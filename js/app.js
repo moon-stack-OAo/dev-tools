@@ -17,60 +17,58 @@ const tools = [
     {id: 'url', icon: 'URL', name: 'URL 编码', desc: 'URL 编解码 / Component 模式', cat: 'encode'},
     {id: 'unicode', icon: 'U+', name: 'Unicode', desc: '\\uXXXX 编码 / 解码', cat: 'encode'},
     {id: 'javaescape', icon: '\\n', name: 'Java 转义', desc: 'Java 字符串转义 / 反转义', cat: 'encode'},
+    {id: 'charset', icon: '文', name: '编码转换', desc: '字符编码互转 / 检测', cat: 'encode'},
+    {id: 'htmlescape', icon: '&lt;&gt;', name: 'HTML 转义', desc: 'HTML 实体编码 / 解码', cat: 'encode'},
     {id: 'jwt', icon: 'JWT', name: 'JWT 解码', desc: '解析 JWT Header / Payload', cat: 'security'},
     {id: 'hash', icon: '#', name: 'Hash 计算', desc: 'MD5 / SHA-1 / SHA-256 / SHA-512', cat: 'security'},
     {id: 'random', icon: 'R', name: '随机生成器', desc: '密码 / Token / PIN 生成', cat: 'security'},
+    {id: 'aes', icon: '🔑', name: 'AES 加解密', desc: 'AES 对称加密 / 解密', cat: 'security'},
+    {id: 'rsa', icon: '🔐', name: 'RSA 工具', desc: '密钥生成 / 加解密 / 签名', cat: 'security'},
     {id: 'uuid', icon: 'U', name: 'UUID 生成', desc: 'UUID v4 / v7 / 批量生成', cat: 'generate'},
     {id: 'ts', icon: 'T', name: '时间戳转换', desc: 'Unix 毫秒/秒 ↔ 日期', cat: 'generate'},
     {id: 'color', icon: '■', name: '颜色转换', desc: 'HEX / RGB / HSL 互转预览', cat: 'generate'},
     {id: 'baseconvert', icon: '0x', name: '进制转换', desc: '2~36 进制互转', cat: 'generate'},
     {id: 'case', icon: 'Aa', name: 'Case 转换', desc: 'camelCase / snake_case 等', cat: 'generate'},
+    {id: 'jsontopojo', icon: 'J→P', name: 'JSON → Java', desc: 'JSON 生成 Java POJO 类', cat: 'generate'},
+    {id: 'sqltopojo', icon: 'S→P', name: 'SQL → Java', desc: 'DDL 生成 MyBatis Plus 实体', cat: 'generate'},
+    {id: 'datamock', icon: '🎲', name: '数据 Mock', desc: '生成姓名 / 手机号 / 邮箱等', cat: 'generate'},
+    {id: 'datecalc', icon: '📅', name: '日期计算器', desc: '日期加减 / 间隔 / 工作日', cat: 'generate'},
     {id: 'diff', icon: '!=', name: '文本对比', desc: '文本差异对比高亮', cat: 'text'},
     {id: 'regex', icon: '.*', name: '正则表达式', desc: '正则匹配测试 / 分组查看', cat: 'text'},
     {id: 'stats', icon: 'Σ', name: '文本统计', desc: '字符 / 单词 / 行数 / 字节', cat: 'text'},
+    {id: 'csv', icon: 'CSV', name: 'CSV 格式化', desc: 'CSV 表格化查看 / 校对', cat: 'text'},
+    {id: 'regexref', icon: '📖', name: '正则速查表', desc: '常用正则表达式分类速查', cat: 'text'},
     {id: 'cron', icon: '*', name: 'Cron 表达式', desc: 'Cron 解析 / 下次执行时间', cat: 'debug'},
     {id: 'ws', icon: 'WS', name: 'WebSocket', desc: 'WebSocket 连接调试', cat: 'debug'},
     {id: 'api', icon: '▶', name: 'API 调用', desc: 'HTTP 请求 / 响应调试', cat: 'debug'},
+    {id: 'ip', icon: '🌍', name: 'IP 工具', desc: 'IP 归属 / 子网计算', cat: 'debug'},
     {id: 'arthas', icon: 'A', name: 'Arthas 命令', desc: 'Arthas 诊断命令速查', cat: 'reference'},
     {id: 'jmh', icon: 'JMH', name: 'JMH 模板', desc: 'JMH 基准测试代码生成', cat: 'reference'},
     {id: 'testgen', icon: 'J5', name: '测试模板', desc: 'JUnit 5 + Mockito 测试生成', cat: 'reference'},
+    {id: 'linux', icon: '🐧', name: 'Linux 命令', desc: '常用 Linux 命令速查', cat: 'reference'},
+    {id: 'docker', icon: '🐳', name: 'Docker 命令', desc: 'Docker / K8s 命令速查', cat: 'reference'},
+    {id: 'gitref', icon: 'G', name: 'Git 命令', desc: 'Git 常用操作速查', cat: 'reference'},
+    {id: 'httpstatus', icon: '🌐', name: 'HTTP 状态码', desc: 'HTTP 状态码 / 方法速查', cat: 'reference'},
+    {id: 'ascii', icon: '⌨', name: 'ASCII 表', desc: 'ASCII / 控制字符速查', cat: 'reference'},
 ];
 
 // === Navigation ===
-const sidebar = document.getElementById('sidebar');
-const sidebarNav = document.getElementById('sidebarNav');
 const panels = document.querySelectorAll('.tool-panel');
 const title = document.getElementById('toolTitle');
 const homeBtn = document.getElementById('homeBtn');
-
-function buildSidebar() {
-    sidebarNav.innerHTML = '';
-    categories.forEach(cat => {
-        const toolsInCat = tools.filter(t => t.cat === cat.id);
-        if (!toolsInCat.length) return;
-        const header = document.createElement('div');
-        header.style.cssText = 'font-size:11px;color:var(--text-muted);padding:12px 10px 4px;text-transform:uppercase;letter-spacing:.5px;font-weight:500';
-        header.textContent = cat.name;
-        sidebarNav.appendChild(header);
-        toolsInCat.forEach(t => {
-            const item = document.createElement('div');
-            item.className = 'nav-item';
-            item.dataset.tool = t.id;
-            item.innerHTML = `<span class="icon">${t.icon}</span><span>${t.name}</span>`;
-            item.addEventListener('click', () => openTool(t.id));
-            sidebarNav.appendChild(item);
-        });
-    });
-}
+const breadcrumb = document.getElementById('breadcrumb');
 
 function buildHomeGrid() {
     const grid = document.getElementById('homeGrid');
     grid.innerHTML = '';
+    const anchors = document.getElementById('homeCatAnchors');
+    anchors.innerHTML = '';
     categories.forEach(cat => {
         const toolsInCat = tools.filter(t => t.cat === cat.id);
         if (!toolsInCat.length) return;
         const divider = document.createElement('div');
         divider.className = 'home-cat-divider';
+        divider.id = 'cat-' + cat.id;
         divider.innerHTML = `<span class="hcd-icon">${cat.icon}</span><span>${cat.name}</span>`;
         grid.appendChild(divider);
         toolsInCat.forEach(t => {
@@ -80,29 +78,59 @@ function buildHomeGrid() {
             card.addEventListener('click', () => openTool(t.id));
             grid.appendChild(card);
         });
+        const anchor = document.createElement('a');
+        anchor.className = 'cat-anchor';
+        anchor.href = '#cat-' + cat.id;
+        anchor.innerHTML = '<span class="cat-icon">' + cat.icon + '</span>' + cat.name;
+        anchors.appendChild(anchor);
     });
+
+    // 滚动高亮当前分类
+    const homePanel = document.getElementById('panel-home');
+    homePanel.addEventListener('scroll', highlightAnchor);
+}
+
+function highlightAnchor() {
+    const homePanel = document.getElementById('panel-home');
+    const dividers = document.querySelectorAll('.home-cat-divider');
+    const anchors = document.querySelectorAll('.cat-anchor');
+    const scrollTop = homePanel.scrollTop;
+    let activeIdx = 0;
+    for (let i = dividers.length - 1; i >= 0; i--) {
+        if (dividers[i].offsetTop <= scrollTop + 60) {
+            activeIdx = i;
+            break;
+        }
+    }
+    anchors.forEach((a, i) => a.classList.toggle('active', i === activeIdx));
 }
 
 function openTool(id) {
     panels.forEach(p => p.classList.remove('active'));
     document.getElementById('panel-home').classList.remove('active');
     document.getElementById('panel-' + id).classList.add('active');
-    title.textContent = tools.find(t => t.id === id).name;
+    const tool = tools.find(t => t.id === id);
+    title.textContent = tool.name;
     homeBtn.style.display = 'flex';
-    sidebar.classList.add('visible');
-    document.querySelectorAll('#sidebarNav .nav-item').forEach(n => n.classList.remove('active'));
-    const activeNav = document.querySelector(`#sidebarNav .nav-item[data-tool="${id}"]`);
-    if (activeNav) activeNav.classList.add('active');
+    const cat = categories.find(c => c.id === tool.cat);
+    breadcrumb.innerHTML = '<span class="bc-item" onclick="goHome()">首页</span><span class="bc-sep">›</span><span class="bc-item" onclick="goHome(\'' + (cat ? cat.id : '') + '\')">' + (cat ? cat.name : '') + '</span><span class="bc-sep">›</span><span class="bc-current">' + tool.name + '</span>';
     setStatus('就绪');
 }
 
-function goHome() {
+function goHome(catId) {
     panels.forEach(p => p.classList.remove('active'));
     document.getElementById('panel-home').classList.add('active');
     title.textContent = 'DevTools';
     homeBtn.style.display = 'none';
-    sidebar.classList.remove('visible');
+    breadcrumb.innerHTML = '';
     clearHomeSearch();
+    setTimeout(() => {
+        highlightAnchor();
+        if (catId) {
+            const el = document.getElementById('cat-' + catId);
+            if (el) el.scrollIntoView({behavior: 'smooth', block: 'start'});
+        }
+    }, 50);
     setStatus('就绪');
 }
 
@@ -123,7 +151,10 @@ function filterHomeTools() {
         let visibleAfter = false;
         let el = cat;
         while (el && !el.classList.contains('home-cat-divider')) {
-            if (el.style.display !== 'none') { visibleAfter = true; break; }
+            if (el.style.display !== 'none') {
+                visibleAfter = true;
+                break;
+            }
             el = el.nextElementSibling;
         }
         d.style.display = (!q || visibleAfter) ? '' : 'none';
@@ -143,14 +174,27 @@ function clearHomeSearch() {
     filterHomeTools();
 }
 
-// 打开工具时清空搜索
+// 打开工具时清空搜索 + 触发延迟渲染
 const origOpen = openTool;
-openTool = function(id) {
+openTool = function (id) {
     clearHomeSearch();
     origOpen(id);
+    const renderMap = {
+        'regexref': 'regexRefRender',
+        'linux': 'linuxRender',
+        'docker': 'dockerRender',
+        'gitref': 'gitRender',
+        'httpstatus': 'httpStatusRender',
+        'ascii': 'asciiRender',
+        'datecalc': 'dateCalcNow',
+        'cron': 'cronBuildFields',
+    };
+    const fnName = renderMap[id];
+    if (fnName && typeof window[fnName] === 'function') {
+        window[fnName]();
+    }
 };
 
-buildSidebar();
 buildHomeGrid();
 
 // === Utils ===
