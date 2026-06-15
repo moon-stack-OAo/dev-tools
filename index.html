@@ -15,7 +15,7 @@
 <body>
 <div class="app" id="app">
     <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">&#9670; DevTools</div>
+        <div class="sidebar-header" onclick="goHome()" style="cursor:pointer">DevTools</div>
         <nav class="sidebar-nav" id="sidebarNav"></nav>
     </aside>
     <div class="main" id="mainContainer">
@@ -26,8 +26,17 @@
 
         <!-- ========== HOME ========== -->
         <div class="tool-panel home-panel active" id="panel-home">
-            <div class="home-title">Java 开发工具箱</div>
-            <div class="home-sub">选择工具开始使用</div>
+            <div class="home-header-row">
+                <div>
+                    <div class="home-title">Java 开发工具箱</div>
+                    <div class="home-sub">选择工具开始使用</div>
+                </div>
+                <div class="home-search-wrap">
+                    <span class="search-icon">&#128269;</span>
+                    <label for="homeSearch"></label>
+                    <input id="homeSearch" oninput="filterHomeTools()" placeholder="搜索工具..." type="text">
+                </div>
+            </div>
             <div class="home-grid" id="homeGrid"></div>
         </div>
 

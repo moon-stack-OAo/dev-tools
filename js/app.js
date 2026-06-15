@@ -102,8 +102,53 @@ function goHome() {
     title.textContent = 'DevTools';
     homeBtn.style.display = 'none';
     sidebar.classList.remove('visible');
+    clearHomeSearch();
     setStatus('就绪');
 }
+
+function filterHomeTools() {
+    const q = document.getElementById('homeSearch').value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.home-card');
+    const dividers = document.querySelectorAll('.home-cat-divider');
+    let hasVisible = false;
+    cards.forEach(card => {
+        const name = card.querySelector('.hc-name').textContent.toLowerCase();
+        const desc = card.querySelector('.hc-desc').textContent.toLowerCase();
+        const match = !q || name.includes(q) || desc.includes(q);
+        card.style.display = match ? '' : 'none';
+        if (match) hasVisible = true;
+    });
+    dividers.forEach(d => {
+        const cat = d.nextElementSibling;
+        let visibleAfter = false;
+        let el = cat;
+        while (el && !el.classList.contains('home-cat-divider')) {
+            if (el.style.display !== 'none') { visibleAfter = true; break; }
+            el = el.nextElementSibling;
+        }
+        d.style.display = (!q || visibleAfter) ? '' : 'none';
+    });
+    const empty = document.querySelector('.home-search-empty');
+    if (empty) empty.remove();
+    if (q && !hasVisible) {
+        const msg = document.createElement('div');
+        msg.className = 'home-search-empty';
+        msg.textContent = '没有匹配的工具';
+        document.getElementById('homeGrid').appendChild(msg);
+    }
+}
+
+function clearHomeSearch() {
+    document.getElementById('homeSearch').value = '';
+    filterHomeTools();
+}
+
+// 打开工具时清空搜索
+const origOpen = openTool;
+openTool = function(id) {
+    clearHomeSearch();
+    origOpen(id);
+};
 
 buildSidebar();
 buildHomeGrid();
