@@ -330,10 +330,20 @@ function emailParseCss(cssText) {
 
 function emailExtractMediaRules(cssText) {
     const medias = [];
-    const re = /@media[^{]+\{([\s\S]*?)\}\s*\}/g;
-    let m;
-    while ((m = re.exec(cssText)) !== null) {
-        medias.push({full: m[0], body: m[1]});
+    const re = /@media[^{]+{/g;
+    let match;
+    while ((match = re.exec(cssText)) !== null) {
+        let depth = 1;
+        const start = match.index;
+        let pos = match.index + match[0].length;
+        while (depth > 0 && pos < cssText.length) {
+            if (cssText[pos] === '{') depth++;
+            else if (cssText[pos] === '}') depth--;
+            pos++;
+        }
+        const full = cssText.substring(start, pos);
+        const body = full.substring(match[0].length, full.length - 1).trim();
+        medias.push({full, body});
     }
     return medias;
 }
@@ -371,7 +381,19 @@ function emailInlineCss(html) {
         };
         apply(tag.toLowerCase());
         if (idMatch) idMatch[1].split(/\s+/).forEach(id => apply('#' + id));
-        if (classMatch) classMatch[1].split(/\s+/).forEach(c => apply('.' + c));
+        if (classMatch) {
+            const classes = classMatch[1].split(/\s+/);
+            classes.forEach(c => apply('.' + c));
+            if (classes.length > 1) {
+                for (let i = 0; i < classes.length; i++) {
+                    let combined = '.' + classes[i];
+                    for (let j = i + 1; j < classes.length; j++) {
+                        combined += '.' + classes[j];
+                        apply(combined);
+                    }
+                }
+            }
+        }
         const styleStr = Object.keys(inline).map(k => k + ':' + inline[k]).join(';');
         let newAttrs = attrs;
         if (classMatch) newAttrs = newAttrs.replace(classMatch[0], '');
