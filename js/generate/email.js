@@ -519,6 +519,7 @@ function emailLoadTemplate() {
         input.id = 'emailVar_' + f.key;
         input.placeholder = f.placeholder || '';
         input.value = f.default || '';
+        input.addEventListener('input', emailRender);
         div.appendChild(input);
         container.appendChild(div);
     });
