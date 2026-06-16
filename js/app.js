@@ -13,6 +13,13 @@ const tools = [
     {id: 'xml', icon: 'bi-code', name: 'XML 格式化', desc: '格式化 / 压缩 / 验证 XML', cat: 'format'},
     {id: 'yaml', icon: 'bi-filetype-yml', name: 'YAML 格式化', desc: 'YAML 格式化 / JSON 互转', cat: 'format'},
     {id: 'sql', icon: 'bi-database', name: 'SQL 格式化', desc: 'SQL 美化 / 多方言支持', cat: 'format'},
+    {
+        id: 'jsonconvert',
+        icon: 'bi-arrow-left-right',
+        name: 'JSON/XML/YAML 互转',
+        desc: 'JSON / XML / YAML 格式互相转换',
+        cat: 'format'
+    },
     {id: 'jsonpath', icon: 'bi-search', name: 'JSONPath 查询', desc: 'JSONPath 表达式查询 / 提取', cat: 'format'},
     {id: 'jsonschema', icon: 'bi-diagram-3', name: 'JSON Schema', desc: 'JSON Schema 生成 / 校验', cat: 'format'},
     {

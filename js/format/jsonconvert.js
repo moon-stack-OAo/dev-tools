@@ -54,7 +54,7 @@ function xmlToJson(xmlStr, attrPrefix) {
 }
 
 // === JSON ↔ YAML ===
-function jsonToYaml(obj) {
+function _objToYaml(obj) {
     const yaml = jsonconvertGetYaml();
     if (!yaml) throw new Error('js-yaml 库未加载');
     return yaml.dump(obj, {indent: 2, lineWidth: -1, noCompatMode: true});
@@ -109,7 +109,7 @@ function jsonconvertRun() {
         } else if (to === 'xml') {
             result = jsonToXml(intermediate, root, attrPrefix);
         } else if (to === 'yaml') {
-            result = jsonToYaml(intermediate);
+            result = _objToYaml(intermediate);
         }
         out.textContent = result;
         out.className = 'output-box';
@@ -134,7 +134,7 @@ function jsonconvertBeautify() {
             out.textContent = JSON.stringify(obj, null, 2);
         } else if (to === 'yaml') {
             const obj = yamlToJsonObj(txt);
-            out.textContent = jsonToYaml(obj);
+            out.textContent = _objToYaml(obj);
         } else if (to === 'xml') {
             const fxp = jsonconvertGetFxps();
             if (!fxp) return;
