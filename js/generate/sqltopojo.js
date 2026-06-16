@@ -1,7 +1,10 @@
 function sqlToPojo() {
     const input = document.getElementById('s2pInput').value;
     const out = document.getElementById('s2pOutput');
-    if (!input) { out.textContent = '请输入 SQL DDL'; return; }
+    if (!input) {
+        out.textContent = '请输入 SQL DDL';
+        return;
+    }
     const lines = input.split('\n').map(l => l.trim()).filter(l => l && !l.toUpperCase().startsWith('CREATE') && !l.toUpperCase().startsWith(')') && !l.toUpperCase().startsWith('PRIMARY') && !l.toUpperCase().startsWith('INDEX') && !l.toUpperCase().startsWith('KEY') && !l.toUpperCase().startsWith('UNIQUE') && !l.toUpperCase().startsWith('CONSTRAINT') && !l.toUpperCase().startsWith('ENGINE') && !l.toUpperCase().startsWith('DEFAULT'));
     const fields = [];
     for (const line of lines) {
@@ -14,9 +17,12 @@ function sqlToPojo() {
         if (sqlType === 'PRIMARY' || sqlType === 'KEY' || sqlType === 'INDEX' || sqlType === 'UNIQUE' || sqlType === 'CONSTRAINT') continue;
         const javaType = sqlTypeToJava(sqlType);
         const comment = extractComment(clean);
-        fields.push({ col, javaType, comment, sqlType: parts[1] });
+        fields.push({col, javaType, comment, sqlType: parts[1]});
     }
-    if (!fields.length) { out.textContent = '未识别到字段定义'; return; }
+    if (!fields.length) {
+        out.textContent = '未识别到字段定义';
+        return;
+    }
     const tableName = extractTableName(input);
     const className = toPascalCase(tableName || 'GeneratedEntity');
     let code = '';

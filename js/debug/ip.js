@@ -1,10 +1,14 @@
 function ipCalcLookup() {
     const input = document.getElementById('ipInput').value.trim();
     const out = document.getElementById('ipOutput');
-    if (!input) { out.textContent = '请输入 IP 地址'; return; }
+    if (!input) {
+        out.textContent = '请输入 IP 地址';
+        return;
+    }
     const parts = input.split('.');
     if (parts.length !== 4 || parts.some(p => isNaN(p) || p < 0 || p > 255)) {
-        out.textContent = '无效 IP 地址'; return;
+        out.textContent = '无效 IP 地址';
+        return;
     }
     const first = parseInt(parts[0]);
     let cls = 'A';
@@ -23,10 +27,14 @@ function ipCalcSubnet() {
     const ip = document.getElementById('ipSubnetIp').value.trim();
     const mask = parseInt(document.getElementById('ipSubnetMask').value);
     const out = document.getElementById('ipSubnetOutput');
-    if (!ip || isNaN(mask) || mask < 0 || mask > 32) { out.textContent = '请输入有效 IP 和掩码 (0-32)'; return; }
+    if (!ip || isNaN(mask) || mask < 0 || mask > 32) {
+        out.textContent = '请输入有效 IP 和掩码 (0-32)';
+        return;
+    }
     const parts = ip.split('.');
     if (parts.length !== 4 || parts.some(p => isNaN(p) || p < 0 || p > 255)) {
-        out.textContent = '无效 IP 地址'; return;
+        out.textContent = '无效 IP 地址';
+        return;
     }
     const ipNum = parts.reduce((acc, p) => (acc << 8) + parseInt(p), 0) >>> 0;
     const maskNum = ~(0xFFFFFFFF >>> mask) >>> 0;
@@ -34,7 +42,11 @@ function ipCalcSubnet() {
     const broadNum = (netNum | ~maskNum) >>> 0;
     const firstUsable = mask < 31 ? netNum + 1 : netNum;
     const lastUsable = mask < 31 ? broadNum - 1 : broadNum;
-    function toIp(n) { return [(n >>> 24) & 0xFF, (n >>> 16) & 0xFF, (n >>> 8) & 0xFF, n & 0xFF].join('.'); }
+
+    function toIp(n) {
+        return [(n >>> 24) & 0xFF, (n >>> 16) & 0xFF, (n >>> 8) & 0xFF, n & 0xFF].join('.');
+    }
+
     const total = Math.pow(2, 32 - mask);
     const usable = Math.max(0, total - 2);
     const result = '网络地址: ' + toIp(netNum) + '\n' + '广播地址: ' + toIp(broadNum) + '\n' + '可用 IP 范围: ' + toIp(firstUsable) + ' - ' + toIp(lastUsable) + '\n' + '子网掩码: ' + toIp(maskNum) + '\n' + 'CIDR: /' + mask + '\n' + '主机数: ' + usable + ' (共 ' + total + ' 个地址)';

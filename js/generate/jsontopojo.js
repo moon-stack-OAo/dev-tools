@@ -3,16 +3,25 @@ function jsonToPojo() {
     const className = document.getElementById('j2pClass').value.trim() || 'GeneratedClass';
     const lombok = document.getElementById('j2pLombok').checked;
     const out = document.getElementById('j2pOutput');
-    if (!input) { out.textContent = '请输入 JSON'; return; }
+    if (!input) {
+        out.textContent = '请输入 JSON';
+        return;
+    }
     let obj;
-    try { obj = JSON.parse(input); } catch (e) { out.textContent = 'JSON 解析失败: ' + e.message; return; }
+    try {
+        obj = JSON.parse(input);
+    } catch (e) {
+        out.textContent = 'JSON 解析失败: ' + e.message;
+        return;
+    }
     if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
-        out.textContent = '请输入 JSON 对象 (非数组)'; return;
+        out.textContent = '请输入 JSON 对象 (非数组)';
+        return;
     }
     const imports = new Set();
     const fields = [];
     for (const [key, val] of Object.entries(obj)) {
-        fields.push({ name: key, type: inferType(key, val, imports) });
+        fields.push({name: key, type: inferType(key, val, imports)});
     }
     let code = '';
     if (lombok) code += 'import lombok.Data;\n';
@@ -21,7 +30,9 @@ function jsonToPojo() {
     if (sorted.length || lombok) code += '\n';
     if (lombok) code += '@Data\n';
     code += 'public class ' + className + ' {\n\n';
-    fields.forEach(f => { code += '    private ' + f.type + ' ' + f.name + ';\n'; });
+    fields.forEach(f => {
+        code += '    private ' + f.type + ' ' + f.name + ';\n';
+    });
     code += '\n}';
     out.textContent = code;
 }

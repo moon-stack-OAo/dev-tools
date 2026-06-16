@@ -1,0 +1,239 @@
+<div class="tool-panel" id="panel-uuid">
+    <div class="toolbar">
+        <button onclick="genUUID('v4')">生成 UUID v4</button>
+        <button class="outline" onclick="genUUID('v7')">生成 UUID v7</button>
+        <button class="outline" onclick="genUUID('v4',5)">批量 5 个</button>
+        <button class="outline" onclick="uuidClear()"
+                style="margin-left:auto;border-color:var(--danger);color:var(--danger)">清空
+        </button>
+    </div>
+    <div class="uuid-list" id="uuidList">
+        <div style="color:var(--text-dim);font-size:13px;padding:8px 0">点击按钮生成 UUID</div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-ts">
+    <div class="mb-8">
+        <div class="label">当前时间</div>
+        <div class="output-box" id="tsNow" style="min-height:auto;padding:8px 12px"></div>
+    </div>
+    <div class="ts-row mb-8">
+        <input id="tsInput" placeholder="时间戳 (秒或毫秒)" type="text">
+        <button onclick="tsFromTimestamp()">→ 转日期</button>
+        <input id="tsDateInput" placeholder="日期字符串 (如 2025-01-01 12:00:00)" type="text">
+        <button onclick="tsFromDate()">→ 转时间戳</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">结果</div>
+        <button class="copy-btn" onclick="copyText('tsOutput')">复制</button>
+        <div class="output-box" id="tsOutput"></div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-case">
+    <div class="mb-8">
+        <div class="label">输入文本</div>
+        <textarea class="json-input" id="caseInput" placeholder="hello world from Java"></textarea>
+    </div>
+    <div class="toolbar">
+        <button onclick="caseConvert('camel')">camelCase</button>
+        <button class="outline" onclick="caseConvert('pascal')">PascalCase</button>
+        <button class="outline" onclick="caseConvert('snake')">snake_case</button>
+        <button class="outline" onclick="caseConvert('kebab')">kebab-case</button>
+        <button class="outline" onclick="caseConvert('upper')">UPPER_CASE</button>
+        <button class="outline" onclick="caseConvert('lower')">lower case</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('caseOutput')">复制</button>
+        <div class="output-box" id="caseOutput"></div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-color">
+    <div class="mb-8">
+        <div class="label">输入颜色 (HEX / RGB / HSL / 名称)</div>
+        <input id="colorInput" placeholder="#ff6600 或 rgb(255,102,0) 或 hsl(24,100%,50%)" type="text"
+               value="#ff6600">
+    </div>
+    <div class="color-preview" id="colorPreview"></div>
+    <div class="toolbar">
+        <button onclick="colorConvert()">转换</button>
+    </div>
+    <div class="color-grid">
+        <div class="copy-wrap">
+            <div class="label">HEX</div>
+            <button class="copy-btn" onclick="copyText('colorHex')">复制</button>
+            <div class="output-box" id="colorHex"></div>
+        </div>
+        <div class="copy-wrap">
+            <div class="label">RGB</div>
+            <button class="copy-btn" onclick="copyText('colorRgb')">复制</button>
+            <div class="output-box" id="colorRgb"></div>
+        </div>
+        <div class="copy-wrap">
+            <div class="label">HSL</div>
+            <button class="copy-btn" onclick="copyText('colorHsl')">复制</button>
+            <div class="output-box" id="colorHsl"></div>
+        </div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-baseconvert">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div class="flex-1">
+            <div class="label">数值</div>
+            <input id="bcInput" placeholder="255" type="text">
+        </div>
+        <div style="width:80px">
+            <div class="label">源进制</div>
+            <input id="bcFromRadix" max="36" min="2" style="width:60px" type="number" value="10">
+        </div>
+        <div style="width:80px">
+            <div class="label">目标进制</div>
+            <input id="bcToRadix" max="36" min="2" style="width:60px" type="number" value="16">
+        </div>
+    </div>
+    <div class="toolbar">
+        <button onclick="baseConvert()">转换</button>
+        <button class="outline" onclick="bcQuick(10,16)">Dec → Hex</button>
+        <button class="outline" onclick="bcQuick(16,10)">Hex → Dec</button>
+        <button class="outline" onclick="bcQuick(10,2)">Dec → Bin</button>
+        <button class="outline" onclick="bcQuick(2,10)">Bin → Dec</button>
+        <button class="outline" onclick="bcQuick(10,8)">Dec → Oct</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">结果</div>
+        <button class="copy-btn" onclick="copyText('bcOutput')">复制</button>
+        <div class="output-box" id="bcOutput"></div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-jsontopojo">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div class="flex-1">
+            <div class="label">类名</div>
+            <input id="j2pClass" placeholder="UserDTO" type="text" value="UserDTO">
+        </div>
+        <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-dim)">
+            <input checked id="j2pLombok" style="accent-color:var(--accent)" type="checkbox"> Lombok @Data
+        </label>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入 JSON</div>
+        <textarea class="json-input" id="j2pInput"
+                  placeholder='{"name":"张三","age":25,"active":true}'></textarea>
+    </div>
+    <div class="toolbar">
+        <button onclick="jsonToPojo()">生成代码</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">生成的 Java 类</div>
+        <button class="copy-btn" onclick="copyText('j2pOutput')">复制</button>
+        <div class="output-box" id="j2pOutput" style="min-height:120px;max-height:400px"></div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-sqltopojo">
+    <div class="mb-8">
+        <div class="label">输入 SQL DDL</div>
+        <textarea class="json-input" id="s2pInput"
+                  placeholder="CREATE TABLE `user` (&#10;  `id` bigint(20) NOT NULL AUTO_INCREMENT,&#10;  `name` varchar(50) DEFAULT NULL COMMENT '姓名',&#10;  `age` int(11) DEFAULT NULL COMMENT '年龄',&#10;  PRIMARY KEY (`id`)&#10;) ENGINE=InnoDB"></textarea>
+    </div>
+    <div class="toolbar">
+        <button onclick="sqlToPojo()">生成实体</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">生成的 MyBatis Plus 实体</div>
+        <button class="copy-btn" onclick="copyText('s2pOutput')">复制</button>
+        <div class="output-box" id="s2pOutput" style="min-height:120px;max-height:400px"></div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-datamock">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div>
+            <div class="label">数据类型</div>
+            <select id="mockType" style="width:140px">
+                <option value="name">姓名</option>
+                <option value="phone">手机号</option>
+                <option value="email">邮箱</option>
+                <option value="idcard">身份证</option>
+                <option value="company">公司名</option>
+                <option value="city">城市</option>
+                <option value="address">地址</option>
+                <option value="url">URL</option>
+                <option value="ip">IP 地址</option>
+            </select>
+        </div>
+        <div>
+            <div class="label">生成数量</div>
+            <input id="mockCount" max="50" min="1" style="width:80px" type="number" value="5">
+        </div>
+    </div>
+    <div class="toolbar">
+        <button onclick="mockBatch()">生成</button>
+    </div>
+    <div class="uuid-list" id="mockList">
+        <div style="color:var(--text-dim);font-size:13px;padding:8px 0">点击按钮生成模拟数据</div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-datecalc">
+    <div class="mb-8">
+        <div class="label">当前时间</div>
+        <div class="output-box" id="dateNow" style="min-height:auto;padding:8px 12px"></div>
+        <div class="label mt-8">时间戳</div>
+        <div class="output-box" id="dateTimestamp" style="min-height:auto;padding:8px 12px"></div>
+    </div>
+    <div class="toolbar" style="margin-bottom:4px">
+        <button onclick="dateCalcNow()">刷新当前时间</button>
+    </div>
+    <div class="mb-8" style="border:1px solid var(--border);border-radius:var(--radius);padding:12px">
+        <div class="label">日期加减</div>
+        <div class="flex gap-6" style="align-items:center;flex-wrap:wrap">
+            <input id="dateBase" type="date">
+            <select id="dateOp" style="width:80px">
+                <option value="add">+</option>
+                <option value="sub">-</option>
+            </select>
+            <input id="dateAmount" min="1" style="width:80px" type="number" value="7">
+            <select id="dateUnit" style="width:100px">
+                <option value="day">天</option>
+                <option value="week">周</option>
+                <option value="month">月</option>
+                <option value="year">年</option>
+            </select>
+            <button onclick="dateCalcAdd()">计算</button>
+        </div>
+        <div class="output-box" id="dateResult" style="min-height:auto;padding:8px 12px;margin-top:8px"></div>
+    </div>
+    <div class="mb-8" style="border:1px solid var(--border);border-radius:var(--radius);padding:12px">
+        <div class="label">日期间隔</div>
+        <div class="flex gap-6" style="align-items:center;flex-wrap:wrap">
+            <input id="dateDiff1" type="date">
+            <span style="color:var(--text-dim)">~</span>
+            <input id="dateDiff2" type="date">
+            <select id="dateDiffUnit" style="width:100px">
+                <option value="day">天</option>
+                <option value="week">周</option>
+                <option value="month">月</option>
+                <option value="year">年</option>
+            </select>
+            <button onclick="dateCalcDiff()">计算</button>
+        </div>
+        <div class="output-box" id="dateDiffResult"
+             style="min-height:auto;padding:8px 12px;margin-top:8px"></div>
+    </div>
+    <div class="mb-8" style="border:1px solid var(--border);border-radius:var(--radius);padding:12px">
+        <div class="label">工作日计算 (周一至周五)</div>
+        <div class="flex gap-6" style="align-items:center;flex-wrap:wrap">
+            <input id="dateBiz1" type="date">
+            <span style="color:var(--text-dim)">~</span>
+            <input id="dateBiz2" type="date">
+            <button onclick="dateCalcBizDays()">计算</button>
+        </div>
+        <div class="output-box" id="dateBizResult"
+             style="min-height:auto;padding:8px 12px;margin-top:8px"></div>
+    </div>
+</div>

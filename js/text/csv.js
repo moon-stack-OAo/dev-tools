@@ -4,11 +4,20 @@ function csvFormat() {
     const delim = delimRaw === '\\t' ? '\t' : delimRaw;
     const hasHeader = document.getElementById('csvHeader').checked;
     const out = document.getElementById('csvOutput');
-    if (!input) { out.innerHTML = '请输入 CSV 数据'; return; }
+    if (!input) {
+        out.innerHTML = '请输入 CSV 数据';
+        return;
+    }
     const lines = input.split('\n').map(l => l.trim()).filter(l => l);
-    if (!lines.length) { out.innerHTML = '无数据'; return; }
+    if (!lines.length) {
+        out.innerHTML = '无数据';
+        return;
+    }
     const rows = lines.map(l => parseCSVLine(l, delim));
-    if (!rows.length) { out.innerHTML = '无法解析'; return; }
+    if (!rows.length) {
+        out.innerHTML = '无法解析';
+        return;
+    }
     const maxCols = Math.max(...rows.map(r => r.length));
     const padded = rows.map(r => {
         while (r.length < maxCols) r.push('');
@@ -39,13 +48,24 @@ function parseCSVLine(line, delim) {
         const ch = line[i];
         if (inQuote) {
             if (ch === '"') {
-                if (i + 1 < line.length && line[i + 1] === '"') { cur += '"'; i++; }
-                else { inQuote = false; }
-            } else { cur += ch; }
+                if (i + 1 < line.length && line[i + 1] === '"') {
+                    cur += '"';
+                    i++;
+                } else {
+                    inQuote = false;
+                }
+            } else {
+                cur += ch;
+            }
         } else {
-            if (ch === '"') { inQuote = true; }
-            else if (ch === delim) { result.push(cur.trim()); cur = ''; }
-            else { cur += ch; }
+            if (ch === '"') {
+                inQuote = true;
+            } else if (ch === delim) {
+                result.push(cur.trim());
+                cur = '';
+            } else {
+                cur += ch;
+            }
         }
     }
     result.push(cur.trim());

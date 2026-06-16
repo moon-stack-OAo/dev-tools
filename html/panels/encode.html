@@ -1,0 +1,113 @@
+<div class="tool-panel" id="panel-base64">
+    <div class="toolbar">
+        <button onclick="b64Encode()">编码</button>
+        <button class="outline" onclick="b64Decode()">解码</button>
+        <label><input id="b64UrlSafe" style="accent-color:var(--accent)" type="checkbox"> URL 安全</label>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入</div>
+        <textarea class="json-input" id="b64Input" placeholder="输入需要编码或解码的文本"></textarea>
+    </div>
+    <div class="mb-8">
+        <div class="label">或上传文件</div>
+        <input id="b64File" onchange="b64FileEncode()" type="file">
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('b64Output')">复制</button>
+        <div class="output-box" id="b64Output"></div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-url">
+    <div class="toolbar">
+        <button onclick="urlEncode()">编码</button>
+        <button class="outline" onclick="urlDecode()">解码</button>
+        <label><input checked id="urlComponent" style="accent-color:var(--accent)" type="checkbox">
+            encodeURIComponent</label>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入</div>
+        <textarea class="json-input" id="urlInput"
+                  placeholder="https://example.com/path?name=hello world"></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('urlOutput')">复制</button>
+        <div class="output-box" id="urlOutput"></div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-javaescape">
+    <div class="toolbar">
+        <button onclick="javaEscape()">Java 转义</button>
+        <button class="outline" onclick="javaUnescape()">Java 反转义</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入</div>
+        <textarea class="json-input" id="javaInput"
+                  placeholder='普通文本: hello "world" &#10;或 Java 转义: hello \"world\"\n'></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('javaOutput')">复制</button>
+        <div class="output-box" id="javaOutput"></div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-unicode">
+    <div class="toolbar">
+        <button onclick="unicodeEncode()">编码 \uXXXX</button>
+        <button class="outline" onclick="unicodeDecode()">解码</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入</div>
+        <textarea class="json-input" id="unicodeInput" placeholder="中文 或 \u4e2d\u6587"></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('unicodeOutput')">复制</button>
+        <div class="output-box" id="unicodeOutput"></div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-charset">
+    <div class="toolbar">
+        <button onclick="charsetDetect()">检测编码</button>
+        <button class="outline" onclick="charsetConvert()">转换</button>
+        <select id="charsetEnc">
+            <option value="utf-8">UTF-8</option>
+            <option value="gbk">GBK</option>
+            <option value="gb2312">GB2312</option>
+            <option value="iso-8859-1">ISO-8859-1</option>
+            <option value="shift-jis">Shift-JIS</option>
+            <option value="euc-kr">EUC-KR</option>
+            <option value="big5">Big5</option>
+        </select>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入文本</div>
+        <textarea class="json-input" id="charsetInput" placeholder="输入要转换编码的文本"></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('charsetOutput')">复制</button>
+        <div class="output-box" id="charsetOutput"></div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-htmlescape">
+    <div class="toolbar">
+        <button onclick="htmlEscape()">转义</button>
+        <button class="outline" onclick="htmlUnescape()">反转义</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入</div>
+        <textarea class="json-input" id="htmlInput" placeholder='<script>alert("xss")</script>'></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('htmlOutput')">复制</button>
+        <div class="output-box" id="htmlOutput"></div>
+    </div>
+</div>

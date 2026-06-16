@@ -102,9 +102,15 @@ function mockBatch() {
         const copyId = 'mockCopy' + i;
         item.innerHTML = '<span>' + (i + 1) + '. ' + val + '</span><button class="copy-btn" id="' + copyId + '" style="opacity:0.6;padding:2px 8px;font-size:11px">复制</button>';
         const btn = item.querySelector('#' + copyId);
-        btn.addEventListener('mouseenter', function() { this.style.opacity = '1'; });
-        btn.addEventListener('mouseleave', function() { this.style.opacity = '0.6'; });
-        btn.addEventListener('click', function() { navigator.clipboard.writeText(val).then(() => toast('已复制')); });
+        btn.addEventListener('mouseenter', function () {
+            this.style.opacity = '1';
+        });
+        btn.addEventListener('mouseleave', function () {
+            this.style.opacity = '0.6';
+        });
+        btn.addEventListener('click', function () {
+            navigator.clipboard.writeText(val).then(() => toast('已复制'));
+        });
         list.appendChild(item);
     }
 }

@@ -15,7 +15,13 @@ for (let i = 0; i < 128; i++) {
     const hex = i.toString(16).toUpperCase().padStart(2, '0');
     const oct = i.toString(8).padStart(3, '0');
     const name = names[i] || '';
-    ASCII_DATA.push({ dec: i, hex, oct, char: ch || (i === 32 ? ' ' : ''), name: name || (i < 32 ? '控制字符' : i === 127 ? '删除' : '') });
+    ASCII_DATA.push({
+        dec: i,
+        hex,
+        oct,
+        char: ch || (i === 32 ? ' ' : ''),
+        name: name || (i < 32 ? '控制字符' : i === 127 ? '删除' : '')
+    });
 }
 
 function asciiRender() {

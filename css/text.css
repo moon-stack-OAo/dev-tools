@@ -1,0 +1,101 @@
+/* Diff */
+.diff-container {
+    display: flex;
+    gap: 12px
+}
+
+.diff-container textarea {
+    height: 300px
+}
+
+.diff-output {
+    background: #1a1f33;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    font-family: var(--font);
+    font-size: 12px;
+    line-height: 1.7;
+    max-height: 400px;
+    overflow: auto;
+    white-space: pre;
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, .2);
+}
+
+.diff-added {
+    background: rgba(0, 212, 170, .1);
+    color: var(--accent);
+    border-left: 3px solid var(--accent);
+    padding-left: 6px;
+    margin: 1px 0
+}
+
+.diff-removed {
+    background: rgba(239, 83, 80, .1);
+    color: var(--danger);
+    border-left: 3px solid var(--danger);
+    padding-left: 6px;
+    margin: 1px 0
+}
+
+@media (max-width: 768px) {
+    .diff-container {
+        flex-direction: column
+    }
+}
+
+/* Stats */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 8px
+}
+
+.stat-card {
+    background: #1a1f33;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 12px 14px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: border-color .2s, transform .2s ease, box-shadow .2s;
+}
+
+.stat-card:hover {
+    border-color: var(--border-light);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .25);
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    opacity: .5;
+}
+
+.stat-card .stat-val {
+    font-size: 26px;
+    font-weight: 700;
+    font-family: var(--font);
+    color: var(--accent);
+    line-height: 1.2
+}
+
+.stat-card .stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 5px;
+    text-transform: uppercase;
+    letter-spacing: .3px
+}
+
+/* Regex */
+.regex-flags {
+    width: 120px
+}

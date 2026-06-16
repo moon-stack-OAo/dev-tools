@@ -40,6 +40,7 @@ const tools = [
     {id: 'regexref', icon: '📖', name: '正则速查表', desc: '常用正则表达式分类速查', cat: 'text'},
     {id: 'cron', icon: '*', name: 'Cron 表达式', desc: 'Cron 解析 / 下次执行时间', cat: 'debug'},
     {id: 'ws', icon: 'WS', name: 'WebSocket', desc: 'WebSocket 连接调试', cat: 'debug'},
+    {id: 'stomp', icon: 'S™', name: 'STOMP', desc: 'STOMP over WebSocket 调试', cat: 'debug'},
     {id: 'api', icon: '▶', name: 'API 调用', desc: 'HTTP 请求 / 响应调试', cat: 'debug'},
     {id: 'ip', icon: '🌍', name: 'IP 工具', desc: 'IP 归属 / 子网计算', cat: 'debug'},
     {id: 'arthas', icon: 'A', name: 'Arthas 命令', desc: 'Arthas 诊断命令速查', cat: 'reference'},
@@ -53,10 +54,28 @@ const tools = [
 ];
 
 // === Navigation ===
-const panels = document.querySelectorAll('.tool-panel');
+let panels = [];
 const title = document.getElementById('toolTitle');
 const homeBtn = document.getElementById('homeBtn');
 const breadcrumb = document.getElementById('breadcrumb');
+
+const PANEL_CATEGORIES = ['format', 'encode', 'security', 'generate', 'text', 'debug', 'reference'];
+
+function loadPanels() {
+    const container = document.getElementById('panels-container');
+    const loading = document.getElementById('panels-loading');
+    return Promise.all(PANEL_CATEGORIES.map(cat =>
+        fetch('html/panels/' + cat + '.html', {cache: 'no-cache'})
+            .then(r => r.ok ? r.text() : '')
+            .catch(() => '')
+    )).then(htmls => {
+        const existingHome = container.innerHTML;
+        container.innerHTML = existingHome + '\n' + htmls.join('\n');
+        panels = document.querySelectorAll('.tool-panel');
+        if (loading) loading.style.display = 'none';
+        container.style.display = '';
+    });
+}
 
 function buildHomeGrid() {
     const grid = document.getElementById('homeGrid');
@@ -195,7 +214,11 @@ openTool = function (id) {
     }
 };
 
-buildHomeGrid();
+loadPanels().then(() => buildHomeGrid()).catch(err => {
+    const loading = document.getElementById('panels-loading');
+    if (loading) loading.textContent = '工具模块加载失败: ' + err.message;
+    console.error('loadPanels failed', err);
+});
 
 // === Utils ===
 function setStatus(msg) {

@@ -1,0 +1,77 @@
+<div class="tool-panel" id="panel-json">
+    <div class="toolbar">
+        <button onclick="jsonFormat()">格式化</button>
+        <button class="outline" onclick="jsonCompress()">压缩</button>
+        <button class="outline" onclick="jsonValidate()">验证</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入 JSON</div>
+        <textarea class="json-input" id="jsonInput" placeholder='{"name":"test","version":1}'></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('jsonOutput')">复制</button>
+        <div class="output-box" id="jsonOutput"></div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-xml">
+    <div class="toolbar">
+        <button onclick="xmlFormat()">格式化</button>
+        <button class="outline" onclick="xmlCompress()">压缩</button>
+        <button class="outline" onclick="xmlValidate()">验证</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入 XML</div>
+        <textarea class="json-input" id="xmlInput"
+                  placeholder="<root><item id='1'>hello</item></root>"></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('xmlOutput')">复制</button>
+        <div class="output-box" id="xmlOutput"></div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-yaml">
+    <div class="toolbar">
+        <button onclick="yamlFormat()">格式化 YAML</button>
+        <button class="outline" onclick="yamlToJson()">YAML → JSON</button>
+        <button class="outline" onclick="jsonToYaml()">JSON → YAML</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入</div>
+        <textarea class="json-input" id="yamlInput" placeholder="server:&#10;  port: 8080"></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('yamlOutput')">复制</button>
+        <div class="output-box" id="yamlOutput"></div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-sql">
+    <div class="toolbar">
+        <button onclick="sqlFormat()">格式化</button>
+        <div>
+            <select id="sqlDialect" style="width:130px">
+                <option value="sql">Standard SQL</option>
+                <option value="mysql">MySQL</option>
+                <option value="postgresql">PostgreSQL</option>
+                <option value="plsql">Oracle PL/SQL</option>
+                <option value="tsql">SQL Server</option>
+                <option value="bigquery">BigQuery</option>
+            </select>
+        </div>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入 SQL</div>
+        <textarea class="json-input" id="sqlInput"
+                  placeholder="SELECT id,name FROM users WHERE age > 18 ORDER BY name"></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('sqlOutput')">复制</button>
+        <div class="output-box" id="sqlOutput"></div>
+    </div>
+</div>

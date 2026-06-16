@@ -1,0 +1,235 @@
+<div class="tool-panel" id="panel-cron">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div class="flex-1">
+            <div class="label">Cron 表达式 (6 段 秒 分 时 日 月 周)</div>
+            <div style="display:flex;gap:4px">
+                <input id="cronInput" placeholder="*/5 * * * *" style="width:240px;font-family:var(--font)"
+                       type="text"
+                       value="*/5 * * * *">
+                <button onclick="cronCopyExpr()" style="padding:3px 10px;font-size:11px;flex-shrink:0">复制
+                </button>
+                <button class="outline" onclick="cronParse()"
+                        style="padding:3px 10px;font-size:11px;flex-shrink:0">解析
+                </button>
+            </div>
+        </div>
+        <div style="width:120px">
+            <div class="label">生成次数</div>
+            <input id="cronCount" max="20" min="1" style="width:60px" type="number" value="5">
+        </div>
+    </div>
+
+    <div class="cron-fields" id="cronFields"></div>
+
+    <div class="toolbar">
+        <button class="outline" onclick="cronPreset('*/5 * * * *')">每5分钟</button>
+        <button class="outline" onclick="cronPreset('0 * * * *')">每小时</button>
+        <button class="outline" onclick="cronPreset('0 0 * * *')">每天凌晨</button>
+        <button class="outline" onclick="cronPreset('0 0 * * 1')">每周一</button>
+        <button class="outline" onclick="cronPreset('0 0 1 * *')">每月1号</button>
+    </div>
+
+    <div class="cron-description" id="cronDesc"
+         style="padding:8px 12px;font-size:13px;color:var(--text-dim);margin-bottom:8px"></div>
+
+    <div class="copy-wrap">
+        <div class="label">下次执行时间</div>
+        <button class="copy-btn" onclick="copyText('cronOutput')">复制</button>
+        <div class="output-box" id="cronOutput"></div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-ws">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <input id="wsUrl" placeholder="wss://echo.websocket.org" style="flex:1;min-width:200px" type="text">
+        <button onclick="wsConnect()">连接</button>
+        <button class="danger" onclick="wsDisconnect()">断开</button>
+        <span class="ws-status disconnected" id="wsStatus"><span class="ws-dot"></span> 未连接</span>
+    </div>
+    <div class="mb-8">
+        <div class="label">消息日志</div>
+        <div class="ws-log" id="wsLog"></div>
+    </div>
+    <div class="flex gap-6">
+        <input id="wsMsg" onkeydown="if(event.key==='Enter')wsSend()" placeholder="输入消息" style="flex:1"
+               type="text">
+        <button onclick="wsSend()">发送</button>
+        <button class="outline" onclick="wsClear()">清空日志</button>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-stomp">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <input id="stompUrl" placeholder="wss://example.com/ws 或 ws://localhost:8080/ws"
+               style="flex:1;min-width:240px" type="text">
+        <button onclick="stompConnect()">CONNECT</button>
+        <button class="danger" onclick="stompDisconnect()">DISCONNECT</button>
+        <span class="ws-status disconnected" id="stompStatus"><span class="ws-dot"></span> 未连接</span>
+    </div>
+
+    <div class="stomp-block">
+        <div class="stomp-block-title">STOMP 握手 (CONNECT Headers)</div>
+        <div class="flex gap-6 mb-8" style="align-items:flex-end;flex-wrap:wrap">
+            <div>
+                <div class="label">Host (虚拟主机)</div>
+                <input id="stompHost" placeholder="localhost" style="width:160px" type="text" value="localhost">
+            </div>
+            <div>
+                <div class="label">心跳 (cx,cy) ms</div>
+                <input id="stompTx" placeholder="10000,10000" style="width:160px" type="text"
+                       value="10000,10000">
+            </div>
+            <div class="flex-1" style="min-width:280px">
+                <div class="label">附加 Headers <span class="stomp-tip">每行一个，格式 key:value</span></div>
+                <input id="stompConnHeaders"
+                       placeholder="login:guest&#10;passcode:guest&#10;Authorization:Bearer xxx" type="text">
+            </div>
+        </div>
+    </div>
+
+    <div class="stomp-block">
+        <div class="stomp-block-title">订阅 (SUBSCRIBE)</div>
+        <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+            <input id="stompSubDest" placeholder="/topic/messages 或 /queue/job.xxx"
+                   style="flex:1;min-width:240px" type="text">
+            <select id="stompSubAck" style="width:170px">
+                <option value="auto">ack=auto (默认)</option>
+                <option value="client">ack=client</option>
+                <option value="client-individual">ack=client-individual</option>
+            </select>
+            <button onclick="stompSubscribe()">+ 订阅</button>
+        </div>
+        <div class="stomp-sub-list" id="stompSubList"></div>
+    </div>
+
+    <div class="stomp-block">
+        <div class="stomp-block-title">发送 (SEND)</div>
+        <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+            <input id="stompSendDest" placeholder="目标 destination" style="flex:1;min-width:240px" type="text">
+            <select id="stompSendCt" style="width:200px">
+                <option value="application/json">application/json</option>
+                <option value="text/plain">text/plain</option>
+                <option value="application/xml">application/xml</option>
+                <option value="">不设置</option>
+            </select>
+        </div>
+        <div class="mb-8">
+            <div class="label">SEND 附加 Headers <span
+                    class="stomp-tip">例如 receipt:123、transaction:tx-1</span></div>
+            <input id="stompSendHeaders" placeholder="receipt:123" type="text">
+        </div>
+        <textarea class="json-input" id="stompSendBody" placeholder='{"event":"ping","ts":1700000000}'
+                  rows="4"></textarea>
+        <div class="flex gap-6 mt-8" style="align-items:center">
+            <button onclick="stompSend()">SEND</button>
+            <button class="outline" onclick="stompClear()">清空日志</button>
+        </div>
+    </div>
+
+    <div class="stomp-block">
+        <div class="stomp-block-title">ACK / NACK <span
+                class="stomp-tip">仅在 ack=client / client-individual 模式下需要</span>
+        </div>
+        <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+            <input id="stompAckId" placeholder="sub-id" style="width:120px" type="text">
+            <input id="stompAckMsgId" placeholder="message-id (从 MESSAGE 帧 headers 复制)"
+                   style="flex:1;min-width:240px" type="text">
+            <button onclick="stompAckOrNack('ack')">ACK</button>
+            <button class="outline" onclick="stompAckOrNack('nack')">NACK</button>
+        </div>
+    </div>
+
+    <div class="stomp-block-title">帧日志 <span class="stomp-tip">显示原始 STOMP 帧与系统消息</span></div>
+    <div class="ws-log" id="stompLog"></div>
+</div>
+
+<div class="tool-panel" id="panel-api">
+    <div class="api-url-bar">
+        <select id="apiMethod" onchange="apiMethodChange(this)">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="PATCH">PATCH</option>
+            <option value="DELETE">DELETE</option>
+            <option value="HEAD">HEAD</option>
+            <option value="OPTIONS">OPTIONS</option>
+        </select>
+        <input id="apiUrl" placeholder="https://api.example.com/endpoint" type="text">
+        <button class="api-send-btn" onclick="apiSend()">&#9654; 发送</button>
+        <button class="outline" onclick="apiClear()">重置</button>
+    </div>
+
+    <div class="api-tabs">
+        <div class="api-tab active" onclick="apiSwitchTab(this,'headers')">Headers</div>
+        <div class="api-tab" onclick="apiSwitchTab(this,'auth')">Authorization</div>
+        <div class="api-tab" onclick="apiSwitchTab(this,'body')">Body</div>
+    </div>
+
+    <div class="api-tab-panel active" id="api-headers-panel">
+        <div class="api-kv-header">
+            <span class="api-kv-key">Key</span>
+            <span class="api-kv-val">Value</span>
+            <span class="api-kv-act"></span>
+        </div>
+        <div id="apiHeadersList"></div>
+        <button class="outline sm" onclick="apiAddHeader()" style="margin-top:4px">+ 添加</button>
+    </div>
+
+    <div class="api-tab-panel" id="api-auth-panel">
+        <div class="api-auth-row">
+            <div class="api-auth-label">Type</div>
+            <select id="apiAuthType" onchange="apiAuthChange()">
+                <option value="none">No Auth</option>
+                <option value="bearer">Bearer Token</option>
+                <option value="basic">Basic Auth</option>
+                <option value="apikey">API Key</option>
+            </select>
+        </div>
+        <div class="api-auth-fields" id="apiAuthFields"></div>
+    </div>
+    <div class="api-tab-panel" id="api-body-panel">
+        <div class="api-body-bar">
+            <select id="apiBodyType">
+                <option value="application/json">application/json</option>
+                <option value="text/plain">text/plain</option>
+                <option value="application/xml">application/xml</option>
+                <option value="application/x-www-form-urlencoded">x-www-form-urlencoded</option>
+            </select>
+        </div>
+        <textarea class="api-body-input" id="apiBody" placeholder='{&#10;  "key": "value"&#10;}'></textarea>
+    </div>
+
+    <div class="api-response" id="apiResponse" style="display:none">
+        <div class="resp-header">
+            <span class="resp-status" id="apiStatus"></span>
+            <span class="resp-meta" id="apiMeta"></span>
+            <button class="outline sm" onclick="copyText('apiBodyOutput')" style="margin-left:auto">复制
+            </button>
+        </div>
+        <div class="resp-body" id="apiBodyOutput"></div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-ip">
+    <div class="mb-8" style="border:1px solid var(--border);border-radius:var(--radius);padding:12px">
+        <div class="label">IP 信息查询</div>
+        <div class="flex gap-6" style="align-items:center">
+            <input id="ipInput" placeholder="如 192.168.1.1" style="flex:1" type="text">
+            <button onclick="ipCalcLookup()">查询</button>
+        </div>
+        <div class="output-box" id="ipOutput" style="min-height:auto;padding:8px 12px;margin-top:8px"></div>
+    </div>
+    <div class="mb-8" style="border:1px solid var(--border);border-radius:var(--radius);padding:12px">
+        <div class="label">子网计算</div>
+        <div class="flex gap-6" style="align-items:center;flex-wrap:wrap">
+            <input id="ipSubnetIp" placeholder="IP 地址" style="flex:1" type="text">
+            <span style="color:var(--text-dim)">/</span>
+            <input id="ipSubnetMask" max="32" min="0" placeholder="掩码" style="width:80px" type="number"
+                   value="24">
+            <button onclick="ipCalcSubnet()">计算</button>
+            <button class="outline sm" onclick="ipCalcAuto()">从上方填入</button>
+        </div>
+        <div class="output-box" id="ipSubnetOutput"
+             style="min-height:auto;padding:8px 12px;margin-top:8px"></div>
+    </div>
+</div>

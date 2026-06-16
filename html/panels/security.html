@@ -1,0 +1,133 @@
+<div class="tool-panel" id="panel-jwt">
+    <div class="mb-8">
+        <div class="label">JWT Token</div>
+        <textarea id="jwtInput" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." rows="2"></textarea>
+    </div>
+    <div class="toolbar">
+        <button onclick="jwtDecode()">解码</button>
+        <button class="outline" onclick="document.getElementById('jwtInput').value=''">清空</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">Header</div>
+        <div class="output-box" id="jwtHeader" style="max-height:120px"></div>
+    </div>
+    <div class="mb-8">
+        <div class="label">Payload</div>
+        <div class="output-box" id="jwtPayload" style="max-height:200px"></div>
+    </div>
+    <div class="mb-8">
+        <div class="label">签名状态</div>
+        <div class="output-box" id="jwtSig" style="min-height:20px"></div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-hash">
+    <div class="mb-8">
+        <div class="label">输入</div>
+        <textarea class="json-input" id="hashInput" placeholder="输入要计算 Hash 的文本"></textarea>
+    </div>
+    <div class="toolbar">
+        <button onclick="hashCompute('md5')">MD5</button>
+        <button class="outline" onclick="hashCompute('sha1')">SHA-1</button>
+        <button class="outline" onclick="hashCompute('sha256')">SHA-256</button>
+        <button class="outline" onclick="hashCompute('sha512')">SHA-512</button>
+        <button class="outline" onclick="hashClear()"
+                style="margin-left:auto;border-color:var(--danger);color:var(--danger)">清空
+        </button>
+    </div>
+    <div id="hashResults"></div>
+</div>
+
+<div class="tool-panel" id="panel-random">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div>
+            <div class="label">长度</div>
+            <input id="randomLen" max="256" min="1" style="width:80px" type="number" value="16">
+        </div>
+        <div>
+            <div class="label">字符集</div>
+            <div style="display:flex;gap:8px;font-size:12px;color:var(--text-dim);flex-wrap:wrap">
+                <label><input checked id="randUpper" style="accent-color:var(--accent)" type="checkbox">
+                    A-Z</label>
+                <label><input checked id="randLower" style="accent-color:var(--accent)" type="checkbox">
+                    a-z</label>
+                <label><input checked id="randDigit" style="accent-color:var(--accent)" type="checkbox">
+                    0-9</label>
+                <label><input id="randSpecial" style="accent-color:var(--accent)" type="checkbox"> !@#$%</label>
+            </div>
+        </div>
+    </div>
+    <div class="toolbar">
+        <button onclick="randPassword()">生成密码</button>
+        <button class="outline" onclick="randToken()">生成 Hex Token</button>
+        <button class="outline" onclick="randPin()">生成 PIN (6位)</button>
+        <button class="outline" onclick="randomClear()"
+                style="margin-left:auto;border-color:var(--danger);color:var(--danger)">清空
+        </button>
+    </div>
+    <div class="uuid-list" id="randomList">
+        <div style="color:var(--text-dim);font-size:13px;padding:8px 0">点击按钮生成随机内容</div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-aes">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div>
+            <div class="label">加密模式</div>
+            <select id="aesMode" style="width:120px">
+                <option value="cbc">CBC</option>
+                <option value="gcm">GCM</option>
+            </select>
+        </div>
+        <div class="flex-1">
+            <div class="label">密码</div>
+            <input id="aesPwd" placeholder="加密密码" type="text">
+        </div>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入</div>
+        <textarea class="json-input" id="aesInput" placeholder="明文或密文 (Base64)"></textarea>
+    </div>
+    <div class="toolbar">
+        <button onclick="aesEncrypt()">加密</button>
+        <button class="outline" onclick="aesDecrypt()">解密</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('aesOutput')">复制</button>
+        <div class="output-box" id="aesOutput"></div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-rsa">
+    <div>
+        <div class="label">密钥位数</div>
+        <select id="rsaBits" style="width:120px">
+            <option value="1024">1024</option>
+            <option value="2048">2048</option>
+            <option value="4096">4096</option>
+        </select>
+        <button onclick="rsaGenKeys()">生成密钥对</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">公钥</div>
+        <textarea id="rsaPubKey" placeholder="Base64 公钥" rows="2"></textarea>
+    </div>
+    <div class="mb-8">
+        <div class="label">私钥</div>
+        <textarea id="rsaPrivKey" placeholder="Base64 私钥" rows="2"></textarea>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入</div>
+        <textarea class="json-input" id="rsaInput" placeholder="明文或密文 (Base64)"></textarea>
+    </div>
+    <div class="toolbar">
+        <button onclick="rsaEncrypt()">加密</button>
+        <button class="outline" onclick="rsaDecrypt()">解密</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('rsaOutput')">复制</button>
+        <div class="output-box" id="rsaOutput"></div>
+    </div>
+</div>
