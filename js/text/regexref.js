@@ -59,36 +59,7 @@ const REGEX_REF = [
     },
 ];
 
-/**
- * 通用的复制函数：优先使用 clipboard API，降级到 execCommand
- */
-function regexRefCopy(text) {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(() => {
-            toast('已复制: ' + text);
-        }).catch(() => {
-            fallbackCopy(text);
-        });
-    } else {
-        fallbackCopy(text);
-    }
-}
-
-function fallbackCopy(text) {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    try {
-        document.execCommand('copy');
-        toast('已复制: ' + text);
-    } catch (e) {
-        toast('复制失败，请手动选择复制');
-    }
-    ta.remove();
-}
+// 使用全局 safeCopy()（定义于 app.js）
 
 function regexRefRender() {
     const container = document.getElementById('regexRefContent');
@@ -106,7 +77,7 @@ function regexRefRender() {
                 + '<span class="regex-ref-desc">' + item.desc + '</span>'
                 + '<i class="bi bi-copy regex-ref-copy-icon"></i>';
             row.addEventListener('click', function () {
-                regexRefCopy(item.pattern);
+                safeCopy(item.pattern, '已复制: ' + item.pattern);
             });
             row.addEventListener('mouseenter', function () {
                 this.style.background = 'var(--glass-hover)';

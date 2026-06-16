@@ -109,7 +109,7 @@ function mockBatch() {
             this.style.opacity = '0.6';
         });
         btn.addEventListener('click', function () {
-            navigator.clipboard.writeText(val).then(() => toast('已复制'));
+            safeCopy(val);
         });
         list.appendChild(item);
     }

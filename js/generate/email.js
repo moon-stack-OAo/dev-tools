@@ -454,7 +454,7 @@ function emailRenderInlined() {
 
 function emailCopySource() {
     const text = document.getElementById('emailSource').textContent;
-    navigator.clipboard.writeText(text).then(() => toast('已复制 HTML (' + formatBytes(text.length) + ')'));
+    safeCopy(text, '已复制 HTML (' + formatBytes(text.length) + ')');
 }
 
 function emailCopyInlined() {
@@ -464,7 +464,7 @@ function emailCopyInlined() {
     const vars = emailCurrentVars();
     const html = tpl.build(vars, theme);
     const inlined = emailInlineCss(html);
-    navigator.clipboard.writeText(inlined).then(() => toast('已复制内联 CSS 的 HTML (' + formatBytes(inlined.length) + ')'));
+    safeCopy(inlined, '已复制内联 CSS 的 HTML (' + formatBytes(inlined.length) + ')');
 }
 
 function formatBytes(n) {

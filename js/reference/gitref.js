@@ -84,7 +84,7 @@ function gitRender() {
                 this.style.background = '';
             });
             row.addEventListener('click', function () {
-                navigator.clipboard.writeText(item.cmd).then(() => toast('已复制'));
+                safeCopy(item.cmd);
             });
             container.appendChild(row);
         });

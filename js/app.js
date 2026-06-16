@@ -156,6 +156,19 @@ function goHome(catId) {
 
 function filterHomeTools() {
     const q = document.getElementById('homeSearch').value.toLowerCase().trim();
+
+    // 如果当前不在首页，自动切回首页再搜索
+    const homePanel = document.getElementById('panel-home');
+    if (!homePanel.classList.contains('active')) {
+        panels.forEach(p => p.classList.remove('active'));
+        homePanel.classList.add('active');
+        title.textContent = 'DevTools';
+        homeBtn.style.display = 'none';
+        breadcrumb.innerHTML = '';
+        setStatus('就绪');
+        setTimeout(highlightAnchor, 50);
+    }
+
     const cards = document.querySelectorAll('.home-card');
     const dividers = document.querySelectorAll('.home-cat-divider');
     let hasVisible = false;
@@ -241,6 +254,30 @@ function toast(msg) {
     t._hide = setTimeout(() => t.classList.remove('show'), 2500);
 }
 
+function safeCopy(text, msg) {
+    msg = msg || '已复制';
+    const doFallback = () => {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+            document.execCommand('copy');
+            toast(msg);
+        } catch (e) {
+            toast('复制失败，请手动选择复制');
+        }
+        ta.remove();
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => toast(msg)).catch(doFallback);
+    } else {
+        doFallback();
+    }
+}
+
 function copyText(id) {
     const el = typeof id === 'string' ? document.getElementById(id) : id;
     const text = el.textContent || el.innerText;
@@ -248,15 +285,7 @@ function copyText(id) {
         toast('没有内容可复制');
         return;
     }
-    navigator.clipboard.writeText(text).then(() => toast('已复制')).catch(() => {
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        ta.remove();
-        toast('已复制');
-    });
+    safeCopy(text);
 }
 
 function safeJSON(s) {

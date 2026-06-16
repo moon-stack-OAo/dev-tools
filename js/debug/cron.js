@@ -325,7 +325,7 @@ function cronCopyExpr() {
         toast('没有可复制的内容');
         return;
     }
-    navigator.clipboard.writeText(val).then(() => toast('已复制'));
+    safeCopy(val);
 }
 
 function cronInit() {
