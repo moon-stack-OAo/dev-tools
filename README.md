@@ -1,6 +1,6 @@
 # Java 开发工具箱
 
-一个开箱即用的 Web 应用，集成了 **42 个工具**（格式化、编解码、安全、生成与转换、文本、调试、参考）。HTML / CSS / JS 全维度按类别拆分，支持
+一个开箱即用的 Web 应用，集成了 **43 个工具**（格式化、编解码、安全、生成与转换、文本、调试、参考）。HTML / CSS / JS 全维度按类别拆分，支持
 Vite 构建、Docker 部署，所有功能在浏览器本地运行，数据不上传任何服务器。
 
 ## 快速开始
@@ -39,7 +39,7 @@ npm run build     # 输出到 dist/
 │   ├── format.html             #  json / xml / yaml / sql
 │   ├── encode.html             #  base64 / url / unicode / javaescape / charset / htmlescape
 │   ├── security.html           #  jwt / hash / random / aes / rsa
-│   ├── generate.html           #  uuid / timestamp / case / color / baseconvert / jsontopojo / sqltopojo / datamock / datecalc
+│   ├── generate.html           #  uuid / timestamp / case / color / baseconvert / jsontopojo / sqltopojo / datamock / datecalc / email
 │   ├── text.html               #  regex / diff / stats / csv / regexref
 │   ├── debug.html              #  cron / websocket / stomp / api / ip
 │   └── reference.html          #  arthas / jmh / testgen / linux / docker / gitref / httpstatus / ascii
@@ -55,7 +55,7 @@ npm run build     # 输出到 dist/
 │   ├── format/                 # 格式化：json / xml / yaml / sql
 │   ├── encode/                 # 编解码：base64 / url / unicode / javaescape / charset / htmlescape
 │   ├── security/               # 安全：jwt / hash / random / aes / rsa
-│   ├── generate/               # 生成与转换：uuid / timestamp / color / baseconvert / case / jsontopojo / sqltopojo / datamock / datecalc
+│   ├── generate/               # 生成与转换：uuid / timestamp / color / baseconvert / case / jsontopojo / sqltopojo / datamock / datecalc / email
 │   ├── text/                   # 文本：diff / regex / stats / csv / regexref
 │   ├── debug/                  # 调试：cron / websocket / stomp / api / ip
 │   └── reference/              # 参考：arthas / jmh / testgen / linux / docker / gitref / httpstatus / ascii
@@ -101,19 +101,20 @@ npm run build     # 输出到 dist/
 | AES 加解密 | AES-CBC / GCM 加密解密，PBKDF2 密钥派生  |
 | RSA 工具  | RSA 密钥对生成（1024/2048/4096）、加密解密  |
 
-### 生成与转换（9）
+### 生成与转换（10）
 
-| 工具        | 功能                                                            |
-|-----------|---------------------------------------------------------------|
-| UUID 生成   | UUID v4 / v7 / 批量生成                                           |
-| 时间戳转换     | Unix 秒 / 毫秒 ↔ 日期字符串互转                                         |
-| 颜色转换      | HEX / RGB / HSL 互转 + 颜色预览                                     |
-| 进制转换      | 2~36 进制互转，Dec→Hex/Bin/Oct 快捷按钮                                |
-| Case 转换   | camelCase / PascalCase / snake_case / kebab-case / UPPER_CASE |
-| JSON→Java | JSON 生成 Java POJO 类（支持 Lombok @Data）                          |
-| SQL→Java  | DDL 建表语句生成 MyBatis Plus 实体                                    |
-| 数据 Mock   | 生成姓名 / 手机号 / 邮箱 / 身份证 / 地址等模拟数据                               |
-| 日期计算器     | 日期加减 / 日期间隔 / 工作日统计                                           |
+| 工具        | 功能                                                                                 |
+|-----------|------------------------------------------------------------------------------------|
+| UUID 生成   | UUID v4 / v7 / 批量生成                                                                |
+| 时间戳转换     | Unix 秒 / 毫秒 ↔ 日期字符串互转                                                              |
+| 颜色转换      | HEX / RGB / HSL 互转 + 颜色预览                                                          |
+| 进制转换      | 2~36 进制互转，Dec→Hex/Bin/Oct 快捷按钮                                                     |
+| Case 转换   | camelCase / PascalCase / snake_case / kebab-case / UPPER_CASE                      |
+| JSON→Java | JSON 生成 Java POJO 类（支持 Lombok @Data）                                               |
+| SQL→Java  | DDL 建表语句生成 MyBatis Plus 实体                                                         |
+| 数据 Mock   | 生成姓名 / 手机号 / 邮箱 / 身份证 / 地址等模拟数据                                                    |
+| 日期计算器     | 日期加减 / 日期间隔 / 工作日统计                                                                |
+| 邮件模板      | 5 套邮件 HTML 模板（欢迎 / 密码重置 / 订单确认 / 活动通知 / 营销推广），填变量实时预览 + 一键内联 CSS（Gmail/Outlook 兼容） |
 
 ### 文本（5）
 

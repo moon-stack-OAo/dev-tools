@@ -328,4 +328,6 @@ function cronCopyExpr() {
     navigator.clipboard.writeText(val).then(() => toast('已复制'));
 }
 
-cronBuildFields();
+function cronInit() {
+    if (document.getElementById('cronFields')) cronBuildFields();
+}

@@ -1,11 +1,16 @@
 function tsUpdateNow() {
+    const el = document.getElementById('tsNow');
+    if (!el) return;
     const now = Date.now();
-    document.getElementById('tsNow').innerHTML =
+    el.innerHTML =
         `Unix 秒: ${Math.floor(now / 1000)} | 毫秒: ${now} | 本地: ${new Date(now).toISOString().replace('T', ' ').slice(0, 19)}`;
 }
 
-setInterval(tsUpdateNow, 1000);
-tsUpdateNow();
+function tsInit() {
+    if (window.__tsInterval) return;
+    window.__tsInterval = setInterval(tsUpdateNow, 1000);
+    tsUpdateNow();
+}
 
 function tsFromTimestamp() {
     const raw = document.getElementById('tsInput').value.trim();

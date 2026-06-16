@@ -86,8 +86,10 @@
     top: 50%;
     transform: translateY(-50%);
     color: var(--text-muted);
-    font-size: 13px;
+    font-size: 14px;
     pointer-events: none;
+    display: flex;
+    align-items: center;
 }
 
 .breadcrumb {
@@ -178,12 +180,6 @@
     font-size: 14px;
 }
 
-.home-search-empty::before {
-    content: '🔍';
-    display: block;
-    font-size: 32px;
-    margin-bottom: 10px;
-}
 
 /* Panels container 必须作为 flex 列容器，让内部 .tool-panel (flex:1) 获得受限高度，
    触发 overflow-y: auto 滚动以及子元素的 position: sticky。 */
@@ -274,10 +270,13 @@
 }
 
 .cat-anchor .cat-icon {
-    font-size: 13px;
+    font-size: 16px;
     width: 18px;
     text-align: center;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .home-cat-divider {
@@ -300,7 +299,9 @@
 
 .home-cat-divider .hcd-icon {
     font-size: 16px;
-    opacity: .8
+    opacity: .8;
+    display: flex;
+    align-items: center;
 }
 
 .home-cat-divider::after {
@@ -363,7 +364,7 @@
     align-items: center;
     justify-content: center;
     border-radius: 14px;
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 700;
     background: var(--bg-input);
     border: 1px solid var(--border);
@@ -396,4 +397,11 @@
     line-height: 1.4;
     padding: 0 4px;
     transition: color .2s;
+}
+
+.home-search-empty .bi {
+    display: block;
+    font-size: 32px;
+    margin-bottom: 10px;
+    color: var(--text-muted);
 }

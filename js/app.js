@@ -1,56 +1,57 @@
 // === Tools Data ===
 const categories = [
-    {id: 'format', name: '格式化', icon: '≡'},
-    {id: 'encode', name: '编解码', icon: '⇄'},
-    {id: 'security', name: '安全', icon: '🔒'},
-    {id: 'generate', name: '生成与转换', icon: '⚙'},
-    {id: 'text', name: '文本', icon: 'T'},
-    {id: 'debug', name: '调试', icon: '▶'},
-    {id: 'reference', name: '参考', icon: '📖'},
+    {id: 'format', name: '格式化', icon: 'bi-file-earmark-code'},
+    {id: 'encode', name: '编解码', icon: 'bi-arrow-left-right'},
+    {id: 'security', name: '安全', icon: 'bi-shield-lock'},
+    {id: 'generate', name: '生成与转换', icon: 'bi-magic'},
+    {id: 'text', name: '文本', icon: 'bi-fonts'},
+    {id: 'debug', name: '调试', icon: 'bi-bug'},
+    {id: 'reference', name: '参考', icon: 'bi-book'},
 ];
 const tools = [
-    {id: 'json', icon: '{}', name: 'JSON 格式化', desc: '格式化 / 压缩 / 验证 JSON', cat: 'format'},
-    {id: 'xml', icon: '&lt;/&gt;', name: 'XML 格式化', desc: '格式化 / 压缩 / 验证 XML', cat: 'format'},
-    {id: 'yaml', icon: 'Y', name: 'YAML 格式化', desc: 'YAML 格式化 / JSON 互转', cat: 'format'},
-    {id: 'sql', icon: 'SQL', name: 'SQL 格式化', desc: 'SQL 美化 / 多方言支持', cat: 'format'},
-    {id: 'base64', icon: 'B64', name: 'Base64', desc: 'Base64 编码解码 / 文件支持', cat: 'encode'},
-    {id: 'url', icon: 'URL', name: 'URL 编码', desc: 'URL 编解码 / Component 模式', cat: 'encode'},
-    {id: 'unicode', icon: 'U+', name: 'Unicode', desc: '\\uXXXX 编码 / 解码', cat: 'encode'},
-    {id: 'javaescape', icon: '\\n', name: 'Java 转义', desc: 'Java 字符串转义 / 反转义', cat: 'encode'},
-    {id: 'charset', icon: '文', name: '编码转换', desc: '字符编码互转 / 检测', cat: 'encode'},
-    {id: 'htmlescape', icon: '&lt;&gt;', name: 'HTML 转义', desc: 'HTML 实体编码 / 解码', cat: 'encode'},
-    {id: 'jwt', icon: 'JWT', name: 'JWT 解码', desc: '解析 JWT Header / Payload', cat: 'security'},
-    {id: 'hash', icon: '#', name: 'Hash 计算', desc: 'MD5 / SHA-1 / SHA-256 / SHA-512', cat: 'security'},
-    {id: 'random', icon: 'R', name: '随机生成器', desc: '密码 / Token / PIN 生成', cat: 'security'},
-    {id: 'aes', icon: '🔑', name: 'AES 加解密', desc: 'AES 对称加密 / 解密', cat: 'security'},
-    {id: 'rsa', icon: '🔐', name: 'RSA 工具', desc: '密钥生成 / 加解密 / 签名', cat: 'security'},
-    {id: 'uuid', icon: 'U', name: 'UUID 生成', desc: 'UUID v4 / v7 / 批量生成', cat: 'generate'},
-    {id: 'ts', icon: 'T', name: '时间戳转换', desc: 'Unix 毫秒/秒 ↔ 日期', cat: 'generate'},
-    {id: 'color', icon: '■', name: '颜色转换', desc: 'HEX / RGB / HSL 互转预览', cat: 'generate'},
-    {id: 'baseconvert', icon: '0x', name: '进制转换', desc: '2~36 进制互转', cat: 'generate'},
-    {id: 'case', icon: 'Aa', name: 'Case 转换', desc: 'camelCase / snake_case 等', cat: 'generate'},
-    {id: 'jsontopojo', icon: 'J→P', name: 'JSON → Java', desc: 'JSON 生成 Java POJO 类', cat: 'generate'},
-    {id: 'sqltopojo', icon: 'S→P', name: 'SQL → Java', desc: 'DDL 生成 MyBatis Plus 实体', cat: 'generate'},
-    {id: 'datamock', icon: '🎲', name: '数据 Mock', desc: '生成姓名 / 手机号 / 邮箱等', cat: 'generate'},
-    {id: 'datecalc', icon: '📅', name: '日期计算器', desc: '日期加减 / 间隔 / 工作日', cat: 'generate'},
-    {id: 'diff', icon: '!=', name: '文本对比', desc: '文本差异对比高亮', cat: 'text'},
-    {id: 'regex', icon: '.*', name: '正则表达式', desc: '正则匹配测试 / 分组查看', cat: 'text'},
-    {id: 'stats', icon: 'Σ', name: '文本统计', desc: '字符 / 单词 / 行数 / 字节', cat: 'text'},
-    {id: 'csv', icon: 'CSV', name: 'CSV 格式化', desc: 'CSV 表格化查看 / 校对', cat: 'text'},
-    {id: 'regexref', icon: '📖', name: '正则速查表', desc: '常用正则表达式分类速查', cat: 'text'},
-    {id: 'cron', icon: '*', name: 'Cron 表达式', desc: 'Cron 解析 / 下次执行时间', cat: 'debug'},
-    {id: 'ws', icon: 'WS', name: 'WebSocket', desc: 'WebSocket 连接调试', cat: 'debug'},
-    {id: 'stomp', icon: 'S™', name: 'STOMP', desc: 'STOMP over WebSocket 调试', cat: 'debug'},
-    {id: 'api', icon: '▶', name: 'API 调用', desc: 'HTTP 请求 / 响应调试', cat: 'debug'},
-    {id: 'ip', icon: '🌍', name: 'IP 工具', desc: 'IP 归属 / 子网计算', cat: 'debug'},
-    {id: 'arthas', icon: 'A', name: 'Arthas 命令', desc: 'Arthas 诊断命令速查', cat: 'reference'},
-    {id: 'jmh', icon: 'JMH', name: 'JMH 模板', desc: 'JMH 基准测试代码生成', cat: 'reference'},
-    {id: 'testgen', icon: 'J5', name: '测试模板', desc: 'JUnit 5 + Mockito 测试生成', cat: 'reference'},
-    {id: 'linux', icon: '🐧', name: 'Linux 命令', desc: '常用 Linux 命令速查', cat: 'reference'},
-    {id: 'docker', icon: '🐳', name: 'Docker 命令', desc: 'Docker / K8s 命令速查', cat: 'reference'},
-    {id: 'gitref', icon: 'G', name: 'Git 命令', desc: 'Git 常用操作速查', cat: 'reference'},
-    {id: 'httpstatus', icon: '🌐', name: 'HTTP 状态码', desc: 'HTTP 状态码 / 方法速查', cat: 'reference'},
-    {id: 'ascii', icon: '⌨', name: 'ASCII 表', desc: 'ASCII / 控制字符速查', cat: 'reference'},
+    {id: 'json', icon: 'bi-braces', name: 'JSON 格式化', desc: '格式化 / 压缩 / 验证 JSON', cat: 'format'},
+    {id: 'xml', icon: 'bi-code', name: 'XML 格式化', desc: '格式化 / 压缩 / 验证 XML', cat: 'format'},
+    {id: 'yaml', icon: 'bi-filetype-yml', name: 'YAML 格式化', desc: 'YAML 格式化 / JSON 互转', cat: 'format'},
+    {id: 'sql', icon: 'bi-database', name: 'SQL 格式化', desc: 'SQL 美化 / 多方言支持', cat: 'format'},
+    {id: 'base64', icon: 'bi-lock', name: 'Base64', desc: 'Base64 编码解码 / 文件支持', cat: 'encode'},
+    {id: 'url', icon: 'bi-link-45deg', name: 'URL 编码', desc: 'URL 编解码 / Component 模式', cat: 'encode'},
+    {id: 'unicode', icon: 'bi-translate', name: 'Unicode', desc: '\\uXXXX 编码 / 解码', cat: 'encode'},
+    {id: 'javaescape', icon: 'bi-slash-lg', name: 'Java 转义', desc: 'Java 字符串转义 / 反转义', cat: 'encode'},
+    {id: 'charset', icon: 'bi-fonts', name: '编码转换', desc: '字符编码互转 / 检测', cat: 'encode'},
+    {id: 'htmlescape', icon: 'bi-filetype-html', name: 'HTML 转义', desc: 'HTML 实体编码 / 解码', cat: 'encode'},
+    {id: 'jwt', icon: 'bi-key', name: 'JWT 解码', desc: '解析 JWT Header / Payload', cat: 'security'},
+    {id: 'hash', icon: 'bi-hash', name: 'Hash 计算', desc: 'MD5 / SHA-1 / SHA-256 / SHA-512', cat: 'security'},
+    {id: 'random', icon: 'bi-dice-6', name: '随机生成器', desc: '密码 / Token / PIN 生成', cat: 'security'},
+    {id: 'aes', icon: 'bi-shield-check', name: 'AES 加解密', desc: 'AES 对称加密 / 解密', cat: 'security'},
+    {id: 'rsa', icon: 'bi-shield-exclamation', name: 'RSA 工具', desc: '密钥生成 / 加解密 / 签名', cat: 'security'},
+    {id: 'uuid', icon: 'bi-fingerprint', name: 'UUID 生成', desc: 'UUID v4 / v7 / 批量生成', cat: 'generate'},
+    {id: 'ts', icon: 'bi-clock', name: '时间戳转换', desc: 'Unix 毫秒/秒 ↔ 日期', cat: 'generate'},
+    {id: 'color', icon: 'bi-palette', name: '颜色转换', desc: 'HEX / RGB / HSL 互转预览', cat: 'generate'},
+    {id: 'baseconvert', icon: 'bi-calculator', name: '进制转换', desc: '2~36 进制互转', cat: 'generate'},
+    {id: 'case', icon: 'bi-type', name: 'Case 转换', desc: 'camelCase / snake_case 等', cat: 'generate'},
+    {id: 'jsontopojo', icon: 'bi-arrow-repeat', name: 'JSON → Java', desc: 'JSON 生成 Java POJO 类', cat: 'generate'},
+    {id: 'sqltopojo', icon: 'bi-arrow-repeat', name: 'SQL → Java', desc: 'DDL 生成 MyBatis Plus 实体', cat: 'generate'},
+    {id: 'datamock', icon: 'bi-people', name: '数据 Mock', desc: '生成姓名 / 手机号 / 邮箱等', cat: 'generate'},
+    {id: 'datecalc', icon: 'bi-calendar', name: '日期计算器', desc: '日期加减 / 间隔 / 工作日', cat: 'generate'},
+    {id: 'email', icon: 'bi-envelope', name: '邮件模板', desc: '邮件 HTML 模板生成 / 预览 / 内联 CSS', cat: 'generate'},
+    {id: 'diff', icon: 'bi-file-earmark-diff', name: '文本对比', desc: '文本差异对比高亮', cat: 'text'},
+    {id: 'regex', icon: 'bi-asterisk', name: '正则表达式', desc: '正则匹配测试 / 分组查看', cat: 'text'},
+    {id: 'stats', icon: 'bi-bar-chart', name: '文本统计', desc: '字符 / 单词 / 行数 / 字节', cat: 'text'},
+    {id: 'csv', icon: 'bi-table', name: 'CSV 格式化', desc: 'CSV 表格化查看 / 校对', cat: 'text'},
+    {id: 'regexref', icon: 'bi-book', name: '正则速查表', desc: '常用正则表达式分类速查', cat: 'text'},
+    {id: 'cron', icon: 'bi-clock-history', name: 'Cron 表达式', desc: 'Cron 解析 / 下次执行时间', cat: 'debug'},
+    {id: 'ws', icon: 'bi-plug', name: 'WebSocket', desc: 'WebSocket 连接调试', cat: 'debug'},
+    {id: 'stomp', icon: 'bi-hdd-network', name: 'STOMP', desc: 'STOMP over WebSocket 调试', cat: 'debug'},
+    {id: 'api', icon: 'bi-cloud-arrow-down', name: 'API 调用', desc: 'HTTP 请求 / 响应调试', cat: 'debug'},
+    {id: 'ip', icon: 'bi-globe2', name: 'IP 工具', desc: 'IP 归属 / 子网计算', cat: 'debug'},
+    {id: 'arthas', icon: 'bi-terminal', name: 'Arthas 命令', desc: 'Arthas 诊断命令速查', cat: 'reference'},
+    {id: 'jmh', icon: 'bi-speedometer2', name: 'JMH 模板', desc: 'JMH 基准测试代码生成', cat: 'reference'},
+    {id: 'testgen', icon: 'bi-check2-square', name: '测试模板', desc: 'JUnit 5 + Mockito 测试生成', cat: 'reference'},
+    {id: 'linux', icon: 'bi-terminal-fill', name: 'Linux 命令', desc: '常用 Linux 命令速查', cat: 'reference'},
+    {id: 'docker', icon: 'bi-box-seam', name: 'Docker 命令', desc: 'Docker / K8s 命令速查', cat: 'reference'},
+    {id: 'gitref', icon: 'bi-git', name: 'Git 命令', desc: 'Git 常用操作速查', cat: 'reference'},
+    {id: 'httpstatus', icon: 'bi-info-circle', name: 'HTTP 状态码', desc: 'HTTP 状态码 / 方法速查', cat: 'reference'},
+    {id: 'ascii', icon: 'bi-keyboard', name: 'ASCII 表', desc: 'ASCII / 控制字符速查', cat: 'reference'},
 ];
 
 // === Navigation ===
@@ -88,19 +89,19 @@ function buildHomeGrid() {
         const divider = document.createElement('div');
         divider.className = 'home-cat-divider';
         divider.id = 'cat-' + cat.id;
-        divider.innerHTML = `<span class="hcd-icon">${cat.icon}</span><span>${cat.name}</span>`;
+        divider.innerHTML = `<span class="hcd-icon"><i class="bi ${cat.icon}"></i></span><span>${cat.name}</span>`;
         grid.appendChild(divider);
         toolsInCat.forEach(t => {
             const card = document.createElement('div');
             card.className = 'home-card';
-            card.innerHTML = `<div class="hc-icon">${t.icon}</div><div class="hc-name">${t.name}</div><div class="hc-desc">${t.desc}</div>`;
+            card.innerHTML = `<div class="hc-icon"><i class="bi ${t.icon}"></i></div><div class="hc-name">${t.name}</div><div class="hc-desc">${t.desc}</div>`;
             card.addEventListener('click', () => openTool(t.id));
             grid.appendChild(card);
         });
         const anchor = document.createElement('a');
         anchor.className = 'cat-anchor';
         anchor.href = '#cat-' + cat.id;
-        anchor.innerHTML = '<span class="cat-icon">' + cat.icon + '</span>' + cat.name;
+        anchor.innerHTML = '<span class="cat-icon"><i class="bi ' + cat.icon + '"></i></span>' + cat.name;
         anchors.appendChild(anchor);
     });
 
@@ -183,7 +184,7 @@ function filterHomeTools() {
     if (q && !hasVisible) {
         const msg = document.createElement('div');
         msg.className = 'home-search-empty';
-        msg.textContent = '没有匹配的工具';
+        msg.innerHTML = '<i class="bi bi-search"></i> 没有匹配的工具';
         document.getElementById('homeGrid').appendChild(msg);
     }
 }
@@ -207,6 +208,7 @@ openTool = function (id) {
         'ascii': 'asciiRender',
         'datecalc': 'dateCalcNow',
         'cron': 'cronBuildFields',
+        'email': 'emailInit',
     };
     const fnName = renderMap[id];
     if (fnName && typeof window[fnName] === 'function') {
@@ -214,7 +216,12 @@ openTool = function (id) {
     }
 };
 
-loadPanels().then(() => buildHomeGrid()).catch(err => {
+loadPanels().then(() => {
+    buildHomeGrid();
+    if (typeof cronInit === 'function') cronInit();
+    if (typeof apiInit === 'function') apiInit();
+    if (typeof tsInit === 'function') tsInit();
+}).catch(err => {
     const loading = document.getElementById('panels-loading');
     if (loading) loading.textContent = '工具模块加载失败: ' + err.message;
     console.error('loadPanels failed', err);

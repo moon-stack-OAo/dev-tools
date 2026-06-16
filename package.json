@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "blueimp-md5": "^2.19.0",
+    "bootstrap-icons": "^1.13.1",
     "diff": "^5.2.0",
     "js-yaml": "^4.1.0",
     "sql-formatter": "^15.4.0"

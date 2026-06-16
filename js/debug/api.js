@@ -140,5 +140,10 @@ function apiClear() {
     setStatus('已重置');
 }
 
-apiAddHeader('Content-Type', 'application/json');
-apiAuthChange();
+function apiInit() {
+    if (!document.getElementById('apiHeadersList')) return;
+    if (!document.querySelector('#apiHeadersList .api-kv-row')) {
+        apiAddHeader('Content-Type', 'application/json');
+    }
+    apiAuthChange();
+}

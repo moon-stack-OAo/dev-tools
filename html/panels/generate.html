@@ -237,3 +237,110 @@
              style="min-height:auto;padding:8px 12px;margin-top:8px"></div>
     </div>
 </div>
+
+<div class="tool-panel" id="panel-email">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div style="min-width:200px;flex:1">
+            <div class="label">选择模板</div>
+            <select id="emailTpl" onchange="emailLoadTemplate()"></select>
+        </div>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-dim);padding-top:18px">
+            <input id="emailMobile" onchange="emailRender()" style="accent-color:var(--accent)" type="checkbox">
+            移动端预览 (375px)
+        </label>
+        <div style="padding-top:18px;color:var(--text-muted);font-size:12px">
+            大小: <span id="emailSize">0 B</span>
+        </div>
+    </div>
+
+    <div class="email-layout">
+        <div class="email-config">
+            <details class="email-section" open>
+                <summary>📝 模板变量</summary>
+                <div class="email-vars" id="emailVars"></div>
+            </details>
+
+            <details class="email-section">
+                <summary>🎨 主题样式</summary>
+                <div class="email-theme">
+                    <div class="email-color-grid">
+                        <div>
+                            <div class="label">主色</div>
+                            <input id="emailPrimary" oninput="emailRender()" type="color" value="#4f46e5"></div>
+                        <div>
+                            <div class="label">按钮文字</div>
+                            <input id="emailBtnText" oninput="emailRender()" type="color" value="#ffffff"></div>
+                        <div>
+                            <div class="label">背景色</div>
+                            <input id="emailBg" oninput="emailRender()" type="color" value="#f5f5f7"></div>
+                        <div>
+                            <div class="label">卡片色</div>
+                            <input id="emailCard" oninput="emailRender()" type="color" value="#ffffff"></div>
+                        <div>
+                            <div class="label">正文字色</div>
+                            <input id="emailText" oninput="emailRender()" type="color" value="#1f2937"></div>
+                        <div>
+                            <div class="label">次要文字</div>
+                            <input id="emailMuted" oninput="emailRender()" type="color" value="#6b7280"></div>
+                        <div>
+                            <div class="label">边框色</div>
+                            <input id="emailBorder" oninput="emailRender()" type="color" value="#e5e7eb"></div>
+                    </div>
+                    <div class="mb-8">
+                        <div class="label">公司 / 品牌名</div>
+                        <input id="emailCompany" oninput="emailRender()" placeholder="XX 科技" type="text"
+                               value="XX 科技">
+                    </div>
+                    <div class="mb-8">
+                        <div class="label">Logo URL（可选）</div>
+                        <input id="emailLogo" oninput="emailRender()" placeholder="https://example.com/logo.png"
+                               type="text">
+                    </div>
+                    <div class="mb-8">
+                        <div class="label">页脚说明</div>
+                        <input id="emailFooterText" oninput="emailRender()" placeholder="此邮件由系统自动发送，请勿直接回复。"
+                               type="text" value="此邮件由系统自动发送，请勿直接回复。">
+                    </div>
+                    <div class="mb-8">
+                        <div class="label">退订链接</div>
+                        <input id="emailUnsub" oninput="emailRender()" placeholder="https://example.com/unsubscribe"
+                               type="text" value="https://example.com/unsubscribe">
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <div class="email-preview">
+            <div class="email-preview-header">实时预览</div>
+            <iframe class="email-iframe" id="emailPreview" sandbox="allow-same-origin"></iframe>
+        </div>
+    </div>
+
+    <div class="email-source-block">
+        <div class="email-source-header">
+            <span>📄 完整 HTML 源码 <span style="color:var(--text-muted);font-weight:400;font-size:12px">（含 &lt;style&gt;，可直接预览）</span></span>
+            <div class="flex gap-6">
+                <button onclick="emailCopySource()">复制 HTML</button>
+                <button class="outline" onclick="emailRenderInlined()">应用内联 CSS</button>
+                <button class="outline" onclick="emailCopyInlined()">复制内联 HTML</button>
+            </div>
+        </div>
+        <pre class="email-source" id="emailSource"></pre>
+    </div>
+
+    <div class="email-tips">
+        💡 提示：
+        <ul>
+            <li>点击「应用内联 CSS」会把 <code>&lt;style&gt;</code> 转换为元素的 <code>style="..."</code> 属性，提升 Gmail
+                / Outlook 等邮件客户端的兼容性
+            </li>
+            <li>模板使用 <code>table</code> + <code>role="presentation"</code> 的布局，是邮件 HTML 的事实标准（Outlook 不支持
+                flex）
+            </li>
+            <li>复制后可直接粘贴到 SendGrid / Mailgun / SES / SMTP 服务的 HTML 内容字段</li>
+            <li>变量占位符 <code>{{name}}</code>、<code>{{company}}</code> 等可由后端模板引擎（Thymeleaf / Freemarker /
+                Handlebars）替换
+            </li>
+        </ul>
+    </div>
+</div>
