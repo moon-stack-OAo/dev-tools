@@ -18,7 +18,8 @@ function jwtDecode() {
         return;
     }
     try {
-        const h = JSON.parse(atob(parts[0])), p = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+        const h = JSON.parse(atob(parts[0].replace(/-/g, '+').replace(/_/g, '/'))),
+            p = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
         hEl.textContent = JSON.stringify(h, null, 2);
         hEl.className = 'output-box';
         pEl.textContent = JSON.stringify(p, null, 2);

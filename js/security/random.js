@@ -1,7 +1,24 @@
 function randGen(len, chars) {
+    const n = chars.length;
+    const maxValid = 256 - (256 % n);
+    let result = '';
     const arr = new Uint8Array(len);
-    crypto.getRandomValues(arr);
-    return Array.from(arr).map(b => chars[b % chars.length]).join('');
+    let remaining = len;
+    let attempts = 0;
+    while (remaining > 0) {
+        crypto.getRandomValues(arr.subarray(0, remaining));
+        let written = 0;
+        for (let i = 0; i < remaining; i++) {
+            if (arr[i] < maxValid) {
+                result += chars[arr[i] % n];
+                written++;
+            }
+        }
+        remaining -= written;
+        attempts++;
+        if (attempts > 100) break;
+    }
+    return result;
 }
 
 function randPassword() {

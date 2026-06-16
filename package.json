@@ -11,10 +11,15 @@
     "postinstall": "node scripts/copy-libs.js"
   },
   "dependencies": {
+    "ajv": "^8.20.0",
+    "bcryptjs": "^2.4.3",
     "blueimp-md5": "^2.19.0",
     "bootstrap-icons": "^1.13.1",
     "diff": "^5.2.0",
+    "fast-xml-parser": "^4.5.6",
     "js-yaml": "^4.1.0",
+    "jsonpath-plus": "^9.0.0",
+    "sm-crypto": "^0.3.14",
     "sql-formatter": "^15.4.0"
   },
   "devDependencies": {

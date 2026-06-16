@@ -9,6 +9,13 @@
     <script src="/lib/diff.min.js"></script>
     <script src="/lib/md5.min.js"></script>
     <script src="/lib/sql-formatter.min.js"></script>
+    <script src="/lib/bcrypt.min.js"></script>
+    <script src="/lib/sm2.min.js"></script>
+    <script src="/lib/sm3.min.js"></script>
+    <script src="/lib/sm4.min.js"></script>
+    <script src="/lib/jsonpath.min.js"></script>
+    <script src="/lib/ajv.min.js"></script>
+    <script src="/lib/fxp.min.js"></script>
     <link href="css/base.css" rel="stylesheet">
     <link href="css/layout.css" rel="stylesheet">
     <link href="css/format.css" rel="stylesheet">
@@ -24,7 +31,8 @@
 <div class="app" id="app">
     <div class="main" id="mainContainer">
         <div class="main-header">
-            <div class="home-btn" id="homeBtn" onclick="goHome()" style="display:none" title="返回首页"><i class="bi bi-chevron-left"></i></div>
+            <div class="home-btn" id="homeBtn" onclick="goHome()" style="display:none" title="返回首页"><i
+                    class="bi bi-chevron-left"></i></div>
             <div class="breadcrumb" id="breadcrumb"></div>
             <span id="toolTitle">DevTools</span>
             <div class="home-search-wrap">
@@ -61,6 +69,11 @@
 <script src="js/format/xml.js"></script>
 <script src="js/format/yaml.js"></script>
 <script src="js/format/sql.js"></script>
+<script src="js/format/jsonpath.js"></script>
+<script src="js/format/jsonschema.js"></script>
+<script src="js/format/jsonconvert.js"></script>
+<script src="js/format/sqldialect.js"></script>
+<script src="js/format/dbtype.js"></script>
 <script src="js/encode/base64.js"></script>
 <script src="js/encode/url.js"></script>
 <script src="js/encode/unicode.js"></script>
@@ -68,6 +81,11 @@
 <script src="js/security/jwt.js"></script>
 <script src="js/security/hash.js"></script>
 <script src="js/security/random.js"></script>
+<script src="js/security/hmac.js"></script>
+<script src="js/security/jwtgen.js"></script>
+<script src="js/security/bcrypt.js"></script>
+<script src="js/security/gmsm.js"></script>
+<script src="js/security/hashext.js"></script>
 <script src="js/generate/uuid.js"></script>
 <script src="js/generate/timestamp.js"></script>
 <script src="js/generate/color.js"></script>

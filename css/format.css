@@ -1,4 +1,55 @@
-/* 格式化工具：json / xml / yaml / sql
- * 当前无专属样式，复用 css/base.css 中的通用类。
- * 未来新增的格式化工具专属样式追加在此文件。
+/* 格式化工具：json / xml / yaml / sql / jsonpath / jsonschema / jsonconvert / sqldialect / dbtype
+ * 复用 css/base.css 中的通用类；此处只放置新增专属样式。
  */
+
+/* dbtype 表格 */
+.dbtype-table-wrap {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: auto;
+    max-height: calc(100vh - 240px);
+    box-shadow: var(--shadow);
+}
+
+.dbtype-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font);
+    font-size: 12.5px;
+}
+
+.dbtype-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--bg-card2);
+}
+
+.dbtype-table th {
+    text-align: left;
+    padding: 9px 14px;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    font-size: 11px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-card2);
+}
+
+.dbtype-table td {
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    white-space: nowrap;
+}
+
+.dbtype-table tbody tr:nth-child(odd) td {
+    background: rgba(255, 255, 255, .02);
+}
+
+.dbtype-table tbody tr:hover td {
+    background: var(--accent-glow);
+    color: var(--accent);
+}

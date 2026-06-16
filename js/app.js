@@ -13,6 +13,16 @@ const tools = [
     {id: 'xml', icon: 'bi-code', name: 'XML 格式化', desc: '格式化 / 压缩 / 验证 XML', cat: 'format'},
     {id: 'yaml', icon: 'bi-filetype-yml', name: 'YAML 格式化', desc: 'YAML 格式化 / JSON 互转', cat: 'format'},
     {id: 'sql', icon: 'bi-database', name: 'SQL 格式化', desc: 'SQL 美化 / 多方言支持', cat: 'format'},
+    {id: 'jsonpath', icon: 'bi-search', name: 'JSONPath 查询', desc: 'JSONPath 表达式查询 / 提取', cat: 'format'},
+    {id: 'jsonschema', icon: 'bi-diagram-3', name: 'JSON Schema', desc: 'JSON Schema 生成 / 校验', cat: 'format'},
+    {
+        id: 'sqldialect',
+        icon: 'bi-translate',
+        name: 'SQL 方言转换',
+        desc: 'MySQL/Oracle/PG/SQLServer 互转',
+        cat: 'format'
+    },
+    {id: 'dbtype', icon: 'bi-table', name: '数据库类型映射', desc: 'MySQL/Oracle/PG/SQLServer 类型对照', cat: 'format'},
     {id: 'base64', icon: 'bi-lock', name: 'Base64', desc: 'Base64 编码解码 / 文件支持', cat: 'encode'},
     {id: 'url', icon: 'bi-link-45deg', name: 'URL 编码', desc: 'URL 编解码 / Component 模式', cat: 'encode'},
     {id: 'unicode', icon: 'bi-translate', name: 'Unicode', desc: '\\uXXXX 编码 / 解码', cat: 'encode'},
@@ -20,10 +30,18 @@ const tools = [
     {id: 'charset', icon: 'bi-fonts', name: '编码转换', desc: '字符编码互转 / 检测', cat: 'encode'},
     {id: 'htmlescape', icon: 'bi-filetype-html', name: 'HTML 转义', desc: 'HTML 实体编码 / 解码', cat: 'encode'},
     {id: 'jwt', icon: 'bi-key', name: 'JWT 解码', desc: '解析 JWT Header / Payload', cat: 'security'},
+    {id: 'jwtgen', icon: 'bi-pen', name: 'JWT 生成', desc: 'HS256/384/512 + RS256/384/512 签名', cat: 'security'},
     {id: 'hash', icon: 'bi-hash', name: 'Hash 计算', desc: 'MD5 / SHA-1 / SHA-256 / SHA-512', cat: 'security'},
+    {
+        id: 'hmac', icon: 'bi-shield-lock', name: 'HMAC 计算',
+        desc: 'HMAC-MD5 / SHA-1 / SHA-256 / SHA-384 / SHA-512', cat: 'security'
+    },
+    {id: 'hashext', icon: 'bi-hash', name: 'Hash 扩展', desc: 'CRC32 / Adler32 / SHA-3 / SM3', cat: 'security'},
     {id: 'random', icon: 'bi-dice-6', name: '随机生成器', desc: '密码 / Token / PIN 生成', cat: 'security'},
     {id: 'aes', icon: 'bi-shield-check', name: 'AES 加解密', desc: 'AES 对称加密 / 解密', cat: 'security'},
     {id: 'rsa', icon: 'bi-shield-exclamation', name: 'RSA 工具', desc: '密钥生成 / 加解密 / 签名', cat: 'security'},
+    {id: 'bcrypt', icon: 'bi-asterisk', name: 'bcrypt 加密', desc: 'bcrypt 哈希 / 验证', cat: 'security'},
+    {id: 'gmsm', icon: 'bi-flag', name: '国密 SM2/3/4', desc: '国密 SM2 公钥 / SM3 摘要 / SM4 对称', cat: 'security'},
     {id: 'uuid', icon: 'bi-fingerprint', name: 'UUID 生成', desc: 'UUID v4 / v7 / 批量生成', cat: 'generate'},
     {id: 'ts', icon: 'bi-clock', name: '时间戳转换', desc: 'Unix 毫秒/秒 ↔ 日期', cat: 'generate'},
     {id: 'color', icon: 'bi-palette', name: '颜色转换', desc: 'HEX / RGB / HSL 互转预览', cat: 'generate'},
@@ -223,6 +241,8 @@ openTool = function (id) {
         'datecalc': 'dateCalcNow',
         'cron': 'cronBuildFields',
         'email': 'emailInit',
+        'jwtgen': 'jwtGenInit',
+        'dbtype': 'dbtypeInit',
     };
     const fnName = renderMap[id];
     if (fnName && typeof window[fnName] === 'function') {

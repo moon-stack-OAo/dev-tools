@@ -29,7 +29,7 @@ async function rsaEncrypt() {
     }
     try {
         let key;
-        if (pubKey && rsaKeyPair) {
+        if (pubKey) {
             const raw = Uint8Array.from(atob(pubKey), c => c.charCodeAt(0));
             key = await crypto.subtle.importKey('spki', raw, {name: 'RSA-OAEP', hash: 'SHA-256'}, false, ['encrypt']);
         } else if (rsaKeyPair) {
@@ -55,7 +55,7 @@ async function rsaDecrypt() {
     }
     try {
         let key;
-        if (privKey && rsaKeyPair) {
+        if (privKey) {
             const raw = Uint8Array.from(atob(privKey), c => c.charCodeAt(0));
             key = await crypto.subtle.importKey('pkcs8', raw, {name: 'RSA-OAEP', hash: 'SHA-256'}, false, ['decrypt']);
         } else if (rsaKeyPair) {
