@@ -88,7 +88,4 @@ function arthasSearch() {
     }, 200);
 }
 
-// 初始渲染
-if (document.getElementById('arthasContent')) {
-    arthasRender('');
-}
+// 由 app.js 的 renderMap 触发 arthasRender()

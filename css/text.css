@@ -99,3 +99,60 @@
 .regex-flags {
     width: 120px
 }
+
+/* 正则速查表 */
+.regex-ref-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: background .12s;
+}
+
+.regex-ref-row:hover {
+    background: var(--glass-hover);
+}
+
+.regex-ref-row:hover .regex-ref-copy-icon {
+    opacity: 1;
+}
+
+.regex-ref-pattern {
+    background: var(--bg-input);
+    padding: 2px 8px;
+    border-radius: 3px;
+    color: var(--accent2);
+    white-space: pre;
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+.regex-ref-desc {
+    color: var(--text-dim);
+    flex: 1;
+    font-family: var(--font-ui);
+    font-size: 12px;
+}
+
+.regex-ref-copy-icon {
+    font-size: 13px;
+    color: var(--text-muted);
+    opacity: 0;
+    transition: all .15s;
+    flex-shrink: 0;
+    cursor: pointer;
+    padding: 2px;
+}
+
+.regex-ref-row:hover .regex-ref-copy-icon {
+    opacity: .6;
+}
+
+.regex-ref-copy-icon:hover {
+    opacity: 1 !important;
+    color: var(--accent);
+}

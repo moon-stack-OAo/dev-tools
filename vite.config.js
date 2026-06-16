@@ -39,6 +39,16 @@ export default defineConfig({
     },
     plugins: [
         {
+            name: 'cache-bust',
+            transformIndexHtml(html) {
+                const v = Date.now().toString(36);
+                return html.replace(
+                    /(src|href)="([^"]+\.(js|css))"/g,
+                    `$1="$2?v=${v}"`
+                );
+            },
+        },
+        {
             name: 'copy-js-assets',
             closeBundle() {
                 if (fs.existsSync('js')) {

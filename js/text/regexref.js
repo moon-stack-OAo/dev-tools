@@ -54,10 +54,41 @@ const REGEX_REF = [
             {pattern: '^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$', desc: '十六进制颜色'},
             {pattern: '^[\\w\\s]+$', desc: '单词 + 空格'},
             {pattern: '^[\\s\\S]*$', desc: '任意字符 (含换行)'},
-            {pattern: '^\s*$', desc: '空行或空白'},
+            {pattern: '^\\s*$', desc: '空行或空白'},
         ]
     },
 ];
+
+/**
+ * 通用的复制函数：优先使用 clipboard API，降级到 execCommand
+ */
+function regexRefCopy(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+            toast('已复制: ' + text);
+        }).catch(() => {
+            fallbackCopy(text);
+        });
+    } else {
+        fallbackCopy(text);
+    }
+}
+
+function fallbackCopy(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+        document.execCommand('copy');
+        toast('已复制: ' + text);
+    } catch (e) {
+        toast('复制失败，请手动选择复制');
+    }
+    ta.remove();
+}
 
 function regexRefRender() {
     const container = document.getElementById('regexRefContent');
@@ -69,12 +100,14 @@ function regexRefRender() {
         container.appendChild(header);
         group.items.forEach(item => {
             const row = document.createElement('div');
-            row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:5px 8px;border-radius:4px;font-size:12px;font-family:var(--font)';
-            row.innerHTML = '<code style="background:var(--bg-input);padding:2px 8px;border-radius:3px;color:var(--accent2);white-space:pre">' + item.pattern.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</code><span style="color:var(--text-dim);flex:1">' + item.desc + '</span>';
+            row.className = 'regex-ref-row';
+            row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:4px;font-size:12px;font-family:var(--font);cursor:pointer;transition:background .12s';
+            row.innerHTML = '<code class="regex-ref-pattern">' + item.pattern.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</code>'
+                + '<span class="regex-ref-desc">' + item.desc + '</span>'
+                + '<i class="bi bi-copy regex-ref-copy-icon"></i>';
             row.addEventListener('click', function () {
-                navigator.clipboard.writeText(item.pattern).then(() => toast('已复制: ' + item.pattern));
+                regexRefCopy(item.pattern);
             });
-            row.style.cursor = 'pointer';
             row.addEventListener('mouseenter', function () {
                 this.style.background = 'var(--glass-hover)';
             });

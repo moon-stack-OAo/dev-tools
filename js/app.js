@@ -206,6 +206,7 @@ openTool = function (id) {
         'gitref': 'gitRender',
         'httpstatus': 'httpStatusRender',
         'ascii': 'asciiRender',
+        'arthas': 'arthasRender',
         'datecalc': 'dateCalcNow',
         'cron': 'cronBuildFields',
         'email': 'emailInit',
