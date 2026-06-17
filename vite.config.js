@@ -33,9 +33,31 @@ function removeGithubPlugin(mode) {
         transformIndexHtml(html) {
             if (mode !== 'dev') return html;
             return html.replace(
-                /[\s]*<a class="header-github"[\s\S]*?<\/a>/g,
+                /\s*<a[^>]*class="header-github"[^>]*>[\s\S]*?<\/a>\s*/g,
                 ''
             );
+        },
+    };
+}
+
+// 在 dev 模式下不注入 withGithub 标志（GitHub 链接不创建）；
+// 在生产模式注入 window.__DEVTOOLS__ = { withGithub: true }，由 app.js 据此动态创建 GitHub 链接 DOM。
+function injectDevtoolsFlagPlugin(mode) {
+    return {
+        name: 'inject-devtools-flag',
+        transformIndexHtml(html) {
+            // dev 场景不注入：包括 `npm run dev` (mode='development') 与 `npm run build:dev` (mode='dev')；
+            // 仅 `npm run build` 默认 mode='production' 时才注入标志。
+            if (mode !== 'production') return html;
+            const flagScript = `<script>window.__DEVTOOLS__ = { withGithub: true };</script>`;
+            // 注入到 </head> 之前；如果找不到 </head>，退而注入到 <body> 之前
+            if (html.includes('</head>')) {
+                return html.replace('</head>', flagScript + '</head>');
+            }
+            if (html.includes('<body')) {
+                return html.replace(/<body([^>]*)>/, `<body$1>${flagScript}`);
+            }
+            return flagScript + html;
         },
     };
 }
@@ -75,5 +97,6 @@ export default defineConfig(({mode}) => ({
             },
         },
         removeGithubPlugin(mode),
+        injectDevtoolsFlagPlugin(mode),
     ],
 }));

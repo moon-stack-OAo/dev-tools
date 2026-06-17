@@ -1,3 +1,23 @@
+// === GitHub Link (动态注入，生产模式才有) ===
+// 仅当 Vite 注入的 window.__DEVTOOLS__.withGithub === true 时，才创建 GitHub 链接。
+// dev 模式下该值为 undefined，自然跳过——同时配合 removeGithubPlugin 在构建时清理硬编码链接。
+(function injectGithubLink() {
+    if (typeof window === 'undefined') return;
+    const flag = window.__DEVTOOLS__;
+    if (!flag || flag.withGithub !== true) return;
+    const header = document.querySelector('.main-header');
+    if (!header) return;
+    const gh = document.createElement('a');
+    gh.id = 'headerGithub';
+    gh.className = 'header-github';
+    gh.href = 'https://github.com/moon-stack-OAo/dev-tools';
+    gh.rel = 'noopener noreferrer';
+    gh.target = '_blank';
+    gh.title = '查看 GitHub 仓库';
+    gh.innerHTML = '<i class="bi bi-github"></i><span>GitHub</span>';
+    header.appendChild(gh);
+})();
+
 // === Tools Data ===
 const categories = [
     {id: 'format', name: '格式化', icon: 'bi-file-earmark-code'},
@@ -209,8 +229,10 @@ function openTool(id) {
     document.getElementById('panel-home').classList.remove('active');
     document.getElementById('panel-' + id).classList.add('active');
     const tool = tools.find(t => t.id === id);
-    document.getElementById('headerHomeTitle').style.display = 'none';
-    document.getElementById('headerGithub').style.display = 'none';
+    const homeTitle = document.getElementById('headerHomeTitle');
+    if (homeTitle) homeTitle.style.display = 'none';
+    const gh = document.getElementById('headerGithub');
+    if (gh) gh.style.display = 'none';
     homeBtn.style.display = 'flex';
     const cat = categories.find(c => c.id === tool.cat);
     document.querySelector('.main-header').classList.add('tool-mode');
@@ -221,8 +243,10 @@ function openTool(id) {
 function goHome(catId) {
     panels.forEach(p => p.classList.remove('active'));
     document.getElementById('panel-home').classList.add('active');
-    document.getElementById('headerHomeTitle').style.display = '';
-    document.getElementById('headerGithub').style.display = '';
+    const homeTitle = document.getElementById('headerHomeTitle');
+    if (homeTitle) homeTitle.style.display = '';
+    const gh = document.getElementById('headerGithub');
+    if (gh) gh.style.display = '';
     homeBtn.style.display = 'none';
     document.querySelector('.main-header').classList.remove('tool-mode');
     breadcrumb.innerHTML = '';
@@ -245,8 +269,10 @@ function filterHomeTools() {
     if (!homePanel.classList.contains('active')) {
         panels.forEach(p => p.classList.remove('active'));
         homePanel.classList.add('active');
-        document.getElementById('headerHomeTitle').style.display = '';
-        document.getElementById('headerGithub').style.display = '';
+        const homeTitle = document.getElementById('headerHomeTitle');
+        if (homeTitle) homeTitle.style.display = '';
+        const gh = document.getElementById('headerGithub');
+        if (gh) gh.style.display = '';
         homeBtn.style.display = 'none';
         document.querySelector('.main-header').classList.remove('tool-mode');
         breadcrumb.innerHTML = '';
