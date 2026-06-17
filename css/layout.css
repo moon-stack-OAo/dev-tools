@@ -155,6 +155,56 @@
     margin-bottom: 0;
 }
 
+.home-header-row .home-titles {
+    flex: 1;
+    min-width: 0;
+}
+
+.home-header-row .home-title {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: .5px;
+    background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    white-space: nowrap;
+}
+
+.home-header-row .home-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.home-header-row .home-github {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    background: var(--bg-card);
+    transition: all .15s ease;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.home-header-row .home-github:hover {
+    border-color: var(--accent);
+    background: var(--bg-card2);
+    color: var(--accent);
+}
+
+.home-header-row .home-github i {
+    font-size: 18px;
+    line-height: 1;
+}
+
 .home-panel .home-title {
     font-size: 22px;
     font-weight: 800;

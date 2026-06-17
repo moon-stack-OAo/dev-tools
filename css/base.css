@@ -1,5 +1,5 @@
 @import 'bootstrap-icons/font/bootstrap-icons.css';
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+/* Inter font from Google Fonts removed for offline/GitHub Pages compatibility */
 
 :root {
     --bg: #141829;
