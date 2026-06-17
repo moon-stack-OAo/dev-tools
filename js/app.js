@@ -213,6 +213,7 @@ function openTool(id) {
     document.getElementById('headerGithub').style.display = 'none';
     homeBtn.style.display = 'flex';
     const cat = categories.find(c => c.id === tool.cat);
+    document.querySelector('.main-header').classList.add('tool-mode');
     breadcrumb.innerHTML = '<span class="bc-item" onclick="goHome()">首页</span><span class="bc-sep">›</span><span class="bc-item" onclick="goHome(\'' + (cat ? cat.id : '') + '\')">' + (cat ? cat.name : '') + '</span><span class="bc-sep">›</span><span class="bc-current">' + tool.name + '</span>';
     setStatus('就绪');
 }
@@ -223,6 +224,7 @@ function goHome(catId) {
     document.getElementById('headerHomeTitle').style.display = '';
     document.getElementById('headerGithub').style.display = '';
     homeBtn.style.display = 'none';
+    document.querySelector('.main-header').classList.remove('tool-mode');
     breadcrumb.innerHTML = '';
     clearHomeSearch();
     setTimeout(() => {
@@ -246,6 +248,7 @@ function filterHomeTools() {
         document.getElementById('headerHomeTitle').style.display = '';
         document.getElementById('headerGithub').style.display = '';
         homeBtn.style.display = 'none';
+        document.querySelector('.main-header').classList.remove('tool-mode');
         breadcrumb.innerHTML = '';
         setStatus('就绪');
         setTimeout(highlightAnchor, 50);
