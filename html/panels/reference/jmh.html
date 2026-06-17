@@ -1,0 +1,58 @@
+<div class="tool-panel" id="panel-jmh">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div class="flex-1">
+            <div class="label">类名</div>
+            <input id="jmhClass" placeholder="MyBenchmark" type="text" value="MyBenchmark">
+        </div>
+        <div class="flex-1">
+            <div class="label">方法名</div>
+            <input id="jmhMethod" placeholder="myMethod" type="text" value="myMethod">
+        </div>
+    </div>
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div>
+            <div class="label">Benchmark Mode</div>
+            <select id="jmhMode" style="width:150px">
+                <option value="Throughput">Throughput</option>
+                <option value="AverageTime">AverageTime</option>
+                <option value="SampleTime">SampleTime</option>
+                <option value="SingleShotTime">SingleShotTime</option>
+                <option value="All">All</option>
+            </select>
+        </div>
+        <div>
+            <div class="label">Fork</div>
+            <input id="jmhFork" min="0" style="width:60px" type="number" value="1">
+        </div>
+        <div>
+            <div class="label">预热次数</div>
+            <input id="jmhWarmup" min="0" style="width:60px" type="number" value="5">
+        </div>
+        <div>
+            <div class="label">预热时长(s)</div>
+            <input id="jmhWarmupTime" min="1" style="width:60px" type="number" value="1">
+        </div>
+        <div>
+            <div class="label">测量次数</div>
+            <input id="jmhMeas" min="1" style="width:60px" type="number" value="5">
+        </div>
+        <div>
+            <div class="label">测量时长(s)</div>
+            <input id="jmhMeasTime" min="1" style="width:60px" type="number" value="1">
+        </div>
+        <div>
+            <div class="label">&nbsp;</div>
+            <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-dim)">
+                <input checked id="jmhState" style="accent-color:var(--accent)" type="checkbox"> @State
+            </label>
+        </div>
+    </div>
+    <div class="toolbar">
+        <button onclick="jmhGenerate()">生成代码</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">生成的 JMH 代码</div>
+        <button class="copy-btn" onclick="jmhCopyOutput()">复制</button>
+        <div class="output-box" id="jmhOutput" style="min-height:120px;max-height:400px"></div>
+    </div>
+</div>

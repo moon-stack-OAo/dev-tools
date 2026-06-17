@@ -1,0 +1,20 @@
+<div class="tool-panel" id="panel-base64">
+    <div class="toolbar">
+        <button onclick="b64Encode()">编码</button>
+        <button class="outline" onclick="b64Decode()">解码</button>
+        <label><input id="b64UrlSafe" style="accent-color:var(--accent)" type="checkbox"> URL 安全</label>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入</div>
+        <textarea class="json-input" id="b64Input" placeholder="输入需要编码或解码的文本"></textarea>
+    </div>
+    <div class="mb-8">
+        <div class="label">或上传文件</div>
+        <input id="b64File" onchange="b64FileEncode()" type="file">
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('b64Output')">复制</button>
+        <div class="output-box" id="b64Output"></div>
+    </div>
+</div>

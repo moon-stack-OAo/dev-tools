@@ -1,0 +1,18 @@
+<div class="tool-panel" id="panel-url">
+    <div class="toolbar">
+        <button onclick="urlEncode()">编码</button>
+        <button class="outline" onclick="urlDecode()">解码</button>
+        <label><input checked id="urlComponent" style="accent-color:var(--accent)" type="checkbox">
+            encodeURIComponent</label>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入</div>
+        <textarea class="json-input" id="urlInput"
+                  placeholder="https://example.com/path?name=hello world"></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('urlOutput')">复制</button>
+        <div class="output-box" id="urlOutput"></div>
+    </div>
+</div>

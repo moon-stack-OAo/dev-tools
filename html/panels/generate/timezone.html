@@ -1,0 +1,47 @@
+<div class="tool-panel" id="panel-timezone">
+    <div class="stomp-block">
+        <div class="stomp-block-title">源时区时间</div>
+        <div class="flex gap-6" style="align-items:flex-end;flex-wrap:wrap">
+            <div>
+                <div class="label">日期时间</div>
+                <input id="tzSourceTime" style="width:220px" type="datetime-local">
+            </div>
+            <div style="flex:1;min-width:240px">
+                <div class="label">时区 (IANA)</div>
+                <select id="tzSourceZone" style="width:100%"></select>
+            </div>
+            <div style="flex:1;min-width:200px">
+                <div class="label">自定义 (可选)</div>
+                <input id="tzSourceCustom" placeholder="如 America/Chicago" style="width:100%" type="text">
+            </div>
+        </div>
+    </div>
+
+    <div class="stomp-block">
+        <div class="stomp-block-title">目标时区</div>
+        <div class="flex gap-6" style="align-items:flex-end;flex-wrap:wrap">
+            <div style="flex:1;min-width:240px">
+                <div class="label">时区 (IANA)</div>
+                <select id="tzTargetZone" style="width:100%"></select>
+            </div>
+            <div style="flex:1;min-width:200px">
+                <div class="label">自定义 (可选)</div>
+                <input id="tzTargetCustom" placeholder="如 Asia/Tokyo" style="width:100%" type="text">
+            </div>
+            <button class="outline" onclick="tzUseBrowser()" style="flex-shrink:0">使用浏览器时区</button>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <button onclick="tzConvert()">转换</button>
+        <button class="outline" onclick="tzNow()">设为当前时间</button>
+        <button class="outline" onclick="tzSwap()">交换</button>
+    </div>
+
+    <div class="copy-wrap">
+        <div class="label">转换结果</div>
+        <button class="copy-btn" onclick="copyText('tzOutput')">复制</button>
+        <pre class="output-box" id="tzOutput"
+             style="min-height:200px;max-height:500px;white-space:pre-wrap;word-break:break-all">点击「转换」查看结果</pre>
+    </div>
+</div>

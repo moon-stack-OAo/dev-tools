@@ -1,0 +1,103 @@
+<!-- GMSM -->
+<div class="tool-panel" id="panel-gmsm">
+    <div class="tab-bar">
+        <div class="tab active" onclick="gmsmSwitchTab('SM3')">SM3 摘要</div>
+        <div class="tab" onclick="gmsmSwitchTab('SM4')">SM4 对称加密</div>
+        <div class="tab" onclick="gmsmSwitchTab('SM2')">SM2 公钥密码</div>
+    </div>
+
+    <div class="tab-content active" id="gmsmTab-SM3">
+        <div class="mb-8">
+            <div class="label">输入</div>
+            <textarea class="json-input" id="sm3Input" placeholder="要计算SM3 摘要的文本"
+                      style="min-height:140px"></textarea>
+        </div>
+        <div class="toolbar">
+            <button onclick="gmsmSm3()">计算 SM3</button>
+        </div>
+        <div class="copy-wrap">
+            <div class="label">输出 (256 bit hex)</div>
+            <button class="copy-btn" onclick="copyText('sm3Output')">复制</button>
+            <div class="output-box" id="sm3Output"></div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="gmsmTab-SM4">
+        <div class="mb-8">
+            <div class="label">密钥 (16 字符 / 128 bit)</div>
+            <input id="sm4Pwd" maxlength="16" placeholder="16 字节 ASCII 密钥" type="text">
+        </div>
+        <div class="mb-8">
+            <div class="label">IV (16 字符，可选；缺省0)</div>
+            <input id="sm4Iv" maxlength="16" placeholder="CBC 模式 IV 16 字节" type="text">
+        </div>
+        <div class="mb-8">
+            <div class="label">输入（明文 / Base64 密文</div>
+            <textarea class="json-input" id="sm4Input" placeholder="明文 Base64 密文"
+                      style="min-height:120px"></textarea>
+        </div>
+        <div class="toolbar">
+            <button onclick="gmsmSm4Encrypt()">加密</button>
+            <button class="outline" onclick="gmsmSm4Decrypt()">解密</button>
+        </div>
+        <div class="copy-wrap">
+            <div class="label">输出 (Base64)</div>
+            <button class="copy-btn" onclick="copyText('sm4Output')">复制</button>
+            <div class="output-box" id="sm4Output"></div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="gmsmTab-SM2">
+        <div class="mb-8">
+            <button onclick="gmsmSm2Gen()">生成 SM2 密钥</button>
+        </div>
+        <div class="mb-8">
+            <div class="label">公钥 (hex)</div>
+            <textarea id="sm2PubKey" placeholder="130 字符 hex，以 04 开头" rows="2"></textarea>
+        </div>
+        <div class="mb-8">
+            <div class="label">私钥 (hex)</div>
+            <textarea id="sm2PrivKey" placeholder="64 字符 hex" rows="2"></textarea>
+        </div>
+        <div class="mb-8">
+            <div class="label">加解密输入(明文 / hex 密文)</div>
+            <textarea class="json-input" id="sm2Input"
+                      placeholder="明文 hex 密文 (C1C3C2 模式)"
+                      style="min-height:100px"></textarea>
+        </div>
+        <div class="toolbar">
+            <button onclick="gmsmSm2Encrypt()">加密</button>
+            <button class="outline" onclick="gmsmSm2Decrypt()">解密</button>
+        </div>
+        <div class="copy-wrap">
+            <div class="label">加解密输出</div>
+            <button class="copy-btn" onclick="copyText('sm2Output')">复制</button>
+            <div class="output-box" id="sm2Output" style="min-height:32px"></div>
+        </div>
+
+        <div class="mb-8" style="margin-top:16px">
+            <div class="label">签名原文 (withSM3)</div>
+            <textarea id="sm2SigInput" placeholder="要签名的原文" rows="2"></textarea>
+        </div>
+        <div class="toolbar">
+            <button onclick="gmsmSm2Sign()">签名</button>
+        </div>
+        <div class="mb-8">
+            <div class="label">签名结果 (Base64, r||s)</div>
+            <textarea id="sm2SigOut" placeholder="SM2 签名" rows="2"></textarea>
+        </div>
+
+        <div class="mb-8" style="margin-top:12px">
+            <div class="label">验签原文</div>
+            <textarea id="sm2SigCheckInput" placeholder="原始消息" rows="2"></textarea>
+        </div>
+        <div class="mb-8">
+            <div class="label">待验证签名(Base64)</div>
+            <textarea id="sm2SigCheckSig" placeholder="签名" rows=" 2"></textarea>
+        </div>
+        <div class="toolbar">
+            <button onclick="gmsmSm2Verify()">验签</button>
+        </div>
+        <div class="output-box" id="sm2SigCheckResult" style="min-height:24px"></div>
+    </div>
+</div>

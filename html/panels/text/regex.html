@@ -1,0 +1,24 @@
+<div class="tool-panel" id="panel-regex">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div class="flex-1">
+            <div class="label">正则表达式</div>
+            <input id="regexPattern" placeholder="\d+" type="text">
+        </div>
+        <div style="width:130px">
+            <div class="label">标志</div>
+            <input class="regex-flags" id="regexFlags" placeholder="gim" type="text" value="g">
+        </div>
+    </div>
+    <div class="mb-8">
+        <div class="label">测试文本</div>
+        <textarea class="json-input" id="regexText" placeholder="输入要匹配的文本"></textarea>
+    </div>
+    <div class="toolbar">
+        <button onclick="regexTest()">测试匹配</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">结果</div>
+        <button class="copy-btn" onclick="copyText('regexOutput')">复制</button>
+        <div class="output-box" id="regexOutput"></div>
+    </div>
+</div>

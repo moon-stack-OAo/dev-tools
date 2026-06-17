@@ -1,0 +1,84 @@
+<div class="tool-panel" id="panel-curl">
+    <div class="curl-layout">
+        <div class="curl-form">
+            <div class="stomp-block">
+                <div class="stomp-block-title">请求设置</div>
+                <div class="api-url-bar" style="margin-bottom:0;border-radius:0">
+                    <select id="curlMethod" onchange="curlMethodChange(this)">
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="DELETE">DELETE</option>
+                        <option value="PATCH">PATCH</option>
+                        <option value="HEAD">HEAD</option>
+                        <option value="OPTIONS">OPTIONS</option>
+                    </select>
+                    <input id="curlUrl" placeholder="https://api.example.com/users" type="text">
+                </div>
+            </div>
+
+            <div class="stomp-block">
+                <div class="stomp-block-title">请求头 (Headers)</div>
+                <div class="api-kv-header">
+                    <span class="api-kv-key">Key</span>
+                    <span class="api-kv-val">Value</span>
+                    <span class="api-kv-act"></span>
+                </div>
+                <div id="curlHeadersList"></div>
+                <button class="outline sm" onclick="curlAddHeader()" style="margin-top:4px">+ 添加 Header</button>
+            </div>
+
+            <div class="stomp-block">
+                <div class="stomp-block-title">Query 参数</div>
+                <div class="api-kv-header">
+                    <span class="api-kv-key">Key</span>
+                    <span class="api-kv-val">Value</span>
+                    <span class="api-kv-act"></span>
+                </div>
+                <div id="curlQueryList"></div>
+                <button class="outline sm" onclick="curlAddQuery()" style="margin-top:4px">+ 添加参数</button>
+            </div>
+
+            <div class="stomp-block">
+                <div class="stomp-block-title">请求体 (Body)</div>
+                <div class="flex gap-6 mb-8" style="align-items:center">
+                    <span class="label" style="margin:0">类型</span>
+                    <select id="curlBodyType" style="width:160px">
+                        <option value="none">none</option>
+                        <option value="json">json (application/json)</option>
+                        <option value="form">form (application/x-www-form-urlencoded)</option>
+                        <option value="raw">raw</option>
+                    </select>
+                </div>
+                <textarea class="api-body-input" id="curlBody" placeholder='{"name":"张三","age":25}'></textarea>
+            </div>
+
+            <div class="toolbar">
+                <button onclick="curlGenerate()">生成 curl 命令</button>
+                <button class="outline" onclick="curlReset()">重置</button>
+            </div>
+        </div>
+
+        <div class="curl-side">
+            <div class="stomp-block">
+                <div class="stomp-block-title">生成结果</div>
+                <div class="copy-wrap">
+                    <button class="copy-btn" onclick="copyText('curlOutput')">复制</button>
+                    <pre class="output-box" id="curlOutput"
+                         style="min-height:240px;max-height:500px;white-space:pre-wrap;word-break:break-all">点击「生成 curl 命令」查看结果</pre>
+                </div>
+            </div>
+
+            <div class="stomp-block">
+                <div class="stomp-block-title">反向解析 <span class="stomp-tip">粘贴已有 curl 命令</span></div>
+                <textarea class="api-body-input" id="curlInput"
+                          placeholder="curl -X POST 'https://api.example.com/users' -H 'Content-Type: application/json' -d '{&quot;name&quot;:&quot;tom&quot;}'"
+                          style="min-height:120px"></textarea>
+                <div class="toolbar" style="margin-top:8px;margin-bottom:0">
+                    <button onclick="curlParse()">解析到表单</button>
+                    <button class="outline" onclick="document.getElementById('curlInput').value=''">清空</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

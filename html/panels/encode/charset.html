@@ -1,0 +1,24 @@
+<div class="tool-panel" id="panel-charset">
+    <div class="toolbar">
+        <button onclick="charsetDetect()">检测编码</button>
+        <button class="outline" onclick="charsetConvert()">转换</button>
+        <select id="charsetEnc">
+            <option value="utf-8">UTF-8</option>
+            <option value="gbk">GBK</option>
+            <option value="gb2312">GB2312</option>
+            <option value="iso-8859-1">ISO-8859-1</option>
+            <option value="shift-jis">Shift-JIS</option>
+            <option value="euc-kr">EUC-KR</option>
+            <option value="big5">Big5</option>
+        </select>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入文本</div>
+        <textarea class="json-input" id="charsetInput" placeholder="输入要转换编码的文本"></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('charsetOutput')">复制</button>
+        <div class="output-box" id="charsetOutput"></div>
+    </div>
+</div>

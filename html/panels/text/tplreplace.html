@@ -1,0 +1,29 @@
+<div class="tool-panel" id="panel-tplreplace">
+    <div class="toolbar">
+        <span class="label" style="margin:0">语法:</span>
+        <select id="tplSyntax" style="width:180px">
+            <option value="js">${var} (JavaScript 模板)</option>
+            <option value="mybatis">#{var} (MyBatis / Thymeleaf)</option>
+            <option value="mustache">{{var}} (Mustache / Vue)</option>
+            <option value="spring">$var$ (Spring)</option>
+            <option value="ibatis">:var (iBATIS)</option>
+        </select>
+        <button onclick="tplPreview()">预览</button>
+        <button class="outline" onclick="tplCopy()">复制</button>
+        <button class="outline" onclick="tplClear()">清空</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">模板 (含变量占位符)</div>
+        <textarea class="json-input" id="tplInput" placeholder="Hello ${name}, your order #${orderId} is ${status}."></textarea>
+    </div>
+    <div class="mb-8">
+        <div class="label">变量 (key: value, 一行一对)</div>
+        <div id="tplVarsList"></div>
+        <button class="outline sm" onclick="tplAddVar()" style="margin-top:6px">+ 添加变量</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">替换结果</div>
+        <button class="copy-btn" onclick="copyText('tplOutput')">复制</button>
+        <div class="output-box tpl-output-box" id="tplOutput"></div>
+    </div>
+</div>

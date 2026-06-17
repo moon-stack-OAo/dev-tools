@@ -1,0 +1,26 @@
+<div class="tool-panel" id="panel-csv">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div>
+            <div class="label">分隔符</div>
+            <select id="csvDelim" style="width:100px">
+                <option value=",">逗号 (,)</option>
+                <option value="\t">Tab</option>
+                <option value=";">分号 (;)</option>
+                <option value="|">竖线 (|)</option>
+            </select>
+        </div>
+        <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-dim)">
+            <input checked id="csvHeader" style="accent-color:var(--accent)" type="checkbox"> 首行为表头
+        </label>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入 CSV</div>
+        <textarea class="json-input" id="csvInput"
+                  placeholder="name,age,city&#10;张三,25,杭州&#10;李四,30,北京"></textarea>
+    </div>
+    <div class="toolbar">
+        <button onclick="csvFormat()">格式化预览</button>
+    </div>
+    <div class="output-box" id="csvOutput"
+         style="min-height:80px;max-height:500px;overflow:auto;padding:0"></div>
+</div>

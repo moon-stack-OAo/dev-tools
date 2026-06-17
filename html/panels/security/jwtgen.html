@@ -1,0 +1,54 @@
+<!-- JWT Token Generator -->
+<div class="tool-panel" id="panel-jwtgen">
+    <div class="flex gap-6 mb-8" style="flex-wrap:wrap;align-items:flex-end">
+        <div>
+            <div class="label">算法</div>
+            <select id="jwtgenAlgo" style="width:130px">
+                <option selected value="HS256">HS256</option>
+                <option value="HS384">HS384</option>
+                <option value="HS512">HS512</option>
+                <option value="RS256">RS256</option>
+                <option value="RS384">RS384</option>
+                <option value="RS512">RS512</option>
+            </select>
+        </div>
+    </div>
+    <div class="mb-8">
+        <div class="label">Header (JSON)</div>
+        <textarea id="jwtgenHeader" rows="3" style="font-family:var(--font)"></textarea>
+    </div>
+    <div class="mb-8">
+        <div class="label">Payload (JSON)</div>
+        <textarea class="json-input" id="jwtgenPayload" oninput="updateJwtExpStatus()"
+                  style="min-height:160px"></textarea>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+            <span style="color:var(--text-dim);font-size:12px;align-self:center">快捷字段</span>
+            <button class="sm outline" onclick="jwtGenAddNow('iat')">iat (现在)</button>
+            <button class="sm outline" onclick="jwtGenAddNow('nbf')">nbf (现在)</button>
+            <button class="sm outline" onclick="jwtGenAddNow('exp')">exp (iat+3600)</button>
+            <button class="sm outline" onclick="jwtGenAddField('sub', '')">sub</button>
+            <button class="sm outline" onclick="jwtGenAddField('iss', '')">iss</button>
+            <button class="sm outline" onclick="jwtGenAddField('aud', '')">aud</button>
+            <button class="sm outline" onclick="jwtGenAddNow('jti')">jti (随机)</button>
+        </div>
+    </div>
+    <div class="mb-8">
+        <div class="label">密钥（HS: 字符串密钥；RS: PEM 私钥 / PKCS#8 Base64</div>
+        <textarea id="jwtgenSecret"
+                  placeholder="HS 算法使用字符串密钥；RS 算法粘贴 PEM 私钥Base64 PKCS#8"
+                  rows="3"></textarea>
+    </div>
+    <div class="toolbar">
+        <button onclick="jwtGenGenerate()">生成 Token</button>
+        <button class="outline" onclick="jwtGenInit()">重置默认</button>
+        <button class="outline" onclick="jwtGenClear()"
+                style="margin-left:auto;border-color:var(--danger);color:var(--danger)">清空
+        </button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出 (JWT)</div>
+        <button class="copy-btn" onclick="copyText('jwtgenOutput')">复制</button>
+        <div class="output-box" id="jwtgenOutput" style="word-break:break-all;min-height:60px"></div>
+        <div id="jwtgenStatus" style="margin-top:6px;font-size:12px;color:var(--text-dim)"></div>
+    </div>
+</div>

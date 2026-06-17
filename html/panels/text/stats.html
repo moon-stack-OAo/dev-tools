@@ -1,0 +1,33 @@
+<div class="tool-panel" id="panel-stats">
+    <div class="mb-8">
+        <div class="label">输入文本</div>
+        <textarea class="json-input" id="statsInput" oninput="statsCalc()"
+                  placeholder="输入文本以统计"></textarea>
+    </div>
+    <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+            <div class="stat-val" id="statsChars">0</div>
+            <div class="stat-label">字符数 (含空格)</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-val" id="statsCharsNoSpace">0</div>
+            <div class="stat-label">字符数 (无空格)</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-val" id="statsWords">0</div>
+            <div class="stat-label">单词数</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-val" id="statsLines">0</div>
+            <div class="stat-label">行数</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-val" id="statsBytes">0</div>
+            <div class="stat-label">字节数 (UTF-8)</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-val" id="statsCJK">0</div>
+            <div class="stat-label">中文字符</div>
+        </div>
+    </div>
+</div>

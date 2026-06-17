@@ -1,0 +1,33 @@
+<!-- JSONPath 查询 -->
+<div class="tool-panel" id="panel-jsonpath">
+    <div class="toolbar">
+        <button onclick="jsonpathRun()">执行查询</button>
+        <button class="outline" onclick="jsonpathClear()">清空</button>
+        <button class="outline" onclick="jsonpathLoadSample()">加载示例数据</button>
+        <span class="label" style="margin:0 0 0 8px">示例:</span>
+        <select id="jsonpathSample" style="width:260px">
+            <option value="">选择示例表达式...</option>
+            <option value="$..price">$..price (所有 price 字段)</option>
+            <option value="$.store.book[0]">$.store.book[0] (第一本书)</option>
+            <option value="$..book[?(@.price&lt;10)]">$..book[?(@.price&lt;10)] (price&lt;10 的书)</option>
+            <option value="$.store.book[*].title">$.store.book[*].title (所有书名)</option>
+            <option value="$..author">$..author (所有作者)</option>
+        </select>
+    </div>
+    <div class="mb-8">
+        <div class="label">JSONPath 表达式</div>
+        <input id="jsonpathExpr" placeholder="$.store.book[*].title" value="$..book[?(@.price<10)]">
+    </div>
+    <div class="mb-8">
+        <div class="label">JSON 数据</div>
+        <textarea class="json-input" id="jsonpathInput"
+                  placeholder='{"store":{"book":[{"title":"A","price":10}]}}'></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">匹配结果 <span id="jsonpathCount"
+                                          style="color:var(--text-muted);text-transform:none;letter-spacing:0"></span>
+        </div>
+        <button class="copy-btn" onclick="copyText('jsonpathOutput')">复制</button>
+        <div class="output-box" id="jsonpathOutput"></div>
+    </div>
+</div>

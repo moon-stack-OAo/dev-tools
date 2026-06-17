@@ -1,0 +1,29 @@
+<div class="tool-panel" id="panel-markdown">
+    <div class="toolbar">
+        <button onclick="mdRender()">预览</button>
+        <button class="outline" onclick="mdCopyHtml()">复制 HTML</button>
+        <button class="outline" onclick="mdExportHtml()">导出 HTML 文件</button>
+        <button class="outline" onclick="mdCopyMd()">复制 Markdown</button>
+        <button class="outline" onclick="mdClear()">清空</button>
+        <button class="outline" onclick="mdLoadSample()">加载示例</button>
+        <span style="flex:1"></span>
+        <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:4px">
+            <input checked id="mdGfm" style="accent-color:var(--accent)" type="checkbox"> GFM (表格/删除线/任务列表/自动链接)
+        </label>
+    </div>
+    <div class="md-split mb-8">
+        <div class="md-pane">
+            <div class="label">Markdown 源</div>
+            <textarea class="json-input" id="mdInput" placeholder="# Hello World&#10;&#10;**加粗**、*斜体*、`行内代码`&#10;&#10;```js&#10;console.log('hi');&#10;```&#10;&#10;- [x] 支持任务列表&#10;- [ ] 待办&#10;&#10;| 列1 | 列2 |&#10;| ---- | ---- |&#10;| A | B |"></textarea>
+        </div>
+        <div class="md-pane">
+            <div class="label">HTML 预览</div>
+            <div class="md-preview" id="mdPreview"></div>
+        </div>
+    </div>
+    <div class="md-stats" id="mdStats">
+        <span><b id="mdStatChars">0</b> 字符</span>
+        <span><b id="mdStatWords">0</b> 单词</span>
+        <span><b id="mdStatLines">0</b> 行</span>
+    </div>
+</div>

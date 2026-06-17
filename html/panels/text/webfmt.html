@@ -1,0 +1,73 @@
+<div class="tool-panel" id="panel-webfmt">
+    <div class="tab-bar">
+        <div class="tab active" onclick="webfmtSwitchTab('html')">HTML 格式化</div>
+        <div class="tab" onclick="webfmtSwitchTab('css')">CSS 格式化</div>
+        <div class="tab" onclick="webfmtSwitchTab('js')">JS 格式化</div>
+    </div>
+
+    <div class="tab-content active" id="webfmtTab-html">
+        <div class="toolbar">
+            <span class="label" style="margin:0">缩进:</span>
+            <select id="htmlfmtIndent" style="width:90px">
+                <option value="2">2 空格</option>
+                <option value="4">4 空格</option>
+            </select>
+            <button onclick="htmlfmtFormat()">格式化</button>
+            <button class="outline" onclick="htmlfmtMinify()">压缩</button>
+            <button class="outline" onclick="htmlfmtClear()">清空</button>
+        </div>
+        <div class="mb-8">
+            <div class="label">输入 HTML</div>
+            <textarea class="json-input" id="htmlfmtInput" placeholder="<div><p>hello</p><span>world</span></div>"></textarea>
+        </div>
+        <div class="copy-wrap">
+            <div class="label">输出</div>
+            <button class="copy-btn" onclick="copyText('htmlfmtOutput')">复制</button>
+            <div class="output-box" id="htmlfmtOutput"></div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="webfmtTab-css">
+        <div class="toolbar">
+            <span class="label" style="margin:0">缩进:</span>
+            <select id="cssfmtIndent" style="width:90px">
+                <option value="2">2 空格</option>
+                <option value="4">4 空格</option>
+            </select>
+            <button onclick="cssfmtFormat()">格式化</button>
+            <button class="outline" onclick="cssfmtMinify()">压缩</button>
+            <button class="outline" onclick="cssfmtClear()">清空</button>
+        </div>
+        <div class="mb-8">
+            <div class="label">输入 CSS</div>
+            <textarea class="json-input" id="cssfmtInput" placeholder=".a{color:red;background:#fff;padding:10px 20px}"></textarea>
+        </div>
+        <div class="copy-wrap">
+            <div class="label">输出</div>
+            <button class="copy-btn" onclick="copyText('cssfmtOutput')">复制</button>
+            <div class="output-box" id="cssfmtOutput"></div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="webfmtTab-js">
+        <div class="toolbar">
+            <span class="label" style="margin:0">缩进:</span>
+            <select id="jsfmtIndent" style="width:90px">
+                <option value="2">2 空格</option>
+                <option value="4">4 空格</option>
+            </select>
+            <button onclick="jsfmtFormat()">格式化</button>
+            <button class="outline" onclick="jsfmtMinify()">压缩</button>
+            <button class="outline" onclick="jsfmtClear()">清空</button>
+        </div>
+        <div class="mb-8">
+            <div class="label">输入 JS</div>
+            <textarea class="json-input" id="jsfmtInput" placeholder="function foo(a,b){return a+b}var x=foo(1,2);console.log(x);"></textarea>
+        </div>
+        <div class="copy-wrap">
+            <div class="label">输出</div>
+            <button class="copy-btn" onclick="copyText('jsfmtOutput')">复制</button>
+            <div class="output-box" id="jsfmtOutput"></div>
+        </div>
+    </div>
+</div>

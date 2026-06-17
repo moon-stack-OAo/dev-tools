@@ -1,0 +1,94 @@
+<div class="tool-panel" id="panel-resratio">
+    <div class="mb-8">
+        <div class="label">输入分辨率</div>
+        <div class="flex gap-6" style="align-items:flex-end;flex-wrap:wrap">
+            <div>
+                <div class="label">宽 (px)</div>
+                <input id="resWidth" max="32768" min="1" oninput="resratioCompute()" placeholder="1920"
+                       style="width:140px" type="number">
+            </div>
+            <span style="color:var(--text-dim);font-size:20px;padding-bottom:8px">×</span>
+            <div>
+                <div class="label">高 (px)</div>
+                <input id="resHeight" max="32768" min="1" oninput="resratioCompute()" placeholder="1080"
+                       style="width:140px" type="number">
+            </div>
+            <button class="outline" onclick="resratioSwap()">⇄ 交换</button>
+            <button class="outline" onclick="resratioClear()" style="margin-left:auto">清空</button>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <button class="outline" onclick="resratioLoadExample()">加载示例 (1920×1080)</button>
+    </div>
+
+    <div class="copy-wrap">
+        <div class="label">计算结果</div>
+        <button class="copy-btn" onclick="copyText('resratioResult')">复制</button>
+        <div class="output-box" id="resratioResult" style="min-height:80px"></div>
+    </div>
+
+    <div class="mb-8">
+        <div class="label">常用分辨率预设（点击自动填入并计算）</div>
+        <div class="btn-group">
+            <button class="outline" onclick="resratioPreset(1280,720)">720p (1280×720)</button>
+            <button class="outline" onclick="resratioPreset(1920,1080)">1080p (1920×1080)</button>
+            <button class="outline" onclick="resratioPreset(2560,1440)">1440p/2K (2560×1440)</button>
+            <button class="outline" onclick="resratioPreset(3840,2160)">4K UHD (3840×2160)</button>
+            <button class="outline" onclick="resratioPreset(4096,2160)">4K DCI (4096×2160)</button>
+            <button class="outline" onclick="resratioPreset(7680,4320)">8K UHD (7680×4320)</button>
+            <button class="outline" onclick="resratioPreset(1366,768)">HD+ WXGA (1366×768)</button>
+            <button class="outline" onclick="resratioPreset(1920,1200)">WUXGA (1920×1200)</button>
+            <button class="outline" onclick="resratioPreset(2560,1600)">WQXGA (2560×1600)</button>
+            <button class="outline" onclick="resratioPreset(5120,2880)">5K (5120×2880)</button>
+            <button class="outline" onclick="resratioPreset(6016,3384)">6K (6016×3384)</button>
+            <button class="outline" onclick="resratioPreset(720,480)">SD 480p (720×480)</button>
+            <button class="outline" onclick="resratioPreset(720,576)">SD 576p (720×576)</button>
+            <button class="outline" onclick="resratioPreset(1024,1024)">1:1 方形 (1024×1024)</button>
+            <button class="outline" onclick="resratioPreset(1024,768)">4:3 (1024×768)</button>
+            <button class="outline" onclick="resratioPreset(1080,720)">3:2 (1080×720)</button>
+            <button class="outline" onclick="resratioPreset(1280,800)">16:10 (1280×800)</button>
+            <button class="outline" onclick="resratioPreset(2560,1080)">21:9 (2560×1080)</button>
+            <button class="outline" onclick="resratioPreset(1179,2556)">iPhone 14 (1179×2556)</button>
+            <button class="outline" onclick="resratioPreset(2048,2732)">iPad Pro (2048×2732)</button>
+        </div>
+    </div>
+
+    <div style="border:1px solid var(--border);border-radius:var(--radius);padding:12px">
+        <div class="label">按比例反算</div>
+        <div class="flex gap-6" style="align-items:flex-end;flex-wrap:wrap">
+            <div>
+                <div class="label">基准边</div>
+                <select id="resByDim" style="width:90px">
+                    <option value="w">按宽</option>
+                    <option value="h">按高</option>
+                </select>
+            </div>
+            <div>
+                <div class="label">基准值 (px)</div>
+                <input id="resByValue" max="32768" min="1" style="width:120px" type="number" value="1920">
+            </div>
+            <div>
+                <div class="label">比例</div>
+                <select id="resByRatio" onchange="resByRatioChange()" style="width:120px">
+                    <option value="1:1">1:1</option>
+                    <option value="4:3">4:3</option>
+                    <option value="3:2">3:2</option>
+                    <option selected value="16:9">16:9</option>
+                    <option value="16:10">16:10</option>
+                    <option value="21:9">21:9</option>
+                    <option value="custom">自定义</option>
+                </select>
+            </div>
+            <div id="resByCustomBox" style="display:none">
+                <div class="label">自定义 (宽 : 高)</div>
+                <input id="resByCustomW" min="1" style="width:80px" type="number" value="16">
+                <span style="color:var(--text-dim)"> : </span>
+                <input id="resByCustomH" min="1" style="width:80px" type="number" value="9">
+            </div>
+            <button onclick="resByCompute()">计算</button>
+        </div>
+        <div class="output-box" id="resByResult"
+             style="min-height:auto;padding:8px 12px;margin-top:10px">点击「计算」查看结果</div>
+    </div>
+</div>

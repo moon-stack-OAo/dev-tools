@@ -1,0 +1,15 @@
+<div class="tool-panel" id="panel-htmlescape">
+    <div class="toolbar">
+        <button onclick="htmlEscape()">转义</button>
+        <button class="outline" onclick="htmlUnescape()">反转义</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入</div>
+        <textarea class="json-input" id="htmlInput" placeholder='<script>alert("xss")</script>'></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('htmlOutput')">复制</button>
+        <div class="output-box" id="htmlOutput"></div>
+    </div>
+</div>

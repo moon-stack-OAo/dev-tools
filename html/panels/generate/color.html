@@ -1,0 +1,28 @@
+<div class="tool-panel" id="panel-color">
+    <div class="mb-8">
+        <div class="label">输入颜色 (HEX / RGB / HSL / 名称)</div>
+        <input id="colorInput" placeholder="#ff6600 或 rgb(255,102,0) 或 hsl(24,100%,50%)" type="text"
+               value="#ff6600">
+    </div>
+    <div class="color-preview" id="colorPreview"></div>
+    <div class="toolbar">
+        <button onclick="colorConvert()">转换</button>
+    </div>
+    <div class="color-grid">
+        <div class="copy-wrap">
+            <div class="label">HEX</div>
+            <button class="copy-btn" onclick="copyText('colorHex')">复制</button>
+            <div class="output-box" id="colorHex"></div>
+        </div>
+        <div class="copy-wrap">
+            <div class="label">RGB</div>
+            <button class="copy-btn" onclick="copyText('colorRgb')">复制</button>
+            <div class="output-box" id="colorRgb"></div>
+        </div>
+        <div class="copy-wrap">
+            <div class="label">HSL</div>
+            <button class="copy-btn" onclick="copyText('colorHsl')">复制</button>
+            <div class="output-box" id="colorHsl"></div>
+        </div>
+    </div>
+</div>

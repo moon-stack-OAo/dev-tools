@@ -81,3 +81,51 @@ function dateCalcBizDays() {
     }
     out.textContent = count + ' 个工作日';
 }
+
+function dateCalcInit() {
+    dateCalcNow();
+    setInterval(dateCalcNow, 1000);
+    const row = document.getElementById('tsDatetimeRow');
+    if (row) {
+        row.addEventListener('click', function(e) {
+            if (e.target.tagName !== 'BUTTON') {
+                document.getElementById('tsDatetime').showPicker();
+            }
+        });
+    }
+}
+
+function dateToTimestamp() {
+    const dt = document.getElementById('tsDatetime').value;
+    const out = document.getElementById('tsResult');
+    if (!dt) {
+        out.textContent = '请选择日期时间';
+        return;
+    }
+    const d = new Date(dt);
+    if (isNaN(d.getTime())) {
+        out.textContent = '无效日期时间';
+        return;
+    }
+    out.textContent = '毫秒(ms)：' + d.getTime() + '     秒(s)：' + Math.floor(d.getTime() / 1000);
+}
+
+function timestampToDate() {
+    const val = document.getElementById('tsInput').value;
+    const unit = document.getElementById('tsUnit').value;
+    const out = document.getElementById('tsResult');
+    if (!val) {
+        out.textContent = '请输入时间戳';
+        return;
+    }
+    const ms = unit === 's' ? parseInt(val) * 1000 : parseInt(val);
+    const d = new Date(ms);
+    if (isNaN(d.getTime())) {
+        out.textContent = '无效时间戳';
+        return;
+    }
+    const pad = n => ('0' + n).slice(-2);
+    const fmt = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
+        + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+    out.textContent = '日期时间：' + fmt;
+}

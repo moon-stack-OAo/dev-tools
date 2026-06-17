@@ -1,0 +1,28 @@
+<div class="tool-panel" id="panel-datamock">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div>
+            <div class="label">数据类型</div>
+            <select id="mockType" style="width:140px">
+                <option value="name">姓名</option>
+                <option value="phone">手机号</option>
+                <option value="email">邮箱</option>
+                <option value="idcard">身份证</option>
+                <option value="company">公司名</option>
+                <option value="city">城市</option>
+                <option value="address">地址</option>
+                <option value="url">URL</option>
+                <option value="ip">IP 地址</option>
+            </select>
+        </div>
+        <div>
+            <div class="label">生成数量</div>
+            <input id="mockCount" max="50" min="1" style="width:80px" type="number" value="5">
+        </div>
+    </div>
+    <div class="toolbar">
+        <button onclick="mockBatch()">生成</button>
+    </div>
+    <div class="uuid-list" id="mockList">
+        <div style="color:var(--text-dim);font-size:13px;padding:8px 0">点击按钮生成模拟数据</div>
+    </div>
+</div>

@@ -1,0 +1,29 @@
+<div class="tool-panel" id="panel-baseconvert">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div class="flex-1">
+            <div class="label">数值</div>
+            <input id="bcInput" placeholder="255" type="text">
+        </div>
+        <div style="width:80px">
+            <div class="label">源进制</div>
+            <input id="bcFromRadix" max="36" min="2" style="width:60px" type="number" value="10">
+        </div>
+        <div style="width:80px">
+            <div class="label">目标进制</div>
+            <input id="bcToRadix" max="36" min="2" style="width:60px" type="number" value="16">
+        </div>
+    </div>
+    <div class="toolbar">
+        <button onclick="baseConvert()">转换</button>
+        <button class="outline" onclick="bcQuick(10,16)">Dec → Hex</button>
+        <button class="outline" onclick="bcQuick(16,10)">Hex → Dec</button>
+        <button class="outline" onclick="bcQuick(10,2)">Dec → Bin</button>
+        <button class="outline" onclick="bcQuick(2,10)">Bin → Dec</button>
+        <button class="outline" onclick="bcQuick(10,8)">Dec → Oct</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">结果</div>
+        <button class="copy-btn" onclick="copyText('bcOutput')">复制</button>
+        <div class="output-box" id="bcOutput"></div>
+    </div>
+</div>

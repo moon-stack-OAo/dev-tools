@@ -1,0 +1,23 @@
+<div class="tool-panel" id="panel-ip">
+    <div class="mb-8" style="border:1px solid var(--border);border-radius:var(--radius);padding:12px">
+        <div class="label">IP 信息查询</div>
+        <div class="flex gap-6" style="align-items:center">
+            <input id="ipInput" placeholder="如 192.168.1.1" style="flex:1" type="text">
+            <button onclick="ipCalcLookup()">查询</button>
+        </div>
+        <div class="output-box" id="ipOutput" style="min-height:auto;padding:8px 12px;margin-top:8px"></div>
+    </div>
+    <div class="mb-8" style="border:1px solid var(--border);border-radius:var(--radius);padding:12px">
+        <div class="label">子网计算</div>
+        <div class="flex gap-6" style="align-items:center;flex-wrap:wrap">
+            <input id="ipSubnetIp" placeholder="IP 地址" style="flex:1" type="text">
+            <span style="color:var(--text-dim)">/</span>
+            <input id="ipSubnetMask" max="32" min="0" placeholder="掩码" style="width:80px" type="number"
+                   value="24">
+            <button onclick="ipCalcSubnet()">计算</button>
+            <button class="outline sm" onclick="ipCalcAuto()">从上方填入</button>
+        </div>
+        <div class="output-box" id="ipSubnetOutput"
+             style="min-height:auto;padding:8px 12px;margin-top:8px"></div>
+    </div>
+</div>

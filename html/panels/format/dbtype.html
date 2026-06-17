@@ -1,0 +1,30 @@
+<!-- 数据库类型映射表 -->
+<div class="tool-panel" id="panel-dbtype">
+    <div class="toolbar">
+        <input id="dbtypeSearch" placeholder="搜索任意列（类型 / Java / JdbcType）..." style="flex:1;min-width:200px">
+        <span class="label" style="margin:0">仅显示:</span>
+        <select id="dbtypeDb" style="width:140px">
+            <option value="all">全部数据库</option>
+            <option value="mysql">MySQL</option>
+            <option value="oracle">Oracle</option>
+            <option value="postgresql">PostgreSQL</option>
+            <option value="sqlserver">SQL Server</option>
+        </select>
+        <span class="label" id="dbtypeCount" style="margin:0"></span>
+    </div>
+    <div class="dbtype-table-wrap">
+        <table class="dbtype-table" id="dbtypeTable">
+            <thead>
+            <tr>
+                <th>MySQL</th>
+                <th>Oracle</th>
+                <th>PostgreSQL</th>
+                <th>SQL Server</th>
+                <th>Java 类型</th>
+                <th>JdbcType</th>
+            </tr>
+            </thead>
+            <tbody id="dbtypeTbody"></tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,24 @@
+<div class="tool-panel" id="panel-jsontopojo">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div class="flex-1">
+            <div class="label">类名</div>
+            <input id="j2pClass" placeholder="UserDTO" type="text" value="UserDTO">
+        </div>
+        <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-dim)">
+            <input checked id="j2pLombok" style="accent-color:var(--accent)" type="checkbox"> Lombok @Data
+        </label>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入 JSON</div>
+        <textarea class="json-input" id="j2pInput"
+                  placeholder='{"name":"张三","age":25,"active":true}'></textarea>
+    </div>
+    <div class="toolbar">
+        <button onclick="jsonToPojo()">生成代码</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">生成的 Java 类</div>
+        <button class="copy-btn" onclick="copyText('j2pOutput')">复制</button>
+        <div class="output-box" id="j2pOutput" style="min-height:120px;max-height:400px"></div>
+    </div>
+</div>

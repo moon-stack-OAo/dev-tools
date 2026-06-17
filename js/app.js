@@ -83,21 +83,57 @@ const tools = [
     {id: 'httpstatus', icon: 'bi-info-circle', name: 'HTTP 状态码', desc: 'HTTP 状态码 / 方法速查', cat: 'reference'},
     {id: 'ascii', icon: 'bi-keyboard', name: 'ASCII 表', desc: 'ASCII / 控制字符速查', cat: 'reference'},
     {id: 'curl', icon: 'bi-terminal', name: 'Curl 生成', desc: '生成 / 解析 curl 命令', cat: 'debug'},
-    {id: 'grpc', icon: 'bi-hdd-network', name: 'gRPC 调试', desc: 'Metadata 构造 / Protobuf 解码 / 状态码', cat: 'debug'},
+    {
+        id: 'grpc',
+        icon: 'bi-hdd-network',
+        name: 'gRPC 调试',
+        desc: 'Metadata 构造 / Protobuf 解码 / 状态码',
+        cat: 'debug'
+    },
     {id: 'urlparser', icon: 'bi-link-45deg', name: 'URL 解析', desc: 'URL 拆解 / 编码解码', cat: 'debug'},
     {id: 'uaparser', icon: 'bi-browser-chrome', name: 'UA 解析', desc: 'User-Agent 解析', cat: 'debug'},
     {id: 'timezone', icon: 'bi-globe', name: '时区转换', desc: '跨时区时间换算', cat: 'generate'},
-    {id: 'mybatisplus', icon: 'bi-database-gear', name: 'MyBatis Plus', desc: 'MyBatis Plus 常用方法速查', cat: 'reference'},
-    {id: 'mybatissql', icon: 'bi-filetype-xml', name: 'MyBatis XML', desc: 'MyBatis 动态 SQL 标签速查', cat: 'reference'},
+    {
+        id: 'mybatisplus',
+        icon: 'bi-database-gear',
+        name: 'MyBatis Plus',
+        desc: 'MyBatis Plus 常用方法速查',
+        cat: 'reference'
+    },
+    {
+        id: 'mybatissql',
+        icon: 'bi-filetype-xml',
+        name: 'MyBatis XML',
+        desc: 'MyBatis 动态 SQL 标签速查',
+        cat: 'reference'
+    },
     {id: 'lombok', icon: 'bi-magic', name: 'Lombok 注解', desc: 'Lombok 常用注解速查', cat: 'reference'},
     {id: 'springboot', icon: 'bi-stars', name: 'Spring Boot 注解', desc: 'Spring Boot 常用注解速查', cat: 'reference'},
-    {id: 'txpropagation', icon: 'bi-arrow-left-right-circle', name: '事务传播', desc: 'Spring 事务传播行为速查', cat: 'reference'},
+    {
+        id: 'txpropagation',
+        icon: 'bi-arrow-left-right-circle',
+        name: '事务传播',
+        desc: 'Spring 事务传播行为速查',
+        cat: 'reference'
+    },
     {id: 'mavenref', icon: 'bi-box', name: 'Maven 命令', desc: 'Maven 常用命令速查', cat: 'reference'},
     {id: 'jdkfeatures', icon: 'bi-cup-hot', name: 'JDK 新特性', desc: 'JDK 8/11/17/21 新特性速查', cat: 'reference'},
-    {id: 'httpheader', icon: 'bi-list-columns-reverse', name: 'HTTP Header', desc: 'HTTP 通用 / 请求 / 响应头速查', cat: 'reference'},
+    {
+        id: 'httpheader',
+        icon: 'bi-list-columns-reverse',
+        name: 'HTTP Header',
+        desc: 'HTTP 通用 / 请求 / 响应头速查',
+        cat: 'reference'
+    },
     {id: 'mimetype', icon: 'bi-file-earmark', name: 'MIME 类型', desc: '文件扩展名 / MIME 类型对照', cat: 'reference'},
     {id: 'portref', icon: 'bi-plug', name: '端口号速查', desc: '常用网络服务端口号对照', cat: 'reference'},
-    {id: 'resratio', icon: 'bi-aspect-ratio', name: '分辨率计算', desc: '最简比例 / 总像素 / 标准比例匹配 / 反算', cat: 'generate'},
+    {
+        id: 'resratio',
+        icon: 'bi-aspect-ratio',
+        name: '分辨率计算',
+        desc: '最简比例 / 总像素 / 标准比例匹配 / 反算',
+        cat: 'generate'
+    },
 ];
 
 // === Navigation ===
@@ -106,13 +142,11 @@ const title = document.getElementById('toolTitle');
 const homeBtn = document.getElementById('homeBtn');
 const breadcrumb = document.getElementById('breadcrumb');
 
-const PANEL_CATEGORIES = ['format', 'encode', 'security', 'generate', 'text', 'debug', 'reference'];
-
 function loadPanels() {
     const container = document.getElementById('panels-container');
     const loading = document.getElementById('panels-loading');
-    return Promise.all(PANEL_CATEGORIES.map(cat =>
-        fetch('html/panels/' + cat + '.html', {cache: 'no-cache'})
+    return Promise.all(tools.map(tool =>
+        fetch(`html/panels/${tool.cat}/${tool.id}.html`, {cache: 'no-cache'})
             .then(r => r.ok ? r.text() : '')
             .catch(() => '')
     )).then(htmls => {
@@ -266,7 +300,7 @@ openTool = function (id) {
         'httpstatus': 'httpStatusRender',
         'ascii': 'asciiRender',
         'arthas': 'arthasRender',
-        'datecalc': 'dateCalcNow',
+        'datecalc': 'dateCalcInit',
         'cron': 'cronBuildFields',
         'email': 'emailInit',
         'jwtgen': 'jwtGenInit',

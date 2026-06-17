@@ -1,0 +1,20 @@
+<div class="tool-panel" id="panel-diff">
+    <div class="diff-container mb-8">
+        <div class="flex-1">
+            <div class="label">文本 A (原始)</div>
+            <textarea id="diffA" placeholder="原始内容" style="height:250px"></textarea>
+        </div>
+        <div class="flex-1">
+            <div class="label">文本 B (修改后)</div>
+            <textarea id="diffB" placeholder="修改后的内容" style="height:250px"></textarea>
+        </div>
+    </div>
+    <div class="toolbar">
+        <button onclick="doDiff()">对比</button>
+        <label style="font-size:12px;color:var(--text-dim)">
+            <input id="diffIgnoreCase" style="accent-color:var(--accent)" type="checkbox"> 忽略大小写
+        </label>
+    </div>
+    <div class="label mt-8">差异结果</div>
+    <div class="diff-output" id="diffOutput"></div>
+</div>

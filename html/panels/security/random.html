@@ -1,0 +1,32 @@
+<!-- Random -->
+<div class="tool-panel" id="panel-random">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div>
+            <div class="label">长度</div>
+            <input id="randomLen" max="256" min="1" style="width:80px" type="number" value="16">
+        </div>
+        <div>
+            <div class="label">字符集</div>
+            <div style="display:flex;gap:8px;font-size:12px;color:var(--text-dim);flex-wrap:wrap">
+                <label><input checked id="randUpper" style="accent-color:var(--accent)" type="checkbox">
+                    A-Z</label>
+                <label><input checked id="randLower" style="accent-color:var(--accent)" type="checkbox">
+                    a-z</label>
+                <label><input checked id="randDigit" style="accent-color:var(--accent)" type="checkbox">
+                    0-9</label>
+                <label><input id="randSpecial" style="accent-color:var(--accent)" type="checkbox"> !@#$%</label>
+            </div>
+        </div>
+    </div>
+    <div class="toolbar">
+        <button onclick="randPassword()">生成密码</button>
+        <button class="outline" onclick="randToken()">生成 Hex Token</button>
+        <button class="outline" onclick="randPin()">生成 PIN (6位)</button>
+        <button class="outline" onclick="randomClear()"
+                style="margin-left:auto;border-color:var(--danger);color:var(--danger)">清空
+        </button>
+    </div>
+    <div class="uuid-list" id="randomList">
+        <div style="color:var(--text-dim);font-size:13px;padding:8px 0">点击按钮生成随机内容</div>
+    </div>
+</div>

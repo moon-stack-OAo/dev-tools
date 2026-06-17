@@ -1,0 +1,66 @@
+<div class="tool-panel" id="panel-api">
+    <div class="api-url-bar">
+        <select id="apiMethod" onchange="apiMethodChange(this)">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="PATCH">PATCH</option>
+            <option value="DELETE">DELETE</option>
+            <option value="HEAD">HEAD</option>
+            <option value="OPTIONS">OPTIONS</option>
+        </select>
+        <input id="apiUrl" placeholder="https://api.example.com/endpoint" type="text">
+        <button class="api-send-btn" onclick="apiSend()">&#9654; 发送</button>
+        <button class="outline" onclick="apiClear()">重置</button>
+    </div>
+
+    <div class="api-tabs">
+        <div class="api-tab active" onclick="apiSwitchTab(this,'headers')">Headers</div>
+        <div class="api-tab" onclick="apiSwitchTab(this,'auth')">Authorization</div>
+        <div class="api-tab" onclick="apiSwitchTab(this,'body')">Body</div>
+    </div>
+
+    <div class="api-tab-panel active" id="api-headers-panel">
+        <div class="api-kv-header">
+            <span class="api-kv-key">Key</span>
+            <span class="api-kv-val">Value</span>
+            <span class="api-kv-act"></span>
+        </div>
+        <div id="apiHeadersList"></div>
+        <button class="outline sm" onclick="apiAddHeader()" style="margin-top:4px">+ 添加</button>
+    </div>
+
+    <div class="api-tab-panel" id="api-auth-panel">
+        <div class="api-auth-row">
+            <div class="api-auth-label">Type</div>
+            <select id="apiAuthType" onchange="apiAuthChange()">
+                <option value="none">No Auth</option>
+                <option value="bearer">Bearer Token</option>
+                <option value="basic">Basic Auth</option>
+                <option value="apikey">API Key</option>
+            </select>
+        </div>
+        <div class="api-auth-fields" id="apiAuthFields"></div>
+    </div>
+    <div class="api-tab-panel" id="api-body-panel">
+        <div class="api-body-bar">
+            <select id="apiBodyType">
+                <option value="application/json">application/json</option>
+                <option value="text/plain">text/plain</option>
+                <option value="application/xml">application/xml</option>
+                <option value="application/x-www-form-urlencoded">x-www-form-urlencoded</option>
+            </select>
+        </div>
+        <textarea class="api-body-input" id="apiBody" placeholder='{&#10;  "key": "value"&#10;}'></textarea>
+    </div>
+
+    <div class="api-response" id="apiResponse" style="display:none">
+        <div class="resp-header">
+            <span class="resp-status" id="apiStatus"></span>
+            <span class="resp-meta" id="apiMeta"></span>
+            <button class="outline sm" onclick="copyText('apiBodyOutput')" style="margin-left:auto">复制
+            </button>
+        </div>
+        <div class="resp-body" id="apiBodyOutput"></div>
+    </div>
+</div>

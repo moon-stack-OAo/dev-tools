@@ -1,0 +1,34 @@
+<div class="tool-panel" id="panel-uaparser">
+    <div class="stomp-block">
+        <div class="stomp-block-title">User-Agent 字符串</div>
+        <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+            <input id="uaparserInput" placeholder="Mozilla/5.0 ..." style="flex:1;min-width:240px"
+                   type="text">
+            <button onclick="uaparserParse()">解析</button>
+            <button class="outline" onclick="uaparserUseCurrent()">使用当前浏览器</button>
+        </div>
+        <div class="flex gap-6" style="align-items:center;flex-wrap:wrap">
+            <span class="label" style="margin:0">常用 UA</span>
+            <select id="uaparserPreset" onchange="uaparserApplyPreset()" style="flex:1;min-width:200px">
+                <option value="">— 选择一个 —</option>
+                <option value="chrome">Chrome (Windows)</option>
+                <option value="firefox">Firefox (Windows)</option>
+                <option value="safari">Safari (macOS)</option>
+                <option value="edge">Edge (Windows)</option>
+                <option value="iphone">iPhone Safari</option>
+                <option value="android">Android Chrome</option>
+                <option value="googlebot">Googlebot</option>
+                <option value="wechat">微信内置</option>
+                <option value="dingtalk">钉钉</option>
+                <option value="feishu">飞书</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="copy-wrap">
+        <div class="label">解析结果</div>
+        <button class="copy-btn" onclick="copyText('uaparserOutput')">复制</button>
+        <pre class="output-box" id="uaparserOutput"
+             style="min-height:240px;max-height:500px;white-space:pre-wrap;word-break:break-all">点击「解析」查看结果</pre>
+    </div>
+</div>

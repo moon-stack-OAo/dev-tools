@@ -1,0 +1,52 @@
+<div class="tool-panel" id="panel-qrcode">
+    <div class="mb-8">
+        <div class="label">内容 (文本 / URL / 任意字符串)</div>
+        <textarea class="json-input" id="qrcodeInput" placeholder="https://example.com&#10;或任意文本内容"></textarea>
+    </div>
+    <div class="toolbar" onclick="document.getElementById('qrcodeOptions').classList.toggle('hidden')" style="cursor:pointer">
+        <i class="bi bi-sliders" style="color:var(--accent)"></i>
+        <span class="label" style="margin:0">选项 (点击展开)</span>
+        <span style="flex:1"></span>
+        <i class="bi bi-chevron-down" id="qrcodeChevron" style="color:var(--text-muted)"></i>
+    </div>
+    <div class="qrcode-options hidden" id="qrcodeOptions">
+        <div class="flex gap-6" style="align-items:center;flex-wrap:wrap">
+            <div>
+                <div class="label">纠错等级</div>
+                <select id="qrcodeLevel" style="width:130px">
+                    <option value="L">L (低 ~7%)</option>
+                    <option selected value="M">M (中 ~15%)</option>
+                    <option value="Q">Q (高 ~25%)</option>
+                    <option value="H">H (最高 ~30%)</option>
+                </select>
+            </div>
+            <div>
+                <div class="label">尺寸 (px)</div>
+                <input id="qrcodeSize" max="1024" min="64" step="16" style="width:90px" type="number" value="256">
+            </div>
+            <div>
+                <div class="label">边距 (quiet zone)</div>
+                <input id="qrcodeMargin" max="32" min="0" step="1" style="width:70px" type="number" value="4">
+            </div>
+            <div>
+                <div class="label">前景色</div>
+                <input id="qrcodeFg" style="width:50px;height:32px;padding:2px" type="color" value="#000000">
+                <input id="qrcodeFgText" style="width:90px;margin-left:4px" type="text" value="#000000">
+            </div>
+            <div>
+                <div class="label">背景色</div>
+                <input id="qrcodeBg" style="width:50px;height:32px;padding:2px" type="color" value="#ffffff">
+                <input id="qrcodeBgText" style="width:90px;margin-left:4px" type="text" value="#ffffff">
+            </div>
+        </div>
+    </div>
+    <div class="toolbar">
+        <button onclick="qrcodeGenerate()">生成</button>
+        <button class="outline" onclick="qrcodeDownload()">下载 PNG</button>
+        <button class="outline" onclick="qrcodeCopyImage()">复制图片</button>
+    </div>
+    <div class="qrcode-output">
+        <canvas id="qrcodeCanvas"></canvas>
+        <div class="qrcode-meta" id="qrcodeMeta"></div>
+    </div>
+</div>

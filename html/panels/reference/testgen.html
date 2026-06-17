@@ -1,0 +1,28 @@
+<div class="tool-panel" id="panel-testgen">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div>
+            <div class="label">测试类型</div>
+            <select id="testType" style="width:140px">
+                <option value="service">Service</option>
+                <option value="controller">Controller</option>
+                <option value="mapper">Mapper</option>
+            </select>
+        </div>
+        <div class="flex-1">
+            <div class="label">完整类名</div>
+            <input id="testClass" placeholder="com.example.UserService" type="text">
+        </div>
+        <div class="flex-1">
+            <div class="label">方法名</div>
+            <input id="testMethod" placeholder="findById" type="text">
+        </div>
+    </div>
+    <div class="toolbar">
+        <button onclick="testGenGenerate()">生成代码</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">生成的测试代码</div>
+        <button class="copy-btn" onclick="copyText('testOutput')">复制</button>
+        <div class="output-box" id="testOutput" style="min-height:120px;max-height:400px"></div>
+    </div>
+</div>

@@ -1,0 +1,16 @@
+<div class="tool-panel" id="panel-javaescape">
+    <div class="toolbar">
+        <button onclick="javaEscape()">Java 转义</button>
+        <button class="outline" onclick="javaUnescape()">Java 反转义</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入</div>
+        <textarea class="json-input" id="javaInput"
+                  placeholder='普通文本: hello "world" &#10;或 Java 转义: hello \"world\"\n'></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('javaOutput')">复制</button>
+        <div class="output-box" id="javaOutput"></div>
+    </div>
+</div>

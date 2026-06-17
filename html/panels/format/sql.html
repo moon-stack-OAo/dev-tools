@@ -1,0 +1,25 @@
+<div class="tool-panel" id="panel-sql">
+    <div class="toolbar">
+        <button onclick="sqlFormat()">格式化</button>
+        <div>
+            <select id="sqlDialect" style="width:130px">
+                <option value="sql">Standard SQL</option>
+                <option value="mysql">MySQL</option>
+                <option value="postgresql">PostgreSQL</option>
+                <option value="plsql">Oracle PL/SQL</option>
+                <option value="tsql">SQL Server</option>
+                <option value="bigquery">BigQuery</option>
+            </select>
+        </div>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入 SQL</div>
+        <textarea class="json-input" id="sqlInput"
+                  placeholder="SELECT id,name FROM users WHERE age > 18 ORDER BY name"></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('sqlOutput')">复制</button>
+        <div class="output-box" id="sqlOutput"></div>
+    </div>
+</div>

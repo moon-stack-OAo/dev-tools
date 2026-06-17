@@ -1,0 +1,13 @@
+<div class="tool-panel" id="panel-uuid">
+    <div class="toolbar">
+        <button onclick="genUUID('v4')">生成 UUID v4</button>
+        <button class="outline" onclick="genUUID('v7')">生成 UUID v7</button>
+        <button class="outline" onclick="genUUID('v4',5)">批量 5 个</button>
+        <button class="outline" onclick="uuidClear()"
+                style="margin-left:auto;border-color:var(--danger);color:var(--danger)">清空
+        </button>
+    </div>
+    <div class="uuid-list" id="uuidList">
+        <div style="color:var(--text-dim);font-size:13px;padding:8px 0">点击按钮生成 UUID</div>
+    </div>
+</div>

@@ -1,0 +1,15 @@
+<div class="tool-panel" id="panel-sqltopojo">
+    <div class="mb-8">
+        <div class="label">输入 SQL DDL</div>
+        <textarea class="json-input" id="s2pInput"
+                  placeholder="CREATE TABLE `user` (&#10;  `id` bigint(20) NOT NULL AUTO_INCREMENT,&#10;  `name` varchar(50) DEFAULT NULL COMMENT '姓名',&#10;  `age` int(11) DEFAULT NULL COMMENT '年龄',&#10;  PRIMARY KEY (`id`)&#10;) ENGINE=InnoDB"></textarea>
+    </div>
+    <div class="toolbar">
+        <button onclick="sqlToPojo()">生成实体</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">生成的 MyBatis Plus 实体</div>
+        <button class="copy-btn" onclick="copyText('s2pOutput')">复制</button>
+        <div class="output-box" id="s2pOutput" style="min-height:120px;max-height:400px"></div>
+    </div>
+</div>

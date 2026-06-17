@@ -1,0 +1,38 @@
+<!-- bcrypt -->
+<div class="tool-panel" id="panel-bcrypt">
+    <div class="mb-8">
+        <div class="label">明文密码</div>
+        <textarea class="json-input" id="bcryptPwd" placeholder="要加密的明文密码" style="min-height:90px"></textarea>
+    </div>
+    <div class="mb-8" style="max-width:200px">
+        <div class="label">cost / rounds (4~14)</div>
+        <input id="bcryptRounds" max="14" min="4" type="number" value="10">
+    </div>
+    <div class="toolbar">
+        <button onclick="bcryptHash()">生成 bcrypt 哈希</button>
+        <button class="outline" onclick="bcryptClear()"
+                style="margin-left:auto;border-color:var(--danger);color:var(--danger)">清空
+        </button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">哈希结果 ($2a$...)</div>
+        <button class="copy-btn" onclick="copyText('bcryptOutput')">复制</button>
+        <div class="output-box" id="bcryptOutput"></div>
+    </div>
+
+    <div class="mb-8" style="margin-top:16px">
+        <div class="label">验证 - 明文</div>
+        <input id="bcryptVerifyPwd" placeholder="明文密码" type="text">
+    </div>
+    <div class="mb-8">
+        <div class="label">验证 - 哈希值</div>
+        <textarea id="bcryptVerifyHash" placeholder="$2a$10$..." rows="2"></textarea>
+    </div>
+    <div class="toolbar">
+        <button onclick="bcryptVerify()">验证</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">验证结果</div>
+        <div class="output-box" id="bcryptVerifyOutput" style="min-height:24px"></div>
+    </div>
+</div>

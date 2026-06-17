@@ -1,0 +1,29 @@
+<!-- AES -->
+<div class="tool-panel" id="panel-aes">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div>
+            <div class="label">加密模式</div>
+            <select id="aesMode" style="width:120px">
+                <option value="cbc">CBC</option>
+                <option value="gcm">GCM</option>
+            </select>
+        </div>
+        <div class="flex-1">
+            <div class="label">密码</div>
+            <input id="aesPwd" placeholder="加密密码" type="text">
+        </div>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入</div>
+        <textarea class="json-input" id="aesInput" placeholder="明文或密文(Base64)"></textarea>
+    </div>
+    <div class="toolbar">
+        <button onclick="aesEncrypt()">加密</button>
+        <button class="outline" onclick="aesDecrypt()">解密</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('aesOutput')">复制</button>
+        <div class="output-box" id="aesOutput"></div>
+    </div>
+</div>

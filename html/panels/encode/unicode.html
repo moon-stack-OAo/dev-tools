@@ -1,0 +1,15 @@
+<div class="tool-panel" id="panel-unicode">
+    <div class="toolbar">
+        <button onclick="unicodeEncode()">编码 \uXXXX</button>
+        <button class="outline" onclick="unicodeDecode()">解码</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入</div>
+        <textarea class="json-input" id="unicodeInput" placeholder="中文 或 \u4e2d\u6587"></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('unicodeOutput')">复制</button>
+        <div class="output-box" id="unicodeOutput"></div>
+    </div>
+</div>

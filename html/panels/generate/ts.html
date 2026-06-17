@@ -1,0 +1,17 @@
+<div class="tool-panel" id="panel-ts">
+    <div class="mb-8">
+        <div class="label">当前时间</div>
+        <div class="output-box" id="tsNow" style="min-height:auto;padding:8px 12px"></div>
+    </div>
+    <div class="ts-row mb-8">
+        <input id="tsInput" placeholder="时间戳 (秒或毫秒)" type="text">
+        <button onclick="tsFromTimestamp()">→ 转日期</button>
+        <input id="tsDateInput" placeholder="日期字符串 (如 2025-01-01 12:00:00)" type="text">
+        <button onclick="tsFromDate()">→ 转时间戳</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">结果</div>
+        <button class="copy-btn" onclick="copyText('tsOutput')">复制</button>
+        <div class="output-box" id="tsOutput"></div>
+    </div>
+</div>

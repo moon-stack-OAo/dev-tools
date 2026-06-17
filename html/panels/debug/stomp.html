@@ -1,0 +1,84 @@
+<div class="tool-panel" id="panel-stomp">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <input id="stompUrl" placeholder="wss://example.com/ws 或 ws://localhost:8080/ws"
+               style="flex:1;min-width:240px" type="text">
+        <button onclick="stompConnect()">CONNECT</button>
+        <button class="danger" onclick="stompDisconnect()">DISCONNECT</button>
+        <span class="ws-status disconnected" id="stompStatus"><span class="ws-dot"></span> 未连接</span>
+    </div>
+
+    <div class="stomp-block">
+        <div class="stomp-block-title">STOMP 握手 (CONNECT Headers)</div>
+        <div class="flex gap-6 mb-8" style="align-items:flex-end;flex-wrap:wrap">
+            <div>
+                <div class="label">Host (虚拟主机)</div>
+                <input id="stompHost" placeholder="localhost" style="width:160px" type="text" value="localhost">
+            </div>
+            <div>
+                <div class="label">心跳 (cx,cy) ms</div>
+                <input id="stompTx" placeholder="10000,10000" style="width:160px" type="text"
+                       value="10000,10000">
+            </div>
+            <div class="flex-1" style="min-width:280px">
+                <div class="label">附加 Headers <span class="stomp-tip">每行一个，格式 key:value</span></div>
+                <input id="stompConnHeaders"
+                       placeholder="login:guest&#10;passcode:guest&#10;Authorization:Bearer xxx" type="text">
+            </div>
+        </div>
+    </div>
+
+    <div class="stomp-block">
+        <div class="stomp-block-title">订阅 (SUBSCRIBE)</div>
+        <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+            <input id="stompSubDest" placeholder="/topic/messages 或 /queue/job.xxx"
+                   style="flex:1;min-width:240px" type="text">
+            <select id="stompSubAck" style="width:170px">
+                <option value="auto">ack=auto (默认)</option>
+                <option value="client">ack=client</option>
+                <option value="client-individual">ack=client-individual</option>
+            </select>
+            <button onclick="stompSubscribe()">+ 订阅</button>
+        </div>
+        <div class="stomp-sub-list" id="stompSubList"></div>
+    </div>
+
+    <div class="stomp-block">
+        <div class="stomp-block-title">发送 (SEND)</div>
+        <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+            <input id="stompSendDest" placeholder="目标 destination" style="flex:1;min-width:240px" type="text">
+            <select id="stompSendCt" style="width:200px">
+                <option value="application/json">application/json</option>
+                <option value="text/plain">text/plain</option>
+                <option value="application/xml">application/xml</option>
+                <option value="">不设置</option>
+            </select>
+        </div>
+        <div class="mb-8">
+            <div class="label">SEND 附加 Headers <span
+                    class="stomp-tip">例如 receipt:123、transaction:tx-1</span></div>
+            <input id="stompSendHeaders" placeholder="receipt:123" type="text">
+        </div>
+        <textarea class="json-input" id="stompSendBody" placeholder='{"event":"ping","ts":1700000000}'
+                  rows="4"></textarea>
+        <div class="flex gap-6 mt-8" style="align-items:center">
+            <button onclick="stompSend()">SEND</button>
+            <button class="outline" onclick="stompClear()">清空日志</button>
+        </div>
+    </div>
+
+    <div class="stomp-block">
+        <div class="stomp-block-title">ACK / NACK <span
+                class="stomp-tip">仅在 ack=client / client-individual 模式下需要</span>
+        </div>
+        <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+            <input id="stompAckId" placeholder="sub-id" style="width:120px" type="text">
+            <input id="stompAckMsgId" placeholder="message-id (从 MESSAGE 帧 headers 复制)"
+                   style="flex:1;min-width:240px" type="text">
+            <button onclick="stompAckOrNack('ack')">ACK</button>
+            <button class="outline" onclick="stompAckOrNack('nack')">NACK</button>
+        </div>
+    </div>
+
+    <div class="stomp-block-title">帧日志 <span class="stomp-tip">显示原始 STOMP 帧与系统消息</span></div>
+    <div class="ws-log" id="stompLog"></div>
+</div>

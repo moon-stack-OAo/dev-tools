@@ -1,0 +1,48 @@
+<!-- JSON Schema 生成 / 校验 -->
+<div class="tool-panel" id="panel-jsonschema">
+    <div class="tab-bar">
+        <div class="tab active" onclick="jsonschemaSwitchTab('gen')">生成 Schema</div>
+        <div class="tab" onclick="jsonschemaSwitchTab('valid')">校验 JSON</div>
+    </div>
+
+    <div class="tab-content active" id="jsonschemaTab-gen">
+        <div class="mb-8">
+            <div class="label">输入 JSON 数据</div>
+            <textarea class="json-input" id="jsonschemaInput"
+                      placeholder='{"name":"alice","age":30,"active":true,"tags":["a","b"]}'></textarea>
+        </div>
+        <div class="toolbar">
+            <button onclick="jsonschemaGenerate()">生成 Schema</button>
+            <button class="outline" onclick="jsonschemaClear('gen')">清空</button>
+            <button class="outline" onclick="jsonschemaLoadSample('gen')">加载示例</button>
+        </div>
+        <div class="copy-wrap">
+            <div class="label">生成的 JSON Schema</div>
+            <button class="copy-btn" onclick="copyText('jsonschemaOutput')">复制</button>
+            <div class="output-box" id="jsonschemaOutput"></div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="jsonschemaTab-valid">
+        <div class="mb-8">
+            <div class="label">JSON 数据</div>
+            <textarea id="jsonschemaData" placeholder='待校验的 JSON 数据'
+                      style="min-height:140px"></textarea>
+        </div>
+        <div class="mb-8">
+            <div class="label">JSON Schema</div>
+            <textarea id="jsonschemaSch" placeholder='JSON Schema 内容'
+                      style="min-height:140px"></textarea>
+        </div>
+        <div class="toolbar">
+            <button onclick="jsonschemaValidate()">校验</button>
+            <button class="outline" onclick="jsonschemaClear('valid')">清空</button>
+            <button class="outline" onclick="jsonschemaLoadSample('valid')">加载示例</button>
+        </div>
+        <div class="copy-wrap">
+            <div class="label">校验结果</div>
+            <button class="copy-btn" onclick="copyText('jsonschemaValidResult')">复制</button>
+            <div class="output-box" id="jsonschemaValidResult"></div>
+        </div>
+    </div>
+</div>

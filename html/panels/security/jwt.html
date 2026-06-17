@@ -1,0 +1,23 @@
+<!-- Security -->
+<div class="tool-panel" id="panel-jwt">
+    <div class="mb-8">
+        <div class="label">JWT Token</div>
+        <textarea id="jwtInput" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." rows="2"></textarea>
+    </div>
+    <div class="toolbar">
+        <button onclick="jwtDecode()">解码</button>
+        <button class="outline" onclick="document.getElementById('jwtInput').value=''">清空</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">Header</div>
+        <div class="output-box" id="jwtHeader" style="max-height:120px"></div>
+    </div>
+    <div class="mb-8">
+        <div class="label">Payload</div>
+        <div class="output-box" id="jwtPayload" style="max-height:200px"></div>
+    </div>
+    <div class="mb-8">
+        <div class="label">签名状态</div>
+        <div class="output-box" id="jwtSig" style="min-height:20px"></div>
+    </div>
+</div>

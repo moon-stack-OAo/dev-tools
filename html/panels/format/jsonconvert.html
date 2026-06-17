@@ -1,0 +1,35 @@
+<!-- JSON / XML / YAML 互转 -->
+<div class="tool-panel" id="panel-jsonconvert">
+    <div class="toolbar">
+        <select id="jsonconvertFrom" style="width:110px">
+            <option value="json">JSON</option>
+            <option value="xml">XML</option>
+            <option value="yaml">YAML</option>
+        </select>
+        <span style="color:var(--text-muted)">→</span>
+        <select id="jsonconvertTo" style="width:110px">
+            <option value="xml">XML</option>
+            <option value="json">JSON</option>
+            <option value="yaml">YAML</option>
+        </select>
+        <span style="color:var(--text-muted)">|</span>
+        <span class="label" style="margin:0">根节点名:</span>
+        <input id="jsonconvertRoot" style="width:120px" value="root">
+        <span class="label" style="margin:0">属性前缀:</span>
+        <input id="jsonconvertAttrPrefix" style="width:80px" value="@_">
+        <button onclick="jsonconvertRun()">转换</button>
+        <button class="outline" onclick="jsonconvertClear()">清空</button>
+        <button class="outline" onclick="jsonconvertSwap()">交换方向</button>
+        <button class="outline" onclick="jsonconvertBeautify()">美化输出</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入内容</div>
+        <textarea class="json-input" id="jsonconvertInput"
+                  placeholder='{"name":"alice","age":30}'></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">转换结果</div>
+        <button class="copy-btn" onclick="copyText('jsonconvertOutput')">复制</button>
+        <div class="output-box" id="jsonconvertOutput"></div>
+    </div>
+</div>

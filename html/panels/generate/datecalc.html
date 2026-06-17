@@ -1,0 +1,74 @@
+<div class="tool-panel" id="panel-datecalc">
+    <div class="mb-8">
+        <div class="label">当前时间</div>
+        <div class="output-box" id="dateNow" style="min-height:auto;padding:8px 12px"></div>
+        <div class="label mt-8">时间戳</div>
+        <div class="output-box" id="dateTimestamp" style="min-height:auto;padding:8px 12px"></div>
+    </div>
+    <div class="toolbar" style="margin-bottom:4px">
+        <button onclick="dateCalcNow()">刷新当前时间</button>
+    </div>
+    <div class="mb-8" style="border:1px solid var(--border);border-radius:var(--radius);padding:12px">
+        <div class="label">日期 ↔ 时间戳互转</div>
+        <div class="flex gap-6" id="tsDatetimeRow" style="align-items:center;flex-wrap:wrap;margin-bottom:6px;cursor:pointer">
+            <input id="tsDatetime" step="1" style="flex:1;min-width:200px" type="datetime-local">
+            <button onclick="dateToTimestamp()">日期 → 时间戳</button>
+        </div>
+        <div class="flex gap-6" style="align-items:center;flex-wrap:wrap;margin-bottom:6px">
+            <input id="tsInput" placeholder="输入时间戳" style="flex:1;min-width:200px" type="number">
+            <select id="tsUnit" style="width:100px">
+                <option value="ms">毫秒 (ms)</option>
+                <option value="s">秒 (s)</option>
+            </select>
+            <button onclick="timestampToDate()">时间戳 → 日期</button>
+        </div>
+        <div class="output-box" id="tsResult" style="min-height:auto;padding:8px 12px"></div>
+    </div>
+    <div class="mb-8" style="border:1px solid var(--border);border-radius:var(--radius);padding:12px">
+        <div class="label">日期加减</div>
+        <div class="flex gap-6" style="align-items:center;flex-wrap:wrap">
+            <input id="dateBase" type="date">
+            <select id="dateOp" style="width:80px">
+                <option value="add">+</option>
+                <option value="sub">-</option>
+            </select>
+            <input id="dateAmount" min="1" style="width:80px" type="number" value="7">
+            <select id="dateUnit" style="width:100px">
+                <option value="day">天</option>
+                <option value="week">周</option>
+                <option value="month">月</option>
+                <option value="year">年</option>
+            </select>
+            <button onclick="dateCalcAdd()">计算</button>
+        </div>
+        <div class="output-box" id="dateResult" style="min-height:auto;padding:8px 12px;margin-top:8px"></div>
+    </div>
+    <div class="mb-8" style="border:1px solid var(--border);border-radius:var(--radius);padding:12px">
+        <div class="label">日期间隔</div>
+        <div class="flex gap-6" style="align-items:center;flex-wrap:wrap">
+            <input id="dateDiff1" type="date">
+            <span style="color:var(--text-dim)">~</span>
+            <input id="dateDiff2" type="date">
+            <select id="dateDiffUnit" style="width:100px">
+                <option value="day">天</option>
+                <option value="week">周</option>
+                <option value="month">月</option>
+                <option value="year">年</option>
+            </select>
+            <button onclick="dateCalcDiff()">计算</button>
+        </div>
+        <div class="output-box" id="dateDiffResult"
+             style="min-height:auto;padding:8px 12px;margin-top:8px"></div>
+    </div>
+    <div class="mb-8" style="border:1px solid var(--border);border-radius:var(--radius);padding:12px">
+        <div class="label">工作日计算 (周一至周五)</div>
+        <div class="flex gap-6" style="align-items:center;flex-wrap:wrap">
+            <input id="dateBiz1" type="date">
+            <span style="color:var(--text-dim)">~</span>
+            <input id="dateBiz2" type="date">
+            <button onclick="dateCalcBizDays()">计算</button>
+        </div>
+        <div class="output-box" id="dateBizResult"
+             style="min-height:auto;padding:8px 12px;margin-top:8px"></div>
+    </div>
+</div>

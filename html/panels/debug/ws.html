@@ -1,0 +1,18 @@
+<div class="tool-panel" id="panel-ws">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <input id="wsUrl" placeholder="wss://echo.websocket.org" style="flex:1;min-width:200px" type="text">
+        <button onclick="wsConnect()">连接</button>
+        <button class="danger" onclick="wsDisconnect()">断开</button>
+        <span class="ws-status disconnected" id="wsStatus"><span class="ws-dot"></span> 未连接</span>
+    </div>
+    <div class="mb-8">
+        <div class="label">消息日志</div>
+        <div class="ws-log" id="wsLog"></div>
+    </div>
+    <div class="flex gap-6">
+        <input id="wsMsg" onkeydown="if(event.key==='Enter')wsSend()" placeholder="输入消息" style="flex:1"
+               type="text">
+        <button onclick="wsSend()">发送</button>
+        <button class="outline" onclick="wsClear()">清空日志</button>
+    </div>
+</div>

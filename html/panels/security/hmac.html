@@ -1,0 +1,41 @@
+<!-- HMAC -->
+<div class="tool-panel" id="panel-hmac">
+    <div class="flex gap-6 mb-8" style="flex-wrap:wrap;align-items:flex-end">
+        <div>
+            <div class="label">算法</div>
+            <select id="hmacAlgo" style="width:170px">
+                <option value="MD5">HMAC-MD5</option>
+                <option value="SHA1">HMAC-SHA-1</option>
+                <option selected value="SHA256">HMAC-SHA-256</option>
+                <option value="SHA384">HMAC-SHA-384</option>
+                <option value="SHA512">HMAC-SHA-512</option>
+            </select>
+        </div>
+        <div>
+            <div class="label">输出格式</div>
+            <select id="hmacFormat" style="width:120px">
+                <option selected value="hex">Hex</option>
+                <option value="base64">Base64</option>
+            </select>
+        </div>
+    </div>
+    <div class="mb-8">
+        <div class="label">密钥</div>
+        <input id="hmacKey" placeholder="HMAC 密钥" type="text">
+    </div>
+    <div class="mb-8">
+        <div class="label">待签名内容</div>
+        <textarea class="json-input" id="hmacInput" placeholder="待签名的文本内容"></textarea>
+    </div>
+    <div class="toolbar">
+        <button onclick="hmacCompute()">计算</button>
+        <button class="outline" onclick="hmacClear()"
+                style="margin-left:auto;border-color:var(--danger);color:var(--danger)">清空
+        </button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('hmacOutput')">复制</button>
+        <div class="output-box" id="hmacOutput" style="font-size:14px;word-break:break-all"></div>
+    </div>
+</div>

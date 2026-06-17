@@ -1,0 +1,17 @@
+<!-- JWT -->
+<div class="tool-panel" id="panel-hash">
+    <div class="mb-8">
+        <div class="label">输入</div>
+        <textarea class="json-input" id="hashInput" placeholder="输入要计算Hash 的文本"></textarea>
+    </div>
+    <div class="toolbar">
+        <button onclick="hashCompute('md5')">MD5</button>
+        <button class="outline" onclick="hashCompute('sha1')">SHA-1</button>
+        <button class="outline" onclick="hashCompute('sha256')">SHA-256</button>
+        <button class="outline" onclick="hashCompute('sha512')">SHA-512</button>
+        <button class="outline" onclick="hashClear()"
+                style="margin-left:auto;border-color:var(--danger);color:var(--danger)">清空
+        </button>
+    </div>
+    <div id="hashResults"></div>
+</div>

@@ -1,0 +1,38 @@
+<!-- SQL 方言互转 -->
+<div class="tool-panel" id="panel-sqldialect">
+    <div class="toolbar">
+        <span class="label" style="margin:0">源方言:</span>
+        <select id="sqldialectFrom" style="width:130px">
+            <option value="mysql">MySQL</option>
+            <option value="oracle">Oracle</option>
+            <option value="postgresql">PostgreSQL</option>
+            <option value="sqlserver">SQL Server</option>
+        </select>
+        <span style="color:var(--text-muted)">→</span>
+        <span class="label" style="margin:0">目标方言:</span>
+        <select id="sqldialectTo" style="width:130px">
+            <option value="oracle">Oracle</option>
+            <option value="mysql">MySQL</option>
+            <option value="postgresql">PostgreSQL</option>
+            <option value="sqlserver">SQL Server</option>
+        </select>
+        <button onclick="sqldialectConvert()">转换</button>
+        <button class="outline" onclick="sqldialectBeautify()">美化</button>
+        <button class="outline" onclick="sqldialectClear()">清空</button>
+        <button class="outline" onclick="sqldialectSwap()">交换</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入 SQL</div>
+        <textarea class="json-input" id="sqldialectInput"
+                  placeholder="SELECT NVL(a, b), sysdate, ROWNUM FROM t WHERE ROWNUM <= 10"></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">目标 SQL</div>
+        <button class="copy-btn" onclick="copyText('sqldialectOutput')">复制</button>
+        <div class="output-box" id="sqldialectOutput"></div>
+    </div>
+    <div class="mt-8"
+         style="font-size:12px;color:var(--warning);padding:8px 12px;background:rgba(255,167,38,.08);border:1px solid rgba(255,167,38,.25);border-radius:var(--radius-sm)">
+        ⚠️ 本工具仅做基础关键字/函数替换，复杂 SQL（PL/SQL 块、T-SQL 流程控制、隐式类型转换等）请人工校验后再使用。
+    </div>
+</div>
