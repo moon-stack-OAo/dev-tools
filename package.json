@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "node scripts/copy-libs.js && vite build",
+    "build:dev": "node scripts/copy-libs.js && vite build --mode dev",
     "preview": "vite preview",
     "copy-libs": "node scripts/copy-libs.js",
     "postinstall": "node scripts/copy-libs.js"

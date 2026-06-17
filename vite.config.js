@@ -27,7 +27,20 @@ function copyTree(src, dest) {
     }
 }
 
-export default defineConfig({
+function removeGithubPlugin(mode) {
+    return {
+        name: 'remove-github-link',
+        transformIndexHtml(html) {
+            if (mode !== 'dev') return html;
+            return html.replace(
+                /[\s]*<a class="header-github"[\s\S]*?<\/a>/g,
+                ''
+            );
+        },
+    };
+}
+
+export default defineConfig(({mode}) => ({
     base: './',
     build: {
         outDir: 'dist',
@@ -61,5 +74,6 @@ export default defineConfig({
                 }
             },
         },
+        removeGithubPlugin(mode),
     ],
-});
+}));
