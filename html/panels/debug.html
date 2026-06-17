@@ -233,3 +233,243 @@
              style="min-height:auto;padding:8px 12px;margin-top:8px"></div>
     </div>
 </div>
+
+<div class="tool-panel" id="panel-curl">
+    <div class="curl-layout">
+        <div class="curl-form">
+            <div class="stomp-block">
+                <div class="stomp-block-title">请求设置</div>
+                <div class="api-url-bar" style="margin-bottom:0;border-radius:0">
+                    <select id="curlMethod" onchange="curlMethodChange(this)">
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="DELETE">DELETE</option>
+                        <option value="PATCH">PATCH</option>
+                        <option value="HEAD">HEAD</option>
+                        <option value="OPTIONS">OPTIONS</option>
+                    </select>
+                    <input id="curlUrl" placeholder="https://api.example.com/users" type="text">
+                </div>
+            </div>
+
+            <div class="stomp-block">
+                <div class="stomp-block-title">请求头 (Headers)</div>
+                <div class="api-kv-header">
+                    <span class="api-kv-key">Key</span>
+                    <span class="api-kv-val">Value</span>
+                    <span class="api-kv-act"></span>
+                </div>
+                <div id="curlHeadersList"></div>
+                <button class="outline sm" onclick="curlAddHeader()" style="margin-top:4px">+ 添加 Header</button>
+            </div>
+
+            <div class="stomp-block">
+                <div class="stomp-block-title">Query 参数</div>
+                <div class="api-kv-header">
+                    <span class="api-kv-key">Key</span>
+                    <span class="api-kv-val">Value</span>
+                    <span class="api-kv-act"></span>
+                </div>
+                <div id="curlQueryList"></div>
+                <button class="outline sm" onclick="curlAddQuery()" style="margin-top:4px">+ 添加参数</button>
+            </div>
+
+            <div class="stomp-block">
+                <div class="stomp-block-title">请求体 (Body)</div>
+                <div class="flex gap-6 mb-8" style="align-items:center">
+                    <span class="label" style="margin:0">类型</span>
+                    <select id="curlBodyType" style="width:160px">
+                        <option value="none">none</option>
+                        <option value="json">json (application/json)</option>
+                        <option value="form">form (application/x-www-form-urlencoded)</option>
+                        <option value="raw">raw</option>
+                    </select>
+                </div>
+                <textarea class="api-body-input" id="curlBody" placeholder='{"name":"张三","age":25}'></textarea>
+            </div>
+
+            <div class="toolbar">
+                <button onclick="curlGenerate()">生成 curl 命令</button>
+                <button class="outline" onclick="curlReset()">重置</button>
+            </div>
+        </div>
+
+        <div class="curl-side">
+            <div class="stomp-block">
+                <div class="stomp-block-title">生成结果</div>
+                <div class="copy-wrap">
+                    <button class="copy-btn" onclick="copyText('curlOutput')">复制</button>
+                    <pre class="output-box" id="curlOutput"
+                         style="min-height:240px;max-height:500px;white-space:pre-wrap;word-break:break-all">点击「生成 curl 命令」查看结果</pre>
+                </div>
+            </div>
+
+            <div class="stomp-block">
+                <div class="stomp-block-title">反向解析 <span class="stomp-tip">粘贴已有 curl 命令</span></div>
+                <textarea class="api-body-input" id="curlInput"
+                          placeholder="curl -X POST 'https://api.example.com/users' -H 'Content-Type: application/json' -d '{&quot;name&quot;:&quot;tom&quot;}'"
+                          style="min-height:120px"></textarea>
+                <div class="toolbar" style="margin-top:8px;margin-bottom:0">
+                    <button onclick="curlParse()">解析到表单</button>
+                    <button class="outline" onclick="document.getElementById('curlInput').value=''">清空</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-grpc">
+    <div class="tab-bar">
+        <div class="tab active" onclick="grpcSwitchTab(this,'meta')">Metadata 构造</div>
+        <div class="tab" onclick="grpcSwitchTab(this,'pb')">Protobuf 解码</div>
+        <div class="tab" onclick="grpcSwitchTab(this,'status')">状态码速查</div>
+    </div>
+
+    <div class="tab-content active" id="grpc-tab-meta">
+        <div class="stomp-block">
+            <div class="stomp-block-title">请求元数据 (Metadata)
+                <span class="stomp-tip">gRPC HTTP/2 自定义 header 列表</span>
+            </div>
+            <div class="api-kv-header">
+                <span class="api-kv-key">Key</span>
+                <span class="api-kv-val">Value</span>
+                <span class="api-kv-act"></span>
+            </div>
+            <div id="grpcMetaList"></div>
+            <button class="outline sm" onclick="grpcAddMeta()" style="margin-top:4px">+ 添加 Metadata</button>
+        </div>
+
+        <div class="stomp-block">
+            <div class="stomp-block-title">目标服务地址</div>
+            <div class="flex gap-6" style="align-items:center;flex-wrap:wrap">
+                <input id="grpcEndpoint" placeholder="https://grpc.example.com/helloworld.Greeter/SayHello"
+                       style="flex:1;min-width:280px" type="text">
+                <span class="label" style="margin:0">Content-Type</span>
+                <select id="grpcCt" style="width:240px">
+                    <option value="application/grpc">application/grpc (标准)</option>
+                    <option selected value="application/grpc+proto">application/grpc+proto (Protobuf)</option>
+                    <option value="application/grpc-web">application/grpc-web</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <button onclick="grpcBuildMeta()">生成 gRPC 请求命令</button>
+        </div>
+
+        <div class="copy-wrap">
+            <div class="label">输出</div>
+            <button class="copy-btn" onclick="copyText('grpcMetaOutput')">复制</button>
+            <pre class="output-box" id="grpcMetaOutput"
+                 style="min-height:160px;max-height:400px;white-space:pre-wrap;word-break:break-all">点击「生成 gRPC 请求命令」查看结果</pre>
+        </div>
+    </div>
+
+    <div class="tab-content" id="grpc-tab-pb">
+        <div class="stomp-block">
+            <div class="stomp-block-title">Base64 编码 Protobuf
+                <span class="stomp-tip">来自 Wireshark / curl 抓包，可解码查看字段片段</span>
+            </div>
+            <textarea class="api-body-input" id="grpcPbInput"
+                      placeholder="CghIb2xsbyBNAAQggICA5aGm5pysf+axguaXtu+4jyA="></textarea>
+            <div class="toolbar" style="margin-top:8px;margin-bottom:0">
+                <button onclick="grpcParsePb()">解析</button>
+                <button class="outline" onclick="grpcParsePbHex()">尝试 Hex 模式</button>
+                <button class="outline" onclick="document.getElementById('grpcPbInput').value=''">清空</button>
+            </div>
+        </div>
+
+        <div class="copy-wrap">
+            <div class="label">解析结果 (Wire Format)</div>
+            <button class="copy-btn" onclick="copyText('grpcPbOutput')">复制</button>
+            <pre class="output-box" id="grpcPbOutput"
+                 style="min-height:200px;max-height:500px;white-space:pre-wrap;word-break:break-all">输入 Base64 字符串后点击「解析」</pre>
+        </div>
+    </div>
+
+    <div class="tab-content" id="grpc-tab-status">
+        <div class="grpc-status-table">
+            <table>
+                <thead>
+                <tr>
+                    <th style="width:60px">Code</th>
+                    <th style="width:200px">Name</th>
+                    <th>说明</th>
+                </tr>
+                </thead>
+                <tbody id="grpcStatusTbody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-urlparser">
+    <div class="stomp-block">
+        <div class="stomp-block-title">URL 解析</div>
+        <div class="flex gap-6 mb-8" style="align-items:center">
+            <input id="urlparserInput"
+                   placeholder="https://user:pass@example.com:8080/path/to?a=1&b=2#hash"
+                   style="flex:1" type="text">
+            <button onclick="urlParserParse()">解析</button>
+            <button class="outline" onclick="urlParserFillSample()">示例</button>
+        </div>
+        <div class="copy-wrap">
+            <div class="label">解析结果</div>
+            <button class="copy-btn" onclick="copyText('urlparserOutput')">复制</button>
+            <div class="output-box" id="urlparserOutput" style="min-height:180px">点击「解析」查看结果</div>
+        </div>
+    </div>
+
+    <div class="stomp-block">
+        <div class="stomp-block-title">URL 编码 / 解码</div>
+        <textarea class="api-body-input" id="urlEncInput"
+                  placeholder="输入待编码或待解码字符串"></textarea>
+        <div class="toolbar" style="margin-top:8px;margin-bottom:0">
+            <button onclick="urlEncEncode()">编码 (encodeURIComponent)</button>
+            <button class="outline" onclick="urlEncDecode()">解码 (decodeURIComponent)</button>
+            <button class="outline" onclick="urlEncEncodeUri()">完整 URL 编码</button>
+            <button class="outline" onclick="urlEncDecodeUri()">完整 URL 解码</button>
+        </div>
+        <div class="copy-wrap" style="margin-top:8px">
+            <div class="label">结果</div>
+            <button class="copy-btn" onclick="copyText('urlEncOutput')">复制</button>
+            <div class="output-box" id="urlEncOutput" style="min-height:80px"></div>
+        </div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-uaparser">
+    <div class="stomp-block">
+        <div class="stomp-block-title">User-Agent 字符串</div>
+        <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+            <input id="uaparserInput" placeholder="Mozilla/5.0 ..." style="flex:1;min-width:240px"
+                   type="text">
+            <button onclick="uaparserParse()">解析</button>
+            <button class="outline" onclick="uaparserUseCurrent()">使用当前浏览器</button>
+        </div>
+        <div class="flex gap-6" style="align-items:center;flex-wrap:wrap">
+            <span class="label" style="margin:0">常用 UA</span>
+            <select id="uaparserPreset" onchange="uaparserApplyPreset()" style="flex:1;min-width:200px">
+                <option value="">— 选择一个 —</option>
+                <option value="chrome">Chrome (Windows)</option>
+                <option value="firefox">Firefox (Windows)</option>
+                <option value="safari">Safari (macOS)</option>
+                <option value="edge">Edge (Windows)</option>
+                <option value="iphone">iPhone Safari</option>
+                <option value="android">Android Chrome</option>
+                <option value="googlebot">Googlebot</option>
+                <option value="wechat">微信内置</option>
+                <option value="dingtalk">钉钉</option>
+                <option value="feishu">飞书</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="copy-wrap">
+        <div class="label">解析结果</div>
+        <button class="copy-btn" onclick="copyText('uaparserOutput')">复制</button>
+        <pre class="output-box" id="uaparserOutput"
+             style="min-height:240px;max-height:500px;white-space:pre-wrap;word-break:break-all">点击「解析」查看结果</pre>
+    </div>
+</div>

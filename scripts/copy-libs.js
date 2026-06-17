@@ -15,6 +15,8 @@ const libs = [
   {src: 'sm-crypto/dist/sm2.js', dest: 'sm2.min.js'},
   {src: 'sm-crypto/dist/sm3.js', dest: 'sm3.min.js'},
   {src: 'sm-crypto/dist/sm4.js', dest: 'sm4.min.js'},
+  {src: 'ua-parser-js/dist/ua-parser.min.js', dest: 'ua-parser.min.js'},
+  {src: 'marked/marked.min.js', dest: 'marked.min.js'},
 ];
 
 // 需要 esbuild 打包为 IIFE 浏览器友好格式的库
@@ -33,6 +35,16 @@ const bundles = [
     entry: 'fast-xml-parser/src/fxp.js',
     dest: 'fxp.min.js',
     globalName: 'FXP',
+  },
+  {
+    entry: 'js-beautify/js/src/index.js',
+    dest: 'js-beautify.min.js',
+    globalName: 'Beautify',
+  },
+  {
+    entry: 'qrcode/lib/browser.js',
+    dest: 'qrcode.min.js',
+    globalName: 'QRCode',
   },
 ];
 

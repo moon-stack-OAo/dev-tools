@@ -36,6 +36,7 @@ const tools = [
     {id: 'javaescape', icon: 'bi-slash-lg', name: 'Java 转义', desc: 'Java 字符串转义 / 反转义', cat: 'encode'},
     {id: 'charset', icon: 'bi-fonts', name: '编码转换', desc: '字符编码互转 / 检测', cat: 'encode'},
     {id: 'htmlescape', icon: 'bi-filetype-html', name: 'HTML 转义', desc: 'HTML 实体编码 / 解码', cat: 'encode'},
+    {id: 'imgbase64', icon: 'bi-image', name: '图片 Base64', desc: '图片与 Base64 互转 / DataURL', cat: 'encode'},
     {id: 'jwt', icon: 'bi-key', name: 'JWT 解码', desc: '解析 JWT Header / Payload', cat: 'security'},
     {id: 'jwtgen', icon: 'bi-pen', name: 'JWT 生成', desc: 'HS256/384/512 + RS256/384/512 签名', cat: 'security'},
     {id: 'hash', icon: 'bi-hash', name: 'Hash 计算', desc: 'MD5 / SHA-1 / SHA-256 / SHA-512', cat: 'security'},
@@ -64,6 +65,10 @@ const tools = [
     {id: 'stats', icon: 'bi-bar-chart', name: '文本统计', desc: '字符 / 单词 / 行数 / 字节', cat: 'text'},
     {id: 'csv', icon: 'bi-table', name: 'CSV 格式化', desc: 'CSV 表格化查看 / 校对', cat: 'text'},
     {id: 'regexref', icon: 'bi-book', name: '正则速查表', desc: '常用正则表达式分类速查', cat: 'text'},
+    {id: 'markdown', icon: 'bi-markdown', name: 'Markdown 预览', desc: 'Markdown 实时预览 / 导出 HTML', cat: 'text'},
+    {id: 'webfmt', icon: 'bi-filetype-html', name: 'Web 格式化', desc: 'HTML / CSS / JS 格式化压缩', cat: 'text'},
+    {id: 'qrcode', icon: 'bi-qr-code', name: '二维码生成', desc: '文本 / URL 生成二维码下载', cat: 'text'},
+    {id: 'tplreplace', icon: 'bi-braces-asterisk', name: '模板替换', desc: '多种语法字符串变量替换', cat: 'text'},
     {id: 'cron', icon: 'bi-clock-history', name: 'Cron 表达式', desc: 'Cron 解析 / 下次执行时间', cat: 'debug'},
     {id: 'ws', icon: 'bi-plug', name: 'WebSocket', desc: 'WebSocket 连接调试', cat: 'debug'},
     {id: 'stomp', icon: 'bi-hdd-network', name: 'STOMP', desc: 'STOMP over WebSocket 调试', cat: 'debug'},
@@ -77,6 +82,22 @@ const tools = [
     {id: 'gitref', icon: 'bi-git', name: 'Git 命令', desc: 'Git 常用操作速查', cat: 'reference'},
     {id: 'httpstatus', icon: 'bi-info-circle', name: 'HTTP 状态码', desc: 'HTTP 状态码 / 方法速查', cat: 'reference'},
     {id: 'ascii', icon: 'bi-keyboard', name: 'ASCII 表', desc: 'ASCII / 控制字符速查', cat: 'reference'},
+    {id: 'curl', icon: 'bi-terminal', name: 'Curl 生成', desc: '生成 / 解析 curl 命令', cat: 'debug'},
+    {id: 'grpc', icon: 'bi-hdd-network', name: 'gRPC 调试', desc: 'Metadata 构造 / Protobuf 解码 / 状态码', cat: 'debug'},
+    {id: 'urlparser', icon: 'bi-link-45deg', name: 'URL 解析', desc: 'URL 拆解 / 编码解码', cat: 'debug'},
+    {id: 'uaparser', icon: 'bi-browser-chrome', name: 'UA 解析', desc: 'User-Agent 解析', cat: 'debug'},
+    {id: 'timezone', icon: 'bi-globe', name: '时区转换', desc: '跨时区时间换算', cat: 'generate'},
+    {id: 'mybatisplus', icon: 'bi-database-gear', name: 'MyBatis Plus', desc: 'MyBatis Plus 常用方法速查', cat: 'reference'},
+    {id: 'mybatissql', icon: 'bi-filetype-xml', name: 'MyBatis XML', desc: 'MyBatis 动态 SQL 标签速查', cat: 'reference'},
+    {id: 'lombok', icon: 'bi-magic', name: 'Lombok 注解', desc: 'Lombok 常用注解速查', cat: 'reference'},
+    {id: 'springboot', icon: 'bi-stars', name: 'Spring Boot 注解', desc: 'Spring Boot 常用注解速查', cat: 'reference'},
+    {id: 'txpropagation', icon: 'bi-arrow-left-right-circle', name: '事务传播', desc: 'Spring 事务传播行为速查', cat: 'reference'},
+    {id: 'mavenref', icon: 'bi-box', name: 'Maven 命令', desc: 'Maven 常用命令速查', cat: 'reference'},
+    {id: 'jdkfeatures', icon: 'bi-cup-hot', name: 'JDK 新特性', desc: 'JDK 8/11/17/21 新特性速查', cat: 'reference'},
+    {id: 'httpheader', icon: 'bi-list-columns-reverse', name: 'HTTP Header', desc: 'HTTP 通用 / 请求 / 响应头速查', cat: 'reference'},
+    {id: 'mimetype', icon: 'bi-file-earmark', name: 'MIME 类型', desc: '文件扩展名 / MIME 类型对照', cat: 'reference'},
+    {id: 'portref', icon: 'bi-plug', name: '端口号速查', desc: '常用网络服务端口号对照', cat: 'reference'},
+    {id: 'resratio', icon: 'bi-aspect-ratio', name: '分辨率计算', desc: '最简比例 / 总像素 / 标准比例匹配 / 反算', cat: 'generate'},
 ];
 
 // === Navigation ===
@@ -250,6 +271,21 @@ openTool = function (id) {
         'email': 'emailInit',
         'jwtgen': 'jwtGenInit',
         'dbtype': 'dbtypeInit',
+        'curl': 'curlInit',
+        'grpc': 'grpcInit',
+        'timezone': 'tzInit',
+        'tplreplace': 'tplInit',
+        'imgbase64': 'imgbase64Init',
+        'mybatisplus': 'mybatisplusRender',
+        'mybatissql': 'mybatissqlRender',
+        'lombok': 'lombokRender',
+        'springboot': 'springbootRender',
+        'txpropagation': 'txpropagationRender',
+        'mavenref': 'mavenrefRender',
+        'jdkfeatures': 'jdkfeaturesRender',
+        'httpheader': 'httpheaderRender',
+        'mimetype': 'mimetypeRender',
+        'portref': 'portrefRender',
     };
     const fnName = renderMap[id];
     if (fnName && typeof window[fnName] === 'function') {
@@ -262,6 +298,11 @@ loadPanels().then(() => {
     if (typeof cronInit === 'function') cronInit();
     if (typeof apiInit === 'function') apiInit();
     if (typeof tsInit === 'function') tsInit();
+    if (typeof curlInit === 'function') curlInit();
+    if (typeof grpcInit === 'function') grpcInit();
+    if (typeof tzInit === 'function') tzInit();
+    if (typeof tplInit === 'function') tplInit();
+    if (typeof imgbase64Init === 'function') imgbase64Init();
 }).catch(err => {
     const loading = document.getElementById('panels-loading');
     if (loading) loading.textContent = '工具模块加载失败: ' + err.message;

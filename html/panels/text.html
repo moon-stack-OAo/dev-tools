@@ -111,3 +111,190 @@
         <div id="regexRefContent"></div>
     </div>
 </div>
+
+<div class="tool-panel" id="panel-markdown">
+    <div class="toolbar">
+        <button onclick="mdRender()">预览</button>
+        <button class="outline" onclick="mdCopyHtml()">复制 HTML</button>
+        <button class="outline" onclick="mdExportHtml()">导出 HTML 文件</button>
+        <button class="outline" onclick="mdCopyMd()">复制 Markdown</button>
+        <button class="outline" onclick="mdClear()">清空</button>
+        <button class="outline" onclick="mdLoadSample()">加载示例</button>
+        <span style="flex:1"></span>
+        <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:4px">
+            <input checked id="mdGfm" style="accent-color:var(--accent)" type="checkbox"> GFM (表格/删除线/任务列表/自动链接)
+        </label>
+    </div>
+    <div class="md-split mb-8">
+        <div class="md-pane">
+            <div class="label">Markdown 源</div>
+            <textarea class="json-input" id="mdInput" placeholder="# Hello World&#10;&#10;**加粗**、*斜体*、`行内代码`&#10;&#10;```js&#10;console.log('hi');&#10;```&#10;&#10;- [x] 支持任务列表&#10;- [ ] 待办&#10;&#10;| 列1 | 列2 |&#10;| ---- | ---- |&#10;| A | B |"></textarea>
+        </div>
+        <div class="md-pane">
+            <div class="label">HTML 预览</div>
+            <div class="md-preview" id="mdPreview"></div>
+        </div>
+    </div>
+    <div class="md-stats" id="mdStats">
+        <span><b id="mdStatChars">0</b> 字符</span>
+        <span><b id="mdStatWords">0</b> 单词</span>
+        <span><b id="mdStatLines">0</b> 行</span>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-webfmt">
+    <div class="tab-bar">
+        <div class="tab active" onclick="webfmtSwitchTab('html')">HTML 格式化</div>
+        <div class="tab" onclick="webfmtSwitchTab('css')">CSS 格式化</div>
+        <div class="tab" onclick="webfmtSwitchTab('js')">JS 格式化</div>
+    </div>
+
+    <div class="tab-content active" id="webfmtTab-html">
+        <div class="toolbar">
+            <span class="label" style="margin:0">缩进:</span>
+            <select id="htmlfmtIndent" style="width:90px">
+                <option value="2">2 空格</option>
+                <option value="4">4 空格</option>
+            </select>
+            <button onclick="htmlfmtFormat()">格式化</button>
+            <button class="outline" onclick="htmlfmtMinify()">压缩</button>
+            <button class="outline" onclick="htmlfmtClear()">清空</button>
+        </div>
+        <div class="mb-8">
+            <div class="label">输入 HTML</div>
+            <textarea class="json-input" id="htmlfmtInput" placeholder="<div><p>hello</p><span>world</span></div>"></textarea>
+        </div>
+        <div class="copy-wrap">
+            <div class="label">输出</div>
+            <button class="copy-btn" onclick="copyText('htmlfmtOutput')">复制</button>
+            <div class="output-box" id="htmlfmtOutput"></div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="webfmtTab-css">
+        <div class="toolbar">
+            <span class="label" style="margin:0">缩进:</span>
+            <select id="cssfmtIndent" style="width:90px">
+                <option value="2">2 空格</option>
+                <option value="4">4 空格</option>
+            </select>
+            <button onclick="cssfmtFormat()">格式化</button>
+            <button class="outline" onclick="cssfmtMinify()">压缩</button>
+            <button class="outline" onclick="cssfmtClear()">清空</button>
+        </div>
+        <div class="mb-8">
+            <div class="label">输入 CSS</div>
+            <textarea class="json-input" id="cssfmtInput" placeholder=".a{color:red;background:#fff;padding:10px 20px}"></textarea>
+        </div>
+        <div class="copy-wrap">
+            <div class="label">输出</div>
+            <button class="copy-btn" onclick="copyText('cssfmtOutput')">复制</button>
+            <div class="output-box" id="cssfmtOutput"></div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="webfmtTab-js">
+        <div class="toolbar">
+            <span class="label" style="margin:0">缩进:</span>
+            <select id="jsfmtIndent" style="width:90px">
+                <option value="2">2 空格</option>
+                <option value="4">4 空格</option>
+            </select>
+            <button onclick="jsfmtFormat()">格式化</button>
+            <button class="outline" onclick="jsfmtMinify()">压缩</button>
+            <button class="outline" onclick="jsfmtClear()">清空</button>
+        </div>
+        <div class="mb-8">
+            <div class="label">输入 JS</div>
+            <textarea class="json-input" id="jsfmtInput" placeholder="function foo(a,b){return a+b}var x=foo(1,2);console.log(x);"></textarea>
+        </div>
+        <div class="copy-wrap">
+            <div class="label">输出</div>
+            <button class="copy-btn" onclick="copyText('jsfmtOutput')">复制</button>
+            <div class="output-box" id="jsfmtOutput"></div>
+        </div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-qrcode">
+    <div class="mb-8">
+        <div class="label">内容 (文本 / URL / 任意字符串)</div>
+        <textarea class="json-input" id="qrcodeInput" placeholder="https://example.com&#10;或任意文本内容"></textarea>
+    </div>
+    <div class="toolbar" onclick="document.getElementById('qrcodeOptions').classList.toggle('hidden')" style="cursor:pointer">
+        <i class="bi bi-sliders" style="color:var(--accent)"></i>
+        <span class="label" style="margin:0">选项 (点击展开)</span>
+        <span style="flex:1"></span>
+        <i class="bi bi-chevron-down" id="qrcodeChevron" style="color:var(--text-muted)"></i>
+    </div>
+    <div class="qrcode-options hidden" id="qrcodeOptions">
+        <div class="flex gap-6" style="align-items:center;flex-wrap:wrap">
+            <div>
+                <div class="label">纠错等级</div>
+                <select id="qrcodeLevel" style="width:130px">
+                    <option value="L">L (低 ~7%)</option>
+                    <option selected value="M">M (中 ~15%)</option>
+                    <option value="Q">Q (高 ~25%)</option>
+                    <option value="H">H (最高 ~30%)</option>
+                </select>
+            </div>
+            <div>
+                <div class="label">尺寸 (px)</div>
+                <input id="qrcodeSize" max="1024" min="64" step="16" style="width:90px" type="number" value="256">
+            </div>
+            <div>
+                <div class="label">边距 (quiet zone)</div>
+                <input id="qrcodeMargin" max="32" min="0" step="1" style="width:70px" type="number" value="4">
+            </div>
+            <div>
+                <div class="label">前景色</div>
+                <input id="qrcodeFg" style="width:50px;height:32px;padding:2px" type="color" value="#000000">
+                <input id="qrcodeFgText" style="width:90px;margin-left:4px" type="text" value="#000000">
+            </div>
+            <div>
+                <div class="label">背景色</div>
+                <input id="qrcodeBg" style="width:50px;height:32px;padding:2px" type="color" value="#ffffff">
+                <input id="qrcodeBgText" style="width:90px;margin-left:4px" type="text" value="#ffffff">
+            </div>
+        </div>
+    </div>
+    <div class="toolbar">
+        <button onclick="qrcodeGenerate()">生成</button>
+        <button class="outline" onclick="qrcodeDownload()">下载 PNG</button>
+        <button class="outline" onclick="qrcodeCopyImage()">复制图片</button>
+    </div>
+    <div class="qrcode-output">
+        <canvas id="qrcodeCanvas"></canvas>
+        <div class="qrcode-meta" id="qrcodeMeta"></div>
+    </div>
+</div>
+
+<div class="tool-panel" id="panel-tplreplace">
+    <div class="toolbar">
+        <span class="label" style="margin:0">语法:</span>
+        <select id="tplSyntax" style="width:180px">
+            <option value="js">${var} (JavaScript 模板)</option>
+            <option value="mybatis">#{var} (MyBatis / Thymeleaf)</option>
+            <option value="mustache">{{var}} (Mustache / Vue)</option>
+            <option value="spring">$var$ (Spring)</option>
+            <option value="ibatis">:var (iBATIS)</option>
+        </select>
+        <button onclick="tplPreview()">预览</button>
+        <button class="outline" onclick="tplCopy()">复制</button>
+        <button class="outline" onclick="tplClear()">清空</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">模板 (含变量占位符)</div>
+        <textarea class="json-input" id="tplInput" placeholder="Hello ${name}, your order #${orderId} is ${status}."></textarea>
+    </div>
+    <div class="mb-8">
+        <div class="label">变量 (key: value, 一行一对)</div>
+        <div id="tplVarsList"></div>
+        <button class="outline sm" onclick="tplAddVar()" style="margin-top:6px">+ 添加变量</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">替换结果</div>
+        <button class="copy-btn" onclick="copyText('tplOutput')">复制</button>
+        <div class="output-box tpl-output-box" id="tplOutput"></div>
+    </div>
+</div>

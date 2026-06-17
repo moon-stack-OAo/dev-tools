@@ -232,3 +232,9 @@
     font-size: 11px;
     color: var(--accent);
 }
+
+/* Timezone */
+#tzOutput {
+    background: #1a1f33;
+    color: #b5e8ff
+}

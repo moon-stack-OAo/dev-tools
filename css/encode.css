@@ -2,3 +2,112 @@
  * 当前无专属样式，复用 css/base.css 中的通用类。
  * 未来新增的编解码工具专属样式追加在此文件。
  */
+
+/* 图片 Base64 */
+.img2b64-drop {
+    margin-top: 8px;
+    border: 1.5px dashed var(--border-light);
+    border-radius: var(--radius);
+    padding: 18px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 12px;
+    transition: all .2s;
+    background: var(--bg-card);
+}
+.img2b64-drop.dragover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-glow);
+}
+
+.img2b64-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 320px;
+    overflow: auto;
+}
+
+.img2b64-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    cursor: pointer;
+    transition: border-color .15s;
+}
+.img2b64-item:hover { border-color: var(--accent); }
+.img2b64-item.active { border-color: var(--accent); background: var(--accent-glow); }
+
+.img2b64-thumb {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    background: #fff;
+    flex-shrink: 0;
+}
+
+.img2b64-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.img2b64-name {
+    color: var(--text);
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.img2b64-meta {
+    color: var(--text-muted);
+    font-size: 11px;
+    font-family: var(--font);
+}
+
+.b642img-preview {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 20px;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
+    max-height: 500px;
+}
+.b642img-preview img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+.b642img-preview .placeholder {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.b642img-meta {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    color: var(--text-dim);
+    font-family: var(--font);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+.b642img-meta b { color: var(--accent); font-weight: 600; }

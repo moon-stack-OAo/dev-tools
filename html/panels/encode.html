@@ -111,3 +111,50 @@
         <div class="output-box" id="htmlOutput"></div>
     </div>
 </div>
+
+<div class="tool-panel" id="panel-imgbase64">
+    <div class="tab-bar">
+        <div class="tab active" onclick="imgbase64SwitchTab('encode')">图片 → Base64</div>
+        <div class="tab" onclick="imgbase64SwitchTab('decode')">Base64 → 图片</div>
+    </div>
+
+    <div class="tab-content active" id="imgbase64Tab-encode">
+        <div class="mb-8">
+            <div class="label">选择 / 拖放图片 (支持多选)</div>
+            <input accept="image/*" id="img2b64File" multiple onchange="img2b64HandleFiles(this.files)" type="file">
+            <div class="img2b64-drop" id="img2b64Drop">或将图片拖到此处</div>
+        </div>
+        <div class="mb-8">
+            <div class="label">文件列表</div>
+            <div class="img2b64-list" id="img2b64List"></div>
+        </div>
+        <div class="toolbar">
+            <button onclick="img2b64CopyDataUrl()">复制 DataURL</button>
+            <button class="outline" onclick="img2b64CopyPure()">复制纯 Base64</button>
+            <button class="outline" onclick="img2b64Download()">下载 .txt</button>
+            <button class="outline" onclick="img2b64Clear()">清空</button>
+        </div>
+        <div class="copy-wrap">
+            <div class="label">当前 DataURL 输出</div>
+            <button class="copy-btn" onclick="copyText('img2b64Output')">复制</button>
+            <textarea class="output-box json-input" id="img2b64Output" readonly style="min-height:120px;max-height:280px;font-family:var(--font)"></textarea>
+        </div>
+    </div>
+
+    <div class="tab-content" id="imgbase64Tab-decode">
+        <div class="mb-8">
+            <div class="label">输入 Base64 (支持 dataURL 或纯 Base64)</div>
+            <textarea class="json-input" id="b642imgInput" placeholder="data:image/png;base64,iVBORw0KGgo...&#10;或纯 Base64 字符串"></textarea>
+        </div>
+        <div class="toolbar">
+            <button onclick="b642imgRender()">渲染</button>
+            <button class="outline" onclick="b642imgDownload()">下载图片</button>
+            <button class="outline" onclick="b642imgClear()">清空</button>
+        </div>
+        <div class="mb-8">
+            <div class="label">图片预览</div>
+            <div class="b642img-preview" id="b642imgPreview"></div>
+        </div>
+        <div class="b642img-meta" id="b642imgMeta"></div>
+    </div>
+</div>
