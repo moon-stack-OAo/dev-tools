@@ -28,6 +28,60 @@
     z-index: 1;
 }
 
+.main-header .header-home-title {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex-shrink: 0;
+    margin-right: 8px;
+}
+
+.main-header .header-home-title .hh-title {
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: .3px;
+    background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+}
+
+.main-header .header-home-title .hh-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 400;
+    line-height: 1.2;
+}
+
+.main-header .header-github {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--bg-input);
+    transition: all .15s ease;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.main-header .header-github:hover {
+    border-color: var(--accent);
+    background: var(--bg-hover);
+    color: var(--accent);
+}
+
+.main-header .header-github i {
+    font-size: 16px;
+    line-height: 1;
+}
+
 .main-header .home-btn {
     width: 34px;
     height: 34px;
@@ -50,10 +104,6 @@
     border-color: var(--accent);
     transform: translateX(-2px);
     box-shadow: 0 2px 12px rgba(0, 212, 170, .15);
-}
-
-.main-header #toolTitle {
-    flex-shrink: 0;
 }
 
 .main-header .home-search-wrap {
@@ -146,63 +196,6 @@
 .tool-panel::-webkit-scrollbar-thumb:hover {
     background: var(--text-muted);
     background-clip: content-box;
-}
-
-.home-header-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 0;
-}
-
-.home-header-row .home-titles {
-    flex: 1;
-    min-width: 0;
-}
-
-.home-header-row .home-title {
-    font-size: 22px;
-    font-weight: 800;
-    letter-spacing: .5px;
-    background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    white-space: nowrap;
-}
-
-.home-header-row .home-sub {
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-top: 4px;
-}
-
-.home-header-row .home-github {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 14px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--text);
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 600;
-    background: var(--bg-card);
-    transition: all .15s ease;
-    flex-shrink: 0;
-    white-space: nowrap;
-}
-
-.home-header-row .home-github:hover {
-    border-color: var(--accent);
-    background: var(--bg-card2);
-    color: var(--accent);
-}
-
-.home-header-row .home-github i {
-    font-size: 18px;
-    line-height: 1;
 }
 
 .home-panel .home-title {

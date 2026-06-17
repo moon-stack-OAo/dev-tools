@@ -37,13 +37,21 @@
         <div class="main-header">
             <div class="home-btn" id="homeBtn" onclick="goHome()" style="display:none" title="返回首页"><i
                     class="bi bi-chevron-left"></i></div>
+            <div class="header-home-title" id="headerHomeTitle">
+                <span class="hh-title">DevTools</span>
+                <span class="hh-sub">74 个工具 · 7 大分类 · 纯前端本地处理</span>
+            </div>
             <div class="breadcrumb" id="breadcrumb"></div>
-            <span id="toolTitle">DevTools</span>
             <div class="home-search-wrap">
                 <span class="search-icon"><i class="bi bi-search"></i></span>
                 <label for="homeSearch"></label>
                 <input id="homeSearch" oninput="filterHomeTools()" placeholder="搜索工具..." type="text">
             </div>
+            <a class="header-github" href="https://github.com/moon-stack-OAo/dev-tools" id="headerGithub"
+               rel="noopener noreferrer" target="_blank" title="查看 GitHub 仓库">
+                <i class="bi bi-github"></i>
+                <span>GitHub</span>
+            </a>
         </div>
 
         <div id="panels-loading" style="padding:60px 24px;text-align:center;color:var(--text-muted);font-size:13px">
@@ -52,16 +60,6 @@
 
         <div id="panels-container" style="display:none">
             <div class="tool-panel home-panel active" id="panel-home">
-                <div class="home-header-row">
-                    <div class="home-titles">
-                        <div class="home-title">Java 开发工具箱</div>
-                        <div class="home-sub">74 个工具 · 7 大分类 · 纯前端本地处理</div>
-                    </div>
-                    <a class="home-github" href="https://github.com/moon-stack-OAo/dev-tools" rel="noopener noreferrer" target="_blank" title="查看 GitHub 仓库">
-                        <i class="bi bi-github"></i>
-                        <span>GitHub</span>
-                    </a>
-                </div>
                 <div class="home-body">
                     <div class="home-cat-anchors" id="homeCatAnchors"></div>
                     <div class="home-grid" id="homeGrid"></div>

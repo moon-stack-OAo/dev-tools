@@ -138,7 +138,6 @@ const tools = [
 
 // === Navigation ===
 let panels = [];
-const title = document.getElementById('toolTitle');
 const homeBtn = document.getElementById('homeBtn');
 const breadcrumb = document.getElementById('breadcrumb');
 
@@ -210,7 +209,8 @@ function openTool(id) {
     document.getElementById('panel-home').classList.remove('active');
     document.getElementById('panel-' + id).classList.add('active');
     const tool = tools.find(t => t.id === id);
-    title.textContent = tool.name;
+    document.getElementById('headerHomeTitle').style.display = 'none';
+    document.getElementById('headerGithub').style.display = 'none';
     homeBtn.style.display = 'flex';
     const cat = categories.find(c => c.id === tool.cat);
     breadcrumb.innerHTML = '<span class="bc-item" onclick="goHome()">首页</span><span class="bc-sep">›</span><span class="bc-item" onclick="goHome(\'' + (cat ? cat.id : '') + '\')">' + (cat ? cat.name : '') + '</span><span class="bc-sep">›</span><span class="bc-current">' + tool.name + '</span>';
@@ -220,7 +220,8 @@ function openTool(id) {
 function goHome(catId) {
     panels.forEach(p => p.classList.remove('active'));
     document.getElementById('panel-home').classList.add('active');
-    title.textContent = 'DevTools';
+    document.getElementById('headerHomeTitle').style.display = '';
+    document.getElementById('headerGithub').style.display = '';
     homeBtn.style.display = 'none';
     breadcrumb.innerHTML = '';
     clearHomeSearch();
@@ -242,7 +243,8 @@ function filterHomeTools() {
     if (!homePanel.classList.contains('active')) {
         panels.forEach(p => p.classList.remove('active'));
         homePanel.classList.add('active');
-        title.textContent = 'DevTools';
+        document.getElementById('headerHomeTitle').style.display = '';
+        document.getElementById('headerGithub').style.display = '';
         homeBtn.style.display = 'none';
         breadcrumb.innerHTML = '';
         setStatus('就绪');
