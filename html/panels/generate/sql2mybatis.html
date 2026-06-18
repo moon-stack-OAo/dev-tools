@@ -1,0 +1,87 @@
+<div class="tool-panel" id="panel-sql2mybatis">
+    <div class="flex gap-8 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div>
+            <div class="label">生成模式</div>
+            <select id="sql2mbMode" style="min-width:160px">
+                <option value="xml">XML</option>
+                <option value="mapper">Mapper 接口</option>
+                <option selected value="both">两者都要</option>
+            </select>
+        </div>
+        <div>
+            <div class="label">返回类型</div>
+            <select id="sql2mbResultMode" style="min-width:140px">
+                <option selected value="resultMap">resultMap</option>
+                <option value="resultType">resultType</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="mb-8">
+        <div class="label">DDL (CREATE TABLE)</div>
+        <textarea class="json-input" id="sql2mbInput"
+                  placeholder="CREATE TABLE `user` (&#10;  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',&#10;  `user_name` varchar(50) DEFAULT NULL COMMENT '用户名',&#10;  `email` varchar(100) DEFAULT NULL COMMENT '邮箱',&#10;  `age` int(11) DEFAULT NULL COMMENT '年龄',&#10;  `created_at` datetime DEFAULT NULL COMMENT '创建时间',&#10;  PRIMARY KEY (`id`)&#10;) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"></textarea>
+    </div>
+
+    <div class="toolbar">
+        <button onclick="sql2mbLoadExample()">加载示例</button>
+        <button class="outline" onclick="sql2mbClearInput()">清空</button>
+    </div>
+
+    <div class="toolbar" style="flex-wrap:wrap;gap:10px 14px">
+        <div>
+            <div class="label" style="margin-bottom:3px">命名空间</div>
+            <input id="sql2mbNamespace" style="min-width:260px" type="text" value="com.example.mapper.UserMapper">
+        </div>
+        <div>
+            <div class="label" style="margin-bottom:3px">表名</div>
+            <input id="sql2mbTable" placeholder="user" style="min-width:140px" type="text">
+        </div>
+        <div>
+            <div class="label" style="margin-bottom:3px">实体类名</div>
+            <input id="sql2mbEntity" placeholder="User" style="min-width:140px" type="text">
+        </div>
+        <div>
+            <div class="label" style="margin-bottom:3px">主键字段</div>
+            <input id="sql2mbPk" placeholder="id" style="min-width:120px" type="text">
+        </div>
+        <div>
+            <div class="label" style="margin-bottom:3px">主键 JDBC 类型</div>
+            <input id="sql2mbPkJdbc" placeholder="BIGINT" style="min-width:110px" type="text">
+        </div>
+        <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-dim);align-self:flex-end;padding-bottom:6px">
+            <input checked id="sql2mbUseGen" style="accent-color:var(--accent)" type="checkbox"> useGeneratedKeys
+        </label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-dim);align-self:flex-end;padding-bottom:6px">
+            <input checked id="sql2mbUseParam" style="accent-color:var(--accent)" type="checkbox"> @Param 注解
+        </label>
+    </div>
+
+    <div class="toolbar">
+        <button onclick="sql2mbGenerate()">生成</button>
+        <button class="outline" onclick="sql2mbCopyAll()">复制全部</button>
+        <button class="outline" id="sql2mb-download" onclick="sql2mbDownloadZip()" title="将当前生成的 Mapper XML 与 Interface 打包为 ZIP 下载">
+            <i class="bi bi-file-earmark-zip"></i> 下载 ZIP
+        </button>
+        <span class="status-text" id="sql2mbStatus" style="font-size:12px;color:var(--text-muted)"></span>
+    </div>
+
+    <div class="tab-bar">
+        <div class="tab active" id="sql2mbTab-xml" onclick="sql2mbSwitchTab('xml')">Mapper XML</div>
+        <div class="tab" id="sql2mbTab-mapper" onclick="sql2mbSwitchTab('mapper')">Mapper Interface</div>
+    </div>
+
+    <div class="tab-content active" id="sql2mbTabContent-xml">
+        <div class="copy-wrap">
+            <button class="copy-btn" onclick="copyText('sql2mbXmlOutput')">复制</button>
+            <div class="output-box" id="sql2mbXmlOutput" style="min-height:240px;max-height:520px"></div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="sql2mbTabContent-mapper">
+        <div class="copy-wrap">
+            <button class="copy-btn" onclick="copyText('sql2mbJavaOutput')">复制</button>
+            <div class="output-box" id="sql2mbJavaOutput" style="min-height:240px;max-height:520px"></div>
+        </div>
+    </div>
+</div>

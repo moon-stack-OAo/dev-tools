@@ -17,6 +17,7 @@ const libs = [
   {src: 'sm-crypto/dist/sm4.js', dest: 'sm4.min.js'},
   {src: 'ua-parser-js/dist/ua-parser.min.js', dest: 'ua-parser.min.js'},
   {src: 'marked/marked.min.js', dest: 'marked.min.js'},
+  {src: 'jszip/dist/jszip.min.js', dest: 'jszip.min.js'},
 ];
 
 // 需要 esbuild 打包为 IIFE 浏览器友好格式的库

@@ -77,6 +77,7 @@ const tools = [
     {id: 'case', icon: 'bi-type', name: 'Case 转换', desc: 'camelCase / snake_case 等', cat: 'generate'},
     {id: 'jsontopojo', icon: 'bi-arrow-repeat', name: 'JSON → Java', desc: 'JSON 生成 Java POJO 类', cat: 'generate'},
     {id: 'sqltopojo', icon: 'bi-arrow-repeat', name: 'SQL → Java', desc: 'DDL 生成 MyBatis Plus 实体', cat: 'generate'},
+    {id: 'sql2mybatis', icon: 'bi-diagram-3', name: 'SQL → MyBatis', desc: 'DDL 生成 Mapper XML + Interface', cat: 'generate'},
     {id: 'datamock', icon: 'bi-people', name: '数据 Mock', desc: '生成姓名 / 手机号 / 邮箱等', cat: 'generate'},
     {id: 'datecalc', icon: 'bi-calendar', name: '日期计算器', desc: '日期加减 / 间隔 / 工作日', cat: 'generate'},
     {id: 'email', icon: 'bi-envelope', name: '邮件模板', desc: '邮件 HTML 模板生成 / 预览 / 内联 CSS', cat: 'generate'},
