@@ -2,3 +2,131 @@
  * 当前无专属样式，复用 css/base.css 中的通用类。
  * 未来新增的参考工具专属样式追加在此文件。
  */
+
+/* arthas 工具专属样式 */
+.arthas-card {
+    padding: 8px 10px 10px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    transition: background .12s, border-color .12s;
+}
+
+.arthas-card:hover {
+    border-color: var(--border-light);
+    background: var(--bg-card2);
+}
+
+.arthas-cmd-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.arthas-cmd-name {
+    background: var(--bg-input);
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--accent2);
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-family: var(--font);
+    font-weight: 600;
+}
+
+.arthas-cmd-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    flex: 1;
+    line-height: 1.5;
+    min-width: 0;
+}
+
+.arthas-scenario {
+    font-size: 11px;
+    color: var(--text-muted);
+    padding: 4px 0 0 2px;
+    line-height: 1.5;
+}
+
+.arthas-scenario::before {
+    content: '▸ ';
+    color: var(--accent);
+}
+
+.arthas-section-title {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-top: 8px;
+    margin-bottom: 4px;
+    padding-left: 2px;
+    font-weight: 600;
+}
+
+.arthas-pre {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 7px 10px;
+    margin: 4px 0 0;
+    font-family: var(--font);
+    font-size: 12px;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.55;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, .25);
+}
+
+.arthas-pre code {
+    font-family: var(--font);
+    background: transparent;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+}
+
+.arthas-pre-output {
+    background: #161a2c;
+    border-color: #232844;
+    color: var(--text-dim);
+}
+
+.arthas-copy-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: var(--bg-card2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 2px 9px;
+    font-size: 11px;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0;
+    transition: all .15s;
+    z-index: 2;
+    font-weight: 500;
+    font-family: var(--font-ui);
+    box-shadow: none;
+    line-height: 1.4;
+}
+
+.arthas-copy-btn:hover {
+    background: var(--bg-hover);
+    color: var(--accent);
+    border-color: var(--accent);
+    transform: none;
+}
+
+.arthas-copy-wrap {
+    position: relative;
+}
+
+.arthas-copy-wrap:hover .arthas-copy-btn {
+    opacity: 1;
+}

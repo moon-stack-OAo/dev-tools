@@ -1,6 +1,7 @@
 <div class="tool-panel" id="panel-linux">
-    <div class="mb-8">
+    <div class="mb-8" style="max-width:400px">
         <div class="label">Linux 命令速查 (点击复制)</div>
-        <div id="linuxContent"></div>
+        <input id="linuxSearch" oninput="linuxSearch()" placeholder="搜索命令或描述..." type="text">
     </div>
+    <div id="linuxContent"></div>
 </div>

@@ -145,7 +145,7 @@ npm run build     # 输出到 dist/
 
 | 工具        | 功能                                               |
 |-----------|--------------------------------------------------|
-| UUID 生成   | UUID v1 / v4 / v7，批量生成                           |
+| UUID 生成   | UUID v4 / v7，批量生成                                |
 | 时间戳转换     | Unix 秒 / 毫秒 ↔ 日期字符串互转，含时区与格式化选项                  |
 | Case 转换   | camelCase / PascalCase / snake_case / kebab-case |
 | 颜色转换      | HEX / RGB / HSL 互转 + 颜色预览                        |
