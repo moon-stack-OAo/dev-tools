@@ -1,0 +1,24 @@
+<div class="tool-panel" id="panel-propertiesfmt">
+    <div class="toolbar">
+        <button id="propBtnToYaml" onclick="propToYAML()">Properties → YAML</button>
+        <button class="outline" id="propBtnToProps" onclick="propToProperties()">YAML → Properties</button>
+        <label><input id="propUnicode" style="accent-color:var(--accent)" type="checkbox"> Unicode 转义</label>
+        <button class="outline" onclick="propSwap()" style="margin-left:auto">⇆ 交换</button>
+        <button class="outline" onclick="propClear()">清空</button>
+    </div>
+    <div class="mb-8" style="display:flex;gap:12px;flex-wrap:wrap">
+        <div style="flex:1;min-width:300px">
+            <div class="label" id="propInputLabel">Properties 输入</div>
+            <textarea class="json-input" id="propInput" placeholder="支持注释(#/!)、续行(\)、Unicode(\uXXXX)转义" style="min-height:280px;font-family:var(--font)"></textarea>
+        </div>
+        <div style="flex:1;min-width:300px">
+            <div class="label" id="propOutputLabel">YAML 输出</div>
+            <textarea class="json-input" id="propOutput" placeholder="转换结果" readonly style="min-height:280px;font-family:var(--font);background:var(--bg-input)"></textarea>
+        </div>
+    </div>
+    <div id="propWarning" style="display:none;padding:10px 12px;background:rgba(220,53,69,.1);border:1px solid var(--danger);border-radius:6px;color:var(--danger);font-size:13px;margin-bottom:8px"></div>
+    <div class="copy-wrap" style="display:flex;gap:8px;align-items:center">
+        <button onclick="copyText('propOutput')">复制结果</button>
+        <span id="propStats" style="color:var(--text-dim);font-size:12px;margin-left:auto"></span>
+    </div>
+</div>

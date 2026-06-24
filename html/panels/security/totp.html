@@ -1,0 +1,72 @@
+<!-- totp -->
+<div class="tool-panel" id="panel-totp">
+    <!-- A 区段：参数配置 -->
+    <div class="mb-8">
+        <div class="label">密钥 (Base32)</div>
+        <input id="totpSecret" placeholder="如：JBSWY3DPEHPK3PXP（兼容空格 / padding / 分隔符）" type="text">
+    </div>
+    <div class="mb-8" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;max-width:600px">
+        <div>
+            <div class="label">算法</div>
+            <select id="totpAlgo">
+                <option value="SHA-1">SHA-1</option>
+                <option value="SHA-256">SHA-256</option>
+                <option value="SHA-512">SHA-512</option>
+            </select>
+        </div>
+        <div>
+            <div class="label">位数</div>
+            <select id="totpDigits">
+                <option value="6">6 位</option>
+                <option value="8">8 位</option>
+            </select>
+        </div>
+        <div>
+            <div class="label">周期 (秒)</div>
+            <select id="totpPeriod">
+                <option value="30">30s</option>
+                <option value="60">60s</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- B 区段：动态码显示 -->
+    <div class="copy-wrap" style="margin-top:8px">
+        <div class="label">当前动态码</div>
+        <button class="copy-btn" onclick="totpCopy()">复制</button>
+        <div class="output-box" id="totpCode" style="font-size:48px;text-align:center;letter-spacing:12px;font-family:var(--font);min-height:80px;line-height:80px">- - - - - -</div>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:8px">
+            <div style="flex:1;height:8px;background:var(--bg-input);border-radius:4px;overflow:hidden">
+                <div id="totpProgress" style="width:0%;height:100%;background:var(--accent);transition:width 1s linear"></div>
+            </div>
+            <div id="totpCountdown" style="min-width:50px;text-align:right;color:var(--text-dim);font-size:13px">未启动</div>
+        </div>
+    </div>
+
+    <!-- C 区段：URI 解析 -->
+    <div class="mb-8" style="margin-top:16px">
+        <div class="label">otpauth:// URI 解析（兼容 Google Authenticator / Authy 二维码内容）</div>
+        <textarea id="totpUri" placeholder="otpauth://totp/GitHub:alice@github.com?secret=JBSWY3DPEHPK3PXP&amp;issuer=GitHub" rows="3"></textarea>
+    </div>
+    <div class="toolbar">
+        <button onclick="totpParseUri()">解析并填充</button>
+        <button class="outline" onclick="totpClear()" style="margin-left:auto;border-color:var(--danger);color:var(--danger)">清空全部</button>
+    </div>
+    <div class="copy-wrap" style="margin-top:8px">
+        <div class="label">解析结果</div>
+        <div class="output-box" id="totpUriResult" style="min-height:24px;white-space:pre-wrap;font-family:var(--font);font-size:13px"></div>
+    </div>
+
+    <!-- D 区段：OTP 验证 -->
+    <div class="mb-8" style="margin-top:16px;max-width:300px">
+        <div class="label">验证 OTP（±1 步时间漂移容错）</div>
+        <input id="totpInput" maxlength="8" placeholder="输入 6/8 位 OTP 码" style="letter-spacing:4px;font-family:var(--font)" type="text">
+    </div>
+    <div class="toolbar">
+        <button onclick="totpVerify()">验证</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">验证结果</div>
+        <div class="output-box" id="totpVerifyResult" style="min-height:24px;font-family:var(--font);font-size:13px"></div>
+    </div>
+</div>

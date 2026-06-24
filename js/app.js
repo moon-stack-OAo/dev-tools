@@ -32,6 +32,13 @@ const tools = [
     {id: 'json', icon: 'bi-braces', name: 'JSON 格式化', desc: '格式化 / 压缩 / 验证 JSON', cat: 'format'},
     {id: 'xml', icon: 'bi-code', name: 'XML 格式化', desc: '格式化 / 压缩 / 验证 XML', cat: 'format'},
     {id: 'yaml', icon: 'bi-filetype-yml', name: 'YAML 格式化', desc: 'YAML 格式化 / JSON 互转', cat: 'format'},
+    {
+        id: 'propertiesfmt',
+        icon: 'bi-file-earmark-text',
+        name: 'Properties 格式化',
+        desc: 'Properties ↔ YAML 互转',
+        cat: 'format'
+    },
     {id: 'sql', icon: 'bi-database', name: 'SQL 格式化', desc: 'SQL 美化 / 多方言支持', cat: 'format'},
     {
         id: 'jsonconvert',
@@ -57,6 +64,7 @@ const tools = [
     {id: 'charset', icon: 'bi-fonts', name: '编码转换', desc: '字符编码互转 / 检测', cat: 'encode'},
     {id: 'htmlescape', icon: 'bi-filetype-html', name: 'HTML 转义', desc: 'HTML 实体编码 / 解码', cat: 'encode'},
     {id: 'imgbase64', icon: 'bi-image', name: '图片 Base64', desc: '图片与 Base64 互转 / DataURL', cat: 'encode'},
+    {id: 'hex', icon: 'bi-123', name: 'Hex 编码', desc: '字符串 ↔ Hex 互转（UTF-8）', cat: 'encode'},
     {id: 'jwt', icon: 'bi-key', name: 'JWT 解码', desc: '解析 JWT Header / Payload', cat: 'security'},
     {id: 'jwtgen', icon: 'bi-pen', name: 'JWT 生成', desc: 'HS256/384/512 + RS256/384/512 签名', cat: 'security'},
     {id: 'hash', icon: 'bi-hash', name: 'Hash 计算', desc: 'MD5 / SHA-1 / SHA-256 / SHA-512', cat: 'security'},
@@ -69,18 +77,41 @@ const tools = [
     {id: 'aes', icon: 'bi-shield-check', name: 'AES 加解密', desc: 'AES 对称加密 / 解密', cat: 'security'},
     {id: 'rsa', icon: 'bi-shield-exclamation', name: 'RSA 工具', desc: '密钥生成 / 加解密 / 签名', cat: 'security'},
     {id: 'bcrypt', icon: 'bi-asterisk', name: 'bcrypt 加密', desc: 'bcrypt 哈希 / 验证', cat: 'security'},
+    {id: 'totp', icon: 'bi-stopwatch', name: 'TOTP 动态令牌', desc: 'TOTP/HOTP 本地生成 + URI 解析', cat: 'security'},
     {id: 'gmsm', icon: 'bi-flag', name: '国密 SM2/3/4', desc: '国密 SM2 公钥 / SM3 摘要 / SM4 对称', cat: 'security'},
+    {
+        id: 'pbkdf2',
+        icon: 'bi-shield-shaded',
+        name: 'PBKDF2 哈希',
+        desc: 'PBKDF2-HMAC-SHA256/512 密码哈希（标准 PHC 格式）',
+        cat: 'security'
+    },
+    {
+        id: 'certparser',
+        icon: 'bi-patch-check',
+        name: 'X.509 证书',
+        desc: 'X.509 证书 PEM/DER 解析',
+        cat: 'security'
+    },
     {id: 'uuid', icon: 'bi-fingerprint', name: 'UUID 生成', desc: 'UUID v4 / v7 / 批量生成', cat: 'generate'},
+    {id: 'snowflake', icon: 'bi-snow', name: '雪花 ID', desc: 'Snowflake / Leaf / UID 三合一生成解析', cat: 'generate'},
     {id: 'ts', icon: 'bi-clock', name: '时间戳转换', desc: 'Unix 毫秒/秒 ↔ 日期', cat: 'generate'},
     {id: 'color', icon: 'bi-palette', name: '颜色转换', desc: 'HEX / RGB / HSL 互转预览', cat: 'generate'},
     {id: 'baseconvert', icon: 'bi-calculator', name: '进制转换', desc: '2~36 进制互转', cat: 'generate'},
     {id: 'case', icon: 'bi-type', name: 'Case 转换', desc: 'camelCase / snake_case 等', cat: 'generate'},
     {id: 'jsontopojo', icon: 'bi-arrow-repeat', name: 'JSON → Java', desc: 'JSON 生成 Java POJO 类', cat: 'generate'},
     {id: 'sqltopojo', icon: 'bi-arrow-repeat', name: 'SQL → Java', desc: 'DDL 生成 MyBatis Plus 实体', cat: 'generate'},
-    {id: 'sql2mybatis', icon: 'bi-diagram-3', name: 'SQL → MyBatis', desc: 'DDL 生成 Mapper XML + Interface', cat: 'generate'},
+    {
+        id: 'sql2mybatis',
+        icon: 'bi-diagram-3',
+        name: 'SQL → MyBatis',
+        desc: 'DDL 生成 Mapper XML + Interface',
+        cat: 'generate'
+    },
     {id: 'datamock', icon: 'bi-people', name: '数据 Mock', desc: '生成姓名 / 手机号 / 邮箱等', cat: 'generate'},
     {id: 'datecalc', icon: 'bi-calendar', name: '日期计算器', desc: '日期加减 / 间隔 / 工作日', cat: 'generate'},
     {id: 'email', icon: 'bi-envelope', name: '邮件模板', desc: '邮件 HTML 模板生成 / 预览 / 内联 CSS', cat: 'generate'},
+    {id: 'qrdecode', icon: 'bi-qr-code-scan', name: '二维码解析', desc: '图片 → URL / 文本 / WiFi', cat: 'generate'},
     {id: 'diff', icon: 'bi-file-earmark-diff', name: '文本对比', desc: '文本差异对比高亮', cat: 'text'},
     {id: 'regex', icon: 'bi-asterisk', name: '正则表达式', desc: '正则匹配测试 / 分组查看', cat: 'text'},
     {id: 'stats', icon: 'bi-bar-chart', name: '文本统计', desc: '字符 / 单词 / 行数 / 字节', cat: 'text'},
@@ -99,6 +130,15 @@ const tools = [
     {id: 'jmh', icon: 'bi-speedometer2', name: 'JMH 模板', desc: 'JMH 基准测试代码生成', cat: 'reference'},
     {id: 'testgen', icon: 'bi-check2-square', name: '测试模板', desc: 'JUnit 5 + Mockito 测试生成', cat: 'reference'},
     {id: 'linux', icon: 'bi-terminal-fill', name: 'Linux 命令', desc: '常用 Linux 命令速查', cat: 'reference'},
+    {id: 'jvmargs', icon: 'bi-cpu', name: 'JVM 参数', desc: 'JVM 启动参数速查', cat: 'reference'},
+    {id: 'redisref', icon: 'bi-database-fill-gear', name: 'Redis 命令', desc: 'Redis 常用命令速查', cat: 'reference'},
+    {
+        id: 'springcloud',
+        icon: 'bi-cloud-fog2',
+        name: 'Spring Cloud',
+        desc: 'Spring Cloud Alibaba 组件速查',
+        cat: 'reference'
+    },
     {id: 'docker', icon: 'bi-box-seam', name: 'Docker 命令', desc: 'Docker / K8s 命令速查', cat: 'reference'},
     {id: 'gitref', icon: 'bi-git', name: 'Git 命令', desc: 'Git 常用操作速查', cat: 'reference'},
     {id: 'httpstatus', icon: 'bi-info-circle', name: 'HTTP 状态码', desc: 'HTTP 状态码 / 方法速查', cat: 'reference'},
@@ -132,7 +172,7 @@ const tools = [
     {id: 'springboot', icon: 'bi-stars', name: 'Spring Boot 注解', desc: 'Spring Boot 常用注解速查', cat: 'reference'},
     {
         id: 'txpropagation',
-        icon: 'bi-arrow-left-right-circle',
+        icon: 'bi-diagram-3',
         name: '事务传播',
         desc: 'Spring 事务传播行为速查',
         cat: 'reference'
@@ -146,6 +186,7 @@ const tools = [
         desc: 'HTTP 通用 / 请求 / 响应头速查',
         cat: 'reference'
     },
+    {id: 'mqref', icon: 'bi-broadcast', name: '消息中间件', desc: 'Kafka / RabbitMQ / RocketMQ 速查', cat: 'reference'},
     {id: 'mimetype', icon: 'bi-file-earmark', name: 'MIME 类型', desc: '文件扩展名 / MIME 类型对照', cat: 'reference'},
     {id: 'portref', icon: 'bi-plug', name: '端口号速查', desc: '常用网络服务端口号对照', cat: 'reference'},
     {
@@ -350,8 +391,12 @@ openTool = function (id) {
         'mavenref': 'mavenrefRender',
         'jdkfeatures': 'jdkfeaturesRender',
         'httpheader': 'httpheaderRender',
+        'mqref': 'mqrefRender',
         'mimetype': 'mimetypeRender',
         'portref': 'portrefRender',
+        'jvmargs': 'jvmargsRender',
+        'redisref': 'redisrefRender',
+        'springcloud': 'springcloudRender',
     };
     const fnName = renderMap[id];
     if (fnName && typeof window[fnName] === 'function') {
@@ -369,6 +414,11 @@ loadPanels().then(() => {
     if (typeof tzInit === 'function') tzInit();
     if (typeof tplInit === 'function') tplInit();
     if (typeof imgbase64Init === 'function') imgbase64Init();
+    if (typeof renderJvmTemplates === 'function') renderJvmTemplates();
+    if (typeof totpInit === 'function') totpInit();
+    if (typeof qrdecodeInit === 'function') qrdecodeInit();
+    if (typeof pbkdf2Init === 'function') pbkdf2Init();
+    if (typeof certparserInit === 'function') certparserInit();
 }).catch(err => {
     const loading = document.getElementById('panels-loading');
     if (loading) loading.textContent = '工具模块加载失败: ' + err.message;

@@ -1,0 +1,80 @@
+<!-- pbkdf2 -->
+<div class="tool-panel" id="panel-pbkdf2">
+    <!-- 算法选择 -->
+    <div class="mb-8">
+        <div class="label">算法</div>
+        <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+                <input checked name="pbkdf2Algo" type="radio" value="SHA-256">
+                <span>PBKDF2-HMAC-<b>SHA-256</b>（推荐，与 Java <code>PBKDF2WithHmacSHA256</code> 一致）</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+                <input name="pbkdf2Algo" type="radio" value="SHA-512">
+                <span>PBKDF2-HMAC-<b>SHA-512</b>（高安全场景）</span>
+            </label>
+        </div>
+        <div class="pbkdf2-tip" style="margin-top:6px">
+            💡 <b>OWASP 2023 推荐</b>: PBKDF2-HMAC-SHA256 + 600,000 次迭代 + 16B Salt + 32B 输出。
+            Argon2id 已列入后续增强（需 WASM 库）。
+        </div>
+    </div>
+
+    <!-- 密码 -->
+    <div class="mb-8">
+        <div class="label">密码</div>
+        <input id="pbkdf2Password" placeholder="要哈希的明文密码" type="password">
+    </div>
+
+    <!-- 参数：Salt 长度 + Iterations + 输出长度 -->
+    <div class="pbkdf2-params">
+        <div>
+            <div class="label">Salt 长度 (B)</div>
+            <input id="pbkdf2SaltLen" max="64" min="8" step="8" type="number" value="16">
+            <button class="sm outline" onclick="pbkdf2RandomSalt()" style="margin-top:6px">生成示例 Salt</button>
+            <div class="pbkdf2-salt-preview" id="pbkdf2SaltPreview"></div>
+        </div>
+        <div>
+            <div class="label">迭代次数</div>
+            <input id="pbkdf2Iterations" max="5000000" min="1000" step="1000" type="number" value="100000">
+            <div class="pbkdf2-hint">SHA-256 @ 100k ≈ 50-200ms · @ 600k ≈ 0.5-1.5s</div>
+        </div>
+        <div>
+            <div class="label">输出长度 (B)</div>
+            <input id="pbkdf2DkLen" max="128" min="16" step="8" type="number" value="32">
+            <div class="pbkdf2-hint">推荐 32B（256 bit）</div>
+        </div>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="toolbar">
+        <button onclick="pbkdf2Generate()">生成哈希</button>
+        <button class="outline" onclick="pbkdf2Clear()"
+                style="margin-left:auto;border-color:var(--danger);color:var(--danger)">清空
+        </button>
+    </div>
+
+    <!-- 结果区 -->
+    <div class="copy-wrap" style="margin-top:8px">
+        <div class="label">哈希结果（PHC 标准格式）</div>
+        <button class="copy-btn" onclick="pbkdf2Copy('phc')">复制 PHC</button>
+        <button class="copy-btn" onclick="pbkdf2Copy('hex')" style="margin-left:6px">复制 HEX</button>
+        <div class="output-box pbkdf2-output" id="pbkdf2Output" style="word-break:break-all;white-space:pre-wrap;font-family:var(--font)"></div>
+        <div class="label" style="margin-top:8px">HASH (HEX)</div>
+        <div class="output-box pbkdf2-output-hex" id="pbkdf2HashHex" style="word-break:break-all;font-family:var(--font);font-size:12px;color:var(--accent)"></div>
+        <div class="pbkdf2-meta" id="pbkdf2Meta"></div>
+    </div>
+
+    <!-- 验证区 -->
+    <div class="mb-8" style="margin-top:18px">
+        <div class="label">验证（输入密码 + 已生成的 PHC 格式字符串）</div>
+        <div class="pbkdf2-verify">
+            <input id="pbkdf2VerifyPwd" placeholder="明文密码" type="password">
+            <textarea id="pbkdf2VerifyHash" placeholder="$pbkdf2-sha256$100000$MTIzNDU2Nzg5$xxxxx（也支持手动粘贴任意 PHC 字符串）" rows="2"></textarea>
+            <div style="display:flex;gap:8px;margin-top:6px">
+                <button onclick="pbkdf2Verify()">验证上方结果</button>
+                <button class="outline" onclick="pbkdf2VerifyFormatted()">验证粘贴的 PHC</button>
+            </div>
+        </div>
+    </div>
+    <div class="output-box" id="pbkdf2VerifyOutput" style="min-height:24px;font-family:var(--font);font-size:13px"></div>
+</div>

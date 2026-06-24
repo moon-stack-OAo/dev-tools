@@ -1,17 +1,19 @@
 # Java 开发工具箱
 
-> 一个面向 Java 开发者的**纯前端**在线工具集 —— **74 个工具、7 大分类**
+> 一个面向 Java 开发者的**纯前端**在线工具集 —— **86 个工具、7 大分类**
 > ，覆盖格式化、编解码、安全、生成与转换、文本、调试、参考速查。无需后端、无需联网、无需上传数据，所有计算均在浏览器本地完成。支持
 > Vite 开发、Docker 一键部署、Nginx 静态托管，开箱即用。
 
 ## ✨ 核心特性
 
-- 🚀 **零依赖开箱即用**：纯静态 HTML / CSS / JavaScript，无任何前端框架，无构建期编译
+- 🚀 **零依赖开箱即用**：纯静态 HTML / CSS / JavaScript，无任何前端框架；业务代码无构建期编译，第三方库通过 Vite + esbuild
+  打包为 IIFE
 - 🔒 **数据 100% 本地处理**：所有计算在浏览器内完成，不会上传任何内容到服务器，支持离线使用
-- 🧰 **74 个工具 / 7 大分类**：覆盖 Java 开发日常所需，工具持续扩充
+- 🧰 **86 个工具 / 7 大分类**：覆盖 Java 开发日常所需，工具持续扩充
 - 🎨 **深色主题 + 响应式**：桌面 / 平板 / 手机均可使用
 - 🐳 **多种部署方式**：Vite 开发、Docker 容器、Nginx 静态托管
-- 📦 **依赖本地化**：15 个常用库全部内置到 `public/lib/`，断网仍可使用
+- 📦 **依赖本地化**：19 个常用库全部内置到 `public/lib/`，断网仍可使用（图标字体 `bootstrap-icons` 随 `npm install` 注入到
+  `node_modules` 后由 Vite 构建产物发布）
 
 ---
 
@@ -59,7 +61,7 @@ npm run build     # 输出到 dist/
 
 ```
 ├── index.html                      # 入口（含首页，启动时按需拉取各工具面板）
-├── html/panels/                    # 工具面板（74 个文件，每个工具一个 HTML）
+├── html/panels/                    # 工具面板（86 个文件，每个工具一个 HTML）
 │   ├── format/                     #  格式化：json / xml / yaml / sql / ...
 │   ├── encode/                     #  编解码：base64 / url / unicode / ...
 │   ├── security/                   #  安全：jwt / hash / aes / rsa / ...
@@ -86,9 +88,11 @@ npm run build     # 输出到 dist/
 │   ├── text/                       #  文本：regex / diff / markdown / ...
 │   ├── debug/                      #  调试：cron / ws / stomp / api / ...
 │   └── reference/                  #  参考：arthas / jmh / springboot / ...
-├── public/lib/                     # 本地化的第三方库（15 个，详见下方依赖列表）
+├── public/lib/                     # 本地化的第三方库（19 个，详见下方依赖列表）
 ├── scripts/
 │   └── copy-libs.js                # 从 node_modules 复制依赖到 public/lib（构建前执行）
+├── docs/                           # 开发文档（各 ticket 需求 / 设计 / 验收记录）
+├── .github/workflows/static.yml    # GitHub Pages 自动部署
 ├── package.json                    # 依赖管理与 npm 脚本
 ├── vite.config.js                  # Vite 6 配置（cache-bust + copy-js-assets 自定义插件）
 ├── Dockerfile                      # 多阶段构建：node:20-alpine → nginx:alpine
@@ -100,21 +104,22 @@ npm run build     # 输出到 dist/
 
 ## 🧰 工具列表
 
-### 一、格式化（9）
+### 一、格式化（10）
 
-| 工具          | 功能                                                            |
-|-------------|---------------------------------------------------------------|
-| JSON 格式化    | 格式化 / 压缩 / 校验 JSON，支持树形预览                                     |
-| XML 格式化     | 格式化 / 压缩 / 校验 XML                                             |
-| YAML 格式化    | YAML 格式化 / YAML↔JSON 互转                                       |
-| SQL 格式化     | SQL 美化，支持 MySQL / PostgreSQL / Oracle / SQL Server / BigQuery |
-| JSONPath    | JSONPath 表达式测试，支持实时取值与链式导航                                    |
-| JSON Schema | JSON Schema 校验与生成                                             |
-| JSON 转换     | JSON ↔ XML / YAML / CSV 互转                                    |
-| SQL 方言转     | MySQL / PostgreSQL / Oracle / SQLServer 方言互转                  |
-| DB 类型映射     | Java 数据库类型映射 + JDBC URL 生成                                    |
+| 工具             | 功能                                                            |
+|----------------|---------------------------------------------------------------|
+| JSON 格式化       | 格式化 / 压缩 / 校验 JSON，支持树形预览                                     |
+| XML 格式化        | 格式化 / 压缩 / 校验 XML                                             |
+| YAML 格式化       | YAML 格式化 / YAML↔JSON 互转                                       |
+| SQL 格式化        | SQL 美化，支持 MySQL / PostgreSQL / Oracle / SQL Server / BigQuery |
+| JSONPath       | JSONPath 表达式测试，支持实时取值与链式导航                                    |
+| JSON Schema    | JSON Schema 校验与生成                                             |
+| JSON 转换        | JSON ↔ XML / YAML / CSV 互转                                    |
+| SQL 方言转        | MySQL / PostgreSQL / Oracle / SQLServer 方言互转                  |
+| DB 类型映射        | Java 数据库类型映射 + JDBC URL 生成                                    |
+| Properties 格式化 | `.properties` 配置文件格式化、键值排序、转义                                 |
 
-### 二、编解码（7）
+### 二、编解码（8）
 
 | 工具        | 功能                                            |
 |-----------|-----------------------------------------------|
@@ -125,38 +130,45 @@ npm run build     # 输出到 dist/
 | 字符集转换     | UTF-8 / GBK / Shift-JIS 等编码互转与检测              |
 | HTML 转义   | HTML 实体编码与解码                                  |
 | 图片 Base64 | 图片 ↔ Base64 互转，支持预览与下载                        |
+| Hex 编码    | 文本与十六进制互转，支持 UTF-8 / GBK 字符集                  |
 
-### 三、安全（10）
+### 三、安全（13）
 
-| 工具      | 功能                                         |
-|---------|--------------------------------------------|
-| JWT 解码  | 解析 JWT Header、Payload、签名、过期时间              |
-| Hash 计算 | MD5 / SHA-1 / SHA-256 / SHA-512            |
-| 随机生成器   | 随机密码（可选字符集）、Hex Token、PIN                  |
-| AES 加解密 | AES-CBC / GCM 加密解密，PBKDF2 密钥派生             |
-| RSA 工具  | RSA 密钥对生成（1024/2048/4096）、加解密、签名验签         |
-| HMAC    | HMAC-SHA1 / SHA256 / SHA512 消息认证码计算        |
-| JWT 生成  | 自定义 Payload 一键生成 JWT（含 HS256 签名）           |
-| Bcrypt  | Bcrypt 哈希与校验（成本因子可调）                       |
-| 国密 SM   | SM2 / SM3 / SM4 加解密、签名验签                   |
-| Hash 扩展 | 支持更多哈希算法（CRC32 / RIPEMD160 / MurmurHash 等） |
+| 工具        | 功能                                                                        |
+|-----------|---------------------------------------------------------------------------|
+| JWT 解码    | 解析 JWT Header、Payload、签名、过期时间                                             |
+| Hash 计算   | MD5 / SHA-1 / SHA-256 / SHA-512                                           |
+| 随机生成器     | 随机密码（可选字符集）、Hex Token、PIN                                                 |
+| AES 加解密   | AES-CBC / GCM 加密解密，PBKDF2 密钥派生                                            |
+| RSA 工具    | RSA 密钥对生成（1024/2048/4096）、加解密、签名验签                                        |
+| HMAC      | HMAC-MD5 / SHA-1 / SHA-256 / SHA-384 / SHA-512 消息认证码计算                    |
+| JWT 生成    | 自定义 Payload 一键生成 JWT，支持 HS256/HS384/HS512（HMAC）+ RS256/RS384/RS512（RSA）签名 |
+| Bcrypt    | Bcrypt 哈希与校验（成本因子可调）                                                      |
+| 国密 SM     | 国密 SM2 公钥密码 / SM3 摘要 / SM4 对称加密（含签名验签）                                    |
+| Hash 扩展   | 支持更多哈希算法（CRC32 / CRC32C / Adler32 / SHA-3 系列（256/384/512）/ SM3）           |
+| TOTP 动态令牌 | RFC 6238 TOTP / RFC 4226 HOTP 二维码生成与码值计算                                  |
+| PBKDF2 哈希 | PBKDF2-HMAC-SHA1/SHA256/SHA512 密钥派生 + PHC 格式                              |
+| X.509 证书  | 解析证书主体/签发者/SAN/指纹/有效期/链，DER↔PEM 互转                                        |
 
-### 四、生成与转换（12）
+### 四、生成与转换（15）
 
-| 工具        | 功能                                               |
-|-----------|--------------------------------------------------|
-| UUID 生成   | UUID v4 / v7，批量生成                                |
-| 时间戳转换     | Unix 秒 / 毫秒 ↔ 日期字符串互转，含时区与格式化选项                  |
-| Case 转换   | camelCase / PascalCase / snake_case / kebab-case |
-| 颜色转换      | HEX / RGB / HSL 互转 + 颜色预览                        |
-| 进制转换      | 2~36 进制互转，Dec→Hex/Bin/Oct 快捷按钮                   |
-| JSON→POJO | JSON 生成 Java POJO 类（支持 Lombok @Data）             |
-| SQL→POJO  | DDL 建表语句生成 MyBatis Plus 实体                       |
-| 数据 Mock   | 姓名 / 手机号 / 邮箱 / 身份证 / 地址等模拟数据批量生成                |
-| 日期计算器     | 日期加减 / 日期间隔 / 工作日统计 + 时间戳互转                      |
-| 邮件模板      | 5 套邮件 HTML 模板，填变量实时预览 + 一键内联 CSS                 |
-| 时区转换      | 全球时区互转 + 夏令时感知                                   |
-| 分辨率计算     | 屏幕分辨率 DPI / 物理尺寸 / 对角线换算                         |
+| 工具          | 功能                                                        |
+|-------------|-----------------------------------------------------------|
+| UUID 生成     | UUID v4 / v7，批量生成                                         |
+| 时间戳转换       | Unix 秒 / 毫秒 ↔ 日期字符串互转，含时区与格式化选项                           |
+| Case 转换     | camelCase / PascalCase / snake_case / kebab-case          |
+| 颜色转换        | HEX / RGB / HSL 互转 + 颜色预览                                 |
+| 进制转换        | 2~36 进制互转，Dec→Hex/Bin/Oct 快捷按钮                            |
+| JSON→POJO   | JSON 生成 Java POJO 类（支持 Lombok @Data）                      |
+| SQL→POJO    | DDL 建表语句生成 MyBatis Plus 实体                                |
+| 数据 Mock     | 姓名 / 手机号 / 邮箱 / 身份证 / 地址等模拟数据批量生成                         |
+| 日期计算器       | 日期加减 / 日期间隔 / 工作日统计 + 时间戳互转                               |
+| 邮件模板        | 5 套邮件 HTML 模板，填变量实时预览 + 一键内联 CSS                          |
+| 时区转换        | 全球时区互转 + 夏令时感知                                            |
+| 分辨率计算       | 屏幕分辨率 DPI / 物理尺寸 / 对角线换算                                  |
+| 雪花 ID       | Twitter Snowflake / 百度 UID-Generator 分布式 ID 生成与解析         |
+| SQL→MyBatis | DDL 建表语句生成 MyBatis @Select/@Insert/@Update/@Delete Mapper |
+| 二维码解析       | 上传图片识别二维码内容（基于 jsQR）                                      |
 
 ### 五、文本（9）
 
@@ -186,7 +198,7 @@ npm run build     # 输出到 dist/
 | URL 解析    | URL 各组成部分解析（协议 / 域名 / 端口 / 路径 / 参数）                                  |
 | UA 解析     | User-Agent 解析：浏览器、操作系统、设备类型                                          |
 
-### 七、参考（18）
+### 七、参考（22）
 
 | 工具           | 功能                                                        |
 |--------------|-----------------------------------------------------------|
@@ -208,6 +220,10 @@ npm run build     # 输出到 dist/
 | HTTP Header  | HTTP 常用请求头 / 响应头速查                                        |
 | MIME Type    | 常见 MIME 类型对照表                                             |
 | 端口速查         | 常用服务默认端口速查（HTTP / SSH / MySQL / Redis 等）                  |
+| JVM 参数       | 常用 JVM 启动参数与 GC 调优速查                                      |
+| Redis 命令     | Redis 常用命令分类速查（String/Hash/List/Set/ZSet 等）               |
+| Spring Cloud | Spring Cloud Alibaba / Netflix 核心组件速查                     |
+| 消息中间件        | Kafka / RabbitMQ / RocketMQ 命令与配置速查                       |
 
 ---
 
@@ -240,6 +256,8 @@ npm run build     # 输出到 dist/
 - **自定义插件**：
     - `cache-bust`：为 JS / CSS 自动追加 `?v=时间戳`，避免缓存
     - `copy-js-assets`：构建时将 `js/` 和 `html/` 目录同步到 `dist/`
+    - `remove-github-link`：从生产构建产物中移除 GitHub 入口链接
+    - `inject-devtools-flag`：注入 `__DEV__` 全局标识，便于工具按环境降级
 
 ### 部署方式
 
@@ -265,25 +283,29 @@ Chrome / Firefox / Edge / Safari 现代浏览器（支持 ES2020+ 语法）。
 
 所有第三方库已下载到 `public/lib/`，构建时随静态资源一起发布，**无需联网即可使用**。
 
-| #  | 库               | 用途                    |
-|----|-----------------|-----------------------|
-| 1  | ajv             | JSON Schema 校验        |
-| 2  | bcryptjs        | Bcrypt 哈希加盐           |
-| 3  | blueimp-md5     | MD5 计算                |
-| 4  | diff            | 文本差异对比                |
-| 5  | fast-xml-parser | XML 解析与生成             |
-| 6  | js-beautify     | HTML / CSS / JS 美化    |
-| 7  | js-yaml         | YAML 解析与生成            |
-| 8  | jsonpath-plus   | JSONPath 查询           |
-| 9  | marked          | Markdown 渲染           |
-| 10 | qrcode          | 二维码生成                 |
-| 11 | sm-crypto       | 国密 SM2 / SM3 / SM4    |
-| 12 | sql-formatter   | SQL 美化与方言转换           |
-| 13 | ua-parser-js    | User-Agent 解析         |
-| 14 | md5（blueimp）    | MD5（备用）               |
-| 15 | 上述依赖的 min 版     | 生产环境使用 `.min.js` 减小体积 |
+| #  | 库               | 用途                 |
+|----|-----------------|--------------------|
+| 1  | ajv             | JSON Schema 校验     |
+| 2  | asn1js          | X.509 证书 ASN.1 解码  |
+| 3  | bcryptjs        | Bcrypt 哈希加盐        |
+| 4  | blueimp-md5     | MD5 计算             |
+| 5  | diff            | 文本差异对比             |
+| 6  | fast-xml-parser | XML 解析与生成          |
+| 7  | js-beautify     | HTML / CSS / JS 美化 |
+| 8  | jsqr            | 二维码识别              |
+| 9  | js-yaml         | YAML 解析与生成         |
+| 10 | jszip           | ZIP 文件处理（辅助二维码识别）  |
+| 11 | jsonpath-plus   | JSONPath 查询        |
+| 12 | marked          | Markdown 渲染        |
+| 13 | pkijs           | X.509 证书高级 API     |
+| 14 | qrcode          | 二维码生成              |
+| 15 | sm-crypto       | 国密 SM2 / SM3 / SM4 |
+| 16 | sql-formatter   | SQL 美化与方言转换        |
+| 17 | ua-parser-js    | User-Agent 解析      |
+| 18 | 上述依赖的 .min 版    | 生产环境使用压缩版减小体积      |
 
-> 💡 **新增依赖**：通过 `npm i xxx` 安装后，执行 `node scripts/copy-libs.js` 即可同步到 `public/lib/`，无需修改构建配置。
+> 💡 **依赖管理**：`npm install` 会自动触发 `postinstall` 钩子同步依赖到 `public/lib/`；新增依赖后也可手动执行
+`npm run copy-libs`。
 
 ---
 

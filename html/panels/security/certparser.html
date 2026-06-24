@@ -1,0 +1,32 @@
+<!-- certparser -->
+<div class="tool-panel" id="panel-certparser">
+    <div class="certparser-tip">
+        💡 <b>X.509 证书解析</b>：粘贴 PEM 文本或输入 DER 十六进制，自动解析证书主题、颁发者、有效期、SAN、Key Usage、CRL 分发点等。
+        完全本地运行，证书数据<b>不会上传</b>到任何服务器。
+    </div>
+
+    <!-- 输入区 -->
+    <div class="mb-8">
+        <div class="label">证书输入（PEM / DER HEX）</div>
+        <textarea id="certparserInput" placeholder="粘贴 -----BEGIN CERTIFICATE----- 块，或直接输入 DER 十六进制字符串（30 82 xx ...）" rows="10"
+                  spellcheck="false"></textarea>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="toolbar" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <button onclick="certparserParse()">解析</button>
+        <button class="outline" onclick="certparserClear()">清空</button>
+        <span style="margin-left:12px;font-size:12px;color:var(--text-dim)">示例：</span>
+        <button class="sm outline" onclick="certparserLoadSample('letsencrypt')">Let's Encrypt 根</button>
+        <button class="sm outline" onclick="certparserLoadSample('github')">GitHub.com</button>
+        <button class="sm outline" onclick="certparserLoadSample('baidu')">Baidu.com（多 SAN）</button>
+    </div>
+
+    <!-- 元信息 -->
+    <div class="certparser-meta" id="certparserMeta"></div>
+
+    <!-- 结果卡片区 -->
+    <div class="certparser-results" id="certparserResults">
+        <div class="certparser-empty">解析结果将在这里显示</div>
+    </div>
+</div>

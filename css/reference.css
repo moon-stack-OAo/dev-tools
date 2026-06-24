@@ -1,4 +1,4 @@
-/* 参考工具：arthas / jmh / testgen / linux / docker / gitref / httpstatus / ascii
+/* 参考工具：arthas / jmh / testgen / linux / docker / gitref / httpstatus / ascii / springcloud
  * 当前无专属样式，复用 css/base.css 中的通用类。
  * 未来新增的参考工具专属样式追加在此文件。
  */
@@ -129,4 +129,303 @@
 
 .arthas-copy-wrap:hover .arthas-copy-btn {
     opacity: 1;
+}
+
+/* Redis 命令速查 */
+.redisref-card {
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    transition: background .12s, border-color .12s;
+    position: relative;
+}
+
+.redisref-card:hover {
+    border-color: var(--border-light);
+    background: var(--bg-card2);
+}
+
+.redisref-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.redisref-cmd {
+    background: var(--bg-input);
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--accent2);
+    white-space: nowrap;
+    font-family: var(--font);
+    font-weight: 600;
+}
+
+.redisref-complexity {
+    font-size: 11px;
+    color: var(--text-muted);
+    padding: 2px 6px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    font-family: var(--font);
+}
+
+.redisref-copy-btn {
+    margin-left: auto;
+    background: var(--bg-card2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 2px 9px;
+    font-size: 11px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all .15s;
+    font-family: var(--font-ui);
+}
+
+.redisref-copy-btn:hover {
+    background: var(--bg-hover);
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.redisref-syntax {
+    font-family: var(--font);
+    font-size: 12px;
+    color: var(--text);
+    padding: 4px 8px;
+    background: var(--bg-input);
+    border-radius: 3px;
+    margin: 4px 0;
+    overflow-x: auto;
+}
+
+.redisref-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin: 4px 0;
+}
+
+.redisref-examples {
+    margin: 4px 0;
+}
+
+.redisref-ex {
+    font-family: var(--font);
+    font-size: 11px;
+    color: var(--accent2);
+    background: rgba(0, 0, 0, .15);
+    padding: 3px 8px;
+    border-radius: 3px;
+    margin: 2px 0;
+    overflow-x: auto;
+}
+
+.redisref-returns {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+button.active {
+    background: var(--accent) !important;
+    color: white !important;
+    border-color: var(--accent) !important;
+}
+
+/* Spring Cloud 组件速查 */
+.springcloud-card {
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    transition: background .12s, border-color .12s;
+    position: relative;
+}
+
+.springcloud-card:hover {
+    border-color: var(--border-light);
+    background: var(--bg-card2);
+}
+
+.springcloud-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.springcloud-key {
+    background: var(--bg-input);
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--accent2);
+    white-space: nowrap;
+    font-family: var(--font);
+    font-weight: 600;
+}
+
+.springcloud-type {
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-family: var(--font-ui);
+    border: 1px solid;
+}
+
+.springcloud-type-注解 {
+    color: #a78bfa;
+    border-color: rgba(167, 139, 250, .4);
+    background: rgba(167, 139, 250, .08);
+}
+
+.springcloud-type-配置项 {
+    color: #34d399;
+    border-color: rgba(52, 211, 153, .4);
+    background: rgba(52, 211, 153, .08);
+}
+
+.springcloud-type-概念 {
+    color: #fbbf24;
+    border-color: rgba(251, 191, 36, .4);
+    background: rgba(251, 191, 36, .08);
+}
+
+.springcloud-type-组件 {
+    color: #60a5fa;
+    border-color: rgba(96, 165, 250, .4);
+    background: rgba(96, 165, 250, .08);
+}
+
+.springcloud-copy-btn {
+    margin-left: auto;
+    background: var(--bg-card2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 2px 9px;
+    font-size: 11px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all .15s;
+    font-family: var(--font-ui);
+}
+
+.springcloud-copy-btn:hover {
+    background: var(--bg-hover);
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.springcloud-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin: 4px 0;
+}
+
+.springcloud-example {
+    font-family: var(--font);
+    font-size: 11px;
+    color: var(--text);
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 7px 10px;
+    margin: 6px 0 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.5;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, .25);
+}
+
+/* 消息中间件速查（Kafka / RabbitMQ / RocketMQ）*/
+.mqref-card {
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    transition: background .12s, border-color .12s;
+    position: relative;
+}
+
+.mqref-card:hover {
+    border-color: var(--border-light);
+    background: var(--bg-card2);
+}
+
+.mqref-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.mqref-key {
+    background: var(--bg-input);
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--accent2);
+    white-space: nowrap;
+    font-family: var(--font);
+    font-weight: 600;
+}
+
+.mqref-type {
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-family: var(--font-ui);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    background: var(--bg-input);
+}
+
+.mqref-copy-btn {
+    margin-left: auto;
+    background: var(--bg-card2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 2px 9px;
+    font-size: 11px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all .15s;
+    font-family: var(--font-ui);
+}
+
+.mqref-copy-btn:hover {
+    background: var(--bg-hover);
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.mqref-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin: 4px 0;
+}
+
+.mqref-example {
+    font-family: var(--font);
+    font-size: 11px;
+    color: var(--text);
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 7px 10px;
+    margin: 6px 0 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.5;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, .25);
 }

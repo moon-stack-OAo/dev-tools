@@ -1,0 +1,17 @@
+<div class="tool-panel" id="panel-redisref">
+    <div class="mb-8" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <input id="redisrefSearch" oninput="redisrefSearch()" placeholder="搜索命令、语法、示例、返回值..." style="flex:1;max-width:400px"
+               type="text">
+        <div id="redisrefTabs" style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="sm outline active" data-cat="all" onclick="redisrefFilter('all')">全部</button>
+            <button class="sm outline" data-cat="String" onclick="redisrefFilter('String')">String</button>
+            <button class="sm outline" data-cat="Hash" onclick="redisrefFilter('Hash')">Hash</button>
+            <button class="sm outline" data-cat="List" onclick="redisrefFilter('List')">List</button>
+            <button class="sm outline" data-cat="Set" onclick="redisrefFilter('Set')">Set</button>
+            <button class="sm outline" data-cat="Sorted Set" onclick="redisrefFilter('Sorted Set')">Sorted Set</button>
+            <button class="sm outline" data-cat="通用" onclick="redisrefFilter('通用')">通用</button>
+            <button class="sm outline" data-cat="集群" onclick="redisrefFilter('集群')">集群</button>
+        </div>
+    </div>
+    <div id="redisrefContent"></div>
+</div>

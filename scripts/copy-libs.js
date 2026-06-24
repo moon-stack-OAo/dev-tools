@@ -18,6 +18,7 @@ const libs = [
   {src: 'ua-parser-js/dist/ua-parser.min.js', dest: 'ua-parser.min.js'},
   {src: 'marked/marked.min.js', dest: 'marked.min.js'},
   {src: 'jszip/dist/jszip.min.js', dest: 'jszip.min.js'},
+  {src: 'jsqr/dist/jsQR.js', dest: 'jsqr.min.js'},
 ];
 
 // 需要 esbuild 打包为 IIFE 浏览器友好格式的库
@@ -46,6 +47,18 @@ const bundles = [
     entry: 'qrcode/lib/browser.js',
     dest: 'qrcode.min.js',
     globalName: 'QRCode',
+  },
+  {
+    // T8 X.509 证书解析：ASN.1 解码库
+    entry: 'asn1js/build/index.es.js',
+    dest: 'asn1js.min.js',
+    globalName: 'ASN1',
+  },
+  {
+    // T8 X.509 证书解析：PKI/X.509 高级 API
+    entry: 'pkijs/build/index.es.js',
+    dest: 'pkijs.min.js',
+    globalName: 'PKI',
   },
 ];
 

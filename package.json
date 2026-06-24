@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "ajv": "^8.20.0",
+    "asn1js": "^3.0.10",
     "bcryptjs": "^2.4.3",
     "blueimp-md5": "^2.19.0",
     "bootstrap-icons": "^1.13.1",
@@ -21,8 +22,10 @@
     "js-beautify": "^1.15.4",
     "js-yaml": "^4.1.0",
     "jsonpath-plus": "^9.0.0",
+    "jsqr": "^1.4.0",
     "jszip": "^3.10.1",
     "marked": "^12.0.2",
+    "pkijs": "^3.4.0",
     "qrcode": "^1.5.4",
     "sm-crypto": "^0.3.14",
     "sql-formatter": "^15.4.0",

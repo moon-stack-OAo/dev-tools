@@ -1,0 +1,35 @@
+<!-- 二维码解析 -->
+<div class="tool-panel" id="panel-qrdecode">
+    <div class="qrdecode-layout">
+        <div>
+            <div class="label">上传图片</div>
+            <div class="qrdecode-drop" id="qrdecodeDrop">
+                <input accept="image/*" id="qrdecodeFile" style="display:none" type="file">
+                <div class="qrdecode-drop-icon">
+                    <i class="bi bi-cloud-arrow-up"></i>
+                </div>
+                <div class="qrdecode-drop-title">点击 / 拖拽 / 粘贴图片</div>
+                <div class="qrdecode-drop-hint">支持 PNG / JPG / WebP / GIF（仅第一帧）</div>
+                <button class="sm" onclick="document.getElementById('qrdecodeFile').click()" type="button">选择文件</button>
+            </div>
+            <div class="qrdecode-meta" id="qrdecodeMeta">等待上传</div>
+        </div>
+        <div>
+            <div class="label">预览 / 解析结果</div>
+            <div class="qrdecode-preview" id="qrdecodePreview">
+                <div class="qrdecode-empty">等待上传图片</div>
+            </div>
+            <div id="qrdecodeResult" style="margin-top:10px"></div>
+        </div>
+    </div>
+    <div class="toolbar" style="margin-top:12px">
+        <button class="outline" onclick="qrdecodeClear()"
+                style="margin-left:auto;border-color:var(--danger);color:var(--danger)">清空
+        </button>
+    </div>
+    <div class="qrdecode-tip">
+        💡 <b>完全本地</b>：图片仅在你的浏览器内处理，不会上传到任何服务器。<br>
+        💡 <b>解析失败？</b>尝试更清晰的图片 / 裁剪掉多余边框 / 确认二维码未严重变形。<br>
+        💡 <b>解析到 otpauth:// URI</b>？跳转到「TOTP 动态令牌」即可直接生成动态码。
+    </div>
+</div>

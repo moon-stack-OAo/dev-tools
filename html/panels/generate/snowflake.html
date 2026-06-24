@@ -1,0 +1,56 @@
+<div class="tool-panel" id="panel-snowflake">
+    <div class="toolbar">
+        <div>
+            <div class="label">算法</div>
+            <select id="sfAlgorithm" style="width:180px">
+                <option value="twitter">Twitter Snowflake</option>
+                <option value="leaf">美团 Leaf</option>
+                <option value="baidu">百度 UID</option>
+            </select>
+        </div>
+        <div>
+            <div class="label">Worker ID (0~31)</div>
+            <input id="sfWorkerId" max="31" min="0" style="width:80px" type="number" value="0">
+        </div>
+        <div>
+            <div class="label">DataCenter ID (0~31)</div>
+            <input id="sfDcId" max="31" min="0" style="width:80px" type="number" value="0">
+        </div>
+        <div style="flex:1;min-width:200px">
+            <div class="label">Epoch (毫秒，可选，仅 Twitter)</div>
+            <input id="sfEpoch" placeholder="1288834974657 = Twitter 默认" style="width:100%" type="text">
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <button onclick="sfGenerate(1)">生成 1 个</button>
+        <button class="outline" onclick="sfGenerate(10)">生成 10 个</button>
+        <button class="outline" onclick="sfGenerate(100)">生成 100 个</button>
+        <button class="outline" onclick="sfGenerate(1000)">生成 1000 个</button>
+        <button class="outline" onclick="sfCopyAll()" style="margin-left:auto">复制全部</button>
+        <button class="outline" onclick="sfExportCSV()">导出 CSV</button>
+        <button class="outline" onclick="sfClear()"
+                style="border-color:var(--danger);color:var(--danger)">清空
+        </button>
+    </div>
+
+    <div class="mb-8" style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px">
+        <div class="label">最新生成的 ID</div>
+        <div id="sfLatest" style="font-family:var(--font);color:var(--accent);font-size:15px;word-break:break-all;margin-top:2px">-</div>
+        <div id="sfLatestMeta" style="font-size:11px;color:var(--text-dim);margin-top:4px">尚未生成</div>
+    </div>
+
+    <div class="label">历史记录（最近 20 条）</div>
+    <div class="uuid-list" id="sfList">
+        <div data-empty style="color:var(--text-dim);font-size:13px;padding:8px 0">点击按钮生成 ID</div>
+    </div>
+
+    <div class="toolbar" style="margin-top:14px">
+        <input id="sfParseInput" placeholder="粘贴 ID 反向解析（纯数字自动按上方算法解析，含字母按 Base36 解析）" style="flex:1;min-width:240px" type="text">
+        <button onclick="sfParseInput()">解析</button>
+    </div>
+    <div class="copy-wrap" style="margin-top:8px">
+        <div class="label">解析结果</div>
+        <div class="output-box" id="sfParseOutput">请粘贴 ID 后点击「解析」</div>
+    </div>
+</div>
