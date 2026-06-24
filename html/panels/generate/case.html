@@ -1,15 +1,26 @@
 <div class="tool-panel" id="panel-case">
     <div class="mb-8">
-        <div class="label">输入文本</div>
-        <textarea class="json-input" id="caseInput" placeholder="hello world from Java"></textarea>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <div class="label" style="margin-bottom:0">输入文本</div>
+        </div>
+        <textarea class="json-input" id="caseInput" placeholder="hello world"></textarea>
     </div>
     <div class="toolbar">
+        <label>驼峰式</label>
         <button onclick="caseConvert('camel')">camelCase</button>
         <button class="outline" onclick="caseConvert('pascal')">PascalCase</button>
+
+        <label>下划线式</label>
         <button class="outline" onclick="caseConvert('snake')">snake_case</button>
-        <button class="outline" onclick="caseConvert('kebab')">kebab-case</button>
         <button class="outline" onclick="caseConvert('upper')">UPPER_CASE</button>
+
+        <label>连接符式</label>
+        <button class="outline" onclick="caseConvert('kebab')">kebab-case</button>
         <button class="outline" onclick="caseConvert('lower')">lower case</button>
+
+        <label>示例</label>
+        <button class="outline" onclick="caseLoadExample()">加载示例文本</button>
+        <button class="outline" onclick="caseClearText()">清空文本</button>
     </div>
     <div class="copy-wrap">
         <div class="label">输出</div>
