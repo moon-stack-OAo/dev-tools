@@ -31,35 +31,48 @@ console.log(greet('World'));
 > 提示：上方勾选/取消 **GFM** 开关可观察差异。`;
 
 let mdDebounceTimer = null;
+let mdInited = false;
+let mdInputEl, mdPreviewEl, mdGfmEl, mdStatCharsEl, mdStatWordsEl, mdStatLinesEl;
+
+// 面板首次打开时缓存 DOM 引用并绑定 scoped 监听器（替代原先挂在 document 上的全局 input 代理）
+function mdInit() {
+    if (mdInited) return;
+    mdInputEl = document.getElementById('mdInput');
+    mdPreviewEl = document.getElementById('mdPreview');
+    mdGfmEl = document.getElementById('mdGfm');
+    mdStatCharsEl = document.getElementById('mdStatChars');
+    mdStatWordsEl = document.getElementById('mdStatWords');
+    mdStatLinesEl = document.getElementById('mdStatLines');
+    if (mdInputEl) mdInputEl.addEventListener('input', mdOnInput);
+    if (mdGfmEl) mdGfmEl.addEventListener('change', mdRender);
+    mdInited = true;
+}
 
 function mdRender() {
-    const input = document.getElementById('mdInput').value;
-    const preview = document.getElementById('mdPreview');
-    const gfm = document.getElementById('mdGfm').checked;
+    const input = mdInputEl.value;
     if (typeof marked === 'undefined') {
-        preview.textContent = 'marked 库未加载';
-        preview.style.color = 'var(--danger)';
+        mdPreviewEl.textContent = 'marked 库未加载';
+        mdPreviewEl.style.color = 'var(--danger)';
+        mdUpdateStats(input);
         return;
     }
     try {
-        const html = marked.parse(input, {gfm, breaks: false});
-        preview.innerHTML = html;
-        preview.style.color = '';
+        const html = marked.parse(input, {gfm: mdGfmEl.checked, breaks: false});
+        mdPreviewEl.innerHTML = html;
+        mdPreviewEl.style.color = '';
         setStatus('Markdown 渲染完成');
     } catch (e) {
-        preview.textContent = '渲染失败: ' + e.message;
-        preview.style.color = 'var(--danger)';
+        mdPreviewEl.textContent = '渲染失败: ' + e.message;
+        mdPreviewEl.style.color = 'var(--danger)';
     }
-    mdUpdateStats();
+    mdUpdateStats(input);
 }
 
-function mdUpdateStats() {
-    const v = document.getElementById('mdInput').value;
-    document.getElementById('mdStatChars').textContent = v.length;
-    const words = (v.match(/[\w\u4e00-\u9fa5]+/g) || []).length;
-    document.getElementById('mdStatWords').textContent = words;
-    const lines = v ? v.split('\n').length : 0;
-    document.getElementById('mdStatLines').textContent = lines;
+function mdUpdateStats(v) {
+    if (v === undefined) v = mdInputEl.value;
+    mdStatCharsEl.textContent = v.length;
+    mdStatWordsEl.textContent = (v.match(/[\w\u4e00-\u9fa5]+/g) || []).length;
+    mdStatLinesEl.textContent = v ? v.split('\n').length : 0;
 }
 
 function mdOnInput() {
@@ -68,7 +81,7 @@ function mdOnInput() {
 }
 
 function mdCopyHtml() {
-    const html = document.getElementById('mdPreview').innerHTML;
+    const html = mdPreviewEl.innerHTML;
     if (!html) {
         toast('暂无渲染内容');
         return;
@@ -77,7 +90,7 @@ function mdCopyHtml() {
 }
 
 function mdCopyMd() {
-    const md = document.getElementById('mdInput').value;
+    const md = mdInputEl.value;
     if (!md) {
         toast('暂无 Markdown 内容');
         return;
@@ -86,7 +99,7 @@ function mdCopyMd() {
 }
 
 function mdExportHtml() {
-    const body = document.getElementById('mdPreview').innerHTML;
+    const body = mdPreviewEl.innerHTML;
     if (!body) {
         toast('请先输入 Markdown 并预览');
         return;
@@ -122,20 +135,16 @@ hr{border:0;border-top:1px solid #e5e7eb;margin:1.5em 0}`;
 }
 
 function mdClear() {
-    document.getElementById('mdInput').value = '';
-    document.getElementById('mdPreview').innerHTML = '';
-    mdUpdateStats();
+    mdInputEl.value = '';
+    mdPreviewEl.innerHTML = '';
+    mdUpdateStats('');
     setStatus('已清空');
 }
 
 function mdLoadSample() {
-    document.getElementById('mdInput').value = MD_SAMPLE;
+    mdInputEl.value = MD_SAMPLE;
     mdRender();
     setStatus('已加载示例');
 }
 
-// 事件代理，避免面板异步加载时机问题
-document.addEventListener('input', e => {
-    if (e.target && e.target.id === 'mdInput') mdOnInput();
-    if (e.target && e.target.id === 'mdGfm') mdRender();
-});
+registerInit('markdown', mdInit);

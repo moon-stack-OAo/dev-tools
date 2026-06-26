@@ -63,14 +63,14 @@ function injectDevtoolsFlagPlugin(mode) {
     };
 }
 
-// 生产构建:扫描 js/ 与 html/ 下所有资源,按文件内容 md5 生成 window.__ASSET_MAP__ 并内联进
+// 构建时扫描 js/ 与 html/ 下所有资源,按文件内容 md5 生成 window.__ASSET_MAP__ 并内联进
 // dist/index.html。app.js 动态加载工具脚本/面板时据此附加 ?v=<hash>,实现强缓存与更新自动失效。
-// dev 模式浏览器不长期缓存,无需该映射。
+// 生产与 build:dev 均需注入(静态部署后 nginx 长缓存,无 ?v= 会命中旧缓存);仅 live dev server 不需要。
 function injectAssetMapPlugin(mode) {
     return {
         name: 'inject-asset-map',
         closeBundle() {
-            if (mode !== 'production') return;
+            if (mode === 'development') return;
             const map = {};
             const stamp = (rel) => {
                 try {

@@ -116,7 +116,6 @@ const tools = [
     {id: 'regex', icon: 'bi-asterisk', name: '正则表达式', desc: '正则匹配测试 / 分组查看', cat: 'text'},
     {id: 'stats', icon: 'bi-bar-chart', name: '文本统计', desc: '字符 / 单词 / 行数 / 字节', cat: 'text'},
     {id: 'csv', icon: 'bi-table', name: 'CSV 格式化', desc: 'CSV 表格化查看 / 校对', cat: 'text'},
-    {id: 'regexref', icon: 'bi-book', name: '正则速查表', desc: '常用正则表达式分类速查', cat: 'text'},
     {id: 'markdown', icon: 'bi-markdown', name: 'Markdown 预览', desc: 'Markdown 实时预览 / 导出 HTML', cat: 'text'},
     {id: 'webfmt', icon: 'bi-filetype-html', name: 'Web 格式化', desc: 'HTML / CSS / JS 格式化压缩', cat: 'text'},
     {id: 'qrcode', icon: 'bi-qr-code', name: '二维码生成', desc: '文本 / URL 生成二维码下载', cat: 'text'},
@@ -140,6 +139,7 @@ const tools = [
         cat: 'reference'
     },
     {id: 'docker', icon: 'bi-box-seam', name: 'Docker 命令', desc: 'Docker / K8s 命令速查', cat: 'reference'},
+    {id: 'regexref', icon: 'bi-book', name: '正则速查表', desc: '常用正则表达式分类速查', cat: 'reference'},
     {id: 'gitref', icon: 'bi-git', name: 'Git 命令', desc: 'Git 常用操作速查', cat: 'reference'},
     {id: 'httpstatus', icon: 'bi-info-circle', name: 'HTTP 状态码', desc: 'HTTP 状态码 / 方法速查', cat: 'reference'},
     {id: 'ascii', icon: 'bi-keyboard', name: 'ASCII 表', desc: 'ASCII / 控制字符速查', cat: 'reference'},
