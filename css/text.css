@@ -320,3 +320,90 @@
 #tplVarsList input {
     font-size: 12px;
 }
+
+/* QR Decode (二维码解析) */
+.qrdecode-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+@media (max-width: 900px) {
+    .qrdecode-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.qrdecode-drop {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    padding: 28px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.qrdecode-drop:hover {
+    border-color: var(--accent);
+    background: rgba(0, 212, 170, .04);
+}
+
+.qrdecode-drop-icon {
+    font-size: 36px;
+    color: var(--accent);
+    opacity: .8;
+}
+
+.qrdecode-drop-title {
+    font-size: 14px;
+    color: var(--text);
+    font-weight: 600;
+}
+
+.qrdecode-drop-hint {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+}
+
+.qrdecode-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    text-align: center;
+    font-family: var(--font);
+}
+
+.qrdecode-preview {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.qrdecode-empty {
+    color: var(--text-dim);
+    font-size: 12px;
+}
+
+.qrdecode-tip {
+    margin-top: 14px;
+    padding: 10px 14px;
+    background: rgba(79, 195, 247, .06);
+    border: 1px solid rgba(79, 195, 247, .2);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.8;
+}

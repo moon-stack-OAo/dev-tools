@@ -24,6 +24,7 @@ const categories = [
     {id: 'encode', name: '编解码', icon: 'bi-arrow-left-right'},
     {id: 'security', name: '安全', icon: 'bi-shield-lock'},
     {id: 'generate', name: '生成与转换', icon: 'bi-magic'},
+    {id: 'codegen', name: '代码生成', icon: 'bi-code-square'},
     {id: 'text', name: '文本', icon: 'bi-fonts'},
     {id: 'debug', name: '调试', icon: 'bi-bug'},
     {id: 'reference', name: '参考', icon: 'bi-book'},
@@ -66,7 +67,13 @@ const tools = [
     {id: 'htmlescape', icon: 'bi-filetype-html', name: 'HTML 转义', desc: 'HTML 实体编码 / 解码', cat: 'encode'},
     {id: 'imgbase64', icon: 'bi-image', name: '图片 Base64', desc: '图片与 Base64 互转 / DataURL', cat: 'encode'},
     {id: 'hex', icon: 'bi-123', name: 'Hex 编码', desc: '字符串 ↔ Hex 互转（UTF-8）', cat: 'encode'},
-    {id: 'protobuf', icon: 'bi-file-earmark-binary', name: 'Protobuf 解码', desc: 'Protobuf ↔ JSON / Base64 / Hex', cat: 'encode'},
+    {
+        id: 'protobuf',
+        icon: 'bi-file-earmark-binary',
+        name: 'Protobuf 解码',
+        desc: 'Protobuf ↔ JSON / Base64 / Hex',
+        cat: 'encode'
+    },
     {id: 'jwt', icon: 'bi-key', name: 'JWT 解码', desc: '解析 JWT Header / Payload', cat: 'security'},
     {id: 'jwtgen', icon: 'bi-pen', name: 'JWT 生成', desc: 'HS256/384/512 + RS256/384/512 签名', cat: 'security'},
     {id: 'hash', icon: 'bi-hash', name: 'Hash 计算', desc: 'MD5 / SHA-1 / SHA-256 / SHA-512', cat: 'security'},
@@ -101,19 +108,19 @@ const tools = [
     {id: 'color', icon: 'bi-palette', name: '颜色转换', desc: 'HEX / RGB / HSL 互转预览', cat: 'generate'},
     {id: 'baseconvert', icon: 'bi-calculator', name: '进制转换', desc: '2~36 进制互转', cat: 'generate'},
     {id: 'case', icon: 'bi-type', name: 'Case 转换', desc: 'camelCase / snake_case 等', cat: 'generate'},
-    {id: 'jsontopojo', icon: 'bi-arrow-repeat', name: 'JSON → Java', desc: 'JSON 生成 Java POJO 类', cat: 'generate'},
-    {id: 'sqltopojo', icon: 'bi-arrow-repeat', name: 'SQL → Java', desc: 'DDL 生成 MyBatis Plus 实体', cat: 'generate'},
+    {id: 'jsontopojo', icon: 'bi-arrow-repeat', name: 'JSON → Java', desc: 'JSON 生成 Java POJO 类', cat: 'codegen'},
+    {id: 'sqltopojo', icon: 'bi-arrow-repeat', name: 'SQL → Java', desc: 'DDL 生成 MyBatis Plus 实体', cat: 'codegen'},
     {
         id: 'sql2mybatis',
         icon: 'bi-diagram-3',
         name: 'SQL → MyBatis',
         desc: 'DDL 生成 Mapper XML + Interface',
-        cat: 'generate'
+        cat: 'codegen'
     },
     {id: 'datamock', icon: 'bi-people', name: '数据 Mock', desc: '生成姓名 / 手机号 / 邮箱等', cat: 'generate'},
     {id: 'datecalc', icon: 'bi-calendar', name: '日期计算器', desc: '日期加减 / 间隔 / 工作日', cat: 'generate'},
-    {id: 'email', icon: 'bi-envelope', name: '邮件模板', desc: '邮件 HTML 模板生成 / 预览 / 内联 CSS', cat: 'generate'},
-    {id: 'qrdecode', icon: 'bi-qr-code-scan', name: '二维码解析', desc: '图片 → URL / 文本 / WiFi', cat: 'generate'},
+    {id: 'email', icon: 'bi-envelope', name: '邮件模板', desc: '邮件 HTML 模板生成 / 预览 / 内联 CSS', cat: 'codegen'},
+    {id: 'qrdecode', icon: 'bi-qr-code-scan', name: '二维码解析', desc: '图片 → URL / 文本 / WiFi', cat: 'text'},
     {id: 'diff', icon: 'bi-file-earmark-diff', name: '文本对比', desc: '文本差异对比高亮', cat: 'text'},
     {id: 'regex', icon: 'bi-asterisk', name: '正则表达式', desc: '正则匹配测试 / 分组查看', cat: 'text'},
     {id: 'stats', icon: 'bi-bar-chart', name: '文本统计', desc: '字符 / 单词 / 行数 / 字节', cat: 'text'},
@@ -128,8 +135,8 @@ const tools = [
     {id: 'api', icon: 'bi-cloud-arrow-down', name: 'API 调用', desc: 'HTTP 请求 / 响应调试', cat: 'debug'},
     {id: 'ip', icon: 'bi-globe2', name: 'IP 工具', desc: 'IP 归属 / 子网计算', cat: 'debug'},
     {id: 'arthas', icon: 'bi-terminal', name: 'Arthas 命令', desc: 'Arthas 诊断命令速查', cat: 'reference'},
-    {id: 'jmh', icon: 'bi-speedometer2', name: 'JMH 模板', desc: 'JMH 基准测试代码生成', cat: 'reference'},
-    {id: 'testgen', icon: 'bi-check2-square', name: '测试模板', desc: 'JUnit 5 + Mockito 测试生成', cat: 'reference'},
+    {id: 'jmh', icon: 'bi-speedometer2', name: 'JMH 模板', desc: 'JMH 基准测试代码生成', cat: 'codegen'},
+    {id: 'testgen', icon: 'bi-check2-square', name: '测试模板', desc: 'JUnit 5 + Mockito 测试生成', cat: 'codegen'},
     {id: 'linux', icon: 'bi-terminal-fill', name: 'Linux 命令', desc: '常用 Linux 命令速查', cat: 'reference'},
     {id: 'jvmargs', icon: 'bi-cpu', name: 'JVM 参数', desc: 'JVM 启动参数速查', cat: 'reference'},
     {id: 'redisref', icon: 'bi-database-fill-gear', name: 'Redis 命令', desc: 'Redis 常用命令速查', cat: 'reference'},
@@ -195,7 +202,13 @@ const tools = [
     {id: 'ideakeys', icon: 'bi-keyboard', name: 'IDEA 快捷键', desc: 'IntelliJ IDEA 快捷键速查', cat: 'reference'},
     {id: 'designpatterns', icon: 'bi-diagram-3', name: '设计模式', desc: '23 种设计模式示例代码', cat: 'reference'},
     {id: 'gcref', icon: 'bi-cpu', name: 'GC 调优', desc: 'JVM 垃圾回收算法与参数速查', cat: 'reference'},
-    {id: 'securityref', icon: 'bi-shield-lock', name: 'Spring Security', desc: 'Spring Security 注解与配置速查', cat: 'reference'},
+    {
+        id: 'securityref',
+        icon: 'bi-shield-lock',
+        name: 'Spring Security',
+        desc: 'Spring Security 注解与配置速查',
+        cat: 'reference'
+    },
     {id: 'junit5', icon: 'bi-check2-square', name: 'JUnit 5', desc: 'JUnit 5 注解与断言速查', cat: 'reference'},
     {id: 'logfmt', icon: 'bi-file-text', name: '日志高亮', desc: '日志格式化 + 级别着色 + 堆栈折叠', cat: 'debug'},
     {id: 'stacktrace', icon: 'bi-list-ol', name: '异常分析', desc: 'Java 堆栈跟踪解析 / 格式化', cat: 'debug'},
@@ -327,9 +340,10 @@ function highlightAnchor() {
     const dividers = document.querySelectorAll('.home-cat-divider');
     const anchors = document.querySelectorAll('.cat-anchor');
     const scrollTop = homePanel.scrollTop;
+    const threshold = scrollTop + homePanel.clientHeight * 0.25;
     let activeIdx = 0;
     for (let i = dividers.length - 1; i >= 0; i--) {
-        if (dividers[i].offsetTop <= scrollTop + 60) {
+        if (dividers[i].offsetTop <= threshold) {
             activeIdx = i;
             break;
         }

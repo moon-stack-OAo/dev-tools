@@ -1,7 +1,7 @@
 # Java 开发工具箱
 
-> 一个面向 Java 开发者的**纯前端**在线工具集 —— **96 个工具、7 大分类**
-> ，覆盖格式化、编解码、安全、生成与转换、文本、调试、参考速查。无需后端、无需联网、无需上传数据，所有计算均在浏览器本地完成。支持
+> 一个面向 Java 开发者的**纯前端**在线工具集 —— **97 个工具、8 大分类**
+> ，覆盖格式化、编解码、安全、生成与转换、代码生成、文本、调试、参考速查。无需后端、无需联网、无需上传数据，所有计算均在浏览器本地完成。支持
 > Vite 开发、Docker 一键部署、Nginx 静态托管，开箱即用。
 
 ## ✨ 核心特性
@@ -9,7 +9,7 @@
 - 🚀 **零依赖开箱即用**：纯静态 HTML / CSS / JavaScript，无任何前端框架；业务代码无构建期编译，第三方库通过 Vite + esbuild
   打包为 IIFE
 - 🔒 **数据 100% 本地处理**：所有计算在浏览器内完成，不会上传任何内容到服务器，支持离线使用
-- 🧰 **96 个工具 / 7 大分类**：覆盖 Java 开发日常所需，工具持续扩充
+- 🧰 **97 个工具 / 8 大分类**：覆盖 Java 开发日常所需，工具持续扩充
 - 🎨 **深色主题 + 响应式**：桌面 / 平板 / 手机均可使用
 - 🐳 **多种部署方式**：Vite 开发、Docker 容器、Nginx 静态托管
 - 📦 **依赖本地化**：19 个常用库全部内置到 `public/lib/`，断网仍可使用（图标字体 `bootstrap-icons` 随 `npm install` 注入到
@@ -154,27 +154,33 @@ npm run build     # 输出到 dist/
 | PBKDF2 哈希 | PBKDF2-HMAC-SHA1/SHA256/SHA512 密钥派生 + PHC 格式                              |
 | X.509 证书  | 解析证书主体/签发者/SAN/指纹/有效期/链，DER↔PEM 互转                                        |
 
-### 四、生成与转换（15）
+### 四、生成与转换（10）
+
+| 工具      | 功能                                                |
+|---------|---------------------------------------------------|
+| UUID 生成 | UUID v4 / v7，批量生成                                 |
+| 雪花 ID   | Twitter Snowflake / 百度 UID-Generator 分布式 ID 生成与解析 |
+| 时间戳转换   | Unix 秒 / 毫秒 ↔ 日期字符串互转，含时区与格式化选项                   |
+| Case 转换 | camelCase / PascalCase / snake_case / kebab-case  |
+| 颜色转换    | HEX / RGB / HSL 互转 + 颜色预览                         |
+| 进制转换    | 2~36 进制互转，Dec→Hex/Bin/Oct 快捷按钮                    |
+| 数据 Mock | 姓名 / 手机号 / 邮箱 / 身份证 / 地址等模拟数据批量生成                 |
+| 日期计算器   | 日期加减 / 日期间隔 / 工作日统计 + 时间戳互转                       |
+| 时区转换    | 全球时区互转 + 夏令时感知                                    |
+| 分辨率计算   | 屏幕分辨率 DPI / 物理尺寸 / 对角线换算                          |
+
+### 五、代码生成（6）
 
 | 工具          | 功能                                                        |
 |-------------|-----------------------------------------------------------|
-| UUID 生成     | UUID v4 / v7，批量生成                                         |
-| 时间戳转换       | Unix 秒 / 毫秒 ↔ 日期字符串互转，含时区与格式化选项                           |
-| Case 转换     | camelCase / PascalCase / snake_case / kebab-case          |
-| 颜色转换        | HEX / RGB / HSL 互转 + 颜色预览                                 |
-| 进制转换        | 2~36 进制互转，Dec→Hex/Bin/Oct 快捷按钮                            |
 | JSON→POJO   | JSON 生成 Java POJO 类（支持 Lombok @Data）                      |
 | SQL→POJO    | DDL 建表语句生成 MyBatis Plus 实体                                |
-| 数据 Mock     | 姓名 / 手机号 / 邮箱 / 身份证 / 地址等模拟数据批量生成                         |
-| 日期计算器       | 日期加减 / 日期间隔 / 工作日统计 + 时间戳互转                               |
-| 邮件模板        | 5 套邮件 HTML 模板，填变量实时预览 + 一键内联 CSS                          |
-| 时区转换        | 全球时区互转 + 夏令时感知                                            |
-| 分辨率计算       | 屏幕分辨率 DPI / 物理尺寸 / 对角线换算                                  |
-| 雪花 ID       | Twitter Snowflake / 百度 UID-Generator 分布式 ID 生成与解析         |
 | SQL→MyBatis | DDL 建表语句生成 MyBatis @Select/@Insert/@Update/@Delete Mapper |
-| 二维码解析       | 上传图片识别二维码内容（基于 jsQR）                                      |
+| 邮件模板        | 5 套邮件 HTML 模板，填变量实时预览 + 一键内联 CSS                          |
+| JMH 模板      | JMH 基准测试代码生成器，可配置 Mode / Fork / 预热 / 测量                   |
+| 测试模板        | JUnit 5 + Mockito 测试代码生成，支持 Service / Controller / Mapper |
 
-### 五、文本（9）
+### 六、文本（9）
 
 | 工具       | 功能                               |
 |----------|----------------------------------|
@@ -182,13 +188,13 @@ npm run build     # 输出到 dist/
 | 文本对比     | 行级差异对比，高亮增删，支持忽略大小写              |
 | 文本统计     | 实时统计字符数 / 单词数 / 行数 / 字节数 / 中文字符数 |
 | CSV 格式化  | CSV 表格化预览，支持逗号 / Tab / 分号分隔符     |
-| 正则速查表    | 常用正则表达式分类展示，点击一键复制               |
 | Markdown | Markdown 实时预览（GFM）               |
 | 网页代码格式化  | HTML / CSS / JS 美化与压缩            |
 | 二维码生成    | 文本 / URL 生成二维码，支持下载 PNG          |
 | 模板替换     | 占位符 `{{key}}` 批量替换 + 预览          |
+| 二维码解析    | 上传图片识别二维码内容（基于 jsQR）             |
 
-### 六、调试（11）
+### 七、调试（12）
 
 | 工具        | 功能                                                                   |
 |-----------|----------------------------------------------------------------------|
@@ -205,38 +211,37 @@ npm run build     # 输出到 dist/
 | 异常分析      | Java 堆栈跟踪解析，识别异常链、提取源码位置                                             |
 | SSE 调试    | Server-Sent Events 实时调试，支持自定义请求头与事件过滤                                |
 
-### 七、参考（28）
+### 八、参考（27）
 
-| 工具              | 功能                                                        |
-|-----------------|-----------------------------------------------------------|
-| Arthas 命令       | 22+ 条常用 Arthas 命令分类速查，支持搜索筛选                              |
-| JMH 模板          | JMH 基准测试代码生成器，可配置 Mode / Fork / 预热 / 测量                   |
-| 测试模板            | JUnit 5 + Mockito 测试代码生成，支持 Service / Controller / Mapper |
-| Linux 命令速查      | 常用 Linux 命令分类速查（文件 / 权限 / 进程 / 网络 / Java），点击复制            |
-| Docker 命令速查     | Docker / Compose / K8s 命令速查，点击复制                          |
-| Git 命令速查        | Git 常用操作速查（配置 / 分支 / 提交 / 查看），点击复制                        |
-| HTTP 状态码速查      | HTTP 方法 + 状态码分类速查                                         |
-| ASCII 表         | 完整 ASCII 码表（DEC / HEX / OCT / 字符 / 说明）                    |
-| MyBatis Plus    | MyBatis Plus 常用注解与 Wrapper 用法速查                           |
-| MyBatis SQL     | MyBatis 动态 SQL 标签与示例                                      |
-| Lombok          | Lombok 注解速查与示例代码                                          |
-| Spring Boot     | Spring Boot 常用注解与配置项速查                                    |
-| 事务传播            | Spring 事务传播机制与隔离级别详解                                      |
-| Maven 命令        | Maven 常用命令与 POM 速查                                        |
-| JDK 新特性         | JDK 8 ~ 21 各版本新特性概览                                       |
-| HTTP Header     | HTTP 常用请求头 / 响应头速查                                        |
-| MIME Type       | 常见 MIME 类型对照表                                             |
-| 端口速查            | 常用服务默认端口速查（HTTP / SSH / MySQL / Redis 等）                  |
-| JVM 参数          | 常用 JVM 启动参数与 GC 调优速查                                      |
-| Redis 命令        | Redis 常用命令分类速查（String/Hash/List/Set/ZSet 等）               |
-| Spring Cloud    | Spring Cloud Alibaba / Netflix 核心组件速查                     |
-| 消息中间件           | Kafka / RabbitMQ / RocketMQ 命令与配置速查                       |
-| Gradle 命令       | Gradle 构建工具常用命令速查                                         |
-| IDEA 快捷键        | IntelliJ IDEA 常用快捷键速查（含 Mac 映射）                           |
-| 设计模式            | 23 种设计模式 Java 示例代码                                        |
-| GC 调优           | JVM 垃圾回收算法、参数与调优速查                                        |
-| Spring Security | Spring Security 注解与配置速查                                   |
-| JUnit 5         | JUnit 5 注解、断言、参数化测试速查                                     |
+| 工具              | 功能                                             |
+|-----------------|------------------------------------------------|
+| Arthas 命令       | 22+ 条常用 Arthas 命令分类速查，支持搜索筛选                   |
+| Linux 命令速查      | 常用 Linux 命令分类速查（文件 / 权限 / 进程 / 网络 / Java），点击复制 |
+| Docker 命令速查     | Docker / Compose / K8s 命令速查，点击复制               |
+| Git 命令速查        | Git 常用操作速查（配置 / 分支 / 提交 / 查看），点击复制             |
+| HTTP 状态码速查      | HTTP 方法 + 状态码分类速查                              |
+| ASCII 表         | 完整 ASCII 码表（DEC / HEX / OCT / 字符 / 说明）         |
+| 正则速查表           | 常用正则表达式分类展示，点击一键复制                             |
+| MyBatis Plus    | MyBatis Plus 常用注解与 Wrapper 用法速查                |
+| MyBatis SQL     | MyBatis 动态 SQL 标签与示例                           |
+| Lombok          | Lombok 注解速查与示例代码                               |
+| Spring Boot     | Spring Boot 常用注解与配置项速查                         |
+| 事务传播            | Spring 事务传播机制与隔离级别详解                           |
+| Maven 命令        | Maven 常用命令与 POM 速查                             |
+| JDK 新特性         | JDK 8 ~ 21 各版本新特性概览                            |
+| HTTP Header     | HTTP 常用请求头 / 响应头速查                             |
+| MIME Type       | 常见 MIME 类型对照表                                  |
+| 端口速查            | 常用服务默认端口速查（HTTP / SSH / MySQL / Redis 等）       |
+| JVM 参数          | 常用 JVM 启动参数与 GC 调优速查                           |
+| Redis 命令        | Redis 常用命令分类速查（String/Hash/List/Set/ZSet 等）    |
+| Spring Cloud    | Spring Cloud Alibaba / Netflix 核心组件速查          |
+| 消息中间件           | Kafka / RabbitMQ / RocketMQ 命令与配置速查            |
+| Gradle 命令       | Gradle 构建工具常用命令速查                              |
+| IDEA 快捷键        | IntelliJ IDEA 常用快捷键速查（含 Mac 映射）                |
+| 设计模式            | 23 种设计模式 Java 示例代码                             |
+| GC 调优           | JVM 垃圾回收算法、参数与调优速查                             |
+| Spring Security | Spring Security 注解与配置速查                        |
+| JUnit 5         | JUnit 5 注解、断言、参数化测试速查                          |
 
 ---
 
