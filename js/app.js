@@ -249,6 +249,23 @@ function debounce(fn, ms) {
 
 const onHomeSearchInput = debounce(filterHomeTools, 80);
 
+// 参考面板搜索框：清除按钮显隐与点击
+function toggleRefClear(input) {
+    const btn = input.parentElement && input.parentElement.querySelector('.ref-search-clear');
+    if (!btn) return;
+    btn.classList.toggle('visible', !!input.value);
+}
+
+function clearRefSearch(btn) {
+    const wrap = btn.parentElement;
+    const input = wrap && wrap.querySelector('input');
+    if (!input) return;
+    input.value = '';
+    input.dispatchEvent(new Event('input', {bubbles: true}));
+    btn.classList.remove('visible');
+    input.focus();
+}
+
 let homeCards = [];
 let homeDividers = [];
 
@@ -333,6 +350,10 @@ function buildHomeGrid() {
     // 滚动高亮当前分类
     const homePanel = document.getElementById('panel-home');
     homePanel.addEventListener('scroll', highlightAnchor);
+
+    // 返回顶部按钮
+    const btt = document.getElementById('backToTop');
+    btt.addEventListener('click', () => homePanel.scrollTo({ top: 0, behavior: 'smooth' }));
 }
 
 function highlightAnchor() {
@@ -349,6 +370,9 @@ function highlightAnchor() {
         }
     }
     anchors.forEach((a, i) => a.classList.toggle('active', i === activeIdx));
+    // 返回顶部按钮显隐
+    const btt = document.getElementById('backToTop');
+    btt.classList.toggle('visible', scrollTop > 300);
 }
 
 async function openTool(id) {
@@ -376,6 +400,11 @@ async function openTool(id) {
     breadcrumb.innerHTML = '<span class="bc-item" onclick="goHome()">首页</span><span class="bc-sep">›</span><span class="bc-item" onclick="goHome(\'' + (cat ? cat.id : '') + '\')">' + (cat ? cat.name : '') + '</span><span class="bc-sep">›</span><span class="bc-current">' + tool.name + '</span>';
     setStatus('就绪');
     if (toolInits[id]) toolInits[id]();
+    // 工具面板滚动 → 返回顶部按钮
+    const tp = document.getElementById('panel-' + id);
+    const btt = document.getElementById('backToTop');
+    tp.addEventListener('scroll', () => btt.classList.toggle('visible', tp.scrollTop > 300));
+    btt.onclick = () => tp.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function goHome(catId) {
@@ -389,6 +418,7 @@ function goHome(catId) {
     document.querySelector('.main-header').classList.remove('tool-mode');
     breadcrumb.innerHTML = '';
     clearHomeSearch();
+    document.getElementById('backToTop').classList.remove('visible');
     setTimeout(() => {
         highlightAnchor();
         if (catId) {

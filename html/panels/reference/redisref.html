@@ -1,7 +1,11 @@
 <div class="tool-panel" id="panel-redisref">
     <div class="ref-search-bar" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-        <input id="redisrefSearch" oninput="redisrefSearch()" placeholder="搜索命令、语法、示例、返回值..." style="flex:1;max-width:400px"
-               type="text">
+        <div class="ref-search-input-wrap" style="flex:1;max-width:400px">
+            <i class="bi bi-search search-icon"></i>
+            <input id="redisrefSearch" oninput="redisrefSearch();toggleRefClear(this)" placeholder="搜索命令、语法、示例、返回值..."
+                   type="text">
+            <button class="ref-search-clear" onclick="clearRefSearch(this)" type="button"><i class="bi bi-x-lg"></i></button>
+        </div>
         <div id="redisrefTabs" style="display:flex;gap:6px;flex-wrap:wrap">
             <button class="sm outline active" data-cat="all" onclick="redisrefFilter('all')">全部</button>
             <button class="sm outline" data-cat="String" onclick="redisrefFilter('String')">String</button>

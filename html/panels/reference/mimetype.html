@@ -1,6 +1,10 @@
 <div class="tool-panel" id="panel-mimetype">
-    <div class="ref-search-bar" style="max-width:400px">
-        <input id="mimetypeSearch" oninput="mimetypeSearch()" placeholder="搜索扩展名、MIME 或说明..." type="text">
+    <div class="ref-search-bar">
+        <div class="ref-search-input-wrap">
+            <i class="bi bi-search search-icon"></i>
+            <input id="mimetypeSearch" oninput="mimetypeSearch();toggleRefClear(this)" placeholder="搜索扩展名、MIME 或说明..." type="text">
+            <button class="ref-search-clear" onclick="clearRefSearch(this)" type="button"><i class="bi bi-x-lg"></i></button>
+        </div>
     </div>
     <div id="mimetypeContent"></div>
 </div>

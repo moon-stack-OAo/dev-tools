@@ -1,6 +1,10 @@
 <div class="tool-panel" id="panel-mybatisplus">
-    <div class="ref-search-bar" style="max-width:400px">
-        <input id="mybatisplusSearch" oninput="mybatisplusSearch()" placeholder="搜索方法名或描述..." type="text">
+    <div class="ref-search-bar">
+        <div class="ref-search-input-wrap">
+            <i class="bi bi-search search-icon"></i>
+            <input id="mybatisplusSearch" oninput="mybatisplusSearch();toggleRefClear(this)" placeholder="搜索方法名或描述..." type="text">
+            <button class="ref-search-clear" onclick="clearRefSearch(this)" type="button"><i class="bi bi-x-lg"></i></button>
+        </div>
     </div>
     <div id="mybatisplusContent"></div>
 </div>

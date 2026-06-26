@@ -1,6 +1,10 @@
 <div class="tool-panel" id="panel-httpheader">
-    <div class="ref-search-bar" style="max-width:400px">
-        <input id="httpheaderSearch" oninput="httpheaderSearch()" placeholder="搜索 Header 名、值或说明..." type="text">
+    <div class="ref-search-bar">
+        <div class="ref-search-input-wrap">
+            <i class="bi bi-search search-icon"></i>
+            <input id="httpheaderSearch" oninput="httpheaderSearch();toggleRefClear(this)" placeholder="搜索 Header 名、值或说明..." type="text">
+            <button class="ref-search-clear" onclick="clearRefSearch(this)" type="button"><i class="bi bi-x-lg"></i></button>
+        </div>
     </div>
     <div id="httpheaderContent"></div>
 </div>

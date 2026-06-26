@@ -247,7 +247,7 @@
 @keyframes panelIn {
     from {
         opacity: 0;
-        transform: translateY(6px)
+        transform: translateY(10px)
     }
 
     to {
@@ -304,7 +304,7 @@
     background: transparent;
     border: none;
     text-decoration: none;
-    transition: all .12s ease;
+    transition: all .18s cubic-bezier(.4, 0, .2, 1);
     cursor: pointer;
     white-space: nowrap;
     position: relative;
@@ -322,6 +322,17 @@
     background: var(--accent-glow);
     border-left-color: var(--accent);
     font-weight: 600;
+    box-shadow: inset 0 0 12px rgba(0, 212, 170, .06);
+}
+
+.cat-anchor.active .cat-icon {
+    animation: iconPop .3s ease;
+}
+
+@keyframes iconPop {
+    0% { transform: scale(1) }
+    50% { transform: scale(1.25) }
+    100% { transform: scale(1) }
 }
 
 .cat-anchor .cat-icon {
@@ -346,6 +357,7 @@
     margin-bottom: 2px;
     position: relative;
     scroll-margin-top: 80px;
+    animation: cardIn .3s ease both;
 }
 
 .home-cat-divider:first-child {
@@ -353,17 +365,24 @@
 }
 
 .home-cat-divider .hcd-icon {
-    font-size: 16px;
-    opacity: .8;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 15px;
+    background: linear-gradient(135deg, var(--accent-glow), var(--accent2-glow));
+    border: 1px solid rgba(0, 212, 170, .2);
+    color: var(--accent);
+    flex-shrink: 0;
 }
 
 .home-cat-divider::after {
     content: '';
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, var(--border) 0%, transparent 100%);
+    background: linear-gradient(90deg, var(--border-light) 0%, transparent 100%);
     margin-left: 6px;
 }
 
@@ -378,6 +397,31 @@
     user-select: none;
     position: relative;
     overflow: hidden;
+    animation: cardIn .4s ease both;
+}
+
+.home-card:nth-child(1) { animation-delay: .02s }
+.home-card:nth-child(2) { animation-delay: .04s }
+.home-card:nth-child(3) { animation-delay: .06s }
+.home-card:nth-child(4) { animation-delay: .08s }
+.home-card:nth-child(5) { animation-delay: .10s }
+.home-card:nth-child(6) { animation-delay: .12s }
+.home-card:nth-child(7) { animation-delay: .14s }
+.home-card:nth-child(8) { animation-delay: .16s }
+.home-card:nth-child(9) { animation-delay: .18s }
+.home-card:nth-child(10) { animation-delay: .20s }
+.home-card:nth-child(11) { animation-delay: .22s }
+.home-card:nth-child(12) { animation-delay: .24s }
+
+@keyframes cardIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(.97)
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1)
+    }
 }
 
 .home-card::before {
@@ -473,4 +517,42 @@
         width: 140px;
         flex: 0 0 140px;
     }
+}
+
+/* 返回顶部按钮 */
+.back-to-top {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 100;
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    transition: all .25s ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .3);
+}
+
+.back-to-top.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.back-to-top:hover {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 212, 170, .25);
 }

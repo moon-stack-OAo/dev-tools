@@ -1,7 +1,11 @@
 <div class="tool-panel" id="panel-jvmargs">
-    <div class="ref-search-bar" style="max-width:400px">
-        <div class="label">JVM 参数速查 (基于 JDK 17 · 点击复制)</div>
-        <input id="jvmargsSearch" oninput="jvmargsSearch()" placeholder="搜索参数、说明、示例..." type="text">
+    <div class="ref-search-bar">
+        <div class="label"><i class="bi bi-search"></i>JVM 参数速查 (基于 JDK 17 · 点击复制)</div>
+        <div class="ref-search-input-wrap">
+            <i class="bi bi-search search-icon"></i>
+            <input id="jvmargsSearch" oninput="jvmargsSearch();toggleRefClear(this)" placeholder="搜索参数、说明、示例..." type="text">
+            <button class="ref-search-clear" onclick="clearRefSearch(this)" type="button"><i class="bi bi-x-lg"></i></button>
+        </div>
     </div>
     <div id="jvmargsTabs" style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
         <button class="sm outline active" onclick="jvmargsFilter('全部')">全部</button>

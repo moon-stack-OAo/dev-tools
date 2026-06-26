@@ -1,7 +1,11 @@
 <div class="tool-panel" id="panel-springcloud">
     <div class="ref-search-bar" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-        <input id="springcloudSearch" oninput="springcloudSearch()" placeholder="搜索注解、配置项、说明..." style="flex:1;max-width:400px"
-               type="text">
+        <div class="ref-search-input-wrap" style="flex:1;max-width:400px">
+            <i class="bi bi-search search-icon"></i>
+            <input id="springcloudSearch" oninput="springcloudSearch();toggleRefClear(this)" placeholder="搜索注解、配置项、说明..."
+                   type="text">
+            <button class="ref-search-clear" onclick="clearRefSearch(this)" type="button"><i class="bi bi-x-lg"></i></button>
+        </div>
         <div id="springcloudTabs" style="display:flex;gap:6px;flex-wrap:wrap">
             <button class="sm outline active" data-cat="all" onclick="springcloudFilter('all')">全部</button>
             <button class="sm outline" data-cat="Nacos" onclick="springcloudFilter('Nacos')">Nacos</button>
