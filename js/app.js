@@ -417,6 +417,7 @@ async function openTool(id) {
     const tool = tools.find(t => t.id === id);
     if (!tool) return;
     clearHomeSearch();
+    showLoading();
     setStatus('加载中...');
     try {
         await Promise.all([loadToolPanel(id), loadToolScript(id)]);
@@ -424,6 +425,7 @@ async function openTool(id) {
         toast('工具加载失败');
         console.error(e);
         setStatus('就绪');
+        hideLoading();
         return;
     }
     document.querySelectorAll('.tool-panel.active').forEach(p => p.classList.remove('active'));
@@ -439,6 +441,7 @@ async function openTool(id) {
     setStatus('就绪');
     if (toolInits[id]) toolInits[id]();
     highlightSidebarTool(id);
+    hideLoading();
     // 工具面板滚动 → 返回顶部按钮
     const tp = document.getElementById('panel-' + id);
     const btt = document.getElementById('backToTop');
@@ -516,8 +519,8 @@ function filterHomeTools() {
 }
 
 function clearHomeSearch() {
-    document.getElementById('homeSearch').value = '';
-    filterHomeTools();
+    const input = document.getElementById('homeSearch');
+    if (input) input.value = '';
 }
 
 // === Sidebar ===
@@ -625,6 +628,27 @@ buildSidebar();
 // === Utils ===
 function setStatus(msg) {
     document.getElementById('statusText').textContent = msg;
+}
+
+function showLoading() {
+    const bar = document.getElementById('loadingBar');
+    if (!bar) return;
+    clearTimeout(bar._hideTimer);
+    bar.classList.remove('done', 'active');
+    void bar.offsetWidth;
+    bar.classList.add('active');
+}
+
+function hideLoading() {
+    const bar = document.getElementById('loadingBar');
+    if (!bar) return;
+    if (!bar.classList.contains('active')) return;
+    bar.classList.remove('active');
+    bar.classList.add('done');
+    bar._hideTimer = setTimeout(() => {
+        bar.classList.remove('done');
+        bar._hideTimer = null;
+    }, 600);
 }
 
 function toast(msg) {
