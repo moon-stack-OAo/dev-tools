@@ -128,26 +128,6 @@ body {
     color: var(--text);
 }
 
-::-webkit-scrollbar {
-    width: 5px;
-    height: 5px
-}
-
-::-webkit-scrollbar-track {
-    background: transparent
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--border-light);
-    border-radius: 10px;
-    background-clip: content-box;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--text-muted);
-    background-clip: content-box;
-}
-
 /* 页面加载过渡 */
 @keyframes appIn {
     from {
@@ -211,6 +191,12 @@ textarea:focus,
 input:focus,
 select:focus {
     border-color: var(--accent);
+}
+
+textarea:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: none;
     box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
@@ -223,9 +209,10 @@ select {
     cursor: pointer;
     appearance: none;
     -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23b0b8cf'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='currentColor'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 10px center;
+    color: var(--text-dim);
     padding-right: 28px;
 }
 
@@ -250,6 +237,34 @@ input[type=file]::file-selector-button {
 
 input[type=file]::file-selector-button:hover {
     background: var(--bg-input)
+}
+
+/* 搜索框内置清除按钮 (type="search") 定制外观 */
+input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 16px;
+    width: 16px;
+    margin-left: 4px;
+    border-radius: 50%;
+    background: var(--bg-hover);
+    color: var(--text-muted);
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23a8b0cc'%3E%3Cpath d='M4.293 4.293a1 1 0 0 1 1.414 0L8 6.586l2.293-2.293a1 1 0 1 1 1.414 1.414L9.414 8l2.293 2.293a1 1 0 0 1-1.414 1.414L8 9.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L6.586 8 4.293 5.707a1 1 0 0 1 0-1.414z'/%3E%3C/svg%3E");
+    background-size: 10px;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: all .15s;
+}
+
+input[type="search"]::-webkit-search-cancel-button:hover {
+    background-color: var(--accent);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3E%3Cpath d='M4.293 4.293a1 1 0 0 1 1.414 0L8 6.586l2.293-2.293a1 1 0 1 1 1.414 1.414L9.414 8l2.293 2.293a1 1 0 0 1-1.414 1.414L8 9.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L6.586 8 4.293 5.707a1 1 0 0 1 0-1.414z'/%3E%3C/svg%3E");
+}
+
+input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 /* 按钮 */
