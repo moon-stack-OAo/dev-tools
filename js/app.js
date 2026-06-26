@@ -438,6 +438,7 @@ async function openTool(id) {
     breadcrumb.innerHTML = '<span class="bc-item" onclick="goHome()">首页</span><span class="bc-sep">›</span><span class="bc-item" onclick="goHome(\'' + (cat ? cat.id : '') + '\')">' + (cat ? cat.name : '') + '</span><span class="bc-sep">›</span><span class="bc-current">' + tool.name + '</span>';
     setStatus('就绪');
     if (toolInits[id]) toolInits[id]();
+    highlightSidebarTool(id);
     // 工具面板滚动 → 返回顶部按钮
     const tp = document.getElementById('panel-' + id);
     const btt = document.getElementById('backToTop');
@@ -456,6 +457,7 @@ function goHome(catId) {
     document.querySelector('.main-header').classList.remove('tool-mode');
     breadcrumb.innerHTML = '';
     clearHomeSearch();
+    clearSidebarHighlight();
     document.getElementById('backToTop').classList.remove('visible');
     setTimeout(() => {
         highlightAnchor();
@@ -482,6 +484,7 @@ function filterHomeTools() {
         homeBtn.style.display = 'none';
         document.querySelector('.main-header').classList.remove('tool-mode');
         breadcrumb.innerHTML = '';
+        clearSidebarHighlight();
         setStatus('就绪');
         setTimeout(highlightAnchor, 50);
     }
@@ -517,6 +520,98 @@ function clearHomeSearch() {
     filterHomeTools();
 }
 
+// === Sidebar ===
+const SIDEBAR_KEY = 'devtools_sidebar';
+let sidebarCollapsed = false;
+
+function readSidebarState() {
+    try {
+        const s = JSON.parse(localStorage.getItem(SIDEBAR_KEY) || '{}');
+        sidebarCollapsed = !!s.collapsed;
+    } catch (e) {
+        sidebarCollapsed = false;
+    }
+}
+
+function saveSidebarState() {
+    try {
+        localStorage.setItem(SIDEBAR_KEY, JSON.stringify({collapsed: sidebarCollapsed}));
+    } catch (e) {
+    }
+}
+
+function buildSidebar() {
+    readSidebarState();
+    const nav = document.getElementById('sidebarNav');
+    if (!nav) return;
+    nav.innerHTML = '';
+    categories.forEach(cat => {
+        const toolsInCat = tools.filter(t => t.cat === cat.id);
+        if (!toolsInCat.length) return;
+        const wrap = document.createElement('div');
+        wrap.className = 'sb-cat cat-' + cat.id;
+        wrap.dataset.cat = cat.id;
+        wrap.innerHTML = `
+            <div class="sb-cat-header" data-cat="${cat.id}" title="${cat.name}">
+                <i class="bi ${cat.icon} sb-cat-icon"></i>
+                <span class="sb-cat-name">${cat.name}</span>
+                <i class="bi bi-chevron-right sb-cat-arrow"></i>
+            </div>
+            <div class="sb-tools">
+                ${toolsInCat.map(t => `<div class="sb-tool" data-tool="${t.id}" title="${t.name}"><i class="bi ${t.icon}"></i><span class="sb-tool-name">${t.name}</span></div>`).join('')}
+            </div>
+        `;
+        nav.appendChild(wrap);
+    });
+
+    nav.addEventListener('click', e => {
+        const catHeader = e.target.closest('.sb-cat-header');
+        if (catHeader) {
+            const catEl = catHeader.parentElement;
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar.classList.contains('collapsed')) {
+                sidebar.classList.remove('collapsed');
+                sidebarCollapsed = false;
+                saveSidebarState();
+                document.querySelectorAll('.sb-cat.expanded').forEach(el => el.classList.remove('expanded'));
+                catEl.classList.add('expanded');
+            } else {
+                catEl.classList.toggle('expanded');
+            }
+            return;
+        }
+        const toolEl = e.target.closest('.sb-tool');
+        if (toolEl) {
+            openTool(toolEl.dataset.tool);
+        }
+    });
+
+    document.getElementById('sidebarToggle').addEventListener('click', () => {
+        sidebarCollapsed = !sidebarCollapsed;
+        document.getElementById('sidebar').classList.toggle('collapsed', sidebarCollapsed);
+        saveSidebarState();
+    });
+
+    if (sidebarCollapsed) {
+        document.getElementById('sidebar').classList.add('collapsed');
+    }
+}
+
+function highlightSidebarTool(id) {
+    document.querySelectorAll('.sb-tool.current').forEach(el => el.classList.remove('current'));
+    document.querySelectorAll('.sb-cat.expanded').forEach(el => el.classList.remove('expanded'));
+    const toolEl = document.querySelector('.sb-tool[data-tool="' + id + '"]');
+    if (!toolEl) return;
+    toolEl.classList.add('current');
+    const catEl = toolEl.closest('.sb-cat');
+    if (catEl) catEl.classList.add('expanded');
+}
+
+function clearSidebarHighlight() {
+    document.querySelectorAll('.sb-tool.current').forEach(el => el.classList.remove('current'));
+    document.querySelectorAll('.sb-cat.expanded').forEach(el => el.classList.remove('expanded'));
+}
+
 // 首页静态就绪:立即显示容器并构建首页网格(工具面板/脚本按需懒加载)
 {
     const loading = document.getElementById('panels-loading');
@@ -525,6 +620,7 @@ function clearHomeSearch() {
     if (container) container.style.display = '';
 }
 buildHomeGrid();
+buildSidebar();
 
 // === Utils ===
 function setStatus(msg) {
