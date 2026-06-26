@@ -60,7 +60,7 @@ npm run build     # 输出到 dist/
 ## 📁 项目结构
 
 ```
-├── index.html                      # 入口（含首页，启动时按需拉取各工具面板）
+├── index.html                      # 入口（含首页 + 本地化依赖库；工具脚本/面板按需懒加载）
 ├── html/panels/                    # 工具面板（86 个文件，每个工具一个 HTML）
 │   ├── format/                     #  格式化：json / xml / yaml / sql / ...
 │   ├── encode/                     #  编解码：base64 / url / unicode / ...
@@ -80,7 +80,7 @@ npm run build     # 输出到 dist/
 │   ├── debug.css                   #  调试类别样式
 │   └── reference.css               #  参考类别样式
 ├── js/
-│   ├── app.js                      # 核心：导航 / 工具数据注册表 / loadPanels() / 通用工具函数
+│   ├── app.js                      # 核心：导航 / 工具注册表 / registerInit / 懒加载 / 通用工具函数
 │   ├── format/                     #  格式化：json / xml / yaml / sql / ...
 │   ├── encode/                     #  编解码：base64 / url / unicode / ...
 │   ├── security/                   #  安全：jwt / hash / aes / rsa / ...
@@ -92,9 +92,11 @@ npm run build     # 输出到 dist/
 ├── scripts/
 │   └── copy-libs.js                # 从 node_modules 复制依赖到 public/lib（构建前执行）
 ├── docs/                           # 开发文档（各 ticket 需求 / 设计 / 验收记录）
+├── test/                           # 单元测试（Vitest，抽离工具纯逻辑）
 ├── .github/workflows/static.yml    # GitHub Pages 自动部署
 ├── package.json                    # 依赖管理与 npm 脚本
-├── vite.config.js                  # Vite 6 配置（cache-bust + copy-js-assets 自定义插件）
+├── vite.config.js                  # Vite 6 配置（cache-bust / copy-js-assets / inject-asset-map 自定义插件）
+├── vitest.config.js                # Vitest 单元测试配置
 ├── Dockerfile                      # 多阶段构建：node:20-alpine → nginx:alpine
 ├── nginx.conf                      # Nginx 配置（gzip + 30 天静态资源缓存 + SPA fallback）
 └── .dockerignore
@@ -237,10 +239,14 @@ npm run build     # 输出到 dist/
 
 ### 模块加载机制
 
-- **JS**：按类别目录拆分（`js/{cat}/{toolId}.js`），通过 `<script>` 同步加载
-- **HTML 面板**：每个工具一个独立文件，位于 `html/panels/{cat}/{toolId}.html`，由 `app.js#loadPanels()` 并行 `fetch` 后注入
-  `#panels-container`
-- **工具注册表**：`app.js` 中集中维护所有工具的元信息（id、名称、分类、入口），便于扩展
+- **懒加载（按需加载）**：首屏仅加载 `index.html` + `app.js` + 本地化依赖库，首页网格立即可用；打开某工具时才动态加载该工具的
+  JS（`loadToolScript`，注入 `<script>`，`loadedScripts` 去重）与 HTML 面板（`loadToolPanel`，`fetch` 后注入
+  `#panels-container`，`loadedPanels` 去重）
+- **文件组织**：JS 按类别目录拆分 `js/{cat}/{toolId}.js`，HTML 面板 `html/panels/{cat}/{toolId}.html`（目录必须与注册表中的
+  `cat` 一致）
+- **工具注册表**：`app.js` 中 `tools[]` 集中维护所有工具元信息（id、名称、分类、入口），是懒加载路径构造与首页网格的单一事实来源
+- **初始化入口**：需初始化的工具在自身 JS 末尾调用 `registerInit(id, fn)` 登记；`openTool` 打开工具后调用
+  `toolInits[id]()` 完成渲染 / 绑定 / 启动定时器（替代旧的启动 init 列表与 renderMap）
 
 ### 样式分层
 
@@ -254,10 +260,24 @@ npm run build     # 输出到 dist/
 
 - **Vite 6**：仅作为开发服务器 + 静态资源打包
 - **自定义插件**：
-    - `cache-bust`：为 JS / CSS 自动追加 `?v=时间戳`，避免缓存
+    - `cache-bust`：为 index.html 中的 JS / CSS 引用按文件内容 md5 追加 `?v=<hash>`（前 8 位），内容变更自动失效
     - `copy-js-assets`：构建时将 `js/` 和 `html/` 目录同步到 `dist/`
-    - `remove-github-link`：从生产构建产物中移除 GitHub 入口链接
-    - `inject-devtools-flag`：注入 `__DEV__` 全局标识，便于工具按环境降级
+    - `inject-asset-map`：扫描 `js/`、`html/` 所有资源生成 `window.__ASSET_MAP__`（逐文件 md5）内联进 `dist/index.html`
+      ；动态懒加载的工具脚本 / 面板据此附加 `?v=<hash>`，实现强缓存与更新自动失效（生产与 `build:dev` 均注入）
+    - `remove-github-link`：从 `dev` 构建产物中移除 GitHub 入口链接
+    - `inject-devtools-flag`：生产构建注入 `window.__DEVTOOLS__ = { withGithub: true }`，由 app.js 据此动态创建 GitHub 链接
+
+### 测试
+
+- 单元测试基于 **Vitest**，覆盖从工具中抽离的纯逻辑（无 DOM 耦合）
+- 工具文件通过 `module.exports` 守卫导出纯函数，测试用 `require()` 直接加载真实生产代码（零重复）
+- `test/setup.js` 提供 `registerInit` 等浏览器全局的 Node 环境垫片
+- 已覆盖：`hex`、`unicode`、`random`（编解码与安全类纯逻辑）
+
+```bash
+npm test           # 运行一次
+npm run test:watch # 监听模式
+```
 
 ### 部署方式
 
@@ -313,6 +333,9 @@ Chrome / Firefox / Edge / Safari 现代浏览器（支持 ES2020+ 语法）。
 
 欢迎提交 Issue 与 PR 扩充工具或修复 Bug。新增工具时请遵循：
 
-1. 在对应分类下创建 `html/panels/{cat}/{toolId}.html` 与 `js/{cat}/{toolId}.js`
-2. 在 `app.js` 的工具注册表中登记元信息
-3. 保持深色主题一致性与响应式适配
+1. 在对应分类下创建 `html/panels/{cat}/{toolId}.html` 与 `js/{cat}/{toolId}.js`（*
+   *注意：文件所在目录必须与注册表中的 `cat` 一致**，懒加载按 `js/{cat}/{id}.js` 构造路径，不一致会 404 打不开）
+2. 在 `app.js` 的 `tools[]` 注册表中登记元信息（id、名称、分类、图标、描述）
+3. 若工具需要初始化（渲染数据、绑定事件、启动定时器等），在工具 JS 末尾调用 `registerInit(toolId, initFn)` 登记，`openTool`
+   会自动调用
+4. 保持深色主题一致性与响应式适配
