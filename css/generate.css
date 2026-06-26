@@ -22,7 +22,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #1a1f33;
+    background: var(--bg-terminal);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     padding: 8px 13px;
@@ -33,7 +33,7 @@
 
 .uuid-item:hover {
     border-color: var(--border-light);
-    background: #1e243a;
+    background: var(--bg-card2);
 }
 
 /* Color */
@@ -58,6 +58,6 @@
 
 /* Timezone */
 #tzOutput {
-    background: #1a1f33;
-    color: #b5e8ff
+    background: var(--bg-terminal);
+    color: var(--accent2)
 }

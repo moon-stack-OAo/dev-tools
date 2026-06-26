@@ -3,10 +3,13 @@
  * 未来新增的参考工具专属样式追加在此文件。
  */
 
-/* 搜索框冻结样式 */
+/* 搜索框冻结样式
+ * 关键修复: position: sticky; top: -20px 让 ref-search-bar 滚动时紧贴 main-header 下方,
+ * 抵消 .tool-panel 的 padding-top: 20px,避免下滑内容从间隙透出。
+ * box-shadow 顶部 1px 模拟上边框,与 main-header 的 border-bottom 视觉融合。 */
 .ref-search-bar {
     position: sticky;
-    top: 0;
+    top: -20px;
     z-index: 10;
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -14,7 +17,7 @@
     padding: 12px 14px;
     margin-bottom: 20px;
     border-radius: var(--radius);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, .12);
+    box-shadow: 0 -1px 0 var(--border), 0 2px 8px rgba(0, 0, 0, .12);
     backdrop-filter: blur(8px);
 }
 
@@ -25,6 +28,107 @@
 .tool-panel > .ref-search-bar:last-of-type,
 .tool-panel > .ref-search-bar:has(+ .ref-tabs-row) {
     margin-bottom: 12px;
+}
+
+.ref-search-bar .label {
+    font-size: 11px;
+    color: var(--accent);
+    margin-bottom: 6px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ref-search-bar .label i {
+    font-size: 13px;
+}
+
+.ref-search-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.ref-search-input-wrap .search-icon {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 14px;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    transition: color .2s;
+    z-index: 1;
+}
+
+.ref-search-input-wrap input {
+    width: 100%;
+    padding: 8px 34px 8px 34px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text);
+    outline: none;
+    transition: all .2s ease;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, .12);
+}
+
+.ref-search-input-wrap input::placeholder {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.ref-search-input-wrap input:hover {
+    border-color: var(--border-light);
+}
+
+.ref-search-input-wrap input:focus {
+    border-color: var(--accent);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, .12), 0 0 0 3px var(--accent-glow);
+    background: var(--bg-card2);
+}
+
+.ref-search-input-wrap input:focus ~ .search-icon,
+.ref-search-input-wrap input:focus + .search-icon {
+    color: var(--accent);
+}
+
+.ref-search-clear {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--bg-hover);
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    transition: all .15s;
+    padding: 0;
+    box-shadow: none;
+    z-index: 1;
+}
+
+.ref-search-clear:hover {
+    background: var(--accent);
+    color: #fff;
+    transform: translateY(-50%) scale(1.05);
+}
+
+.ref-search-clear.visible {
+    display: flex;
 }
 
 /* arthas 工具专属样式 */
@@ -115,8 +219,8 @@
 }
 
 .arthas-pre-output {
-    background: #161a2c;
-    border-color: #232844;
+    background: var(--bg-terminal);
+    border-color: var(--border-terminal);
     color: var(--text-dim);
 }
 
@@ -258,7 +362,7 @@
 
 button.active {
     background: var(--accent) !important;
-    color: white !important;
+    color: var(--bg) !important;
     border-color: var(--accent) !important;
 }
 
@@ -305,27 +409,27 @@ button.active {
 }
 
 .springcloud-type-注解 {
-    color: #a78bfa;
-    border-color: rgba(167, 139, 250, .4);
-    background: rgba(167, 139, 250, .08);
+    color: var(--purple);
+    border-color: rgba(var(--purple-rgb), .4);
+    background: rgba(var(--purple-rgb), .08);
 }
 
 .springcloud-type-配置项 {
-    color: #34d399;
-    border-color: rgba(52, 211, 153, .4);
-    background: rgba(52, 211, 153, .08);
+    color: var(--success);
+    border-color: rgba(var(--success-rgb), .4);
+    background: rgba(var(--success-rgb), .08);
 }
 
 .springcloud-type-概念 {
-    color: #fbbf24;
-    border-color: rgba(251, 191, 36, .4);
-    background: rgba(251, 191, 36, .08);
+    color: var(--warning);
+    border-color: rgba(var(--warning-rgb), .4);
+    background: rgba(var(--warning-rgb), .08);
 }
 
 .springcloud-type-组件 {
-    color: #60a5fa;
-    border-color: rgba(96, 165, 250, .4);
-    background: rgba(96, 165, 250, .08);
+    color: var(--accent2);
+    border-color: rgba(var(--accent2-rgb), .4);
+    background: rgba(var(--accent2-rgb), .08);
 }
 
 .springcloud-copy-btn {

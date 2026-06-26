@@ -226,6 +226,44 @@ const tools = [
 const homeBtn = document.getElementById('homeBtn');
 const breadcrumb = document.getElementById('breadcrumb');
 
+// === Theme ===
+const THEME_KEY = 'devtools.theme';
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    const icon = document.getElementById('themeIcon');
+    if (icon) icon.className = theme === 'light' ? 'bi bi-sun-fill' : 'bi bi-moon-stars-fill';
+    try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+}
+
+function toggleTheme() {
+    const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+    applyTheme(cur === 'light' ? 'dark' : 'light');
+}
+
+(function initTheme() {
+    let saved = 'dark';
+    try { saved = localStorage.getItem(THEME_KEY) || 'dark'; } catch (e) {}
+    applyTheme(saved);
+})();
+
+// === Usage Stats ===
+const STATS_KEY = 'devtools.usage';
+function bumpUsage(id) {
+    try {
+        const raw = localStorage.getItem(STATS_KEY);
+        const stats = raw ? JSON.parse(raw) : {};
+        stats[id] = (stats[id] || 0) + 1;
+        localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+    } catch (e) {}
+}
+
+function getUsageStats() {
+    try {
+        const raw = localStorage.getItem(STATS_KEY);
+        return raw ? JSON.parse(raw) : {};
+    } catch (e) { return {}; }
+}
+
 // 懒加载状态:工具的 JS 与 HTML 面板仅在首次打开时加载
 const loadedScripts = new Set();
 const loadedPanels = new Set(['home']);
@@ -325,13 +363,13 @@ function buildHomeGrid() {
         const toolsInCat = tools.filter(t => t.cat === cat.id);
         if (!toolsInCat.length) return;
         const divider = document.createElement('div');
-        divider.className = 'home-cat-divider';
+        divider.className = 'home-cat-divider cat-' + cat.id;
         divider.id = 'cat-' + cat.id;
         divider.innerHTML = `<span class="hcd-icon"><i class="bi ${cat.icon}"></i></span><span>${cat.name}</span>`;
         grid.appendChild(divider);
         toolsInCat.forEach(t => {
             const card = document.createElement('div');
-            card.className = 'home-card';
+            card.className = 'home-card cat-' + t.cat;
             card.dataset.cat = t.cat;
             card.innerHTML = `<div class="hc-icon"><i class="bi ${t.icon}"></i></div><div class="hc-name">${t.name}</div><div class="hc-desc">${t.desc}</div>`;
             card.addEventListener('click', () => openTool(t.id));

@@ -10,15 +10,15 @@
 }
 
 .ws-status.connected {
-    background: rgba(0, 212, 170, .12);
+    background: rgba(var(--accent-rgb), .12);
     color: var(--accent);
-    box-shadow: inset 0 0 0 1px rgba(0, 212, 170, .2)
+    box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb), .2)
 }
 
 .ws-status.disconnected {
-    background: rgba(239, 83, 80, .1);
+    background: rgba(var(--danger-rgb), .1);
     color: var(--danger);
-    box-shadow: inset 0 0 0 1px rgba(239, 83, 80, .15)
+    box-shadow: inset 0 0 0 1px rgba(var(--danger-rgb), .15)
 }
 
 .ws-dot {
@@ -35,7 +35,7 @@
 }
 
 .ws-log {
-    background: #1a1f33;
+    background: var(--bg-terminal);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     padding: 10px;
@@ -100,7 +100,7 @@
 }
 
 .stomp-sub-list {
-    background: #14182a;
+    background: var(--bg);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     padding: 6px 10px;
@@ -127,7 +127,7 @@
 .stomp-sub-id {
     font-family: var(--font);
     color: var(--accent);
-    background: rgba(0, 212, 170, .1);
+    background: rgba(var(--accent-rgb), .1);
     padding: 1px 6px;
     border-radius: 4px;
     font-size: 11px
@@ -161,7 +161,7 @@
 }
 
 #stompLog .stomp-body {
-    color: #b5e8ff;
+    color: var(--accent2);
     white-space: pre-wrap;
     word-break: break-all;
     display: inline-block;
@@ -191,38 +191,38 @@
 }
 
 .api-url-bar select.method-GET {
-    color: #4caf50;
-    border-color: #4caf50
+    color: var(--success);
+    border-color: var(--success)
 }
 
 .api-url-bar select.method-POST {
-    color: #ff9800;
-    border-color: #ff9800
+    color: var(--warning);
+    border-color: var(--warning)
 }
 
 .api-url-bar select.method-PUT {
-    color: #2196f3;
-    border-color: #2196f3
+    color: var(--accent2);
+    border-color: var(--accent2)
 }
 
 .api-url-bar select.method-PATCH {
-    color: #9c27b0;
-    border-color: #9c27b0
+    color: var(--purple);
+    border-color: var(--purple)
 }
 
 .api-url-bar select.method-DELETE {
-    color: #f44336;
-    border-color: #f44336
+    color: var(--danger);
+    border-color: var(--danger)
 }
 
 .api-url-bar select.method-HEAD {
-    color: #607d8b;
-    border-color: #607d8b
+    color: var(--blue-grey);
+    border-color: var(--blue-grey)
 }
 
 .api-url-bar select.method-OPTIONS {
-    color: #607d8b;
-    border-color: #607d8b
+    color: var(--blue-grey);
+    border-color: var(--blue-grey)
 }
 
 .api-url-bar input {
@@ -236,12 +236,12 @@
 .api-url-bar .api-send-btn {
     padding: 7px 20px;
     border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-    background: linear-gradient(135deg, #4caf50, #388e3c);
-    box-shadow: 0 2px 8px rgba(76, 175, 80, .25);
+    background: linear-gradient(135deg, var(--success), color-mix(in srgb, var(--success), #000 25%));
+    box-shadow: 0 2px 8px rgba(var(--success-rgb), .25);
 }
 
 .api-url-bar .api-send-btn:hover {
-    box-shadow: 0 4px 14px rgba(76, 175, 80, .35)
+    box-shadow: 0 4px 14px rgba(var(--success-rgb), .35)
 }
 
 .api-url-bar .outline {
@@ -398,7 +398,7 @@
 
 .api-response {
     margin-top: 12px;
-    background: #1a1f33;
+    background: var(--bg-terminal);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     overflow: hidden
@@ -424,23 +424,23 @@
 }
 
 .api-response .resp-status.status-2xx {
-    background: rgba(76, 175, 80, .15);
-    color: #4caf50
+    background: rgba(var(--success-rgb), .15);
+    color: var(--success)
 }
 
 .api-response .resp-status.status-3xx {
-    background: rgba(33, 150, 243, .15);
-    color: #2196f3
+    background: rgba(var(--info-rgb), .15);
+    color: var(--info)
 }
 
 .api-response .resp-status.status-4xx {
-    background: rgba(255, 152, 0, .15);
-    color: #ff9800
+    background: rgba(var(--warning-rgb), .15);
+    color: var(--warning)
 }
 
 .api-response .resp-status.status-5xx {
-    background: rgba(244, 67, 54, .15);
-    color: #f44336
+    background: rgba(var(--danger-rgb), .15);
+    color: var(--danger)
 }
 
 .api-response .resp-meta {
@@ -611,8 +611,8 @@
 }
 
 #curlOutput {
-    background: #1a1f33;
-    color: #b5e8ff
+    background: var(--bg-terminal);
+    color: var(--accent2)
 }
 
 /* gRPC */
@@ -668,18 +668,18 @@
 }
 
 #grpcMetaOutput {
-    background: #1a1f33;
-    color: #b5e8ff
+    background: var(--bg-terminal);
+    color: var(--accent2)
 }
 
 #grpcPbOutput {
-    background: #1a1f33;
-    color: #b5e8ff;
+    background: var(--bg-terminal);
+    color: var(--accent2);
 }
 
 /* Logfmt 日志高亮 */
 .logfmt-results {
-    background: #1a1f33;
+    background: var(--bg-terminal);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     padding: 12px 16px;
@@ -706,14 +706,14 @@
 
 .logfmt-line.logfmt-level-ERROR,
 .logfmt-line.logfmt-level-FATAL {
-    background: rgba(239, 83, 80, .08);
+    background: rgba(var(--danger-rgb), .08);
     border-left: 2px solid var(--danger);
     padding-left: 6px;
     margin: 1px 0;
 }
 
 .logfmt-line.logfmt-level-WARN {
-    background: rgba(255, 167, 38, .06);
+    background: rgba(var(--warning-rgb), .06);
     border-left: 2px solid var(--warning);
     padding-left: 6px;
     margin: 1px 0;
@@ -729,12 +729,30 @@
     min-width: 5ch;
 }
 
-.logfmt-l-trace { color: #6b7593; }
-.logfmt-l-debug { color: #4fc3f7; }
-.logfmt-l-info  { color: #66bb6a; }
-.logfmt-l-warn  { color: #ffa726; }
-.logfmt-l-error { color: #ef5350; }
-.logfmt-l-fatal { color: #ff5252; font-weight: 700; }
+.logfmt-l-trace {
+    color: #6b7593;
+}
+
+.logfmt-l-debug {
+    color: var(--accent2);
+}
+
+.logfmt-l-info {
+    color: var(--success);
+}
+
+.logfmt-l-warn {
+    color: var(--warning);
+}
+
+.logfmt-l-error {
+    color: var(--danger);
+}
+
+.logfmt-l-fatal {
+    color: var(--danger);
+    font-weight: 700;
+}
 
 .logfmt-thread {
     color: #b39ddb;
@@ -754,11 +772,11 @@
 }
 
 .logfmt-stack-error {
-    border-left-color: rgba(239, 83, 80, .5);
+    border-left-color: rgba(var(--danger-rgb), .5);
 }
 
 .logfmt-stack-warn {
-    border-left-color: rgba(255, 167, 38, .4);
+    border-left-color: rgba(var(--warning-rgb), .4);
 }
 
 .logfmt-stack-head {
