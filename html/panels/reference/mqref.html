@@ -1,13 +1,16 @@
 <div class="tool-panel" id="panel-mqref">
-    <div class="mb-8" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-        <input id="mqrefSearch" oninput="mqrefSearch()" placeholder="搜索中间件配置 / 概念 / 示例..." style="flex:1;max-width:400px"
-               type="text">
-        <div id="mqrefTabs" style="display:flex;gap:6px;flex-wrap:wrap">
-            <button class="sm outline active" data-tab="kafka" onclick="mqrefSwitchTab('kafka')">Kafka</button>
-            <button class="sm outline" data-tab="rabbitmq" onclick="mqrefSwitchTab('rabbitmq')">RabbitMQ</button>
-            <button class="sm outline" data-tab="rocketmq" onclick="mqrefSwitchTab('rocketmq')">RocketMQ</button>
+    <div class="ref-search-bar">
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            <input id="mqrefSearch" oninput="mqrefSearch()" placeholder="搜索中间件配置 / 概念 / 示例..."
+                   style="flex:1;max-width:400px"
+                   type="text">
+            <div id="mqrefTabs" style="display:flex;gap:6px;flex-wrap:wrap">
+                <button class="sm outline active" data-tab="kafka" onclick="mqrefSwitchTab('kafka')">Kafka</button>
+                <button class="sm outline" data-tab="rabbitmq" onclick="mqrefSwitchTab('rabbitmq')">RabbitMQ</button>
+                <button class="sm outline" data-tab="rocketmq" onclick="mqrefSwitchTab('rocketmq')">RocketMQ</button>
+            </div>
         </div>
+        <div id="mqrefCats" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px"></div>
     </div>
-    <div id="mqrefCats" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"></div>
     <div id="mqrefList"></div>
 </div>

@@ -1,0 +1,33 @@
+<div class="tool-panel" id="panel-protobuf">
+    <div class="toolbar">
+        <button onclick="protobufDecodeBase64()">Base64 → JSON</button>
+        <button class="outline" onclick="protobufDecodeHex()">Hex → JSON</button>
+        <button class="outline" onclick="protobufEncode()">JSON → Base64</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">Proto 定义（可选，用于字段名称解析）</div>
+        <textarea class="json-input" id="protobufSchema" placeholder="message User {
+  int32 id = 1;
+  string name = 2;
+  string email = 3;
+}"></textarea>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入数据（Base64 或 Hex 编码的 Protobuf 数据）</div>
+        <textarea class="json-input" id="protobufInput" placeholder="CgRqb2huEgtqb2huQGV4LmNvbQ=="></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">解码结果</div>
+        <button class="copy-btn" onclick="copyText('protobufOutput')">复制</button>
+        <pre class="output-box" id="protobufOutput" style="white-space:pre-wrap"></pre>
+    </div>
+    <div style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
+        <strong>说明：</strong>
+        <ul style="margin:4px 0 0 16px">
+            <li>支持无 Schema 的通用解码（字段显示为 field_N）</li>
+            <li>提供 Proto 定义后，字段名称会自动映射</li>
+            <li>支持嵌套消息、重复字段、枚举等</li>
+            <li>编码功能需要输入合法的 JSON 对象</li>
+        </ul>
+    </div>
+</div>

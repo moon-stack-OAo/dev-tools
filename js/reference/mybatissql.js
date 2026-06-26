@@ -74,20 +74,13 @@ function mybatissqlRender(filter) {
         return;
     }
     list.forEach(group => {
-        const section = document.createElement('div');
-        section.style.cssText = 'margin-bottom:18px';
-        section.innerHTML = `
-            <div style="font-size:13px;font-weight:600;color:var(--accent);padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:4px">${group.cat}</div>
-            <div style="font-size:12px;color:var(--text-muted);padding:2px 0 4px">语法：<code style="color:var(--accent2);background:var(--bg-input);padding:1px 6px;border-radius:3px">${group.syntax.replace(/</g, '&lt;')}</code></div>
-            <div style="font-size:12px;color:var(--text-dim);padding:2px 0 8px">${group.desc}</div>
-        `;
-        const pre = document.createElement('pre');
-        pre.style.cssText = 'background:var(--bg-input);padding:10px 12px;border-radius:4px;font-size:12px;overflow:auto;cursor:pointer;margin:0;border:1px solid var(--border);color:var(--text);position:relative';
-        pre.textContent = group.example;
-        pre.title = '点击复制示例';
-        pre.addEventListener('click', () => safeCopy(group.example));
-        section.appendChild(pre);
-        container.appendChild(section);
+        const card = document.createElement('div');
+        card.className = 'ref-card';
+        let html = `<div class="ref-cmd-head"><code class="ref-cmd-name">${group.cat}</code><span class="ref-cmd-desc">${group.desc}</span><button class="sm outline" onclick="safeCopy('${group.syntax.replace(/'/g, "\\'")}')">复制语法</button></div>`;
+        html += `<div class="ref-syntax">${group.syntax.replace(/</g, '&lt;')}</div>`;
+        html += `<div class="ref-copy-wrap"><pre class="ref-pre"><code>${group.example.replace(/</g, '&lt;')}</code></pre><button class="ref-copy-btn" onclick="safeCopy(this.parentElement.querySelector('pre').innerText)">复制</button></div>`;
+        card.innerHTML = html;
+        container.appendChild(card);
     });
 }
 

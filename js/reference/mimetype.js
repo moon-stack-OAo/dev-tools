@@ -1,4 +1,4 @@
-const MIME_TYPES = [
+﻿const MIME_TYPES = [
     // 文本
     {ext: '.html, .htm', mime: 'text/html', cat: '文本', desc: 'HTML 文档'},
     {ext: '.css', mime: 'text/css', cat: '文本', desc: 'CSS 样式表'},
@@ -62,11 +62,26 @@ const MIME_TYPES = [
 
     // Office
     {ext: '.doc', mime: 'application/msword', cat: '办公', desc: 'Word 97-2003'},
-    {ext: '.docx', mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', cat: '办公', desc: 'Word 2007+'},
+    {
+        ext: '.docx',
+        mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        cat: '办公',
+        desc: 'Word 2007+'
+    },
     {ext: '.xls', mime: 'application/vnd.ms-excel', cat: '办公', desc: 'Excel 97-2003'},
-    {ext: '.xlsx', mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', cat: '办公', desc: 'Excel 2007+'},
+    {
+        ext: '.xlsx',
+        mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        cat: '办公',
+        desc: 'Excel 2007+'
+    },
     {ext: '.ppt', mime: 'application/vnd.ms-powerpoint', cat: '办公', desc: 'PowerPoint 97-2003'},
-    {ext: '.pptx', mime: 'application/vnd.openxmlformats-officedocument.presentationml.presentation', cat: '办公', desc: 'PowerPoint 2007+'},
+    {
+        ext: '.pptx',
+        mime: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        cat: '办公',
+        desc: 'PowerPoint 2007+'
+    },
     {ext: '.odt', mime: 'application/vnd.oasis.opendocument.text', cat: '办公', desc: 'OpenDocument Text'},
 
     // 字体
@@ -129,7 +144,7 @@ function mimetypeRender(filter) {
     };
 
     const header = document.createElement('div');
-    header.style.cssText = 'display:grid;grid-template-columns:200px 1fr 70px 1fr;background:var(--bg-input);font-weight:600;border-radius:4px;padding:6px 0;margin-bottom:6px;font-size:12px;position:sticky;top:0';
+    header.style.cssText = 'display:grid;grid-template-columns:200px 1fr 70px 1fr;background:var(--bg-input);font-weight:600;border-radius:4px;padding:6px 0;margin-bottom:6px;font-size:12px;position:sticky;top:52px;z-index:5';
     header.innerHTML = `
         <span style="padding:4px 10px">扩展名</span>
         <span style="padding:4px 10px">MIME 类型</span>

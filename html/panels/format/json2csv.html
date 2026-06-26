@@ -1,0 +1,30 @@
+<div class="tool-panel" id="panel-json2csv">
+    <div class="toolbar">
+        <button onclick="json2csvConvert()">JSON → CSV</button>
+        <button class="outline" onclick="csv2jsonConvert()">CSV → JSON</button>
+        <label><input checked id="json2csvHeader" style="accent-color:var(--accent)" type="checkbox"> 包含表头</label>
+        <label><input checked id="json2csvPretty" style="accent-color:var(--accent)" type="checkbox"> JSON 格式化</label>
+    </div>
+    <div class="mb-8">
+        <div class="label">JSON 输入（数组格式）</div>
+        <textarea class="json-input" id="json2csvInput" placeholder='[
+  {"name": "张三", "age": 25, "city": "北京"},
+  {"name": "李四", "age": 30, "city": "上海"},
+  {"name": "王五", "age": 28, "city": "广州"}
+]'></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出结果</div>
+        <button class="copy-btn" onclick="copyText('json2csvOutput')">复制</button>
+        <textarea class="json-input" id="json2csvOutput" readonly style="min-height:150px"></textarea>
+    </div>
+    <div style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
+        <strong>说明：</strong>
+        <ul style="margin:4px 0 0 16px">
+            <li>JSON → CSV：输入 JSON 数组，自动生成 CSV</li>
+            <li>CSV → JSON：输入 CSV 文本，生成 JSON 数组</li>
+            <li>支持嵌套对象（自动展平为 a.b.c 格式）</li>
+            <li>支持数组字段（用分号分隔）</li>
+        </ul>
+    </div>
+</div>

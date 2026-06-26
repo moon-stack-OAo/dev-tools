@@ -1,0 +1,39 @@
+<div class="tool-panel" id="panel-sse">
+    <div class="toolbar">
+        <button onclick="sseConnect()">连接</button>
+        <button class="outline" onclick="sseDisconnect()">断开</button>
+        <button class="outline" onclick="sseClear()">清空日志</button>
+        <span id="sseStatus" style="margin-left:8px;font-size:12px;color:var(--text-dim)">未连接</span>
+    </div>
+    <div class="mb-8">
+        <div class="label">SSE 端点 URL</div>
+        <input id="sseUrl" placeholder="https://api.example.com/events" type="text" value="">
+    </div>
+    <div class="mb-8" style="display:flex;gap:12px;flex-wrap:wrap">
+        <div style="flex:1;min-width:200px">
+            <div class="label">自定义请求头</div>
+            <textarea class="json-input" id="sseHeaders" placeholder='{"Authorization": "Bearer xxx"}' style="min-height:60px"></textarea>
+        </div>
+        <div style="flex:1;min-width:200px">
+            <div class="label">事件过滤（用逗号分隔）</div>
+            <input id="sseFilter" placeholder="message,update,notification" type="text">
+        </div>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">事件日志</div>
+        <button class="copy-btn" onclick="sseCopyLog()">复制</button>
+        <div id="sseLog" style="padding:12px;background:var(--bg-input);border-radius:4px;font-family:var(--font);font-size:12px;max-height:400px;overflow-y:auto">
+            <div style="color:var(--text-dim)">等待连接...</div>
+        </div>
+    </div>
+    <div style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
+        <strong>说明：</strong>
+        <ul style="margin:4px 0 0 16px">
+            <li>Server-Sent Events (SSE) 单向实时通信调试</li>
+            <li>支持自定义请求头（如 Authorization）</li>
+            <li>支持事件类型过滤</li>
+            <li>自动重连机制（默认 3 秒）</li>
+            <li>显示事件 ID、类型、数据和时间戳</li>
+        </ul>
+    </div>
+</div>

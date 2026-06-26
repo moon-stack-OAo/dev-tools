@@ -67,27 +67,19 @@ const GIT_CMDS = [
 
 function gitRender() {
     const container = document.getElementById('gitContent');
+    if (!container) return;
     container.innerHTML = '';
     GIT_CMDS.forEach(group => {
-        const h = document.createElement('div');
-        h.style.cssText = 'font-size:13px;font-weight:600;color:var(--accent);padding:10px 0 6px;border-bottom:1px solid var(--border);margin-bottom:4px';
-        h.textContent = group.cat;
-        container.appendChild(h);
+        const section = document.createElement('div');
+        section.style.cssText = 'margin-bottom:16px';
+        section.innerHTML = `<div style="font-size:12px;font-weight:600;color:var(--accent);padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:8px">${group.cat}</div>`;
         group.items.forEach(item => {
-            const row = document.createElement('div');
-            row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:4px 8px;border-radius:4px;font-size:12px;cursor:pointer;transition:background .12s';
-            row.innerHTML = '<code style="background:var(--bg-input);padding:2px 8px;border-radius:3px;color:var(--accent2);white-space:pre;font-family:var(--font)">' + item.cmd.replace(/</g, '&lt;') + '</code><span style="color:var(--text-dim)">' + item.desc + '</span>';
-            row.addEventListener('mouseenter', function () {
-                this.style.background = 'var(--glass-hover)';
-            });
-            row.addEventListener('mouseleave', function () {
-                this.style.background = '';
-            });
-            row.addEventListener('click', function () {
-                safeCopy(item.cmd);
-            });
-            container.appendChild(row);
+            const card = document.createElement('div');
+            card.className = 'ref-card';
+            card.innerHTML = `<div class="ref-cmd-head"><code class="ref-cmd-name">${item.cmd.replace(/</g, '&lt;')}</code><span class="ref-cmd-desc">${item.desc.replace(/</g, '&lt;')}</span><button class="sm outline" onclick="safeCopy('${item.cmd.replace(/'/g, "\\'")}')">复制</button></div>`;
+            section.appendChild(card);
         });
+        container.appendChild(section);
     });
 }
 

@@ -159,30 +159,17 @@ function lombokRender(filter) {
         if (!matched.length) return;
         hasResult = true;
         const section = document.createElement('div');
-        section.style.cssText = 'margin-bottom:18px';
-        section.innerHTML = `<div style="font-size:12px;font-weight:600;color:var(--accent);padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:6px">${group.cat}</div>`;
+        section.style.cssText = 'margin-bottom:16px';
+        section.innerHTML = `<div style="font-size:12px;font-weight:600;color:var(--accent);padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:8px">${group.cat}</div>`;
         matched.forEach(item => {
-            const wrap = document.createElement('div');
-            wrap.style.cssText = 'padding:6px 8px;border-radius:4px;margin-bottom:4px;transition:background .12s';
-            wrap.onmouseenter = () => wrap.style.background = 'var(--glass)';
-            wrap.onmouseleave = () => wrap.style.background = '';
-            wrap.innerHTML = `
-                <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
-                    <code style="color:var(--accent2);font-size:13px;font-weight:600;background:var(--bg-input);padding:2px 8px;border-radius:4px;cursor:pointer" title="点击复制注解">${item.name}</code>
-                    <span style="font-size:12px;color:var(--text-dim);flex:1">${item.desc}</span>
-                </div>
-            `;
-            const codeEl = wrap.querySelector('code');
-            codeEl.addEventListener('click', () => safeCopy(item.name));
+            const card = document.createElement('div');
+            card.className = 'ref-card';
+            let html = `<div class="ref-cmd-head"><code class="ref-cmd-name">${item.name}</code><span class="ref-cmd-desc">${item.desc}</span><button class="sm outline" onclick="safeCopy('${item.name.replace(/'/g, "\\'")}')">复制</button></div>`;
             if (item.code) {
-                const pre = document.createElement('pre');
-                pre.style.cssText = 'background:var(--bg-input);padding:8px 10px;border-radius:4px;font-size:12px;overflow:auto;cursor:pointer;margin:6px 0 0;border:1px solid var(--border);color:var(--text)';
-                pre.textContent = item.code;
-                pre.title = '点击复制代码';
-                pre.addEventListener('click', () => safeCopy(item.code));
-                wrap.appendChild(pre);
+                html += `<div class="ref-copy-wrap"><pre class="ref-pre"><code>${item.code.replace(/</g, '&lt;')}</code></pre><button class="ref-copy-btn" onclick="safeCopy(this.parentElement.querySelector('pre').innerText)">复制</button></div>`;
             }
-            section.appendChild(wrap);
+            card.innerHTML = html;
+            section.appendChild(card);
         });
         container.appendChild(section);
     });

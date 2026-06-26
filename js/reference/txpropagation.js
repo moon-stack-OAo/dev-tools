@@ -61,39 +61,20 @@ function txpropagationRender(filter) {
         return;
     }
 
-    const header = document.createElement('div');
-    header.style.cssText = 'display:grid;grid-template-columns:170px 1fr 1fr;background:var(--bg-input);font-weight:600;border-radius:4px;padding:6px 0;margin-bottom:6px;font-size:12px;position:sticky;top:0';
-    header.innerHTML = `
-        <span style="padding:4px 10px">传播行为</span>
-        <span style="padding:4px 10px">行为描述</span>
-        <span style="padding:4px 10px">典型场景</span>
-    `;
-    container.appendChild(header);
-
     list.forEach(p => {
-        const row = document.createElement('div');
-        row.style.cssText = 'display:grid;grid-template-columns:170px 1fr 1fr;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;cursor:pointer;transition:background .12s;border-radius:4px';
-        row.onmouseenter = () => row.style.background = 'var(--glass)';
-        row.onmouseleave = () => row.style.background = '';
-        const tag = p.isDefault
-            ? '<span style="font-size:10px;background:var(--accent);color:#fff;padding:1px 5px;border-radius:3px;margin-left:6px">默认</span>'
-            : '';
-        row.innerHTML = `
-            <span style="padding:4px 10px"><code style="background:var(--bg-input);padding:2px 8px;border-radius:3px;color:var(--accent2);font-weight:600">${p.name}</code>${tag}</span>
-            <span style="padding:4px 10px;color:var(--text-dim)">${p.desc}</span>
-            <span style="padding:4px 10px;color:var(--text-muted)">${p.scenario}</span>
-        `;
-        row.addEventListener('click', () => safeCopy('Propagation.' + p.name));
-        container.appendChild(row);
+        const card = document.createElement('div');
+        card.className = 'ref-card';
+        const tag = p.isDefault ? '<span style="font-size:10px;background:var(--accent);color:#fff;padding:1px 5px;border-radius:3px;margin-left:6px">默认</span>' : '';
+        let html = `<div class="ref-cmd-head"><code class="ref-cmd-name">${p.name}</code>${tag}<button class="sm outline" onclick="safeCopy('Propagation.${p.name}')">复制</button></div>`;
+        html += `<div style="font-size:12px;color:var(--text-dim);margin:4px 0">${p.desc}</div>`;
+        html += `<div style="font-size:11px;color:var(--text-muted)">场景: ${p.scenario}</div>`;
+        card.innerHTML = html;
+        container.appendChild(card);
     });
 
     const usage = document.createElement('div');
-    usage.style.cssText = 'margin-top:18px;padding:10px 12px;background:var(--bg-input);border-radius:4px;font-size:12px;color:var(--text-dim);line-height:1.7';
-    usage.innerHTML = `
-        <div style="color:var(--accent);font-weight:600;margin-bottom:6px">使用示例：</div>
-        <code style="display:block;color:var(--accent2);white-space:pre">@Transactional(propagation = Propagation.REQUIRES_NEW)
-public void logOperation(String msg) { ... }</code>
-    `;
+    usage.className = 'ref-card';
+    usage.innerHTML = `<div style="font-size:12px;font-weight:600;color:var(--accent);margin-bottom:6px">使用示例</div><div class="ref-copy-wrap"><pre class="ref-pre"><code>@Transactional(propagation = Propagation.REQUIRES_NEW)\npublic void logOperation(String msg) { ... }</code></pre><button class="ref-copy-btn" onclick="safeCopy(this.parentElement.querySelector('pre').innerText)">复制</button></div>`;
     container.appendChild(usage);
 }
 

@@ -1,6 +1,6 @@
 # Java 开发工具箱
 
-> 一个面向 Java 开发者的**纯前端**在线工具集 —— **86 个工具、7 大分类**
+> 一个面向 Java 开发者的**纯前端**在线工具集 —— **96 个工具、7 大分类**
 > ，覆盖格式化、编解码、安全、生成与转换、文本、调试、参考速查。无需后端、无需联网、无需上传数据，所有计算均在浏览器本地完成。支持
 > Vite 开发、Docker 一键部署、Nginx 静态托管，开箱即用。
 
@@ -9,7 +9,7 @@
 - 🚀 **零依赖开箱即用**：纯静态 HTML / CSS / JavaScript，无任何前端框架；业务代码无构建期编译，第三方库通过 Vite + esbuild
   打包为 IIFE
 - 🔒 **数据 100% 本地处理**：所有计算在浏览器内完成，不会上传任何内容到服务器，支持离线使用
-- 🧰 **86 个工具 / 7 大分类**：覆盖 Java 开发日常所需，工具持续扩充
+- 🧰 **96 个工具 / 7 大分类**：覆盖 Java 开发日常所需，工具持续扩充
 - 🎨 **深色主题 + 响应式**：桌面 / 平板 / 手机均可使用
 - 🐳 **多种部署方式**：Vite 开发、Docker 容器、Nginx 静态托管
 - 📦 **依赖本地化**：19 个常用库全部内置到 `public/lib/`，断网仍可使用（图标字体 `bootstrap-icons` 随 `npm install` 注入到
@@ -106,7 +106,7 @@ npm run build     # 输出到 dist/
 
 ## 🧰 工具列表
 
-### 一、格式化（10）
+### 一、格式化（11）
 
 | 工具             | 功能                                                            |
 |----------------|---------------------------------------------------------------|
@@ -120,19 +120,21 @@ npm run build     # 输出到 dist/
 | SQL 方言转        | MySQL / PostgreSQL / Oracle / SQLServer 方言互转                  |
 | DB 类型映射        | Java 数据库类型映射 + JDBC URL 生成                                    |
 | Properties 格式化 | `.properties` 配置文件格式化、键值排序、转义                                 |
+| JSON ↔ CSV     | JSON 数组与 CSV 互转，支持嵌套对象展平                                      |
 
-### 二、编解码（8）
+### 二、编解码（9）
 
-| 工具        | 功能                                            |
-|-----------|-----------------------------------------------|
-| Base64    | 文本 / 文件 Base64 编码解码，支持 URL 安全模式               |
-| URL 编码    | URL 编解码，支持 `encodeURI` / `encodeURIComponent` |
-| Unicode   | `\uXXXX` 编码与解码互转                              |
-| Java 转义   | Java 字符串转义与反转义（`\n` `\t` `\"` 等）              |
-| 字符集转换     | UTF-8 / GBK / Shift-JIS 等编码互转与检测              |
-| HTML 转义   | HTML 实体编码与解码                                  |
-| 图片 Base64 | 图片 ↔ Base64 互转，支持预览与下载                        |
-| Hex 编码    | 文本与十六进制互转，支持 UTF-8 / GBK 字符集                  |
+| 工具          | 功能                                            |
+|-------------|-----------------------------------------------|
+| Base64      | 文本 / 文件 Base64 编码解码，支持 URL 安全模式               |
+| URL 编码      | URL 编解码，支持 `encodeURI` / `encodeURIComponent` |
+| Unicode     | `\uXXXX` 编码与解码互转                              |
+| Java 转义     | Java 字符串转义与反转义（`\n` `\t` `\"` 等）              |
+| 字符集转换       | UTF-8 / GBK / Shift-JIS 等编码互转与检测              |
+| HTML 转义     | HTML 实体编码与解码                                  |
+| 图片 Base64   | 图片 ↔ Base64 互转，支持预览与下载                        |
+| Hex 编码      | 文本与十六进制互转，支持 UTF-8 / GBK 字符集                  |
+| Protobuf 解码 | Protobuf ↔ JSON 互转，支持 Base64 / Hex 编解码        |
 
 ### 三、安全（13）
 
@@ -186,7 +188,7 @@ npm run build     # 输出到 dist/
 | 二维码生成    | 文本 / URL 生成二维码，支持下载 PNG          |
 | 模板替换     | 占位符 `{{key}}` 批量替换 + 预览          |
 
-### 六、调试（9）
+### 六、调试（11）
 
 | 工具        | 功能                                                                   |
 |-----------|----------------------------------------------------------------------|
@@ -199,33 +201,42 @@ npm run build     # 输出到 dist/
 | gRPC 调试   | gRPC 请求构造与响应解析（Unary 调用）                                             |
 | URL 解析    | URL 各组成部分解析（协议 / 域名 / 端口 / 路径 / 参数）                                  |
 | UA 解析     | User-Agent 解析：浏览器、操作系统、设备类型                                          |
+| 日志高亮      | 日志格式化 + 级别着色 + 堆栈折叠                                                  |
+| 异常分析      | Java 堆栈跟踪解析，识别异常链、提取源码位置                                             |
+| SSE 调试    | Server-Sent Events 实时调试，支持自定义请求头与事件过滤                                |
 
-### 七、参考（22）
+### 七、参考（28）
 
-| 工具           | 功能                                                        |
-|--------------|-----------------------------------------------------------|
-| Arthas 命令    | 22+ 条常用 Arthas 命令分类速查，支持搜索筛选                              |
-| JMH 模板       | JMH 基准测试代码生成器，可配置 Mode / Fork / 预热 / 测量                   |
-| 测试模板         | JUnit 5 + Mockito 测试代码生成，支持 Service / Controller / Mapper |
-| Linux 命令速查   | 常用 Linux 命令分类速查（文件 / 权限 / 进程 / 网络 / Java），点击复制            |
-| Docker 命令速查  | Docker / Compose / K8s 命令速查，点击复制                          |
-| Git 命令速查     | Git 常用操作速查（配置 / 分支 / 提交 / 查看），点击复制                        |
-| HTTP 状态码速查   | HTTP 方法 + 状态码分类速查                                         |
-| ASCII 表      | 完整 ASCII 码表（DEC / HEX / OCT / 字符 / 说明）                    |
-| MyBatis Plus | MyBatis Plus 常用注解与 Wrapper 用法速查                           |
-| MyBatis SQL  | MyBatis 动态 SQL 标签与示例                                      |
-| Lombok       | Lombok 注解速查与示例代码                                          |
-| Spring Boot  | Spring Boot 常用注解与配置项速查                                    |
-| 事务传播         | Spring 事务传播机制与隔离级别详解                                      |
-| Maven 命令     | Maven 常用命令与 POM 速查                                        |
-| JDK 新特性      | JDK 8 ~ 21 各版本新特性概览                                       |
-| HTTP Header  | HTTP 常用请求头 / 响应头速查                                        |
-| MIME Type    | 常见 MIME 类型对照表                                             |
-| 端口速查         | 常用服务默认端口速查（HTTP / SSH / MySQL / Redis 等）                  |
-| JVM 参数       | 常用 JVM 启动参数与 GC 调优速查                                      |
-| Redis 命令     | Redis 常用命令分类速查（String/Hash/List/Set/ZSet 等）               |
-| Spring Cloud | Spring Cloud Alibaba / Netflix 核心组件速查                     |
-| 消息中间件        | Kafka / RabbitMQ / RocketMQ 命令与配置速查                       |
+| 工具              | 功能                                                        |
+|-----------------|-----------------------------------------------------------|
+| Arthas 命令       | 22+ 条常用 Arthas 命令分类速查，支持搜索筛选                              |
+| JMH 模板          | JMH 基准测试代码生成器，可配置 Mode / Fork / 预热 / 测量                   |
+| 测试模板            | JUnit 5 + Mockito 测试代码生成，支持 Service / Controller / Mapper |
+| Linux 命令速查      | 常用 Linux 命令分类速查（文件 / 权限 / 进程 / 网络 / Java），点击复制            |
+| Docker 命令速查     | Docker / Compose / K8s 命令速查，点击复制                          |
+| Git 命令速查        | Git 常用操作速查（配置 / 分支 / 提交 / 查看），点击复制                        |
+| HTTP 状态码速查      | HTTP 方法 + 状态码分类速查                                         |
+| ASCII 表         | 完整 ASCII 码表（DEC / HEX / OCT / 字符 / 说明）                    |
+| MyBatis Plus    | MyBatis Plus 常用注解与 Wrapper 用法速查                           |
+| MyBatis SQL     | MyBatis 动态 SQL 标签与示例                                      |
+| Lombok          | Lombok 注解速查与示例代码                                          |
+| Spring Boot     | Spring Boot 常用注解与配置项速查                                    |
+| 事务传播            | Spring 事务传播机制与隔离级别详解                                      |
+| Maven 命令        | Maven 常用命令与 POM 速查                                        |
+| JDK 新特性         | JDK 8 ~ 21 各版本新特性概览                                       |
+| HTTP Header     | HTTP 常用请求头 / 响应头速查                                        |
+| MIME Type       | 常见 MIME 类型对照表                                             |
+| 端口速查            | 常用服务默认端口速查（HTTP / SSH / MySQL / Redis 等）                  |
+| JVM 参数          | 常用 JVM 启动参数与 GC 调优速查                                      |
+| Redis 命令        | Redis 常用命令分类速查（String/Hash/List/Set/ZSet 等）               |
+| Spring Cloud    | Spring Cloud Alibaba / Netflix 核心组件速查                     |
+| 消息中间件           | Kafka / RabbitMQ / RocketMQ 命令与配置速查                       |
+| Gradle 命令       | Gradle 构建工具常用命令速查                                         |
+| IDEA 快捷键        | IntelliJ IDEA 常用快捷键速查（含 Mac 映射）                           |
+| 设计模式            | 23 种设计模式 Java 示例代码                                        |
+| GC 调优           | JVM 垃圾回收算法、参数与调优速查                                        |
+| Spring Security | Spring Security 注解与配置速查                                   |
+| JUnit 5         | JUnit 5 注解、断言、参数化测试速查                                     |
 
 ---
 

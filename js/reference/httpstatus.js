@@ -57,44 +57,36 @@ const HTTP_METHODS = [
 
 function httpStatusRender() {
     const container = document.getElementById('httpStatusContent');
+    if (!container) return;
     container.innerHTML = '';
-    const h = document.createElement('div');
-    h.style.cssText = 'font-size:13px;font-weight:600;color:var(--accent);padding:0 0 6px;border-bottom:1px solid var(--border);margin-bottom:8px';
-    h.textContent = 'HTTP 方法';
-    container.appendChild(h);
+
+    const methodColors = {GET: '#4caf50', HEAD: '#607d8b', POST: '#ff9800', PUT: '#2196f3', PATCH: '#9c27b0', DELETE: '#f44336', OPTIONS: '#607d8b'};
+
+    const methodSection = document.createElement('div');
+    methodSection.style.cssText = 'margin-bottom:16px';
+    methodSection.innerHTML = '<div style="font-size:12px;font-weight:600;color:var(--accent);padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:8px">HTTP 方法</div>';
     HTTP_METHODS.forEach(m => {
-        const row = document.createElement('div');
-        row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:4px 8px;border-radius:4px;font-size:12px';
-        const col = ({
-            GET: '#4caf50',
-            HEAD: '#607d8b',
-            POST: '#ff9800',
-            PUT: '#2196f3',
-            PATCH: '#9c27b0',
-            DELETE: '#f44336',
-            OPTIONS: '#607d8b'
-        })[m.method] || 'var(--text)';
-        row.innerHTML = '<code style="background:var(--bg-input);padding:2px 10px;border-radius:3px;color:' + col + ';font-weight:600">' + m.method + '</code><span style="color:var(--text-dim);flex:1">' + m.desc + '</span><span style="font-size:11px;color:var(--text-muted)">' + (m.safe ? '安全 ' : '') + (m.idempotent ? '幂等' : '') + '</span>';
-        container.appendChild(row);
+        const card = document.createElement('div');
+        card.className = 'ref-card';
+        const col = methodColors[m.method] || 'var(--text)';
+        card.innerHTML = `<div class="ref-cmd-head"><code style="background:var(--bg-input);padding:2px 10px;border-radius:4px;font-size:13px;color:${col};font-weight:600;white-space:nowrap">${m.method}</code><span class="ref-cmd-desc">${m.desc}</span><span style="font-size:11px;color:var(--text-muted)">${m.safe ? '安全 ' : ''}${m.idempotent ? '幂等' : ''}</span></div>`;
+        methodSection.appendChild(card);
     });
+    container.appendChild(methodSection);
+
     Object.entries(HTTP_STATUS).forEach(([cat, items]) => {
-        const h2 = document.createElement('div');
-        h2.style.cssText = 'font-size:13px;font-weight:600;color:var(--accent);padding:10px 0 6px;border-bottom:1px solid var(--border);margin-bottom:4px;margin-top:8px';
-        h2.textContent = cat + ' ' + ({
-            '1xx': '信息',
-            '2xx': '成功',
-            '3xx': '重定向',
-            '4xx': '客户端错误',
-            '5xx': '服务器错误'
-        })[cat] || '';
-        container.appendChild(h2);
+        const section = document.createElement('div');
+        section.style.cssText = 'margin-bottom:16px';
+        const catLabel = cat + ' ' + ({'1xx': '信息', '2xx': '成功', '3xx': '重定向', '4xx': '客户端错误', '5xx': '服务器错误'}[cat] || '');
+        section.innerHTML = `<div style="font-size:12px;font-weight:600;color:var(--accent);padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:8px">${catLabel}</div>`;
         items.forEach(item => {
-            const row = document.createElement('div');
-            row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:4px 8px;border-radius:4px;font-size:12px';
+            const card = document.createElement('div');
+            card.className = 'ref-card';
             const statusCol = item.code < 200 ? '#607d8b' : item.code < 300 ? '#4caf50' : item.code < 400 ? '#2196f3' : item.code < 500 ? '#ff9800' : '#f44336';
-            row.innerHTML = '<code style="background:var(--bg-input);padding:2px 8px;border-radius:3px;color:' + statusCol + ';font-weight:600;min-width:42px;text-align:center">' + item.code + '</code><span style="color:var(--accent2);width:160px">' + item.text + '</span><span style="color:var(--text-dim)">' + item.desc + '</span>';
-            container.appendChild(row);
+            card.innerHTML = `<div class="ref-cmd-head"><code style="background:var(--bg-input);padding:2px 10px;border-radius:4px;font-size:13px;color:${statusCol};font-weight:600;min-width:42px;text-align:center">${item.code}</code><span style="color:var(--accent2);font-weight:500;min-width:120px">${item.text}</span><span class="ref-cmd-desc">${item.desc}</span></div>`;
+            section.appendChild(card);
         });
+        container.appendChild(section);
     });
 }
 

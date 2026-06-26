@@ -120,43 +120,30 @@ function jvmargsRender() {
             : group.items;
         if (matched.length === 0) return;
         hasResult = true;
-        const h = document.createElement('div');
-        h.style.cssText = 'font-size:13px;font-weight:600;color:var(--accent);padding:10px 0 6px;border-bottom:1px solid var(--border);margin-bottom:4px';
-        h.textContent = group.cat;
-        container.appendChild(h);
+        const section = document.createElement('div');
+        section.style.cssText = 'margin-bottom:16px';
+        section.innerHTML = `<div style="font-size:12px;font-weight:600;color:var(--accent);padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:8px">${group.cat}</div>`;
         matched.forEach(item => {
-            const row = document.createElement('div');
-            row.style.cssText = 'display:flex;flex-direction:column;gap:4px;padding:10px 12px;border:1px solid var(--border);border-radius:6px;margin-bottom:6px;background:var(--bg-card);transition:border-color .12s;cursor:pointer';
+            const card = document.createElement('div');
+            card.className = 'ref-card';
             const safeArg = item.arg.replace(/</g, '&lt;');
             const safeDesc = item.desc.replace(/</g, '&lt;');
             const safeExample = (item.example || '').replace(/</g, '&lt;');
             const safeDefault = (item.default || '').replace(/</g, '&lt;');
-            const metaHtml = (item.example && item.example !== '-'
-                ? '<span>示例: <code style="background:var(--bg-input);padding:1px 6px;border-radius:3px;color:var(--accent2);font-family:var(--font)">' + safeExample + '</code></span>'
-                : '') +
-                (item.default && item.default !== '-'
-                    ? '<span style="color:var(--text-dim)">默认: ' + safeDefault + '</span>'
-                    : '');
-            row.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center">' +
-                '<code style="color:var(--accent);font-family:var(--font);font-size:13px;font-weight:600">' + safeArg + '</code>' +
-                '<button class="sm outline" onclick="event.stopPropagation();safeCopy(\'' + safeArg.replace(/'/g, "\\'") + '\',\'已复制参数名\')">复制参数名</button>' +
-                '</div>' +
-                '<div style="font-size:12px;color:var(--text-main)">' + safeDesc + '</div>' +
-                (metaHtml ? '<div style="display:flex;gap:12px;font-size:11px;flex-wrap:wrap">' + metaHtml + '</div>' : '');
-            row.addEventListener('mouseenter', function () {
-                this.style.borderColor = 'var(--accent)';
-            });
-            row.addEventListener('mouseleave', function () {
-                this.style.borderColor = 'var(--border)';
-            });
-            row.addEventListener('click', function () {
-                safeCopy(item.arg, '已复制参数名');
-            });
-            container.appendChild(row);
+            let html = `<div class="ref-cmd-head"><code class="ref-cmd-name">${safeArg}</code><span class="ref-cmd-desc">${safeDesc}</span><button class="sm outline" onclick="safeCopy('${safeArg.replace(/'/g, "\\'")}')">复制</button></div>`;
+            if (safeExample && safeExample !== '-') {
+                html += `<div class="ref-syntax">${safeExample}</div>`;
+            }
+            if (safeDefault && safeDefault !== '-') {
+                html += `<div style="font-size:11px;color:var(--text-muted);margin-top:4px">默认: ${safeDefault}</div>`;
+            }
+            card.innerHTML = html;
+            section.appendChild(card);
         });
+        container.appendChild(section);
     });
     if (!hasResult) {
-        container.innerHTML = '<div style="color:var(--text-dim);padding:20px;text-align:center">无匹配参数</div>';
+        container.innerHTML = '<div style="color:var(--text-muted);padding:20px;text-align:center">无匹配参数</div>';
     }
 }
 

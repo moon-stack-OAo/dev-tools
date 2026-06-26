@@ -103,16 +103,13 @@ function mavenrefRender(filter) {
         if (!matched.length) return;
         hasResult = true;
         const section = document.createElement('div');
-        section.style.cssText = 'margin-bottom:14px';
-        section.innerHTML = `<div style="font-size:12px;font-weight:600;color:var(--accent);padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:6px">${group.cat}</div>`;
+        section.style.cssText = 'margin-bottom:16px';
+        section.innerHTML = `<div style="font-size:12px;font-weight:600;color:var(--accent);padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:8px">${group.cat}</div>`;
         matched.forEach(item => {
-            const row = document.createElement('div');
-            row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:4px;transition:background .12s;cursor:pointer';
-            row.onmouseenter = () => row.style.background = 'var(--glass)';
-            row.onmouseleave = () => row.style.background = '';
-            row.innerHTML = `<code style="background:var(--bg-input);padding:2px 8px;border-radius:3px;color:var(--accent2);white-space:pre;font-family:var(--font);font-size:12px;flex-shrink:0">${item.cmd.replace(/</g, '&lt;')}</code><span style="color:var(--text-dim);font-size:12px;flex:1">${item.desc}</span>`;
-            row.addEventListener('click', () => safeCopy(item.cmd));
-            section.appendChild(row);
+            const card = document.createElement('div');
+            card.className = 'ref-card';
+            card.innerHTML = `<div class="ref-cmd-head"><code class="ref-cmd-name">${item.cmd.replace(/</g, '&lt;')}</code><span class="ref-cmd-desc">${item.desc}</span><button class="sm outline" onclick="safeCopy('${item.cmd.replace(/'/g, "\\'")}')">复制</button></div>`;
+            section.appendChild(card);
         });
         container.appendChild(section);
     });

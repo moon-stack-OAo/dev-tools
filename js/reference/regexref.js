@@ -63,30 +63,19 @@ const REGEX_REF = [
 
 function regexRefRender() {
     const container = document.getElementById('regexRefContent');
+    if (!container) return;
     container.innerHTML = '';
     REGEX_REF.forEach(group => {
-        const header = document.createElement('div');
-        header.style.cssText = 'font-size:13px;font-weight:600;color:var(--accent);padding:12px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px';
-        header.textContent = group.cat;
-        container.appendChild(header);
+        const section = document.createElement('div');
+        section.style.cssText = 'margin-bottom:16px';
+        section.innerHTML = `<div style="font-size:12px;font-weight:600;color:var(--accent);padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:8px">${group.cat}</div>`;
         group.items.forEach(item => {
-            const row = document.createElement('div');
-            row.className = 'regex-ref-row';
-            row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:4px;font-size:12px;font-family:var(--font);cursor:pointer;transition:background .12s';
-            row.innerHTML = '<code class="regex-ref-pattern">' + item.pattern.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</code>'
-                + '<span class="regex-ref-desc">' + item.desc + '</span>'
-                + '<i class="bi bi-copy regex-ref-copy-icon"></i>';
-            row.addEventListener('click', function () {
-                safeCopy(item.pattern, '已复制: ' + item.pattern);
-            });
-            row.addEventListener('mouseenter', function () {
-                this.style.background = 'var(--glass-hover)';
-            });
-            row.addEventListener('mouseleave', function () {
-                this.style.background = '';
-            });
-            container.appendChild(row);
+            const card = document.createElement('div');
+            card.className = 'ref-card';
+            card.innerHTML = `<div class="ref-cmd-head"><code class="ref-cmd-name">${item.pattern.replace(/</g, '&lt;')}</code><span class="ref-cmd-desc">${item.desc}</span><button class="sm outline" onclick="safeCopy('${item.pattern.replace(/'/g, "\\'")}')">复制</button></div>`;
+            section.appendChild(card);
         });
+        container.appendChild(section);
     });
 }
 

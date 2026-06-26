@@ -1,0 +1,33 @@
+<div class="tool-panel" id="panel-stacktrace">
+    <div class="toolbar">
+        <button onclick="stacktraceParse()">解析堆栈</button>
+        <button class="outline" onclick="stacktraceFormat()">格式化</button>
+        <button class="outline" onclick="stacktraceClear()">清空</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">粘贴异常堆栈</div>
+        <textarea class="json-input" id="stacktraceInput" placeholder='java.lang.NullPointerException: Cannot invoke "String.length()" because "str" is null
+    at com.example.service.UserService.validate(UserService.java:42)
+    at com.example.controller.UserController.create(UserController.java:28)
+    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+    at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:897)
+Caused by: java.lang.IllegalArgumentException: Invalid input
+    at com.example.utils.Validator.check(Validator.java:15)
+    ... 15 more'></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">解析结果</div>
+        <button class="copy-btn" onclick="copyText('stacktraceOutput')">复制</button>
+        <div id="stacktraceOutput" style="padding:12px;background:var(--bg-input);border-radius:4px;font-family:var(--font);font-size:12px;white-space:pre-wrap;max-height:400px;overflow-y:auto"></div>
+    </div>
+    <div style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
+        <strong>功能：</strong>
+        <ul style="margin:4px 0 0 16px">
+            <li>解析异常类型和消息</li>
+            <li>高亮显示堆栈帧</li>
+            <li>识别 Caused by 链</li>
+            <li>提取源码位置（类名、方法名、文件、行号）</li>
+            <li>支持搜索过滤</li>
+        </ul>
+    </div>
+</div>
