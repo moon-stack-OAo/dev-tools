@@ -37,32 +37,28 @@
 }
 
 .main-header .header-home-title .hh-title {
-    font-size: 17px;
-    font-weight: 800;
-    letter-spacing: .3px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: .2px;
     color: var(--text);
     line-height: 1.2;
-    position: relative;
-    padding-bottom: 3px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.main-header .header-home-title .hh-title::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    border-radius: 1px;
-    opacity: .85;
+.main-header .header-home-title .hh-logo {
+    display: block;
+    flex-shrink: 0;
+    filter: drop-shadow(0 1px 2px rgba(var(--accent-rgb), .25));
 }
 
 .main-header .header-home-title .hh-sub {
-    font-size: 11px;
+    font-size: 10.5px;
     color: var(--text-muted);
     font-weight: 400;
     line-height: 1.2;
+    letter-spacing: .2px;
 }
 
 .main-header .header-github {
