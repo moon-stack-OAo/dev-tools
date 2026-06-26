@@ -505,3 +505,5 @@ function springcloudFilter(cat) {
     });
     springcloudRender();
 }
+
+registerInit('springcloud', springcloudRender);

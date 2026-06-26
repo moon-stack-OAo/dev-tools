@@ -107,3 +107,5 @@ function jdkfeaturesSearch() {
         jdkfeaturesRender(document.getElementById('jdkfeaturesSearch').value);
     }, 200);
 }
+
+registerInit('jdkfeatures', jdkfeaturesRender);

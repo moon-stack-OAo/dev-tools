@@ -1,0 +1,45 @@
+<div class="tool-panel" id="panel-logfmt">
+    <div class="stomp-block">
+        <div class="stomp-block-title">原始日志</div>
+        <textarea class="api-body-input" id="logfmtInput"
+                  placeholder="粘贴 Spring Boot / logback / log4j2 日志，支持多行、堆栈、Caused by ..."
+                  style="min-height:200px;max-height:300px"></textarea>
+        <div class="flex gap-6 mt-6" style="flex-wrap:wrap;align-items:center">
+            <button onclick="logfmtFormat()">▶ 格式化</button>
+            <button class="outline" onclick="logfmtClear()">清空</button>
+            <button class="outline" onclick="logfmtCopyText()">复制纯文本</button>
+            <button class="outline" onclick="logfmtDownload()">下载 .log</button>
+            <span class="stomp-tip">插入示例:</span>
+            <button class="outline sm" onclick="logfmtInsertSample('springboot')">Spring Boot</button>
+            <button class="outline sm" onclick="logfmtInsertSample('error')">异常堆栈</button>
+            <button class="outline sm" onclick="logfmtInsertSample('simple')">简单日志</button>
+            <button class="outline sm" onclick="logfmtInsertSample('tomcat')">Tomcat</button>
+        </div>
+    </div>
+
+    <div class="stomp-block">
+        <div class="stomp-block-title">过滤 / 搜索</div>
+        <div class="flex gap-6" style="align-items:center;flex-wrap:wrap">
+            <span class="label" style="margin:0">级别:</span>
+            <button class="logfmt-level-btn sm outline" data-level="TRACE">TRACE</button>
+            <button class="logfmt-level-btn sm outline" data-level="DEBUG">DEBUG</button>
+            <button class="logfmt-level-btn sm outline" data-level="INFO">INFO</button>
+            <button class="logfmt-level-btn sm outline" data-level="WARN">WARN</button>
+            <button class="logfmt-level-btn sm outline" data-level="ERROR">ERROR</button>
+            <button class="logfmt-level-btn sm outline" data-level="FATAL">FATAL</button>
+            <button class="outline sm" onclick="logfmtOnlyError()">仅 ERROR</button>
+            <button class="outline sm" onclick="logfmtAllLevels()">全部</button>
+            <input id="logfmtSearch" oninput="logfmtSearch(this.value)" placeholder="搜索关键字（200ms 防抖）"
+                   style="flex:1;min-width:200px" type="text">
+        </div>
+    </div>
+
+    <div class="stomp-block">
+        <div class="stomp-block-title">
+            格式化结果 <span class="stomp-tip" id="logfmtStats"></span>
+        </div>
+        <div class="logfmt-results" id="logfmtResults">
+            <div class="logfmt-empty">点击「格式化」查看高亮结果</div>
+        </div>
+    </div>
+</div>

@@ -52,3 +52,5 @@ function tsFromDate() {
     out.className = 'output-box';
     setStatus('日期转换完成');
 }
+
+registerInit('ts', tsInit);

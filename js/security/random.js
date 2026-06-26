@@ -71,3 +71,7 @@ function randomClear() {
     document.getElementById('randomList').innerHTML = '<div style="color:var(--text-dim);font-size:13px;padding:8px 0">点击按钮生成随机内容</div>';
     setStatus('已清空');
 }
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { randGen };
+}

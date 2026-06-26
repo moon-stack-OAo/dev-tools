@@ -1,6 +1,7 @@
 import {defineConfig} from 'vite';
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 
 function copyDir(src, dest) {
     if (fs.statSync(src).isDirectory()) {
@@ -62,6 +63,46 @@ function injectDevtoolsFlagPlugin(mode) {
     };
 }
 
+// 生产构建:扫描 js/ 与 html/ 下所有资源,按文件内容 md5 生成 window.__ASSET_MAP__ 并内联进
+// dist/index.html。app.js 动态加载工具脚本/面板时据此附加 ?v=<hash>,实现强缓存与更新自动失效。
+// dev 模式浏览器不长期缓存,无需该映射。
+function injectAssetMapPlugin(mode) {
+    return {
+        name: 'inject-asset-map',
+        closeBundle() {
+            if (mode !== 'production') return;
+            const map = {};
+            const stamp = (rel) => {
+                try {
+                    return crypto.createHash('md5').update(fs.readFileSync(rel)).digest('hex').slice(0, 8);
+                } catch (e) {
+                    return '';
+                }
+            };
+            const walk = (dir, pred) => {
+                if (!fs.existsSync(dir)) return;
+                for (const e of fs.readdirSync(dir, {withFileTypes: true})) {
+                    const full = path.join(dir, e.name);
+                    if (e.isDirectory()) walk(full, pred);
+                    else if (pred(e.name)) {
+                        map[path.relative('.', full).replace(/\\/g, '/')] = stamp(full);
+                    }
+                }
+            };
+            walk('js', n => n.endsWith('.js') && n !== 'app.js');
+            walk('html', n => n.endsWith('.html'));
+            const inline = `<script>window.__ASSET_MAP__=${JSON.stringify(map)};</script>`;
+            const idx = path.join('dist', 'index.html');
+            if (fs.existsSync(idx)) {
+                let h = fs.readFileSync(idx, 'utf8');
+                h = h.replace('<script src="js/app.js', inline + '\n<script src="js/app.js');
+                fs.writeFileSync(idx, h, 'utf8');
+                console.log('✓ ASSET_MAP 已内联到 dist/index.html (' + Object.keys(map).length + ' 项)');
+            }
+        },
+    };
+}
+
 export default defineConfig(({mode}) => ({
     base: './',
     build: {
@@ -76,10 +117,17 @@ export default defineConfig(({mode}) => ({
         {
             name: 'cache-bust',
             transformIndexHtml(html) {
-                const v = Date.now().toString(36);
                 return html.replace(
                     /(src|href)="([^"]+\.(js|css))"/g,
-                    `$1="$2?v=${v}"`
+                    (m, attr, file) => {
+                        try {
+                            const buf = fs.readFileSync(file);
+                            const hash = crypto.createHash('md5').update(buf).digest('hex').slice(0, 8);
+                            return `${attr}="${file}?v=${hash}"`;
+                        } catch (e) {
+                            return m;
+                        }
+                    }
                 );
             },
         },
@@ -98,5 +146,6 @@ export default defineConfig(({mode}) => ({
         },
         removeGithubPlugin(mode),
         injectDevtoolsFlagPlugin(mode),
+        injectAssetMapPlugin(mode),
     ],
 }));

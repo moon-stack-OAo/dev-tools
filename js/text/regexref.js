@@ -89,3 +89,5 @@ function regexRefRender() {
         });
     });
 }
+
+registerInit('regexref', regexRefRender);

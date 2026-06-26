@@ -194,3 +194,5 @@ function linuxSearch() {
         linuxRender(el ? el.value : '');
     }, 200);
 }
+
+registerInit('linux', linuxRender);

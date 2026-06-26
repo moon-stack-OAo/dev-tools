@@ -875,3 +875,5 @@ if (typeof module !== 'undefined' && module.exports) {
         OID_EKU: OID_EKU,
     };
 }
+
+registerInit('certparser', certparserInit);

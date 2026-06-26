@@ -147,3 +147,5 @@ function apiInit() {
     }
     apiAuthChange();
 }
+
+registerInit('api', apiInit);

@@ -217,3 +217,5 @@ function imgbase64Init() {
         });
     }
 }
+
+registerInit('imgbase64', imgbase64Init);

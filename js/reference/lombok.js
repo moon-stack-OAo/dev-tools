@@ -197,3 +197,5 @@ function lombokSearch() {
         lombokRender(document.getElementById('lombokSearch').value);
     }, 200);
 }
+
+registerInit('lombok', lombokRender);

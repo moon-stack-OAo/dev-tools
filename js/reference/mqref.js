@@ -731,3 +731,5 @@ function mqrefFilter(cat) {
     });
     mqrefRender();
 }
+
+registerInit('mqref', mqrefRender);

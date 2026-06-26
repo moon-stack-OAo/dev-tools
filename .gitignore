@@ -18,3 +18,7 @@
 /tools.iml
 /vcs.xml
 
+# Windows 设备名残留（npm/yarn 偶发会在根目录生成名为 "nul" 的空文件）
+/nul
+nul
+

@@ -89,3 +89,5 @@ document.addEventListener('change', e => {
 
 // 暴露给 app.js 的延迟渲染钩子
 window.dbtypeInit = dbtypeInit;
+
+registerInit('dbtype', dbtypeInit);

@@ -303,3 +303,5 @@ if (typeof module !== 'undefined' && module.exports) {
         randomSalt: randomSalt,
     };
 }
+
+registerInit('pbkdf2', pbkdf2Init);

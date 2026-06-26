@@ -161,3 +161,5 @@ function springbootSearch() {
         springbootRender(document.getElementById('springbootSearch').value);
     }, 200);
 }
+
+registerInit('springboot', springbootRender);

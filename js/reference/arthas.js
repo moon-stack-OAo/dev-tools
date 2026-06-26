@@ -464,3 +464,5 @@ function arthasSearch() {
 }
 
 // 由 app.js 的 renderMap 触发 arthasRender()
+
+registerInit('arthas', arthasRender);

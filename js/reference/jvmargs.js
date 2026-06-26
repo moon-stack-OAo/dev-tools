@@ -193,3 +193,5 @@ function jvmargsFilter(cat) {
     });
     jvmargsRender();
 }
+
+registerInit('jvmargs', function () { jvmargsRender(); renderJvmTemplates(); });

@@ -189,6 +189,7 @@ const tools = [
     {id: 'mqref', icon: 'bi-broadcast', name: '消息中间件', desc: 'Kafka / RabbitMQ / RocketMQ 速查', cat: 'reference'},
     {id: 'mimetype', icon: 'bi-file-earmark', name: 'MIME 类型', desc: '文件扩展名 / MIME 类型对照', cat: 'reference'},
     {id: 'portref', icon: 'bi-plug', name: '端口号速查', desc: '常用网络服务端口号对照', cat: 'reference'},
+    {id: 'logfmt', icon: 'bi-file-text', name: '日志高亮', desc: '日志格式化 + 级别着色 + 堆栈折叠', cat: 'debug'},
     {
         id: 'resratio',
         icon: 'bi-aspect-ratio',
@@ -199,24 +200,80 @@ const tools = [
 ];
 
 // === Navigation ===
-let panels = [];
 const homeBtn = document.getElementById('homeBtn');
 const breadcrumb = document.getElementById('breadcrumb');
 
-function loadPanels() {
-    const container = document.getElementById('panels-container');
-    const loading = document.getElementById('panels-loading');
-    return Promise.all(tools.map(tool =>
-        fetch(`html/panels/${tool.cat}/${tool.id}.html`, {cache: 'no-cache'})
-            .then(r => r.ok ? r.text() : '')
-            .catch(() => '')
-    )).then(htmls => {
-        const existingHome = container.innerHTML;
-        container.innerHTML = existingHome + '\n' + htmls.join('\n');
-        panels = document.querySelectorAll('.tool-panel');
-        if (loading) loading.style.display = 'none';
-        container.style.display = '';
+// 懒加载状态:工具的 JS 与 HTML 面板仅在首次打开时加载
+const loadedScripts = new Set();
+const loadedPanels = new Set(['home']);
+const _scriptPromise = {};
+const _panelPromise = {};
+
+// 生产构建内联的 window.__ASSET_MAP__ 提供逐文件内容哈希,用于动态资源强缓存;
+// dev 模式无该映射,返回空串(浏览器每次取最新)。
+function assetV(p) {
+    const m = window.__ASSET_MAP__;
+    return (m && m[p]) ? '?v=' + m[p] : '';
+}
+
+function debounce(fn, ms) {
+    let t;
+    return function (...args) {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), ms);
+    };
+}
+
+const onHomeSearchInput = debounce(filterHomeTools, 80);
+
+let homeCards = [];
+let homeDividers = [];
+
+// 工具初始化注册表:各工具 JS 末尾调用 registerInit(id, fn) 自行登记,
+// openTool 打开工具后调用 toolInits[id]() 完成初始化(替代旧 renderMap + 启动 init 列表)。
+const toolInits = {};
+
+function registerInit(id, fn) {
+    toolInits[id] = fn;
+}
+
+function loadToolScript(id) {
+    if (loadedScripts.has(id)) return Promise.resolve();
+    if (_scriptPromise[id]) return _scriptPromise[id];
+    const tool = tools.find(t => t.id === id);
+    if (!tool) return Promise.reject(new Error('未知工具: ' + id));
+    const src = `js/${tool.cat}/${tool.id}.js${assetV('js/' + tool.cat + '/' + tool.id + '.js')}`;
+    _scriptPromise[id] = new Promise((resolve, reject) => {
+        const el = document.createElement('script');
+        el.src = src;
+        el.onload = () => {
+            loadedScripts.add(id);
+            resolve();
+        };
+        el.onerror = () => {
+            delete _scriptPromise[id];
+            reject(new Error('加载脚本失败: ' + src));
+        };
+        document.head.appendChild(el);
     });
+    return _scriptPromise[id];
+}
+
+function loadToolPanel(id) {
+    if (loadedPanels.has(id)) return Promise.resolve();
+    if (_panelPromise[id]) return _panelPromise[id];
+    const tool = tools.find(t => t.id === id);
+    if (!tool) return Promise.reject(new Error('未知工具: ' + id));
+    const url = `html/panels/${tool.cat}/${tool.id}.html${assetV('html/panels/' + tool.cat + '/' + tool.id + '.html')}`;
+    _panelPromise[id] = fetch(url)
+        .then(r => r.ok ? r.text() : '')
+        .catch(() => '')
+        .then(html => {
+            const container = document.getElementById('panels-container');
+            container.insertAdjacentHTML('beforeend', html);
+            loadedPanels.add(id);
+        });
+    return _panelPromise[id];
 }
 
 function buildHomeGrid() {
@@ -235,6 +292,7 @@ function buildHomeGrid() {
         toolsInCat.forEach(t => {
             const card = document.createElement('div');
             card.className = 'home-card';
+            card.dataset.cat = t.cat;
             card.innerHTML = `<div class="hc-icon"><i class="bi ${t.icon}"></i></div><div class="hc-name">${t.name}</div><div class="hc-desc">${t.desc}</div>`;
             card.addEventListener('click', () => openTool(t.id));
             grid.appendChild(card);
@@ -245,6 +303,9 @@ function buildHomeGrid() {
         anchor.innerHTML = '<span class="cat-icon"><i class="bi ' + cat.icon + '"></i></span>' + cat.name;
         anchors.appendChild(anchor);
     });
+
+    homeCards = Array.from(grid.querySelectorAll('.home-card'));
+    homeDividers = Array.from(grid.querySelectorAll('.home-cat-divider'));
 
     // 滚动高亮当前分类
     const homePanel = document.getElementById('panel-home');
@@ -266,11 +327,21 @@ function highlightAnchor() {
     anchors.forEach((a, i) => a.classList.toggle('active', i === activeIdx));
 }
 
-function openTool(id) {
-    panels.forEach(p => p.classList.remove('active'));
-    document.getElementById('panel-home').classList.remove('active');
-    document.getElementById('panel-' + id).classList.add('active');
+async function openTool(id) {
     const tool = tools.find(t => t.id === id);
+    if (!tool) return;
+    clearHomeSearch();
+    setStatus('加载中...');
+    try {
+        await Promise.all([loadToolPanel(id), loadToolScript(id)]);
+    } catch (e) {
+        toast('工具加载失败');
+        console.error(e);
+        setStatus('就绪');
+        return;
+    }
+    document.querySelectorAll('.tool-panel.active').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
     const homeTitle = document.getElementById('headerHomeTitle');
     if (homeTitle) homeTitle.style.display = 'none';
     const gh = document.getElementById('headerGithub');
@@ -280,10 +351,11 @@ function openTool(id) {
     document.querySelector('.main-header').classList.add('tool-mode');
     breadcrumb.innerHTML = '<span class="bc-item" onclick="goHome()">首页</span><span class="bc-sep">›</span><span class="bc-item" onclick="goHome(\'' + (cat ? cat.id : '') + '\')">' + (cat ? cat.name : '') + '</span><span class="bc-sep">›</span><span class="bc-current">' + tool.name + '</span>';
     setStatus('就绪');
+    if (toolInits[id]) toolInits[id]();
 }
 
 function goHome(catId) {
-    panels.forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tool-panel.active').forEach(p => p.classList.remove('active'));
     document.getElementById('panel-home').classList.add('active');
     const homeTitle = document.getElementById('headerHomeTitle');
     if (homeTitle) homeTitle.style.display = '';
@@ -309,7 +381,7 @@ function filterHomeTools() {
     // 如果当前不在首页，自动切回首页再搜索
     const homePanel = document.getElementById('panel-home');
     if (!homePanel.classList.contains('active')) {
-        panels.forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tool-panel.active').forEach(p => p.classList.remove('active'));
         homePanel.classList.add('active');
         const homeTitle = document.getElementById('headerHomeTitle');
         if (homeTitle) homeTitle.style.display = '';
@@ -322,28 +394,21 @@ function filterHomeTools() {
         setTimeout(highlightAnchor, 50);
     }
 
-    const cards = document.querySelectorAll('.home-card');
-    const dividers = document.querySelectorAll('.home-cat-divider');
+    const matchedCats = new Set();
     let hasVisible = false;
-    cards.forEach(card => {
+    homeCards.forEach(card => {
         const name = card.querySelector('.hc-name').textContent.toLowerCase();
         const desc = card.querySelector('.hc-desc').textContent.toLowerCase();
         const match = !q || name.includes(q) || desc.includes(q);
         card.style.display = match ? '' : 'none';
-        if (match) hasVisible = true;
-    });
-    dividers.forEach(d => {
-        const cat = d.nextElementSibling;
-        let visibleAfter = false;
-        let el = cat;
-        while (el && !el.classList.contains('home-cat-divider')) {
-            if (el.style.display !== 'none') {
-                visibleAfter = true;
-                break;
-            }
-            el = el.nextElementSibling;
+        if (match) {
+            hasVisible = true;
+            matchedCats.add(card.dataset.cat);
         }
-        d.style.display = (!q || visibleAfter) ? '' : 'none';
+    });
+    homeDividers.forEach(d => {
+        const catId = d.id.replace('cat-', '');
+        d.style.display = (!q || matchedCats.has(catId)) ? '' : 'none';
     });
     const empty = document.querySelector('.home-search-empty');
     if (empty) empty.remove();
@@ -360,70 +425,14 @@ function clearHomeSearch() {
     filterHomeTools();
 }
 
-// 打开工具时清空搜索 + 触发延迟渲染
-const origOpen = openTool;
-openTool = function (id) {
-    clearHomeSearch();
-    origOpen(id);
-    const renderMap = {
-        'regexref': 'regexRefRender',
-        'linux': 'linuxRender',
-        'docker': 'dockerRender',
-        'gitref': 'gitRender',
-        'httpstatus': 'httpStatusRender',
-        'ascii': 'asciiRender',
-        'arthas': 'arthasRender',
-        'datecalc': 'dateCalcInit',
-        'cron': 'cronBuildFields',
-        'email': 'emailInit',
-        'jwtgen': 'jwtGenInit',
-        'dbtype': 'dbtypeInit',
-        'curl': 'curlInit',
-        'grpc': 'grpcInit',
-        'timezone': 'tzInit',
-        'tplreplace': 'tplInit',
-        'imgbase64': 'imgbase64Init',
-        'mybatisplus': 'mybatisplusRender',
-        'mybatissql': 'mybatissqlRender',
-        'lombok': 'lombokRender',
-        'springboot': 'springbootRender',
-        'txpropagation': 'txpropagationRender',
-        'mavenref': 'mavenrefRender',
-        'jdkfeatures': 'jdkfeaturesRender',
-        'httpheader': 'httpheaderRender',
-        'mqref': 'mqrefRender',
-        'mimetype': 'mimetypeRender',
-        'portref': 'portrefRender',
-        'jvmargs': 'jvmargsRender',
-        'redisref': 'redisrefRender',
-        'springcloud': 'springcloudRender',
-    };
-    const fnName = renderMap[id];
-    if (fnName && typeof window[fnName] === 'function') {
-        window[fnName]();
-    }
-};
-
-loadPanels().then(() => {
-    buildHomeGrid();
-    if (typeof cronInit === 'function') cronInit();
-    if (typeof apiInit === 'function') apiInit();
-    if (typeof tsInit === 'function') tsInit();
-    if (typeof curlInit === 'function') curlInit();
-    if (typeof grpcInit === 'function') grpcInit();
-    if (typeof tzInit === 'function') tzInit();
-    if (typeof tplInit === 'function') tplInit();
-    if (typeof imgbase64Init === 'function') imgbase64Init();
-    if (typeof renderJvmTemplates === 'function') renderJvmTemplates();
-    if (typeof totpInit === 'function') totpInit();
-    if (typeof qrdecodeInit === 'function') qrdecodeInit();
-    if (typeof pbkdf2Init === 'function') pbkdf2Init();
-    if (typeof certparserInit === 'function') certparserInit();
-}).catch(err => {
+// 首页静态就绪:立即显示容器并构建首页网格(工具面板/脚本按需懒加载)
+{
     const loading = document.getElementById('panels-loading');
-    if (loading) loading.textContent = '工具模块加载失败: ' + err.message;
-    console.error('loadPanels failed', err);
-});
+    if (loading) loading.style.display = 'none';
+    const container = document.getElementById('panels-container');
+    if (container) container.style.display = '';
+}
+buildHomeGrid();
 
 // === Utils ===
 function setStatus(msg) {

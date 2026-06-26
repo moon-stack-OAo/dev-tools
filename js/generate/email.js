@@ -540,3 +540,5 @@ function emailInit() {
     if (!sel.value) sel.value = 'welcome';
     emailLoadTemplate();
 }
+
+registerInit('email', emailInit);

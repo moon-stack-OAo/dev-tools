@@ -394,3 +394,5 @@ if (typeof module !== 'undefined' && module.exports) {
         formatOtp,
     };
 }
+
+registerInit('totp', totpInit);

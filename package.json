@@ -5,6 +5,8 @@
   "description": "Java 开发工具箱",
   "scripts": {
     "dev": "vite",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "build": "node scripts/copy-libs.js && vite build",
     "build:dev": "node scripts/copy-libs.js && vite build --mode dev",
     "preview": "vite preview",
@@ -32,6 +34,7 @@
     "ua-parser-js": "^1.0.41"
   },
   "devDependencies": {
-    "vite": "^6.0.0"
+    "vite": "^6.0.0",
+    "vitest": "^4.1.9"
   }
 }

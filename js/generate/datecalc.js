@@ -129,3 +129,5 @@ function timestampToDate() {
         + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
     out.textContent = '日期时间：' + fmt;
 }
+
+registerInit('datecalc', dateCalcInit);

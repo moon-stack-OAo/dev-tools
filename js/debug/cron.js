@@ -331,3 +331,5 @@ function cronCopyExpr() {
 function cronInit() {
     if (document.getElementById('cronFields')) cronBuildFields();
 }
+
+registerInit('cron', cronBuildFields);

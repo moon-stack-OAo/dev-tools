@@ -110,3 +110,5 @@ function tplInit() {
         tplAddVar('status', '已发货');
     }
 }
+
+registerInit('tplreplace', tplInit);

@@ -160,3 +160,5 @@ function mimetypeSearch() {
         mimetypeRender(document.getElementById('mimetypeSearch').value);
     }, 200);
 }
+
+registerInit('mimetype', mimetypeRender);

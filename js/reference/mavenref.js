@@ -127,3 +127,5 @@ function mavenrefSearch() {
         mavenrefRender(document.getElementById('mavenrefSearch').value);
     }, 200);
 }
+
+registerInit('mavenref', mavenrefRender);

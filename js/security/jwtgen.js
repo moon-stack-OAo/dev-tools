@@ -169,3 +169,5 @@ function jwtGenClear() {
     document.getElementById('jwtgenStatus').textContent = '';
     setStatus('已清空');
 }
+
+registerInit('jwtgen', jwtGenInit);

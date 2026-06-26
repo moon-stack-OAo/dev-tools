@@ -103,3 +103,5 @@ function txpropagationSearch() {
         txpropagationRender(document.getElementById('txpropagationSearch').value);
     }, 200);
 }
+
+registerInit('txpropagation', txpropagationRender);

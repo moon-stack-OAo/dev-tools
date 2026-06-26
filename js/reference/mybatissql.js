@@ -97,3 +97,5 @@ function mybatissqlSearch() {
         mybatissqlRender(document.getElementById('mybatissqlSearch').value);
     }, 200);
 }
+
+registerInit('mybatissql', mybatissqlRender);

@@ -97,3 +97,5 @@ function httpStatusRender() {
         });
     });
 }
+
+registerInit('httpstatus', httpStatusRender);

@@ -81,3 +81,5 @@ function dockerRender() {
         });
     });
 }
+
+registerInit('docker', dockerRender);

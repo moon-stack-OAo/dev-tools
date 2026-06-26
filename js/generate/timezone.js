@@ -205,3 +205,5 @@ function tzInit() {
         document.getElementById('tzSourceTime').value = tzNowString();
     }
 }
+
+registerInit('timezone', tzInit);

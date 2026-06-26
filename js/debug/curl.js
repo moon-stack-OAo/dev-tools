@@ -271,3 +271,5 @@ function curlInit() {
     const sel = document.getElementById('curlMethod');
     if (sel) curlMethodChange(sel);
 }
+
+registerInit('curl', curlInit);

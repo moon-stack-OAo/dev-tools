@@ -281,3 +281,5 @@ function grpcInit() {
     }
     grpcRenderStatusTable();
 }
+
+registerInit('grpc', grpcInit);

@@ -159,3 +159,5 @@ function portrefSearch() {
         portrefRender(document.getElementById('portrefSearch').value);
     }, 200);
 }
+
+registerInit('portref', portrefRender);

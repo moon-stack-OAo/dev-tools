@@ -78,3 +78,7 @@ function hexDecode() {
         out.className = 'output-box error';
     }
 }
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { strToHex, hexToStr };
+}

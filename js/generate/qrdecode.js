@@ -273,3 +273,5 @@ function qrdecodeInit() {
         }
     });
 }
+
+registerInit('qrdecode', qrdecodeInit);

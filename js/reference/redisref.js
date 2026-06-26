@@ -792,3 +792,5 @@ function redisrefFilter(cat) {
     });
     redisrefRender();
 }
+
+registerInit('redisref', redisrefRender);

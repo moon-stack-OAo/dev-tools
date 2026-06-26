@@ -674,5 +674,154 @@
 
 #grpcPbOutput {
     background: #1a1f33;
-    color: #b5e8ff
+    color: #b5e8ff;
+}
+
+/* Logfmt 日志高亮 */
+.logfmt-results {
+    background: #1a1f33;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    min-height: 200px;
+    max-height: 600px;
+    overflow-y: auto;
+    font-family: var(--font);
+    font-size: 12.5px;
+    line-height: 1.65;
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, .2);
+}
+
+.logfmt-empty {
+    color: var(--text-muted);
+    text-align: center;
+    padding: 40px 0;
+    font-style: italic;
+}
+
+.logfmt-line {
+    padding: 1px 0;
+    word-break: break-all;
+}
+
+.logfmt-line.logfmt-level-ERROR,
+.logfmt-line.logfmt-level-FATAL {
+    background: rgba(239, 83, 80, .08);
+    border-left: 2px solid var(--danger);
+    padding-left: 6px;
+    margin: 1px 0;
+}
+
+.logfmt-line.logfmt-level-WARN {
+    background: rgba(255, 167, 38, .06);
+    border-left: 2px solid var(--warning);
+    padding-left: 6px;
+    margin: 1px 0;
+}
+
+.logfmt-timestamp {
+    color: #8a96b8;
+}
+
+.logfmt-level {
+    font-weight: 600;
+    display: inline-block;
+    min-width: 5ch;
+}
+
+.logfmt-l-trace { color: #6b7593; }
+.logfmt-l-debug { color: #4fc3f7; }
+.logfmt-l-info  { color: #66bb6a; }
+.logfmt-l-warn  { color: #ffa726; }
+.logfmt-l-error { color: #ef5350; }
+.logfmt-l-fatal { color: #ff5252; font-weight: 700; }
+
+.logfmt-thread {
+    color: #b39ddb;
+}
+
+.logfmt-logger {
+    color: #80deea;
+}
+
+.logfmt-msg {
+    color: var(--text);
+}
+
+.logfmt-stack {
+    margin: 2px 0 6px 24px;
+    border-left: 2px solid var(--border-light);
+}
+
+.logfmt-stack-error {
+    border-left-color: rgba(239, 83, 80, .5);
+}
+
+.logfmt-stack-warn {
+    border-left-color: rgba(255, 167, 38, .4);
+}
+
+.logfmt-stack-head {
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 11.5px;
+    padding: 2px 6px;
+    user-select: none;
+    transition: color .15s;
+}
+
+.logfmt-stack-head:hover {
+    color: var(--text-dim);
+}
+
+.logfmt-stack-caret {
+    display: inline-block;
+    transition: transform .15s;
+    font-size: 10px;
+}
+
+.logfmt-stack-open .logfmt-stack-caret {
+    transform: rotate(90deg);
+}
+
+.logfmt-stack-body {
+    display: none;
+    padding: 4px 6px;
+}
+
+.logfmt-stack-open .logfmt-stack-body {
+    display: block;
+}
+
+.logfmt-stack-line {
+    color: #c5cae9;
+    font-size: 11.5px;
+    line-height: 1.5;
+    padding: 1px 0;
+}
+
+.logfmt-stack-at {
+    color: #b39ddb;
+}
+
+.logfmt-caused {
+    color: #ffab91;
+    font-weight: 500;
+    margin-top: 3px;
+}
+
+.logfmt-exception-class {
+    color: #ef9a9a;
+    font-weight: 600;
+}
+
+.logfmt-exception-msg {
+    color: #ffccbc;
+}
+
+.logfmt-level-btn.active {
+    background: var(--accent);
+    color: #141829;
+    border-color: var(--accent);
+    font-weight: 600;
 }

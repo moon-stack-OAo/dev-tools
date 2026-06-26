@@ -158,3 +158,5 @@ function mybatisplusSearch() {
         mybatisplusRender(document.getElementById('mybatisplusSearch').value);
     }, 200);
 }
+
+registerInit('mybatisplus', mybatisplusRender);

@@ -90,3 +90,5 @@ function gitRender() {
         });
     });
 }
+
+registerInit('gitref', gitRender);

@@ -50,3 +50,5 @@ function asciiRender() {
     tbl.innerHTML = html;
     container.appendChild(tbl);
 }
+
+registerInit('ascii', asciiRender);
