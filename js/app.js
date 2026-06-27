@@ -67,7 +67,7 @@ const tools = [
     {id: 'json2csv', icon: 'bi-filetype-csv', name: 'JSON ↔ CSV', desc: 'JSON 数组与 CSV 互转', cat: 'format'},
     {id: 'base64', icon: 'bi-lock', name: 'Base64', desc: 'Base64 编码解码 / 文件支持', cat: 'encode'},
     {id: 'url', icon: 'bi-link-45deg', name: 'URL 编码', desc: 'URL 编解码 / Component 模式', cat: 'encode'},
-    {id: 'unicode', icon: 'bi-translate', name: 'Unicode', desc: '\uXXXX 编码 / 解码', cat: 'encode'},
+    {id: 'unicode', icon: 'bi-translate', name: 'Unicode', desc: '\\uXXXX 编码 / 解码', cat: 'encode'},
     {id: 'javaescape', icon: 'bi-slash-lg', name: 'Java 转义', desc: 'Java 字符串转义 / 反转义', cat: 'encode'},
     {id: 'charset', icon: 'bi-fonts', name: '编码转换', desc: '字符编码互转 / 检测', cat: 'encode'},
     {id: 'htmlescape', icon: 'bi-filetype-html', name: 'HTML 转义', desc: 'HTML 实体编码 / 解码', cat: 'encode'},
