@@ -53,3 +53,21 @@
     background: var(--accent-glow);
     color: var(--accent);
 }
+
+/* dbtype 面板：工具栏固定，表格区域独立滚动 */
+#panel-dbtype.active {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#panel-dbtype.active > .tool-header,
+#panel-dbtype.active > .toolbar {
+    flex-shrink: 0;
+}
+
+#panel-dbtype.active > .dbtype-table-wrap {
+    flex: 1;
+    min-height: 0;
+    max-height: none;
+}
