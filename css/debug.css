@@ -314,7 +314,7 @@
 }
 
 .api-kv-header .api-kv-act {
-    width: 30px;
+    width: 28px;
     flex-shrink: 0;
 }
 
@@ -332,8 +332,8 @@
     padding: 5px 8px;
 }
 
-.api-kv-row input:first-child {
-    max-width: 50%;
+.api-kv-row input:nth-child(2) {
+    flex: 2;
 }
 
 .api-kv-row button {
@@ -585,35 +585,472 @@
     border-color: var(--border-light);
 }
 
-/* Curl */
-.curl-layout {
+/* ============== HTTP 调试工具 ============== */
+.http-topbar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 10px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-sm);
+}
+
+.http-method-sel {
+    width: 110px;
+    flex-shrink: 0;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 8px 28px 8px 12px;
+    border-radius: var(--radius-sm);
+    letter-spacing: 0.5px;
+}
+
+.http-method-sel.method-GET {
+    color: var(--success);
+    border-color: var(--success);
+    background-color: rgba(var(--success-rgb), 0.08);
+}
+
+.http-method-sel.method-POST {
+    color: var(--warning);
+    border-color: var(--warning);
+    background-color: rgba(var(--warning-rgb), 0.08);
+}
+
+.http-method-sel.method-PUT {
+    color: var(--accent2);
+    border-color: var(--accent2);
+    background-color: rgba(var(--accent2-rgb), 0.08);
+}
+
+.http-method-sel.method-PATCH {
+    color: var(--purple);
+    border-color: var(--purple);
+    background-color: rgba(var(--purple-rgb), 0.08);
+}
+
+.http-method-sel.method-DELETE {
+    color: var(--danger);
+    border-color: var(--danger);
+    background-color: rgba(var(--danger-rgb), 0.08);
+}
+
+.http-method-sel.method-HEAD,
+.http-method-sel.method-OPTIONS {
+    color: var(--blue-grey);
+    border-color: var(--blue-grey);
+    background-color: rgba(var(--accent-rgb), 0.04);
+}
+
+.http-url-input {
+    flex: 1;
+    min-width: 200px;
+    font-family: var(--font);
+    font-size: 13px;
+}
+
+.http-send-btn {
+    background: linear-gradient(135deg, var(--success), color-mix(in srgb, var(--success), #000 25%));
+    color: #0a0a1a;
+    box-shadow: 0 2px 10px rgba(var(--success-rgb), 0.25);
+    padding: 8px 18px;
+}
+
+.http-send-btn:hover {
+    box-shadow: 0 6px 20px rgba(var(--success-rgb), 0.4);
+}
+
+.http-layout {
     display: grid;
-    grid-template-columns: 1.1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 12px;
-    align-items: flex-start;
+    align-items: stretch;
+    min-height: 0;
 }
 
 @media (max-width: 1100px) {
-    .curl-layout {
+    .http-layout {
         grid-template-columns: 1fr;
     }
 }
 
-.curl-form,
-.curl-side {
+.http-form {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    min-height: 520px;
 }
 
-.curl-form .stomp-block + .stomp-block,
-.curl-side .stomp-block + .stomp-block {
-    margin-top: 0;
+.http-side {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    min-height: 520px;
 }
 
-#curlOutput {
+.http-tabs {
+    background: var(--bg-card2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 4px;
+    flex-wrap: wrap;
+}
+
+.http-tabs .api-tab {
+    padding: 10px 16px;
+    font-size: 12.5px;
+}
+
+.http-tab-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 16px;
+    padding: 0 5px;
+    margin-left: 4px;
+    border-radius: 8px;
+    background: var(--bg-input);
+    color: var(--text-muted);
+    font-size: 10px;
+    font-weight: 600;
+    font-family: var(--font);
+    transition: var(--transition);
+}
+
+.http-tabs .api-tab.active .http-tab-count {
+    background: var(--accent);
+    color: #0a0a1a;
+}
+
+.http-tabs .api-tab:not(.active) .http-tab-count:not(:empty) {
+    background: var(--accent-glow);
+    color: var(--accent);
+}
+
+.http-form .api-tab-panel,
+.http-side .api-tab-panel {
+    border: none;
+    border-radius: 0;
+    background: var(--bg-card);
+    padding: 14px;
+    flex: 1;
+    overflow: auto;
+}
+
+.http-form .api-tab-panel.active,
+.http-side .api-tab-panel.active {
+    display: flex;
+    flex-direction: column;
+}
+
+.http-panel-hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    padding: 7px 10px;
+    background: var(--accent-glow);
+    border-left: 2px solid var(--accent);
+    border-radius: 4px;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.http-panel-hint i {
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+.http-panel-hint code {
+    background: var(--bg-input);
+    color: var(--accent2);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 11px;
+}
+
+.http-quick-headers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.http-quick-headers button {
+    font-family: var(--font);
+    font-size: 11px;
+    padding: 3px 10px;
+}
+
+.http-options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.http-option-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.http-option-row:hover {
+    border-color: var(--border-light);
+    background: var(--bg-hover);
+}
+
+.http-option-row input[type='checkbox'] {
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.http-option-row input[type='text'],
+.http-option-row input[type='number'] {
+    padding: 5px 9px;
+    font-size: 12px;
+    flex: 1;
+    min-width: 0;
+}
+
+.http-option-label {
+    font-size: 13px;
+    color: var(--text);
+    flex: 1;
+    min-width: 0;
+    user-select: none;
+}
+
+.http-option-flag {
+    font-family: var(--font);
+    font-size: 11px;
+    color: var(--accent);
+    background: var(--accent-glow);
+    padding: 2px 7px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    font-weight: 500;
+}
+
+.http-side-tabs {
+    background: var(--bg-card2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 4px;
+    position: relative;
+}
+
+.http-side-tabs .api-tab {
+    padding: 10px 16px;
+    font-size: 12.5px;
+}
+
+.http-side-tabs .api-tab i {
+    margin-right: 4px;
+    font-size: 13px;
+    vertical-align: -1px;
+}
+
+.http-format-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 2px;
+    padding: 2px;
+    background: var(--bg-input);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+}
+
+.http-fmt-btn {
+    padding: 3px 12px !important;
+    font-size: 11px !important;
+    background: transparent !important;
+    color: var(--text-muted) !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 4px !important;
+}
+
+.http-fmt-btn.active {
+    background: var(--accent) !important;
+    color: #0a0a1a !important;
+    font-weight: 600 !important;
+}
+
+.http-fmt-btn:hover:not(.active) {
+    color: var(--text) !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.http-side-panel {
+    padding: 14px;
+    background: var(--bg-card);
+    flex-direction: column;
+}
+
+.http-response-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+    color: var(--text-muted);
+    text-align: center;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-input);
+}
+
+.http-response-empty i {
+    font-size: 42px;
+    margin-bottom: 14px;
+    color: var(--text-muted);
+    opacity: 0.5;
+}
+
+.http-response-empty .empty-state-title {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.http-empty-tip {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.http-curl-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 8px;
+}
+
+.http-curl-output {
     background: var(--bg-terminal);
     color: var(--accent2);
+    font-size: 13px;
+    line-height: 1.65;
+    padding: 14px;
+    flex: 1;
+    overflow: auto;
+    min-height: 180px;
+    border-radius: var(--radius-sm);
+    margin: 0;
+}
+
+.http-copy-fixed {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    opacity: 1;
+    background: var(--bg-card);
+}
+
+.http-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 11.5px;
+    color: var(--text-muted);
+}
+
+.http-stat-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.http-stat-item i {
+    color: var(--accent);
+    font-size: 13px;
+}
+
+.http-stat-item b {
+    color: var(--accent);
+    font-weight: 600;
+    font-family: var(--font);
+}
+
+.http-parse-section {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--border);
+}
+
+.http-parse-title {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.http-parse-title i {
+    color: var(--accent);
+}
+
+.http-parse-title .stomp-tip {
+    font-weight: 400;
+    margin-left: auto;
+}
+
+.http-parse-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.http-parse-actions button {
+    padding: 6px 18px;
+}
+
+@media (max-width: 768px) {
+    .http-topbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .http-method-sel {
+        width: 100%;
+    }
+
+    .http-format-toggle {
+        position: static;
+        transform: none;
+        margin-left: auto;
+        margin-bottom: 6px;
+    }
 }
 
 /* gRPC */

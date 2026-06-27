@@ -159,7 +159,13 @@ const tools = [
     {id: 'cron', icon: 'bi-clock-history', name: 'Cron 表达式', desc: 'Cron 解析 / 下次执行时间', cat: 'debug'},
     {id: 'ws', icon: 'bi-plug', name: 'WebSocket', desc: 'WebSocket 连接调试', cat: 'debug'},
     {id: 'stomp', icon: 'bi-hdd-network', name: 'STOMP', desc: 'STOMP over WebSocket 调试', cat: 'debug'},
-    {id: 'api', icon: 'bi-cloud-arrow-down', name: 'API 调用', desc: 'HTTP 请求 / 响应调试', cat: 'debug'},
+    {
+        id: 'httpdebug',
+        icon: 'bi-cloud-arrow-down',
+        name: 'HTTP 调试',
+        desc: '发送请求 / 查看响应 / cURL 生成解析',
+        cat: 'debug'
+    },
     {id: 'ip', icon: 'bi-globe2', name: 'IP 工具', desc: 'IP 归属 / 子网计算', cat: 'debug'},
     {id: 'arthas', icon: 'bi-terminal', name: 'Arthas 命令', desc: 'Arthas 诊断命令速查', cat: 'reference'},
     {id: 'jmh', icon: 'bi-speedometer2', name: 'JMH 模板', desc: 'JMH 基准测试代码生成', cat: 'codegen'},
@@ -179,7 +185,6 @@ const tools = [
     {id: 'gitref', icon: 'bi-git', name: 'Git 命令', desc: 'Git 常用操作速查', cat: 'reference'},
     {id: 'httpstatus', icon: 'bi-info-circle', name: 'HTTP 状态码', desc: 'HTTP 状态码 / 方法速查', cat: 'reference'},
     {id: 'ascii', icon: 'bi-keyboard', name: 'ASCII 表', desc: 'ASCII / 控制字符速查', cat: 'reference'},
-    {id: 'curl', icon: 'bi-terminal', name: 'Curl 生成', desc: '生成 / 解析 curl 命令', cat: 'debug'},
     {
         id: 'grpc',
         icon: 'bi-hdd-network',
@@ -273,6 +278,7 @@ const breadcrumb = document.getElementById('breadcrumb');
 
 // === Theme ===
 const THEME_KEY = 'devtools.theme';
+
 function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     const icon = document.getElementById('themeIcon');
@@ -299,13 +305,15 @@ function toggleTheme() {
 
 // === Usage Stats ===
 const STATS_KEY = 'devtools.usage';
+
 function bumpUsage(id) {
     try {
         const raw = localStorage.getItem(STATS_KEY);
         const stats = raw ? JSON.parse(raw) : {};
         stats[id] = (stats[id] || 0) + 1;
         localStorage.setItem(STATS_KEY, JSON.stringify(stats));
-    } catch (e) {}
+    } catch (e) {
+    }
 }
 
 function getUsageStats() {
@@ -503,7 +511,7 @@ function buildHomeGrid() {
 
     // 返回顶部按钮
     const btt = document.getElementById('backToTop');
-    btt.addEventListener('click', () => homePanel.scrollTo({ top: 0, behavior: 'smooth' }));
+    btt.addEventListener('click', () => homePanel.scrollTo({top: 0, behavior: 'smooth'}));
 }
 
 function highlightAnchor() {
@@ -591,7 +599,7 @@ async function openTool(id) {
         tp.dataset.scrollBound = '1';
         tp.addEventListener('scroll', () => btt.classList.toggle('visible', tp.scrollTop > 300));
     }
-    btt.onclick = () => tp.scrollTo({ top: 0, behavior: 'smooth' });
+    btt.onclick = () => tp.scrollTo({top: 0, behavior: 'smooth'});
 }
 
 function goHome(catId) {

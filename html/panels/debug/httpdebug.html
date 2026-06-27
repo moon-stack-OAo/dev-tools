@@ -1,0 +1,221 @@
+<div class="tool-panel" id="panel-httpdebug">
+    <div class="http-topbar">
+        <select class="http-method-sel" id="httpMethod" onchange="httpMethodChange(this)">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="DELETE">DELETE</option>
+            <option value="PATCH">PATCH</option>
+            <option value="HEAD">HEAD</option>
+            <option value="OPTIONS">OPTIONS</option>
+        </select>
+        <input class="http-url-input" id="httpUrl" placeholder="https://api.example.com/users" type="text">
+        <button class="http-send-btn" onclick="httpSend()" title="发送 HTTP 请求">&#9654; 发送</button>
+        <button class="outline" onclick="httpGenerate()" title="生成 cURL 命令">生成 cURL</button>
+        <button class="outline" onclick="httpFillSample()" title="加载示例">示例</button>
+        <button class="outline" onclick="httpReset()" title="清空所有内容">重置</button>
+    </div>
+
+    <div class="http-layout">
+        <div class="http-form">
+            <div class="api-tabs http-tabs">
+                <div class="api-tab active" onclick="httpSwitchTab(this,'params')">
+                    Params <span class="http-tab-count" id="httpParamsCount">0</span>
+                </div>
+                <div class="api-tab" onclick="httpSwitchTab(this,'headers')">
+                    Headers <span class="http-tab-count" id="httpHeadersCount">0</span>
+                </div>
+                <div class="api-tab" onclick="httpSwitchTab(this,'body')">Body</div>
+                <div class="api-tab" onclick="httpSwitchTab(this,'auth')">Auth</div>
+                <div class="api-tab" onclick="httpSwitchTab(this,'options')">Options</div>
+            </div>
+
+            <div class="api-tab-panel active" id="http-params-panel">
+                <div class="http-panel-hint">
+                    <i class="bi bi-info-circle"></i>
+                    Query 参数会自动拼接到 URL 的 <code>?</code> 后面
+                </div>
+                <div class="api-kv-header">
+                    <span class="api-kv-key">Key</span>
+                    <span class="api-kv-val">Value</span>
+                    <span class="api-kv-act"></span>
+                </div>
+                <div id="httpQueryList"></div>
+                <button class="outline sm" onclick="httpAddQuery()" style="margin-top:6px">+ 添加参数</button>
+            </div>
+
+            <div class="api-tab-panel" id="http-headers-panel">
+                <div class="http-panel-hint">
+                    <i class="bi bi-info-circle"></i>
+                    常用 Header 可点击下方按钮快速添加
+                </div>
+                <div class="http-quick-headers">
+                    <button class="outline sm" onclick="httpQuickHeader('Authorization','Bearer ')">+ Authorization
+                    </button>
+                    <button class="outline sm" onclick="httpQuickHeader('Content-Type','application/json')">+
+                        Content-Type: json
+                    </button>
+                    <button class="outline sm" onclick="httpQuickHeader('Accept','application/json')">+ Accept: json
+                    </button>
+                    <button class="outline sm" onclick="httpQuickHeader('User-Agent','dev-tools/1.0')">+ User-Agent
+                    </button>
+                    <button class="outline sm" onclick="httpQuickHeader('Cookie','')">+ Cookie</button>
+                </div>
+                <div class="api-kv-header" style="margin-top:8px">
+                    <span class="api-kv-key">Key</span>
+                    <span class="api-kv-val">Value</span>
+                    <span class="api-kv-act"></span>
+                </div>
+                <div id="httpHeadersList"></div>
+                <button class="outline sm" onclick="httpAddHeader()" style="margin-top:6px">+ 添加 Header</button>
+            </div>
+
+            <div class="api-tab-panel" id="http-body-panel">
+                <div class="flex gap-6 mb-8" style="align-items:center">
+                    <span class="label" style="margin:0">类型</span>
+                    <select id="httpBodyType" style="width:220px">
+                        <option value="none">none</option>
+                        <option value="json">json (application/json)</option>
+                        <option value="form">form-urlencoded</option>
+                        <option value="text">text/plain</option>
+                        <option value="raw">raw</option>
+                    </select>
+                </div>
+                <textarea class="api-body-input" id="httpBody"
+                          placeholder='{"name":"张三","age":25}'></textarea>
+            </div>
+
+            <div class="api-tab-panel" id="http-auth-panel">
+                <div class="flex gap-6 mb-12" style="align-items:center">
+                    <span class="label" style="margin:0;width:60px">类型</span>
+                    <select id="httpAuthType" onchange="httpAuthChange()" style="width:200px">
+                        <option value="none">No Auth</option>
+                        <option value="bearer">Bearer Token</option>
+                        <option value="basic">Basic Auth</option>
+                        <option value="apikey">API Key</option>
+                    </select>
+                </div>
+                <div id="httpAuthFields"></div>
+                <div class="http-panel-hint" style="margin-top:8px">
+                    <i class="bi bi-lightbulb"></i>
+                    认证信息会作为 Header 一起发送到服务器
+                </div>
+            </div>
+
+            <div class="api-tab-panel" id="http-options-panel">
+                <div class="http-options-grid">
+                    <label class="http-option-row">
+                        <input checked id="httpOptFollow" type="checkbox">
+                        <span class="http-option-label">跟随重定向</span>
+                        <code class="http-option-flag">-L</code>
+                    </label>
+                    <label class="http-option-row">
+                        <input id="httpOptInsecure" type="checkbox">
+                        <span class="http-option-label">跳过 SSL 验证</span>
+                        <code class="http-option-flag">-k</code>
+                    </label>
+                    <label class="http-option-row">
+                        <input id="httpOptCompressed" type="checkbox">
+                        <span class="http-option-label">请求压缩 (gzip)</span>
+                        <code class="http-option-flag">--compressed</code>
+                    </label>
+                    <label class="http-option-row">
+                        <input id="httpOptVerbose" type="checkbox">
+                        <span class="http-option-label">详细输出</span>
+                        <code class="http-option-flag">-v</code>
+                    </label>
+                    <label class="http-option-row">
+                        <input id="httpOptIncludeHeader" type="checkbox">
+                        <span class="http-option-label">输出响应头</span>
+                        <code class="http-option-flag">-i</code>
+                    </label>
+                    <label class="http-option-row">
+                        <input id="httpOptSilent" type="checkbox">
+                        <span class="http-option-label">静默模式</span>
+                        <code class="http-option-flag">-s</code>
+                    </label>
+                    <label class="http-option-row">
+                        <span class="http-option-label">超时 (秒)</span>
+                        <input id="httpOptTimeout" min="0" placeholder="30" step="1" style="width:90px"
+                               type="number">
+                        <code class="http-option-flag">--max-time</code>
+                    </label>
+                    <label class="http-option-row">
+                        <span class="http-option-label">User-Agent</span>
+                        <input id="httpOptUA" placeholder="自定义 UA (可选)" style="flex:1;min-width:0"
+                               type="text">
+                        <code class="http-option-flag">-A</code>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="http-side">
+            <div class="api-tabs http-side-tabs">
+                <div class="api-tab active" onclick="httpSwitchSideTab(this,'response')">
+                    <i class="bi bi-lightning-charge"></i> 响应
+                </div>
+                <div class="api-tab" onclick="httpSwitchSideTab(this,'curl')">
+                    <i class="bi bi-terminal"></i> cURL 命令
+                </div>
+            </div>
+
+            <div class="api-tab-panel active http-side-panel" id="http-response-panel">
+                <div class="http-response-empty" id="httpResponseEmpty">
+                    <i class="bi bi-send"></i>
+                    <div class="empty-state-title">点击「发送」开始 HTTP 请求</div>
+                    <div class="http-empty-tip">支持 GET / POST / PUT / DELETE 等常用方法，含 Auth / cURL 反向解析</div>
+                </div>
+                <div class="http-response" id="httpResponse" style="display:none">
+                    <div class="resp-header">
+                        <span class="resp-status" id="httpStatus"></span>
+                        <span class="resp-meta" id="httpMeta"></span>
+                        <button class="outline sm" onclick="httpCopyResponse()" style="margin-left:auto">复制 Body
+                        </button>
+                    </div>
+                    <div class="resp-body" id="httpBodyOutput"></div>
+                </div>
+            </div>
+
+            <div class="api-tab-panel http-side-panel" id="http-curl-panel">
+                <div class="http-curl-header">
+                    <div class="http-format-toggle">
+                        <button class="outline sm http-fmt-btn active" id="httpFmtMulti"
+                                onclick="httpSetFormat('multi')" title="多行（带 \\ 换行）">多行
+                        </button>
+                        <button class="outline sm http-fmt-btn" id="httpFmtSingle"
+                                onclick="httpSetFormat('single')" title="单行">单行
+                        </button>
+                    </div>
+                </div>
+                <div class="copy-wrap" style="flex:1;display:flex;flex-direction:column;min-height:0">
+                    <button class="copy-btn http-copy-fixed" onclick="copyText('httpCurlOutput')">复制</button>
+                    <pre class="output-box http-curl-output" id="httpCurlOutput"
+                         style="flex:1">点击「生成 cURL」查看结果</pre>
+                </div>
+                <div class="http-stats" id="httpStats" style="display:none">
+                    <span class="http-stat-item"><i class="bi bi-link-45deg"></i> <b id="httpStatMethod">GET</b> <span
+                            id="httpStatUrl">-</span></span>
+                    <span class="http-stat-item"><i class="bi bi-list-ul"></i> <b
+                            id="httpStatHeaders">0</b> Header</span>
+                    <span class="http-stat-item"><i class="bi bi-file-text"></i> <b
+                            id="httpStatBody">0</b> 字节 Body</span>
+                </div>
+                <div class="http-parse-section">
+                    <div class="http-parse-title">
+                        <i class="bi bi-arrow-left-right"></i> 反向解析 cURL
+                        <span class="stomp-tip">粘贴已有命令自动填表</span>
+                    </div>
+                    <textarea class="api-body-input" id="httpCurlInput"
+                              placeholder="curl -X POST 'https://api.example.com/users' &#10;  -H 'Content-Type: application/json' &#10;  -d '{&quot;name&quot;:&quot;tom&quot;}'"
+                              style="min-height:100px"></textarea>
+                    <div class="http-parse-actions">
+                        <button onclick="httpParse()">解析到表单</button>
+                        <button class="outline" onclick="document.getElementById('httpCurlInput').value=''">清空
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
