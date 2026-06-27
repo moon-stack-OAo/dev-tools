@@ -9,12 +9,13 @@ function caseConvert(type) {
     const words = raw.match(/[a-zA-Z0-9]+/g) || [raw];
 
     const CONVERTERS = {
-        camel: (words) => words.map((w, i) => i === 0 ? w.toLowerCase() : w[0].toUpperCase() + w.slice(1).toLowerCase()).join(''),
-        pascal: (words) => words.map(w => w[0].toUpperCase() + w.slice(1).toLowerCase()).join(''),
-        snake: (words) => words.map(w => w.toLowerCase()).join('_'),
-        kebab: (words) => words.map(w => w.toLowerCase()).join('-'),
-        upper: (words) => words.map(w => w.toUpperCase()).join('_'),
-        lower: (words) => words.map(w => w.toLowerCase()).join(' '),
+        camel: (words) =>
+            words.map((w, i) => (i === 0 ? w.toLowerCase() : w[0].toUpperCase() + w.slice(1).toLowerCase())).join(''),
+        pascal: (words) => words.map((w) => w[0].toUpperCase() + w.slice(1).toLowerCase()).join(''),
+        snake: (words) => words.map((w) => w.toLowerCase()).join('_'),
+        kebab: (words) => words.map((w) => w.toLowerCase()).join('-'),
+        upper: (words) => words.map((w) => w.toUpperCase()).join('_'),
+        lower: (words) => words.map((w) => w.toLowerCase()).join(' '),
     };
 
     const converter = CONVERTERS[type];

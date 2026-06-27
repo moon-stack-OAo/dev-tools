@@ -23,7 +23,7 @@ async function bcryptHash() {
     try {
         setStatus('正在计算（cost=' + rounds + '）...');
         // 让 UI 有机会刷新
-        await new Promise(r => setTimeout(r, 10));
+        await new Promise((r) => setTimeout(r, 10));
         const hash = dcodeIO.bcrypt.hashSync(pwd, rounds);
         out.textContent = hash;
         out.className = 'output-box';

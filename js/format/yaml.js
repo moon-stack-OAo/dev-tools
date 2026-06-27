@@ -17,23 +17,27 @@ function yamlProcess(fn) {
 }
 
 function yamlFormat() {
-    yamlProcess(raw => jsyaml.dump(jsyaml.load(raw), {
-        indent: 2,
-        lineWidth: -1,
-        noCompatMode: true,
-        sortKeys: true
-    }));
+    yamlProcess((raw) =>
+        jsyaml.dump(jsyaml.load(raw), {
+            indent: 2,
+            lineWidth: -1,
+            noCompatMode: true,
+            sortKeys: true,
+        })
+    );
 }
 
 function yamlToJson() {
-    yamlProcess(raw => JSON.stringify(jsyaml.load(raw), null, 2));
+    yamlProcess((raw) => JSON.stringify(jsyaml.load(raw), null, 2));
 }
 
 function jsonToYaml() {
-    yamlProcess(raw => jsyaml.dump(JSON.parse(raw), {
-        indent: 2,
-        lineWidth: -1,
-        noCompatMode: true,
-        sortKeys: true
-    }));
+    yamlProcess((raw) =>
+        jsyaml.dump(JSON.parse(raw), {
+            indent: 2,
+            lineWidth: -1,
+            noCompatMode: true,
+            sortKeys: true,
+        })
+    );
 }

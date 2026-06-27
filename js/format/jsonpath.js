@@ -5,10 +5,10 @@ const JSONPATH_SAMPLE_DATA = {
             {category: 'reference', title: 'Sayings of the Century', author: 'Nigel Rees', price: 8.95},
             {category: 'fiction', title: 'Sword of Honour', author: 'Evelyn Waugh', price: 12.99},
             {category: 'fiction', title: 'Moby Dick', author: 'Herman Melville', price: 8.99, isbn: '0-553-21311-3'},
-            {category: 'fiction', title: 'The Lord of the Rings', author: 'J.R.R. Tolkien', price: 22.99}
+            {category: 'fiction', title: 'The Lord of the Rings', author: 'J.R.R. Tolkien', price: 22.99},
         ],
-        bicycle: {color: 'red', price: 19.95}
-    }
+        bicycle: {color: 'red', price: 19.95},
+    },
 };
 
 function jsonpathRun() {
@@ -74,7 +74,7 @@ function jsonpathLoadSample() {
 }
 
 // 监听示例下拉框（事件委托，避免面板异步加载时机问题）
-document.addEventListener('change', e => {
+document.addEventListener('change', (e) => {
     if (e.target && e.target.id === 'jsonpathSample') {
         const v = e.target.value;
         if (v) {

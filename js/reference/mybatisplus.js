@@ -18,7 +18,7 @@ const MYBATIS_PLUS_DATA = [
             {method: 'selectObjs(Wrapper<T> wrapper)', desc: '返回 List<Object>（只取第一列）'},
             {method: 'selectPage(IPage<T> page, Wrapper<T>)', desc: '分页查询，返回 IPage<T>'},
             {method: 'selectMapsPage(IPage, Wrapper)', desc: '分页查询，返回 IPage<Map>'},
-        ]
+        ],
     },
     {
         cat: 'IService<T> / ServiceImpl<M, T>',
@@ -44,7 +44,7 @@ const MYBATIS_PLUS_DATA = [
             {method: 'page(IPage<T> page)', desc: '无条件分页'},
             {method: 'page(IPage<T> page, Wrapper<T> wrapper)', desc: '带条件分页'},
             {method: 'chain()', desc: '链式调用，返回 ChainQuery / LambdaQueryChainWrapper'},
-        ]
+        ],
     },
     {
         cat: 'LambdaQueryWrapper<T>',
@@ -80,7 +80,7 @@ const MYBATIS_PLUS_DATA = [
             {method: 'apply(String applySql, Object... params)', desc: '拼接 SQL 片段（参数自动绑定）'},
             {method: 'exists(String existsSql)', desc: 'EXISTS 子查询'},
             {method: 'notExists(String notExistsSql)', desc: 'NOT EXISTS 子查询'},
-        ]
+        ],
     },
     {
         cat: 'LambdaUpdateWrapper<T>',
@@ -91,7 +91,7 @@ const MYBATIS_PLUS_DATA = [
             {method: 'incr(SFunction, long val)', desc: '原子自增（set field = field + val）'},
             {method: 'decr(SFunction, long val)', desc: '原子自减'},
             {method: 'eq / ne / gt / lt ...', desc: '同 LambdaQueryWrapper 的条件方法'},
-        ]
+        ],
     },
     {
         cat: '分页插件 PaginationInnerInterceptor',
@@ -104,7 +104,7 @@ const MYBATIS_PLUS_DATA = [
             {method: 'IPage.setTotal(long) / getTotal()', desc: '总数'},
             {method: 'IPage.setSearchCount(boolean)', desc: '关闭 count SQL（已知总数时提速）'},
             {method: 'IPage.getPages()', desc: '总页数'},
-        ]
+        ],
     },
     {
         cat: '通用方法速记',
@@ -113,7 +113,7 @@ const MYBATIS_PLUS_DATA = [
             {method: 'Wrappers.lambdaUpdate()', desc: '构造 LambdaUpdateWrapper'},
             {method: 'Wrappers.query() / Wrappers.update()', desc: '非 Lambda 构造器'},
             {method: 'QueryWrapper<T>.lambda()', desc: 'QueryWrapper 转 LambdaQueryWrapper'},
-        ]
+        ],
     },
 ];
 
@@ -125,18 +125,18 @@ function mybatisplusRender(filter) {
     filter = (filter || '').trim().toLowerCase();
     container.innerHTML = '';
     let hasResult = false;
-    MYBATIS_PLUS_DATA.forEach(group => {
+    MYBATIS_PLUS_DATA.forEach((group) => {
         const matched = filter
-            ? group.items.filter(i =>
-                i.method.toLowerCase().includes(filter) ||
-                i.desc.toLowerCase().includes(filter))
+            ? group.items.filter(
+                (i) => i.method.toLowerCase().includes(filter) || i.desc.toLowerCase().includes(filter)
+            )
             : group.items;
         if (!matched.length) return;
         hasResult = true;
         const section = document.createElement('div');
         section.style.cssText = 'margin-bottom:16px';
         section.innerHTML = `<div style="font-size:12px;font-weight:600;color:var(--accent);padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:8px">${group.cat}</div>`;
-        matched.forEach(item => {
+        matched.forEach((item) => {
             const card = document.createElement('div');
             card.className = 'ref-card';
             card.innerHTML = `<div class="ref-cmd-head"><code class="ref-cmd-name">${item.method.replace(/</g, '&lt;')}</code><span class="ref-cmd-desc">${item.desc}</span><button class="sm outline" onclick="safeCopy('${item.method.replace(/'/g, "\\'")}')">复制</button></div>`;

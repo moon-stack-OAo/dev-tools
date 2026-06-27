@@ -6,7 +6,8 @@
 // === 0. 正则
 // ============================================================
 // 单行日志：timestamp(毫秒可选) + level + [thread] + logger - message
-const LOG_PATTERN = /^\s*(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}(?:[.,]\d+)?)\s+(TRACE|DEBUG|INFO|WARN|ERROR|FATAL)\s+\[([^\]]+)\]\s+([\w$.\-]+)\s*[-:]\s*(.*)$/;
+const LOG_PATTERN =
+    /^\s*(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}(?:[.,]\d+)?)\s+(TRACE|DEBUG|INFO|WARN|ERROR|FATAL)\s+\[([^\]]+)\]\s+([\w$.\-]+)\s*[-:]\s*(.*)$/;
 // 异常堆栈行：JVM StackTrace 风格
 const STACK_FRAME = /^\s*at\s+/;
 // 异常 cause 行：Caused by: xxx.xxx: message
@@ -28,7 +29,7 @@ function parseLogLine(line) {
         thread: m[3],
         logger: m[4],
         message: m[5],
-        raw: line
+        raw: line,
     };
 }
 
@@ -90,7 +91,7 @@ const LEVEL_CLASS = {
     INFO: 'logfmt-l-info',
     WARN: 'logfmt-l-warn',
     ERROR: 'logfmt-l-error',
-    FATAL: 'logfmt-l-fatal'
+    FATAL: 'logfmt-l-fatal',
 };
 
 // ============================================================
@@ -113,15 +114,25 @@ function renderLogEntryHTML(entry) {
     const levelCls = LEVEL_CLASS[entry.level] || 'logfmt-l-info';
     // 结构：timestamp | level | [thread] | logger | - | message
     const parts = [
-        '<span class="logfmt-timestamp">', _lfEscape(entry.timestamp), '</span>',
+        '<span class="logfmt-timestamp">',
+        _lfEscape(entry.timestamp),
+        '</span>',
         ' ',
-        '<span class="logfmt-level ' + levelCls + '">', _lfEscape(entry.level.padEnd(5)), '</span>',
+        '<span class="logfmt-level ' + levelCls + '">',
+        _lfEscape(entry.level.padEnd(5)),
+        '</span>',
         ' ',
-        '<span class="logfmt-thread">[', _lfEscape(entry.thread), ']</span>',
+        '<span class="logfmt-thread">[',
+        _lfEscape(entry.thread),
+        ']</span>',
         ' ',
-        '<span class="logfmt-logger">', _lfEscape(entry.logger), '</span>',
+        '<span class="logfmt-logger">',
+        _lfEscape(entry.logger),
+        '</span>',
         ' - ',
-        '<span class="logfmt-msg">', _lfEscape(entry.message), '</span>'
+        '<span class="logfmt-msg">',
+        _lfEscape(entry.message),
+        '</span>',
     ];
     return parts.join('');
 }
@@ -131,36 +142,53 @@ function renderStackFramesHTML(frames, parentLevel) {
     if (!frames || !frames.length) return '';
     const cls = parentLevel === 'ERROR' || parentLevel === 'FATAL' ? 'logfmt-stack-error' : 'logfmt-stack-warn';
     const summary = frames.length + ' 帧';
-    const head = '<div class="logfmt-stack ' + cls + '">' +
+    const head =
+        '<div class="logfmt-stack ' +
+        cls +
+        '">' +
         '<div class="logfmt-stack-head" onclick="this.parentElement.classList.toggle(\'logfmt-stack-open\')">' +
-        '<i class="bi bi-chevron-right logfmt-stack-caret"></i> Stack Trace (' + summary + ')' +
+        '<i class="bi bi-chevron-right logfmt-stack-caret"></i> Stack Trace (' +
+        summary +
+        ')' +
         '</div>' +
         '<div class="logfmt-stack-body">';
-    const body = frames.map(function (f) {
-        // Caused by 单独高亮
-        if (CAUSED_BY.test(f)) {
-            return '<div class="logfmt-stack-line logfmt-caused">' + _lfEscape(f) + '</div>';
-        }
-        // "at xxx" 关键字加色
-        const m = f.match(/^(\s*)(at\s+)(.+)$/);
-        if (m) {
-            return '<div class="logfmt-stack-line">' +
-                _lfEscape(m[1]) +
-                '<span class="logfmt-stack-at">' + _lfEscape(m[2]) + '</span>' +
-                _lfEscape(m[3]) +
-                '</div>';
-        }
-        // Exception 头（如 java.lang.NullPointerException: ...）
-        const ex = f.match(EXCEPTION_FIRST);
-        if (ex) {
-            const cls2 = 'logfmt-exception-class';
-            return '<div class="logfmt-stack-line">' +
-                '<span class="' + cls2 + '">' + _lfEscape(ex[1]) + '</span>' +
-                (ex[2] ? '<span class="logfmt-exception-msg">' + _lfEscape(': ' + ex[2]) + '</span>' : '') +
-                '</div>';
-        }
-        return '<div class="logfmt-stack-line">' + _lfEscape(f) + '</div>';
-    }).join('');
+    const body = frames
+        .map(function (f) {
+            // Caused by 单独高亮
+            if (CAUSED_BY.test(f)) {
+                return '<div class="logfmt-stack-line logfmt-caused">' + _lfEscape(f) + '</div>';
+            }
+            // "at xxx" 关键字加色
+            const m = f.match(/^(\s*)(at\s+)(.+)$/);
+            if (m) {
+                return (
+                    '<div class="logfmt-stack-line">' +
+                    _lfEscape(m[1]) +
+                    '<span class="logfmt-stack-at">' +
+                    _lfEscape(m[2]) +
+                    '</span>' +
+                    _lfEscape(m[3]) +
+                    '</div>'
+                );
+            }
+            // Exception 头（如 java.lang.NullPointerException: ...）
+            const ex = f.match(EXCEPTION_FIRST);
+            if (ex) {
+                const cls2 = 'logfmt-exception-class';
+                return (
+                    '<div class="logfmt-stack-line">' +
+                    '<span class="' +
+                    cls2 +
+                    '">' +
+                    _lfEscape(ex[1]) +
+                    '</span>' +
+                    (ex[2] ? '<span class="logfmt-exception-msg">' + _lfEscape(': ' + ex[2]) + '</span>' : '') +
+                    '</div>'
+                );
+            }
+            return '<div class="logfmt-stack-line">' + _lfEscape(f) + '</div>';
+        })
+        .join('');
     const tail = '</div></div>';
     return head + body + tail;
 }
@@ -172,9 +200,8 @@ function renderGroupHTML(group) {
         // 无 entry：纯堆栈块
         return renderStackFramesHTML(group.frames, null);
     }
-    const entryHtml = '<div class="logfmt-line logfmt-level-' + group.entry.level + '">' +
-        renderLogEntryHTML(group.entry) +
-        '</div>';
+    const entryHtml =
+        '<div class="logfmt-line logfmt-level-' + group.entry.level + '">' + renderLogEntryHTML(group.entry) + '</div>';
     return entryHtml + renderStackFramesHTML(group.frames, group.entry.level);
 }
 
@@ -273,7 +300,8 @@ function _lfBuildEntryNode(entry) {
 function _lfBuildStackNode(frames, parentLevel) {
     if (!frames.length) return null;
     const wrap = document.createElement('div');
-    wrap.className = 'logfmt-stack ' +
+    wrap.className =
+        'logfmt-stack ' +
         (parentLevel === 'ERROR' || parentLevel === 'FATAL' ? 'logfmt-stack-error' : 'logfmt-stack-warn');
     const head = document.createElement('div');
     head.className = 'logfmt-stack-head';
@@ -336,7 +364,9 @@ function logfmtRender() {
         }
     });
     // 统计
-    const totalLines = input.split(/\r?\n/).filter(function (l) { return l.trim(); }).length;
+    const totalLines = input.split(/\r?\n/).filter(function (l) {
+        return l.trim();
+    }).length;
     const matched = filtered.length;
     const stats = document.getElementById('logfmtStats');
     if (stats) {
@@ -385,16 +415,27 @@ function logfmtDownload() {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    setTimeout(function () {
+        URL.revokeObjectURL(url);
+    }, 1000);
     toast('已下载 ' + filename);
     setStatus('✅ 已下载 ' + filename);
 }
 
 function _lfTimestamp() {
     const d = new Date();
-    const pad = function (n) { return String(n).padStart(2, '0'); };
-    return d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' +
-        pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds());
+    const pad = function (n) {
+        return String(n).padStart(2, '0');
+    };
+    return (
+        d.getFullYear() +
+        pad(d.getMonth() + 1) +
+        pad(d.getDate()) +
+        '-' +
+        pad(d.getHours()) +
+        pad(d.getMinutes()) +
+        pad(d.getSeconds())
+    );
 }
 
 function logfmtInsertSample(kind) {
@@ -421,7 +462,9 @@ function logfmtOnlyError() {
 }
 
 function logfmtAllLevels() {
-    Object.keys(_lfEnabledLevels).forEach(function (k) { _lfEnabledLevels[k] = true; });
+    Object.keys(_lfEnabledLevels).forEach(function (k) {
+        _lfEnabledLevels[k] = true;
+    });
     document.querySelectorAll('.logfmt-level-btn').forEach(function (b) {
         b.classList.add('active');
     });
@@ -477,8 +520,7 @@ const SAMPLES = {
         '2024-01-15 08:00:00.000  INFO [main] com.example.App - Application started\n' +
         '2024-01-15 08:00:01.234  WARN [main] com.example.App - Config file not found, using defaults\n' +
         '2024-01-15 08:00:02.567  INFO [main] com.example.App - Listening on port 8080',
-    tomcat:
-        '20-May-2024 10:23:45.123 INFO [http-nio-8080-exec-1] org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/api] - Initializing Spring embedded WebApplicationContext'
+    tomcat: '20-May-2024 10:23:45.123 INFO [http-nio-8080-exec-1] org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/api] - Initializing Spring embedded WebApplicationContext',
 };
 
 // ============================================================
@@ -506,7 +548,7 @@ if (typeof module !== 'undefined' && module.exports) {
         _lfFilterWithStack: _lfFilterWithStack,
         LOG_PATTERN: LOG_PATTERN,
         LEVEL_CLASS: LEVEL_CLASS,
-        SAMPLES: SAMPLES
+        SAMPLES: SAMPLES,
     };
 }
 

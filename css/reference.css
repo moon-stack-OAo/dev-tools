@@ -17,7 +17,8 @@
     padding: 12px 14px;
     margin-bottom: 20px;
     border-radius: var(--radius);
-    box-shadow: 0 -1px 0 var(--border), 0 2px 8px rgba(0, 0, 0, .12);
+    box-shadow: 0 -1px 0 var(--border),
+    0 2px 8px rgba(0, 0, 0, 0.12);
     backdrop-filter: blur(8px);
 }
 
@@ -36,7 +37,7 @@
     margin-bottom: 6px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: .6px;
+    letter-spacing: 0.6px;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -62,7 +63,7 @@
     pointer-events: none;
     display: flex;
     align-items: center;
-    transition: color .2s;
+    transition: color 0.2s;
     z-index: 1;
 }
 
@@ -75,8 +76,8 @@
     border: 1px solid var(--border);
     color: var(--text);
     outline: none;
-    transition: all .2s ease;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, .12);
+    transition: all 0.2s ease;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
 .ref-search-input-wrap input::placeholder {
@@ -90,7 +91,8 @@
 
 .ref-search-input-wrap input:focus {
     border-color: var(--accent);
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, .12), 0 0 0 3px var(--accent-glow);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.12),
+    0 0 0 3px var(--accent-glow);
     background: var(--bg-card2);
 }
 
@@ -115,7 +117,7 @@
     align-items: center;
     justify-content: center;
     font-size: 11px;
-    transition: all .15s;
+    transition: all 0.15s;
     padding: 0;
     box-shadow: none;
     z-index: 1;
@@ -138,7 +140,8 @@
     margin-bottom: 8px;
     border: 1px solid var(--border);
     background: var(--bg-card);
-    transition: background .12s, border-color .12s;
+    transition: background 0.12s,
+    border-color 0.12s;
 }
 
 .arthas-card:hover {
@@ -188,7 +191,7 @@
     font-size: 10px;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: .5px;
+    letter-spacing: 0.5px;
     margin-top: 8px;
     margin-bottom: 4px;
     padding-left: 2px;
@@ -207,7 +210,7 @@
     white-space: pre-wrap;
     word-break: break-all;
     line-height: 1.55;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, .25);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
 .arthas-pre code {
@@ -236,7 +239,7 @@
     border-radius: 4px;
     cursor: pointer;
     opacity: 0;
-    transition: all .15s;
+    transition: all 0.15s;
     z-index: 2;
     font-weight: 500;
     font-family: var(--font-ui);
@@ -266,7 +269,8 @@
     margin-bottom: 8px;
     border: 1px solid var(--border);
     background: var(--bg-card);
-    transition: background .12s, border-color .12s;
+    transition: background 0.12s,
+    border-color 0.12s;
     position: relative;
 }
 
@@ -311,7 +315,7 @@
     font-size: 11px;
     border-radius: 4px;
     cursor: pointer;
-    transition: all .15s;
+    transition: all 0.15s;
     font-family: var(--font-ui);
 }
 
@@ -347,7 +351,7 @@
     font-family: var(--font);
     font-size: 11px;
     color: var(--accent2);
-    background: rgba(0, 0, 0, .15);
+    background: rgba(0, 0, 0, 0.15);
     padding: 3px 8px;
     border-radius: 3px;
     margin: 2px 0;
@@ -373,7 +377,8 @@ button.active {
     margin-bottom: 8px;
     border: 1px solid var(--border);
     background: var(--bg-card);
-    transition: background .12s, border-color .12s;
+    transition: background 0.12s,
+    border-color 0.12s;
     position: relative;
 }
 
@@ -410,26 +415,26 @@ button.active {
 
 .springcloud-type-注解 {
     color: var(--purple);
-    border-color: rgba(var(--purple-rgb), .4);
-    background: rgba(var(--purple-rgb), .08);
+    border-color: rgba(var(--purple-rgb), 0.4);
+    background: rgba(var(--purple-rgb), 0.08);
 }
 
 .springcloud-type-配置项 {
     color: var(--success);
-    border-color: rgba(var(--success-rgb), .4);
-    background: rgba(var(--success-rgb), .08);
+    border-color: rgba(var(--success-rgb), 0.4);
+    background: rgba(var(--success-rgb), 0.08);
 }
 
 .springcloud-type-概念 {
     color: var(--warning);
-    border-color: rgba(var(--warning-rgb), .4);
-    background: rgba(var(--warning-rgb), .08);
+    border-color: rgba(var(--warning-rgb), 0.4);
+    background: rgba(var(--warning-rgb), 0.08);
 }
 
 .springcloud-type-组件 {
     color: var(--accent2);
-    border-color: rgba(var(--accent2-rgb), .4);
-    background: rgba(var(--accent2-rgb), .08);
+    border-color: rgba(var(--accent2-rgb), 0.4);
+    background: rgba(var(--accent2-rgb), 0.08);
 }
 
 .springcloud-copy-btn {
@@ -441,7 +446,7 @@ button.active {
     font-size: 11px;
     border-radius: 4px;
     cursor: pointer;
-    transition: all .15s;
+    transition: all 0.15s;
     font-family: var(--font-ui);
 }
 
@@ -470,7 +475,7 @@ button.active {
     white-space: pre-wrap;
     word-break: break-all;
     line-height: 1.5;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, .25);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
 /* 消息中间件速查（Kafka / RabbitMQ / RocketMQ）*/
@@ -480,7 +485,8 @@ button.active {
     margin-bottom: 8px;
     border: 1px solid var(--border);
     background: var(--bg-card);
-    transition: background .12s, border-color .12s;
+    transition: background 0.12s,
+    border-color 0.12s;
     position: relative;
 }
 
@@ -526,7 +532,7 @@ button.active {
     font-size: 11px;
     border-radius: 4px;
     cursor: pointer;
-    transition: all .15s;
+    transition: all 0.15s;
     font-family: var(--font-ui);
 }
 
@@ -555,7 +561,7 @@ button.active {
     white-space: pre-wrap;
     word-break: break-all;
     line-height: 1.5;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, .25);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
 /* 通用参考工具卡片样式（Gradle/IDEA/设计模式/GC/Spring Security/JUnit5） */
@@ -565,7 +571,8 @@ button.active {
     margin-bottom: 8px;
     border: 1px solid var(--border);
     background: var(--bg-card);
-    transition: background .12s, border-color .12s;
+    transition: background 0.12s,
+    border-color 0.12s;
 }
 
 .ref-card:hover {
@@ -614,7 +621,7 @@ button.active {
     font-size: 10px;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: .5px;
+    letter-spacing: 0.5px;
     margin-top: 8px;
     margin-bottom: 4px;
     padding-left: 2px;
@@ -633,7 +640,7 @@ button.active {
     white-space: pre-wrap;
     word-break: break-all;
     line-height: 1.55;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, .25);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
 .ref-pre code {
@@ -656,7 +663,7 @@ button.active {
     border-radius: 4px;
     cursor: pointer;
     opacity: 0;
-    transition: all .15s;
+    transition: all 0.15s;
     z-index: 2;
     font-weight: 500;
     font-family: var(--font-ui);

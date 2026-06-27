@@ -8,7 +8,8 @@ function b64Encode() {
     }
     try {
         let enc = btoa(unescape(encodeURIComponent(raw)));
-        if (document.getElementById('b64UrlSafe').checked) enc = enc.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        if (document.getElementById('b64UrlSafe').checked)
+            enc = enc.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
         out.textContent = enc;
         out.className = 'output-box';
         setStatus('编码成功');

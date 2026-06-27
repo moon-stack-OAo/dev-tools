@@ -6,14 +6,17 @@ const CRON_FIELDS = [
         name: '时',
         min: 0,
         max: 23,
-        values: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
+        values: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
     },
     {
         id: 'dom',
         name: '日',
         min: 1,
         max: 31,
-        values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+        values: [
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+            30, 31,
+        ],
     },
     {id: 'month', name: '月', min: 1, max: 12, values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]},
     {id: 'dow', name: '周', min: 0, max: 7, values: [0, 1, 2, 3, 4, 5, 6, 7]},
@@ -32,14 +35,14 @@ const MONTH_LABELS = {
     9: '9月',
     10: '10月',
     11: '11月',
-    12: '12月'
+    12: '12月',
 };
 let cronState = {second: '0', minute: '*', hour: '*', dom: '*', month: '*', dow: '*', year: '*'};
 
 function cronBuildFields() {
     const container = document.getElementById('cronFields');
     container.innerHTML = '';
-    CRON_FIELDS.forEach(field => {
+    CRON_FIELDS.forEach((field) => {
         const row = document.createElement('div');
         row.className = 'cron-field-row';
         const header = document.createElement('div');
@@ -64,7 +67,15 @@ function cronBuildFields() {
         // 区间行 (始终创建)
         const rangeRow = document.createElement('div');
         rangeRow.className = 'cron-range-row';
-        rangeRow.innerHTML = '从 <input type="number" class="cron-range-start" min="' + field.min + '" max="' + field.max + '"> 开始, 每 <input type="number" class="cron-range-step" min="1" max="' + field.max + '"> ' + field.name;
+        rangeRow.innerHTML =
+            '从 <input type="number" class="cron-range-start" min="' +
+            field.min +
+            '" max="' +
+            field.max +
+            '"> 开始, 每 <input type="number" class="cron-range-step" min="1" max="' +
+            field.max +
+            '"> ' +
+            field.name;
         const rs = rangeRow.querySelector('.cron-range-start');
         const rp = rangeRow.querySelector('.cron-range-step');
         rs.onchange = rp.onchange = () => {
@@ -76,11 +87,12 @@ function cronBuildFields() {
         // 格子
         const grid = document.createElement('div');
         grid.className = 'cron-grid';
-        field.values.forEach(v => {
+        field.values.forEach((v) => {
             const cell = document.createElement('div');
             cell.className = 'cron-cell';
             cell.dataset.value = v;
-            cell.textContent = field.id === 'dow' ? (DOW_LABELS[v] || v) : field.id === 'month' ? (MONTH_LABELS[v] || v) : v;
+            cell.textContent =
+                field.id === 'dow' ? DOW_LABELS[v] || v : field.id === 'month' ? MONTH_LABELS[v] || v : v;
             cell.onclick = () => cronToggleCell(field.id, v);
             grid.appendChild(cell);
         });
@@ -93,8 +105,8 @@ function cronBuildFields() {
 
 function cronSetMode(fid, mode) {
     if (mode === 0) cronState[fid] = '*';
-    else if (mode === 1) cronState[fid] = '*/' + cronGuessStep(CRON_FIELDS.find(f => f.id === fid));
-    else cronState[fid] = '' + CRON_FIELDS.find(f => f.id === fid).min;
+    else if (mode === 1) cronState[fid] = '*/' + cronGuessStep(CRON_FIELDS.find((f) => f.id === fid));
+    else cronState[fid] = '' + CRON_FIELDS.find((f) => f.id === fid).min;
     cronUpdateFields();
     cronSyncInput();
 }
@@ -104,7 +116,8 @@ function cronToggleCell(fid, v) {
     if (cur === '*' || cur.includes('/')) return;
     const nums = cur.split(',').map(Number);
     const idx = nums.indexOf(v);
-    if (idx >= 0) nums.splice(idx, 1); else nums.push(v);
+    if (idx >= 0) nums.splice(idx, 1);
+    else nums.push(v);
     nums.sort((a, b) => a - b);
     cronState[fid] = nums.length ? nums.join(',') : '*';
     cronUpdateFields();
@@ -137,7 +150,7 @@ function cronUpdateFields() {
         const grid = row.querySelector('.cron-grid');
         grid.style.display = mode === 2 ? '' : 'none';
         const cells = grid.querySelectorAll('.cron-cell');
-        cells.forEach(cell => {
+        cells.forEach((cell) => {
             const v = parseInt(cell.dataset.value);
             cell.classList.remove('selected', 'all');
             if (mode === 0) cell.classList.add('all');
@@ -150,7 +163,15 @@ function cronUpdateFields() {
 }
 
 function cronSyncInput() {
-    const expr = [cronState.second, cronState.minute, cronState.hour, cronState.dom, cronState.month, cronState.dow, cronState.year].join(' ');
+    const expr = [
+        cronState.second,
+        cronState.minute,
+        cronState.hour,
+        cronState.dom,
+        cronState.month,
+        cronState.dow,
+        cronState.year,
+    ].join(' ');
     document.getElementById('cronInput').value = expr;
     cronParse();
 }
@@ -177,7 +198,15 @@ function cronParse() {
         return;
     }
     try {
-        const ranges = [[0, 59], [0, 59], [0, 23], [1, 31], [1, 12], [0, 7], [1970, 2099]];
+        const ranges = [
+            [0, 59],
+            [0, 59],
+            [0, 23],
+            [1, 31],
+            [1, 12],
+            [0, 7],
+            [1970, 2099],
+        ];
         const parsed = fields.map((f, i) => cronParseField(f, ranges[i][0], ranges[i][1]));
         const [seconds, minutes, hours, doms, months, dows, years] = parsed;
         if (dows.includes(7) && !dows.includes(0)) dows.push(0);
@@ -195,8 +224,13 @@ function cronParse() {
         current.setSeconds(0, 0);
         let maxIter = 525600;
         while (results.length < count && maxIter-- > 0) {
-            const m = current.getMonth() + 1, d = current.getDate(), dw = current.getDay(), h = current.getHours(),
-                min = current.getMinutes(), sec = current.getSeconds(), y = current.getFullYear();
+            const m = current.getMonth() + 1,
+                d = current.getDate(),
+                dw = current.getDay(),
+                h = current.getHours(),
+                min = current.getMinutes(),
+                sec = current.getSeconds(),
+                y = current.getFullYear();
             if (!yearWild && !years.includes(y)) {
                 current.setFullYear(y + 1);
                 current.setMonth(0, 1);
@@ -241,12 +275,27 @@ function cronParse() {
         }
         let r = '';
         results.forEach((d, i) => {
-            const ds = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0') + '  ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ':' + String(d.getSeconds()).padStart(2, '0');
-            r += (i + 1) + '. ' + ds + '\n';
+            const ds =
+                d.getFullYear() +
+                '-' +
+                String(d.getMonth() + 1).padStart(2, '0') +
+                '-' +
+                String(d.getDate()).padStart(2, '0') +
+                '  ' +
+                String(d.getHours()).padStart(2, '0') +
+                ':' +
+                String(d.getMinutes()).padStart(2, '0') +
+                ':' +
+                String(d.getSeconds()).padStart(2, '0');
+            r += i + 1 + '. ' + ds + '\n';
         });
         out.textContent = r.trim();
         out.className = 'output-box';
-        desc.textContent = '📋 ' + fields.map((f, i) => ['秒', '分', '时', '日', '月', '周', '年'][i] + '=' + (f === '*' ? '任意' : f)).join(' | ');
+        desc.textContent =
+            '📋 ' +
+            fields
+                .map((f, i) => ['秒', '分', '时', '日', '月', '周', '年'][i] + '=' + (f === '*' ? '任意' : f))
+                .join(' | ');
         setStatus('Cron 解析完成');
     } catch (e) {
         out.textContent = '解析失败: ' + e.message;
@@ -256,9 +305,26 @@ function cronParse() {
 
 function cronParseField(field, min, max) {
     const values = new Set();
-    field = field.replace(/JAN/gi, '1').replace(/FEB/gi, '2').replace(/MAR/gi, '3').replace(/APR/gi, '4').replace(/MAY/gi, '5').replace(/JUN/gi, '6')
-        .replace(/JUL/gi, '7').replace(/AUG/gi, '8').replace(/SEP/gi, '9').replace(/OCT/gi, '10').replace(/NOV/gi, '11').replace(/DEC/gi, '12')
-        .replace(/SUN/gi, '0').replace(/MON/gi, '1').replace(/TUE/gi, '2').replace(/WED/gi, '3').replace(/THU/gi, '4').replace(/FRI/gi, '5').replace(/SAT/gi, '6');
+    field = field
+        .replace(/JAN/gi, '1')
+        .replace(/FEB/gi, '2')
+        .replace(/MAR/gi, '3')
+        .replace(/APR/gi, '4')
+        .replace(/MAY/gi, '5')
+        .replace(/JUN/gi, '6')
+        .replace(/JUL/gi, '7')
+        .replace(/AUG/gi, '8')
+        .replace(/SEP/gi, '9')
+        .replace(/OCT/gi, '10')
+        .replace(/NOV/gi, '11')
+        .replace(/DEC/gi, '12')
+        .replace(/SUN/gi, '0')
+        .replace(/MON/gi, '1')
+        .replace(/TUE/gi, '2')
+        .replace(/WED/gi, '3')
+        .replace(/THU/gi, '4')
+        .replace(/FRI/gi, '5')
+        .replace(/SAT/gi, '6');
     for (const part of field.split(',')) {
         if (part === '*') {
             for (let i = min; i <= max; i++) values.add(i);

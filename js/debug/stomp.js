@@ -11,20 +11,10 @@ const STOMP_NULL = '\x00';
 const STOMP_LF = '\n';
 const STOMP_HEARTBEAT = '\n';
 
-function stompEscapeHtml(s) {
-    if (s === undefined || s === null) return '';
-    return String(s)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-}
-
 function stompEncode(command, headers, body) {
     let frame = command + STOMP_LF;
     headers = headers || {};
-    Object.keys(headers).forEach(k => {
+    Object.keys(headers).forEach((k) => {
         const v = headers[k];
         if (v !== undefined && v !== null && v !== '') {
             frame += k + ':' + v + STOMP_LF;
@@ -59,7 +49,7 @@ function stompParseFrame(raw) {
     }
     const headers = {};
     if (headerBlock) {
-        headerBlock.split(STOMP_LF).forEach(line => stompParseLine(line, headers));
+        headerBlock.split(STOMP_LF).forEach((line) => stompParseLine(line, headers));
     }
     return {command, headers, body};
 }
@@ -67,7 +57,7 @@ function stompParseFrame(raw) {
 function stompParseExtraHeaders(text) {
     const result = {};
     if (!text) return result;
-    text.split(/\r?\n/).forEach(line => {
+    text.split(/\r?\n/).forEach((line) => {
         const idx = line.indexOf(':');
         if (idx > 0) {
             result[line.substring(0, idx).trim()] = line.substring(idx + 1).trim();
@@ -144,11 +134,11 @@ function stompLogFrame(dir, command, headers, body) {
     const time = new Date().toLocaleTimeString();
     const prefix = dir === 'out' ? '▶' : '◀';
     let html = `<span class="time">${time}</span>${prefix} <b>${escapeHtml(command)}</b>`;
-    Object.keys(headers).forEach(k => {
-        html += `<br>&nbsp;&nbsp;<span class="stomp-h-key">${stompEscapeHtml(k)}</span>: <span class="stomp-h-val">${stompEscapeHtml(headers[k])}</span>`;
+    Object.keys(headers).forEach((k) => {
+        html += `<br>&nbsp;&nbsp;<span class="stomp-h-key">${escapeHtml(k)}</span>: <span class="stomp-h-val">${escapeHtml(headers[k])}</span>`;
     });
     if (body) {
-        html += `<br>&nbsp;&nbsp;<span class="stomp-body">${stompEscapeHtml(body)}</span>`;
+        html += `<br>&nbsp;&nbsp;<span class="stomp-body">${escapeHtml(body)}</span>`;
     }
     div.innerHTML = html;
     log.appendChild(div);
@@ -161,7 +151,7 @@ function stompLogMsg(type, content) {
     const div = document.createElement('div');
     div.className = 'ws-msg system';
     const time = new Date().toLocaleTimeString();
-    div.innerHTML = `<span class="time">${time}</span>● ${stompEscapeHtml(content)}`;
+    div.innerHTML = `<span class="time">${time}</span>● ${escapeHtml(content)}`;
     log.appendChild(div);
     log.scrollTop = log.scrollHeight;
 }
@@ -177,7 +167,7 @@ function stompRenderSubs() {
     stompSubs.forEach((dest, id) => {
         const div = document.createElement('div');
         div.className = 'stomp-sub-item';
-        div.innerHTML = `<span class="stomp-sub-id">${stompEscapeHtml(id)}</span><span class="stomp-sub-dest">${stompEscapeHtml(dest)}</span><button class="outline sm" onclick="stompUnsubscribe('${id}')">取消</button>`;
+        div.innerHTML = `<span class="stomp-sub-id">${escapeHtml(id)}</span><span class="stomp-sub-dest">${escapeHtml(dest)}</span><button class="outline sm" onclick="stompUnsubscribe('${id}')">取消</button>`;
         list.appendChild(div);
     });
 }
@@ -206,7 +196,14 @@ function stompDispatch(frame) {
             const txParts = txInput.split(',');
             const tx = parseInt(txParts[0], 10) || 0;
             stompStartHeartbeat(tx, sy);
-            stompLogMsg('system', 'STOMP 已握手 (version=' + (frame.headers['version'] || '?') + ', session=' + (frame.headers['session'] || '-') + ')');
+            stompLogMsg(
+                'system',
+                'STOMP 已握手 (version=' +
+                (frame.headers['version'] || '?') +
+                ', session=' +
+                (frame.headers['session'] || '-') +
+                ')'
+            );
             break;
         }
         case 'MESSAGE': {
@@ -265,8 +262,8 @@ function stompConnect() {
         stompLogMsg('system', 'WebSocket 已建立，发送 STOMP CONNECT');
         const headers = {
             'accept-version': '1.2',
-            'host': document.getElementById('stompHost').value.trim() || 'localhost',
-            'heart-beat': document.getElementById('stompTx').value.trim() || '0,0'
+            host: document.getElementById('stompHost').value.trim() || 'localhost',
+            'heart-beat': document.getElementById('stompTx').value.trim() || '0,0',
         };
         const extra = stompParseExtraHeaders(document.getElementById('stompConnHeaders').value);
         Object.assign(headers, extra);
@@ -331,7 +328,7 @@ function stompSubscribe() {
         toast('请输入 destination');
         return;
     }
-    const id = 'sub-' + (++stompSubSeq);
+    const id = 'sub-' + ++stompSubSeq;
     const ackMode = document.getElementById('stompSubAck').value;
     const headers = {id, destination: dest};
     if (ackMode && ackMode !== 'auto') headers.ack = ackMode;

@@ -48,6 +48,26 @@ function mdInit() {
     mdInited = true;
 }
 
+// 清理 HTML 中的 XSS 向量（script 标签、on* 事件属性、javascript: 协议）
+function _mdSanitize(html) {
+    var tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    tmp.querySelectorAll('script,iframe,object,embed,form').forEach(function (el) {
+        el.remove();
+    });
+    tmp.querySelectorAll('*').forEach(function (el) {
+        for (var i = el.attributes.length - 1; i >= 0; i--) {
+            var attr = el.attributes[i];
+            var n = attr.name.toLowerCase();
+            var v = attr.value.trim();
+            if (n.startsWith('on') || ((n === 'href' || n === 'src') && /^\s*javascript:/i.test(v))) {
+                el.removeAttribute(attr.name);
+            }
+        }
+    });
+    return tmp.innerHTML;
+}
+
 function mdRender() {
     const input = mdInputEl.value;
     if (typeof marked === 'undefined') {
@@ -58,7 +78,7 @@ function mdRender() {
     }
     try {
         const html = marked.parse(input, {gfm: mdGfmEl.checked, breaks: false});
-        mdPreviewEl.innerHTML = html;
+        mdPreviewEl.innerHTML = _mdSanitize(html);
         mdPreviewEl.style.color = '';
         setStatus('Markdown 渲染完成');
     } catch (e) {

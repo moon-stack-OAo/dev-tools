@@ -2,7 +2,12 @@
     // 文本
     {ext: '.html, .htm', mime: 'text/html', cat: '文本', desc: 'HTML 文档'},
     {ext: '.css', mime: 'text/css', cat: '文本', desc: 'CSS 样式表'},
-    {ext: '.js, .mjs', mime: 'text/javascript', cat: '文本', desc: 'JavaScript（module 常用 application/javascript）'},
+    {
+        ext: '.js, .mjs',
+        mime: 'text/javascript',
+        cat: '文本',
+        desc: 'JavaScript（module 常用 application/javascript）',
+    },
     {ext: '.json', mime: 'application/json', cat: '文本', desc: 'JSON 数据'},
     {ext: '.xml', mime: 'application/xml', cat: '文本', desc: 'XML 文档'},
     {ext: '.txt', mime: 'text/plain', cat: '文本', desc: '纯文本'},
@@ -66,21 +71,21 @@
         ext: '.docx',
         mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         cat: '办公',
-        desc: 'Word 2007+'
+        desc: 'Word 2007+',
     },
     {ext: '.xls', mime: 'application/vnd.ms-excel', cat: '办公', desc: 'Excel 97-2003'},
     {
         ext: '.xlsx',
         mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         cat: '办公',
-        desc: 'Excel 2007+'
+        desc: 'Excel 2007+',
     },
     {ext: '.ppt', mime: 'application/vnd.ms-powerpoint', cat: '办公', desc: 'PowerPoint 97-2003'},
     {
         ext: '.pptx',
         mime: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
         cat: '办公',
-        desc: 'PowerPoint 2007+'
+        desc: 'PowerPoint 2007+',
     },
     {ext: '.odt', mime: 'application/vnd.oasis.opendocument.text', cat: '办公', desc: 'OpenDocument Text'},
 
@@ -120,11 +125,13 @@ function mimetypeRender(filter) {
     filter = (filter || '').trim().toLowerCase();
     container.innerHTML = '';
     const list = filter
-        ? MIME_TYPES.filter(m =>
-            m.ext.toLowerCase().includes(filter) ||
-            m.mime.toLowerCase().includes(filter) ||
-            m.cat.toLowerCase().includes(filter) ||
-            m.desc.toLowerCase().includes(filter))
+        ? MIME_TYPES.filter(
+            (m) =>
+                m.ext.toLowerCase().includes(filter) ||
+                m.mime.toLowerCase().includes(filter) ||
+                m.cat.toLowerCase().includes(filter) ||
+                m.desc.toLowerCase().includes(filter)
+        )
         : MIME_TYPES;
     if (!list.length) {
         container.innerHTML = '<div style="color:var(--text-muted);padding:20px;text-align:center">无匹配结果</div>';
@@ -132,19 +139,20 @@ function mimetypeRender(filter) {
     }
 
     const catColor = {
-        '文本': '#2196f3',
-        '图片': '#9c27b0',
-        '音频': '#ff9800',
-        '视频': '#f44336',
-        '应用': '#4caf50',
-        '办公': '#00bcd4',
-        '字体': '#795548',
-        '可执行': '#607d8b',
-        '其他': '#9e9e9e',
+        文本: '#2196f3',
+        图片: '#9c27b0',
+        音频: '#ff9800',
+        视频: '#f44336',
+        应用: '#4caf50',
+        办公: '#00bcd4',
+        字体: '#795548',
+        可执行: '#607d8b',
+        其他: '#9e9e9e',
     };
 
     const header = document.createElement('div');
-    header.style.cssText = 'display:grid;grid-template-columns:200px 1fr 70px 1fr;background:var(--bg-input);font-weight:600;border-radius:4px;padding:6px 0;margin-bottom:6px;font-size:12px;position:sticky;top:52px;z-index:5';
+    header.style.cssText =
+        'display:grid;grid-template-columns:200px 1fr 70px 1fr;background:var(--bg-input);font-weight:600;border-radius:4px;padding:6px 0;margin-bottom:6px;font-size:12px;position:sticky;top:52px;z-index:5';
     header.innerHTML = `
         <span style="padding:4px 10px">扩展名</span>
         <span style="padding:4px 10px">MIME 类型</span>
@@ -153,11 +161,12 @@ function mimetypeRender(filter) {
     `;
     container.appendChild(header);
 
-    list.forEach(m => {
+    list.forEach((m) => {
         const row = document.createElement('div');
-        row.style.cssText = 'display:grid;grid-template-columns:200px 1fr 70px 1fr;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;cursor:pointer;transition:background .12s;border-radius:4px';
-        row.onmouseenter = () => row.style.background = 'var(--glass)';
-        row.onmouseleave = () => row.style.background = '';
+        row.style.cssText =
+            'display:grid;grid-template-columns:200px 1fr 70px 1fr;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;cursor:pointer;transition:background .12s;border-radius:4px';
+        row.onmouseenter = () => (row.style.background = 'var(--glass)');
+        row.onmouseleave = () => (row.style.background = '');
         row.innerHTML = `
             <span style="padding:4px 10px"><code style="background:var(--bg-input);padding:2px 6px;border-radius:3px;color:var(--accent2);font-weight:600">${m.ext}</code></span>
             <span style="padding:4px 10px;color:var(--text);font-family:var(--font);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${m.mime}">${m.mime}</span>

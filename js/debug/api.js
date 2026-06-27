@@ -4,8 +4,8 @@ function apiMethodChange(el) {
 }
 
 function apiSwitchTab(tab, name) {
-    document.querySelectorAll('.api-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.api-tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.api-tab').forEach((t) => t.classList.remove('active'));
+    document.querySelectorAll('.api-tab-panel').forEach((p) => p.classList.remove('active'));
     tab.classList.add('active');
     document.getElementById('api-' + name + '-panel').classList.add('active');
 }
@@ -22,7 +22,7 @@ function apiAddHeader(key, val) {
 
 function apiCollectHeaders() {
     const headers = {};
-    document.querySelectorAll('#apiHeadersList .api-kv-row').forEach(row => {
+    document.querySelectorAll('#apiHeadersList .api-kv-row').forEach((row) => {
         const inputs = row.querySelectorAll('input');
         const key = inputs[0].value.trim();
         const val = inputs[1].value.trim();
@@ -97,8 +97,10 @@ function apiSend() {
             opts.headers['Content-Type'] = ct;
         }
     }
-    const respEl = document.getElementById('apiResponse'), statusEl = document.getElementById('apiStatus'),
-        metaEl = document.getElementById('apiMeta'), bodyEl = document.getElementById('apiBodyOutput');
+    const respEl = document.getElementById('apiResponse'),
+        statusEl = document.getElementById('apiStatus'),
+        metaEl = document.getElementById('apiMeta'),
+        bodyEl = document.getElementById('apiBodyOutput');
     respEl.style.display = 'block';
     statusEl.textContent = '请求中...';
     statusEl.className = 'resp-status';
@@ -106,27 +108,30 @@ function apiSend() {
     bodyEl.textContent = '';
     setStatus('API 请求中...');
     const start = performance.now();
-    fetch(url, opts).then(async resp => {
-        const elapsed = ((performance.now() - start) / 1000).toFixed(2);
-        const code = resp.status;
-        const cls = code < 300 ? 'status-2xx' : code < 400 ? 'status-3xx' : code < 500 ? 'status-4xx' : 'status-5xx';
-        statusEl.textContent = code + ' ' + resp.statusText;
-        statusEl.className = 'resp-status ' + cls;
-        const text = await resp.text();
-        metaEl.textContent = elapsed + 's  |  ' + (text.length) + ' bytes';
-        try {
-            bodyEl.textContent = JSON.stringify(JSON.parse(text), null, 2);
-        } catch (e) {
-            bodyEl.textContent = text;
-        }
-        setStatus('API 请求完成 (' + resp.status + ')');
-    }).catch(err => {
-        statusEl.textContent = '错误';
-        statusEl.className = 'resp-status status-5xx';
-        metaEl.textContent = '';
-        bodyEl.textContent = '请求失败: ' + err.message;
-        setStatus('API 请求失败');
-    });
+    fetch(url, opts)
+        .then(async (resp) => {
+            const elapsed = ((performance.now() - start) / 1000).toFixed(2);
+            const code = resp.status;
+            const cls =
+                code < 300 ? 'status-2xx' : code < 400 ? 'status-3xx' : code < 500 ? 'status-4xx' : 'status-5xx';
+            statusEl.textContent = code + ' ' + resp.statusText;
+            statusEl.className = 'resp-status ' + cls;
+            const text = await resp.text();
+            metaEl.textContent = elapsed + 's  |  ' + text.length + ' bytes';
+            try {
+                bodyEl.textContent = JSON.stringify(JSON.parse(text), null, 2);
+            } catch (e) {
+                bodyEl.textContent = text;
+            }
+            setStatus('API 请求完成 (' + resp.status + ')');
+        })
+        .catch((err) => {
+            statusEl.textContent = '错误';
+            statusEl.className = 'resp-status status-5xx';
+            metaEl.textContent = '';
+            bodyEl.textContent = '请求失败: ' + err.message;
+            setStatus('API 请求失败');
+        });
 }
 
 function apiClear() {

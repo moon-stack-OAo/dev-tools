@@ -1,15 +1,15 @@
 // AES 加密 / 解密（AES-256-CBC / AES-256-GCM）
 // 使用随机 Salt（PBKDF2）+ 随机 IV
 
-const SALT_SIZE = 16;   // 128 bit
-const IV_SIZE = 16;     // 128 bit
+const SALT_SIZE = 16; // 128 bit
+const IV_SIZE = 16; // 128 bit
 
 async function aesDeriveKey(pwd, salt) {
     const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(pwd), 'PBKDF2', false, ['deriveKey']);
     return crypto.subtle.deriveKey(
         {name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256'},
         key,
-        {name: 'AES-GCM', length: 256},  // deriveKey 时 name 不影响派生，最终加解密会按 mode 使用
+        {name: 'AES-GCM', length: 256}, // deriveKey 时 name 不影响派生，最终加解密会按 mode 使用
         false,
         ['encrypt', 'decrypt']
     );
@@ -52,7 +52,7 @@ async function aesDecrypt() {
         return;
     }
     try {
-        const raw = Uint8Array.from(atob(input.trim()), c => c.charCodeAt(0));
+        const raw = Uint8Array.from(atob(input.trim()), (c) => c.charCodeAt(0));
         if (raw.length < SALT_SIZE + IV_SIZE) {
             out.textContent = '密文数据太短';
             return;

@@ -53,26 +53,21 @@ function dbtypeRender() {
         const idxMap = {mysql: 0, oracle: 1, postgresql: 2, sqlserver: 3};
         const idx = idxMap[db];
         if (idx != null) {
-            rows = rows.filter(r => r[idx] && r[idx].trim());
+            rows = rows.filter((r) => r[idx] && r[idx].trim());
         }
     }
     if (search) {
-        rows = rows.filter(r => r.some(c => (c || '').toLowerCase().includes(search)));
+        rows = rows.filter((r) => r.some((c) => (c || '').toLowerCase().includes(search)));
     }
 
     dbtypeFiltered = rows;
-    const html = rows.map(r => '<tr>' + r.map(c => `<td>${escapeHtml(c)}</td>`).join('') + '</tr>').join('');
-    tbody.innerHTML = html || '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px">无匹配记录</td></tr>';
+    const html = rows.map((r) => '<tr>' + r.map((c) => `<td>${escapeHtml(c)}</td>`).join('') + '</tr>').join('');
+    tbody.innerHTML =
+        html ||
+        '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px">无匹配记录</td></tr>';
 
     const count = document.getElementById('dbtypeCount');
     if (count) count.textContent = `共 ${rows.length} 条`;
-}
-
-function escapeHtml(s) {
-    return String(s == null ? '' : s)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
 }
 
 function dbtypeInit() {
@@ -80,10 +75,10 @@ function dbtypeInit() {
 }
 
 // 事件委托：避免面板异步加载时机问题
-document.addEventListener('input', e => {
+document.addEventListener('input', (e) => {
     if (e.target && e.target.id === 'dbtypeSearch') dbtypeRender();
 });
-document.addEventListener('change', e => {
+document.addEventListener('change', (e) => {
     if (e.target && e.target.id === 'dbtypeDb') dbtypeRender();
 });
 

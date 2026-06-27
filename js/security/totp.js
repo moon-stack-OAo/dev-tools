@@ -17,7 +17,7 @@ function base32Decode(input) {
         buffer = (buffer << 5) | val;
         bits += 5;
         if (bits >= 8) {
-            bytes.push((buffer >> (bits - 8)) & 0xFF);
+            bytes.push((buffer >> (bits - 8)) & 0xff);
             bits -= 8;
         }
     }
@@ -27,16 +27,15 @@ function base32Decode(input) {
 // === 2. HMAC（支持 SHA-1 / SHA-256 / SHA-512）===
 async function hmacHash(key, message, algorithm) {
     const algoMap = {
-        'SHA1': 'SHA-1', 'SHA-1': 'SHA-1',
-        'SHA256': 'SHA-256', 'SHA-256': 'SHA-256',
-        'SHA512': 'SHA-512', 'SHA-512': 'SHA-512',
+        SHA1: 'SHA-1',
+        'SHA-1': 'SHA-1',
+        SHA256: 'SHA-256',
+        'SHA-256': 'SHA-256',
+        SHA512: 'SHA-512',
+        'SHA-512': 'SHA-512',
     };
     const hashName = algoMap[algorithm] || 'SHA-1';
-    const cryptoKey = await crypto.subtle.importKey(
-        'raw', key,
-        { name: 'HMAC', hash: hashName },
-        false, ['sign']
-    );
+    const cryptoKey = await crypto.subtle.importKey('raw', key, {name: 'HMAC', hash: hashName}, false, ['sign']);
     const sig = await crypto.subtle.sign('HMAC', cryptoKey, message);
     return new Uint8Array(sig);
 }
@@ -47,15 +46,16 @@ async function generateOtp(secretB32, counter, digits, algorithm) {
     const counterBytes = new Uint8Array(8);
     let c = counter;
     for (let i = 7; i >= 0; i--) {
-        counterBytes[i] = c & 0xFF;
+        counterBytes[i] = c & 0xff;
         c = Math.floor(c / 256);
     }
     const hash = await hmacHash(key, counterBytes, algorithm);
-    const offset = hash[hash.length - 1] & 0x0F;
-    const code = ((hash[offset] & 0x7F) << 24) |
-        ((hash[offset + 1] & 0xFF) << 16) |
-        ((hash[offset + 2] & 0xFF) << 8) |
-        (hash[offset + 3] & 0xFF);
+    const offset = hash[hash.length - 1] & 0x0f;
+    const code =
+        ((hash[offset] & 0x7f) << 24) |
+        ((hash[offset + 1] & 0xff) << 16) |
+        ((hash[offset + 2] & 0xff) << 8) |
+        (hash[offset + 3] & 0xff);
     return String(code % Math.pow(10, digits)).padStart(digits, '0');
 }
 
@@ -301,8 +301,12 @@ async function totpVerify() {
     try {
         const result = await verifyOtp(input, secret, period, digits, algo);
         if (result.valid) {
-            const label = result.offset === 0 ? '当前窗口'
-                : (result.offset > 0 ? '窗口 +' + result.offset : '窗口 ' + result.offset);
+            const label =
+                result.offset === 0
+                    ? '当前窗口'
+                    : result.offset > 0
+                        ? '窗口 +' + result.offset
+                        : '窗口 ' + result.offset;
             out.textContent = '✓ 匹配（' + label + '）';
             out.style.color = 'var(--accent)';
             setStatus('OTP 校验通过');

@@ -3,7 +3,7 @@ const WIRE_TYPES = {
     0: 'varint',
     1: 'fixed64',
     2: 'length-delimited',
-    5: 'fixed32'
+    5: 'fixed32',
 };
 
 // 解析 Protobuf varint
@@ -13,7 +13,7 @@ function decodeVarint(bytes, offset) {
     let pos = offset;
     while (pos < bytes.length) {
         const b = bytes[pos];
-        result |= (b & 0x7F) << shift;
+        result |= (b & 0x7f) << shift;
         if ((b & 0x80) === 0) {
             return { value: result, bytesRead: pos - offset + 1 };
         }
@@ -43,12 +43,8 @@ function decodeProtobuf(bytes, offset, length, schema) {
             const wireType = tag & 0x07;
 
             // 获取字段名
-            const fieldName = schema && schema[fieldNumber]
-                ? schema[fieldNumber].name
-                : 'field_' + fieldNumber;
-            const fieldType = schema && schema[fieldNumber]
-                ? schema[fieldNumber].type
-                : null;
+            const fieldName = schema && schema[fieldNumber] ? schema[fieldNumber].name : 'field_' + fieldNumber;
+            const fieldType = schema && schema[fieldNumber] ? schema[fieldNumber].type : null;
 
             let value;
             switch (wireType) {
@@ -69,9 +65,8 @@ function decodeProtobuf(bytes, offset, length, schema) {
                     for (let i = 0; i < 8; i++) {
                         view64.setUint8(i, bytes[pos + i]);
                     }
-                    value = fieldType === 'double'
-                        ? view64.getFloat64(0, true)
-                        : view64.getBigUint64(0, true).toString();
+                    value =
+                        fieldType === 'double' ? view64.getFloat64(0, true) : view64.getBigUint64(0, true).toString();
                     pos += 8;
                     break;
 
@@ -88,11 +83,13 @@ function decodeProtobuf(bytes, offset, length, schema) {
                                 value = new TextDecoder('utf-8').decode(bytes.slice(pos, pos + len));
                             } catch {
                                 value = Array.from(bytes.slice(pos, pos + len))
-                                    .map(b => b.toString(16).padStart(2, '0')).join(' ');
+                                    .map((b) => b.toString(16).padStart(2, '0'))
+                                    .join(' ');
                             }
                         } else {
                             value = Array.from(bytes.slice(pos, pos + len))
-                                .map(b => b.toString(16).padStart(2, '0')).join(' ');
+                                .map((b) => b.toString(16).padStart(2, '0'))
+                                .join(' ');
                         }
                     } else {
                         // 尝试作为嵌套消息解码
@@ -102,11 +99,13 @@ function decodeProtobuf(bytes, offset, length, schema) {
                                 value = nested;
                             } else {
                                 value = Array.from(bytes.slice(pos, pos + len))
-                                    .map(b => b.toString(16).padStart(2, '0')).join(' ');
+                                    .map((b) => b.toString(16).padStart(2, '0'))
+                                    .join(' ');
                             }
                         } catch {
                             value = Array.from(bytes.slice(pos, pos + len))
-                                .map(b => b.toString(16).padStart(2, '0')).join(' ');
+                                .map((b) => b.toString(16).padStart(2, '0'))
+                                .join(' ');
                         }
                     }
                     pos += len;
@@ -119,9 +118,7 @@ function decodeProtobuf(bytes, offset, length, schema) {
                     for (let i = 0; i < 4; i++) {
                         view32.setUint8(i, bytes[pos + i]);
                     }
-                    value = fieldType === 'float'
-                        ? view32.getFloat32(0, true)
-                        : view32.getUint32(0, true);
+                    value = fieldType === 'float' ? view32.getFloat32(0, true) : view32.getUint32(0, true);
                     pos += 4;
                     break;
 
@@ -156,7 +153,7 @@ function parseProtoSchema(schemaText) {
         const fieldNumber = parseInt(match[3]);
         schema[fieldNumber] = {
             type: match[1],
-            name: match[2]
+            name: match[2],
         };
     }
     return Object.keys(schema).length > 0 ? schema : null;
@@ -211,7 +208,7 @@ function protobufDecodeHex() {
         if (!/^[0-9a-fA-F]+$/.test(hex) || hex.length % 2 !== 0) {
             throw new Error('非法 Hex 字符串');
         }
-        const bytes = new Uint8Array(hex.match(/.{1,2}/g).map(h => parseInt(h, 16)));
+        const bytes = new Uint8Array(hex.match(/.{1,2}/g).map((h) => parseInt(h, 16)));
 
         const schema = parseProtoSchema(schemaText);
         const result = decodeProtobuf(bytes, 0, bytes.length, schema);
@@ -243,8 +240,13 @@ function protobufEncode() {
         // 简单的 JSON → Protobuf 编码
         const bytes = encodeProtobuf(json, schema);
         const base64 = btoa(String.fromCharCode(...bytes));
-        output.textContent = 'Base64: ' + base64 + '\n\nHex: ' +
-            Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(' ');
+        output.textContent =
+            'Base64: ' +
+            base64 +
+            '\n\nHex: ' +
+            Array.from(bytes)
+                .map((b) => b.toString(16).padStart(2, '0'))
+                .join(' ');
         output.style.color = '';
         setStatus('编码成功');
     } catch (e) {
@@ -350,13 +352,13 @@ function encodeProtobuf(obj, schema) {
 // 编码 varint
 function encodeVarint(bytes, value) {
     value = value >>> 0;
-    while (value > 0x7F) {
-        bytes.push((value & 0x7F) | 0x80);
+    while (value > 0x7f) {
+        bytes.push((value & 0x7f) | 0x80);
         value >>>= 7;
     }
-    bytes.push(value & 0x7F);
+    bytes.push(value & 0x7f);
 }
 
-registerInit('protobuf', function() {
+registerInit('protobuf', function () {
     // 初始化
 });

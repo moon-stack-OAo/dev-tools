@@ -100,7 +100,7 @@ function resratioMatchTier(w, h) {
                 short: s.short,
                 desc: s.desc,
                 exact: true,
-                badge: '✓'
+                badge: '✓',
             });
         }
     }
@@ -114,7 +114,7 @@ function resratioMatchTier(w, h) {
                 short: t.short,
                 desc: t.desc,
                 exact: false,
-                badge: '≈'
+                badge: '≈',
             });
         }
     }
@@ -125,7 +125,7 @@ function resratioMatchTier(w, h) {
         short: '—',
         desc: '超出常规档位',
         exact: false,
-        badge: '?'
+        badge: '?',
     });
 }
 
@@ -162,33 +162,54 @@ function resratioCompute() {
     const matched = resratioMatchStandard(iw, ih);
 
     const parts = [];
-    parts.push('<div style="font-size:24px;font-weight:600;color:#22c55e;margin-bottom:4px">' + rw + ' : ' + rh + '</div>');
+    parts.push(
+        '<div style="font-size:24px;font-weight:600;color:#22c55e;margin-bottom:4px">' + rw + ' : ' + rh + '</div>'
+    );
     parts.push('<div style="color:var(--text-dim);font-size:12px;margin-bottom:10px">最简整数比例</div>');
 
     // === 档位（精确匹配强调，区间匹配提示）===
     const tier = resratioMatchTier(iw, ih);
     const tierBadgeColor = tier.exact ? '#22c55e' : '#eab308';
     const tierHint = tier.exact ? '标准' : '区间';
-    const tierLabel = tier.exact
-        ? tier.short + ' / ' + tier.name + ' / ' + tier.desc
-        : tier.name + ' / ' + tier.desc;
+    const tierLabel = tier.exact ? tier.short + ' / ' + tier.name + ' / ' + tier.desc : tier.name + ' / ' + tier.desc;
     parts.push(
-        '<div style="margin:4px 0 10px;padding:8px 10px;border-radius:6px;'
-        + 'background:' + (tier.exact ? 'rgba(34,197,94,0.08)' : 'rgba(234,179,8,0.08)') + ';'
-        + 'border:1px solid ' + (tier.exact ? 'rgba(34,197,94,0.3)' : 'rgba(234,179,8,0.3)') + '">'
-        + '<span style="color:var(--accent);font-size:12px;font-weight:600">档位</span> '
-        + '<span style="display:inline-block;min-width:18px;text-align:center;font-weight:700;color:' + tierBadgeColor + '">'
-        + tier.badge + '</span> '
-        + '<span style="font-weight:600">' + tierLabel + '</span> '
-        + '<span style="color:var(--text-dim);font-size:12px">(' + tier.mp.toFixed(2) + ' MP)</span>'
-        + '<span style="margin-left:8px;font-size:11px;color:var(--text-dim);'
-        + 'border:1px solid var(--border);border-radius:4px;padding:1px 6px">' + tierHint + '</span>'
-        + '</div>'
+        '<div style="margin:4px 0 10px;padding:8px 10px;border-radius:6px;' +
+        'background:' +
+        (tier.exact ? 'rgba(34,197,94,0.08)' : 'rgba(234,179,8,0.08)') +
+        ';' +
+        'border:1px solid ' +
+        (tier.exact ? 'rgba(34,197,94,0.3)' : 'rgba(234,179,8,0.3)') +
+        '">' +
+        '<span style="color:var(--accent);font-size:12px;font-weight:600">档位</span> ' +
+        '<span style="display:inline-block;min-width:18px;text-align:center;font-weight:700;color:' +
+        tierBadgeColor +
+        '">' +
+        tier.badge +
+        '</span> ' +
+        '<span style="font-weight:600">' +
+        tierLabel +
+        '</span> ' +
+        '<span style="color:var(--text-dim);font-size:12px">(' +
+        tier.mp.toFixed(2) +
+        ' MP)</span>' +
+        '<span style="margin-left:8px;font-size:11px;color:var(--text-dim);' +
+        'border:1px solid var(--border);border-radius:4px;padding:1px 6px">' +
+        tierHint +
+        '</span>' +
+        '</div>'
     );
 
     parts.push('<div>浮点比例：<b>' + floatRatio + ' : 1</b></div>');
     if (matched) {
-        parts.push('<div style="margin-top:6px;color:#22c55e">✓ 匹配标准比例 ' + matched.w + ':' + matched.h + '（' + matched.name + '）</div>');
+        parts.push(
+            '<div style="margin-top:6px;color:#22c55e">✓ 匹配标准比例 ' +
+            matched.w +
+            ':' +
+            matched.h +
+            '（' +
+            matched.name +
+            '）</div>'
+        );
     } else {
         parts.push('<div style="margin-top:6px;color:var(--text-dim)">非标准比例</div>');
     }
@@ -197,7 +218,9 @@ function resratioCompute() {
     parts.push('<div>像素宽高比 (PAR)：<b>1:1（方形像素）</b></div>');
 
     if (!isInt) {
-        parts.push('<div style="margin-top:8px;color:var(--danger);font-size:12px">⚠ 检测到小数像素，最简比例基于四舍五入，结果可能偏差</div>');
+        parts.push(
+            '<div style="margin-top:8px;color:var(--danger);font-size:12px">⚠ 检测到小数像素，最简比例基于四舍五入，结果可能偏差</div>'
+        );
     }
 
     out.className = 'output-box';
@@ -267,18 +290,29 @@ function resByCompute() {
     let w, h;
     if (dim === 'w') {
         w = Math.round(base);
-        h = Math.round(base * rh / rw);
+        h = Math.round((base * rh) / rw);
     } else {
         h = Math.round(base);
-        w = Math.round(base * rw / rh);
+        w = Math.round((base * rw) / rh);
     }
 
     const total = w * h;
     const mp = (total / 1_000_000).toFixed(2);
     const g = gcd(w, h);
-    const ratioStr = (w / g) + ':' + (h / g);
+    const ratioStr = w / g + ':' + h / g;
 
     out.className = 'output-box';
-    out.innerHTML = '<b>' + w + ' × ' + h + '</b>（像素总数 ' + total.toLocaleString('en-US') + ' ≈ ' + mp + ' MP，最简比例 ' + ratioStr + '）';
+    out.innerHTML =
+        '<b>' +
+        w +
+        ' × ' +
+        h +
+        '</b>（像素总数 ' +
+        total.toLocaleString('en-US') +
+        ' ≈ ' +
+        mp +
+        ' MP，最简比例 ' +
+        ratioStr +
+        '）';
     setStatus('反算完成');
 }

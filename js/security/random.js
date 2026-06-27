@@ -45,7 +45,9 @@ function randToken() {
     const len = parseInt(document.getElementById('randomLen').value) || 32;
     const bytes = new Uint8Array(len);
     crypto.getRandomValues(bytes);
-    const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+    const hex = Array.from(bytes)
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('');
     const list = document.getElementById('randomList');
     const div = document.createElement('div');
     div.className = 'uuid-item';
@@ -68,7 +70,8 @@ function randPin() {
 }
 
 function randomClear() {
-    document.getElementById('randomList').innerHTML = '<div style="color:var(--text-dim);font-size:13px;padding:8px 0">点击按钮生成随机内容</div>';
+    document.getElementById('randomList').innerHTML =
+        '<div style="color:var(--text-dim);font-size:13px;padding:8px 0">点击按钮生成随机内容</div>';
     setStatus('已清空');
 }
 

@@ -3,9 +3,10 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# 安装依赖
-COPY package.json ./
-RUN npm install
+# 安装依赖（先复制 lock 文件以利用缓存 + 保证可复现构建）
+COPY package.json package-lock.json ./
+# postinstall 钩子会执行 copy-libs.js 将第三方库打包到 public/lib
+RUN npm ci
 
 # 复制源码并构建
 COPY . .

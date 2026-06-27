@@ -13,7 +13,10 @@ function b64urlEncodeString(str) {
 }
 
 function pemToArrayBuffer(pem) {
-    const lines = pem.trim().split(/\r?\n/).filter(l => l && !l.startsWith('-----'));
+    const lines = pem
+        .trim()
+        .split(/\r?\n/)
+        .filter((l) => l && !l.startsWith('-----'));
     const b64 = lines.join('');
     const bin = atob(b64);
     const bytes = new Uint8Array(bin.length);
@@ -34,11 +37,15 @@ function jwtGenInit() {
     const payloadEl = document.getElementById('jwtgenPayload');
     const now = Math.floor(Date.now() / 1000);
     headerEl.value = JSON.stringify({ alg: 'HS256', typ: 'JWT' }, null, 2);
-    payloadEl.value = JSON.stringify({
-        sub: 'user123',
-        iat: now,
-        exp: now + 3600,
-    }, null, 2);
+    payloadEl.value = JSON.stringify(
+        {
+            sub: 'user123',
+            iat: now,
+            exp: now + 3600,
+        },
+        null,
+        2
+    );
     updateJwtExpStatus();
 }
 
@@ -89,7 +96,9 @@ function jwtGenAddNow(field) {
     } else if (field === 'jti') {
         const arr = new Uint8Array(16);
         crypto.getRandomValues(arr);
-        const hex = Array.from(arr).map(b => b.toString(16).padStart(2, '0')).join('');
+        const hex = Array.from(arr)
+            .map((b) => b.toString(16).padStart(2, '0'))
+            .join('');
         jwtGenAddField('jti', hex);
     }
 }
@@ -102,11 +111,25 @@ async function jwtGenGenerate() {
     const out = document.getElementById('jwtgenOutput');
 
     let header, payload;
-    try { header = JSON.parse(headerStr); }
-    catch (e) { out.textContent = 'Header JSON 解析失败: ' + e.message; out.className = 'output-box error'; return; }
-    try { payload = JSON.parse(payloadStr); }
-    catch (e) { out.textContent = 'Payload JSON 解析失败: ' + e.message; out.className = 'output-box error'; return; }
-    if (!secret) { out.textContent = '请输入密钥'; out.className = 'output-box error'; return; }
+    try {
+        header = JSON.parse(headerStr);
+    } catch (e) {
+        out.textContent = 'Header JSON 解析失败: ' + e.message;
+        out.className = 'output-box error';
+        return;
+    }
+    try {
+        payload = JSON.parse(payloadStr);
+    } catch (e) {
+        out.textContent = 'Payload JSON 解析失败: ' + e.message;
+        out.className = 'output-box error';
+        return;
+    }
+    if (!secret) {
+        out.textContent = '请输入密钥';
+        out.className = 'output-box error';
+        return;
+    }
 
     try {
         const enc = new TextEncoder();
@@ -120,9 +143,11 @@ async function jwtGenGenerate() {
             const hashMap = { HS256: 'SHA-256', HS384: 'SHA-384', HS512: 'SHA-512' };
             const hashName = hashMap[algo];
             const key = await crypto.subtle.importKey(
-                'raw', enc.encode(secret),
+                'raw',
+                enc.encode(secret),
                 { name: 'HMAC', hash: hashName },
-                false, ['sign']
+                false,
+                ['sign']
             );
             const sig = await crypto.subtle.sign('HMAC', key, data);
             signature = b64urlEncode(sig);
@@ -134,13 +159,20 @@ async function jwtGenGenerate() {
                 keyData = pemToArrayBuffer(secret);
             } else {
                 const cleaned = secret.replace(/\s+/g, '');
-                try { keyData = Uint8Array.from(atob(cleaned), c => c.charCodeAt(0)).buffer; }
-                catch (e) { out.textContent = '私钥格式错误：需为 PEM 或 Base64'; out.className = 'output-box error'; return; }
+                try {
+                    keyData = Uint8Array.from(atob(cleaned), (c) => c.charCodeAt(0)).buffer;
+                } catch (e) {
+                    out.textContent = '私钥格式错误：需为 PEM 或 Base64';
+                    out.className = 'output-box error';
+                    return;
+                }
             }
             const key = await crypto.subtle.importKey(
-                'pkcs8', keyData,
+                'pkcs8',
+                keyData,
                 { name: 'RSASSA-PKCS1-v1_5', hash: hashName },
-                false, ['sign']
+                false,
+                ['sign']
             );
             const sig = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', key, data);
             signature = b64urlEncode(sig);

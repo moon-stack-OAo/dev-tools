@@ -1,7 +1,17 @@
 function dateCalcNow() {
     const d = new Date();
-    const fmt = d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2)
-        + ' ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2) + ':' + ('0' + d.getSeconds()).slice(-2);
+    const fmt =
+        d.getFullYear() +
+        '-' +
+        ('0' + (d.getMonth() + 1)).slice(-2) +
+        '-' +
+        ('0' + d.getDate()).slice(-2) +
+        ' ' +
+        ('0' + d.getHours()).slice(-2) +
+        ':' +
+        ('0' + d.getMinutes()).slice(-2) +
+        ':' +
+        ('0' + d.getSeconds()).slice(-2);
     document.getElementById('dateNow').textContent = fmt;
     document.getElementById('dateTimestamp').textContent = d.getTime();
 }
@@ -23,10 +33,10 @@ function dateCalcAdd() {
     }
     const sign = op === 'add' ? 1 : -1;
     const map = {
-        'day': () => d.setDate(d.getDate() + sign * amount),
-        'week': () => d.setDate(d.getDate() + sign * amount * 7),
-        'month': () => d.setMonth(d.getMonth() + sign * amount),
-        'year': () => d.setFullYear(d.getFullYear() + sign * amount)
+        day: () => d.setDate(d.getDate() + sign * amount),
+        week: () => d.setDate(d.getDate() + sign * amount * 7),
+        month: () => d.setMonth(d.getMonth() + sign * amount),
+        year: () => d.setFullYear(d.getFullYear() + sign * amount),
     };
     (map[unit] || map.day)();
     const fmt = d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
@@ -42,20 +52,24 @@ function dateCalcDiff() {
         out.textContent = '请选择两个日期';
         return;
     }
-    const a = new Date(d1), b = new Date(d2);
+    const a = new Date(d1),
+        b = new Date(d2);
     if (isNaN(a.getTime()) || isNaN(b.getTime())) {
         out.textContent = '无效日期';
         return;
     }
     const ms = Math.abs(b - a);
-    const map = {'day': 86400000, 'week': 604800000, 'month': 2592000000, 'year': 31536000000};
-    const val = (map[unit] || 86400000);
-    out.textContent = Math.round(ms / val) + ' ' + ({
-        'day': '天',
-        'week': '周',
-        'month': '月',
-        'year': '年'
-    }[unit] || '天');
+    const map = {day: 86400000, week: 604800000, month: 2592000000, year: 31536000000};
+    const val = map[unit] || 86400000;
+    out.textContent =
+        Math.round(ms / val) +
+        ' ' +
+        ({
+            day: '天',
+            week: '周',
+            month: '月',
+            year: '年',
+        }[unit] || '天');
 }
 
 function dateCalcBizDays() {
@@ -66,7 +80,8 @@ function dateCalcBizDays() {
         out.textContent = '请选择两个日期';
         return;
     }
-    const a = new Date(d1), b = new Date(d2);
+    const a = new Date(d1),
+        b = new Date(d2);
     if (isNaN(a.getTime()) || isNaN(b.getTime())) {
         out.textContent = '无效日期';
         return;
@@ -87,7 +102,7 @@ function dateCalcInit() {
     setInterval(dateCalcNow, 1000);
     const row = document.getElementById('tsDatetimeRow');
     if (row) {
-        row.addEventListener('click', function(e) {
+        row.addEventListener('click', function (e) {
             if (e.target.tagName !== 'BUTTON') {
                 document.getElementById('tsDatetime').showPicker();
             }
@@ -124,9 +139,19 @@ function timestampToDate() {
         out.textContent = '无效时间戳';
         return;
     }
-    const pad = n => ('0' + n).slice(-2);
-    const fmt = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
-        + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+    const pad = (n) => ('0' + n).slice(-2);
+    const fmt =
+        d.getFullYear() +
+        '-' +
+        pad(d.getMonth() + 1) +
+        '-' +
+        pad(d.getDate()) +
+        ' ' +
+        pad(d.getHours()) +
+        ':' +
+        pad(d.getMinutes()) +
+        ':' +
+        pad(d.getSeconds());
     out.textContent = '日期时间：' + fmt;
 }
 

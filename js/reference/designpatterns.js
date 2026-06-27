@@ -1,6 +1,7 @@
 const DESIGN_PATTERNS = [
     {
-        cat: '创建型模式', items: [
+        cat: '创建型模式',
+        items: [
             {
                 name: '单例模式 (Singleton)',
                 desc: '确保一个类只有一个实例',
@@ -19,7 +20,7 @@ const DESIGN_PATTERNS = [
         }
         return instance;
     }
-}`
+}`,
             },
             {
                 name: '工厂方法 (Factory Method)',
@@ -40,7 +41,7 @@ public class ConcreteFactoryA extends Factory {
     public Product createProduct() {
         return new ConcreteProductA();
     }
-}`
+}`,
             },
             {
                 name: '抽象工厂 (Abstract Factory)',
@@ -58,7 +59,7 @@ public class WindowsFactory implements GUIFactory {
 public class MacFactory implements GUIFactory {
     public Button createButton() { return new MacButton(); }
     public TextField createTextField() { return new MacTextField(); }
-}`
+}`,
             },
             {
                 name: '建造者模式 (Builder)',
@@ -86,7 +87,7 @@ public class MacFactory implements GUIFactory {
     }
 }
 
-// 使用: new User.Builder().name("张三").age(25).email("zhangsan@example.com").build();`
+// 使用: new User.Builder().name("张三").age(25).email("zhangsan@example.com").build();`,
             },
             {
                 name: '原型模式 (Prototype)',
@@ -106,12 +107,13 @@ public class MacFactory implements GUIFactory {
 public class Circle extends Shape {
     public Circle() { type = "Circle"; }
     public void draw() { System.out.println("Drawing Circle"); }
-}`
+}`,
             },
-        ]
+        ],
     },
     {
-        cat: '结构型模式', items: [
+        cat: '结构型模式',
+        items: [
             {
                 name: '适配器模式 (Adapter)',
                 desc: '将一个类的接口转换成客户端期望的另一个接口',
@@ -138,7 +140,7 @@ public class MediaAdapter implements MediaPlayer {
             advancedPlayer.playMp4(fileName);
         }
     }
-}`
+}`,
             },
             {
                 name: '装饰器模式 (Decorator)',
@@ -170,7 +172,7 @@ public class RedShapeDecorator extends ShapeDecorator {
     private void setRedBorder(Shape decoratedShape) {
         System.out.println("Border Color: Red");
     }
-}`
+}`,
             },
             {
                 name: '代理模式 (Proxy)',
@@ -201,7 +203,7 @@ public class ProxyImage implements Image {
         }
         realImage.display();
     }
-}`
+}`,
             },
             {
                 name: '外观模式 (Facade)',
@@ -226,7 +228,7 @@ public class ComputerFacade {
         memory.load();
         disk.read();
     }
-}`
+}`,
             },
             {
                 name: '组合模式 (Composite)',
@@ -249,12 +251,13 @@ public class Manager extends Employee {
         System.out.println("Manager: " + name);
         subordinates.forEach(Employee::show);
     }
-}`
+}`,
             },
-        ]
+        ],
     },
     {
-        cat: '行为型模式', items: [
+        cat: '行为型模式',
+        items: [
             {
                 name: '策略模式 (Strategy)',
                 desc: '定义一系列算法，把它们一个个封装起来',
@@ -278,7 +281,7 @@ public class Sorter {
     public void sort(int[] array) {
         strategy.sort(array);
     }
-}`
+}`,
             },
             {
                 name: '观察者模式 (Observer)',
@@ -308,7 +311,7 @@ public class ConcreteObserver implements Observer {
     public void update(String message) {
         System.out.println(name + " received: " + message);
     }
-}`
+}`,
             },
             {
                 name: '模板方法 (Template Method)',
@@ -329,7 +332,7 @@ public class Cricket extends Game {
     void initialize() { System.out.println("Cricket Game Initialized"); }
     void startPlay() { System.out.println("Cricket Game Started"); }
     void endPlay() { System.out.println("Cricket Game Finished"); }
-}`
+}`,
             },
             {
                 name: '状态模式 (State)',
@@ -356,7 +359,7 @@ public class Context {
     private State state;
     public void setState(State state) { this.state = state; }
     public State getState() { return state; }
-}`
+}`,
             },
             {
                 name: '责任链模式 (Chain of Responsibility)',
@@ -385,9 +388,9 @@ public class LogHandler extends Handler {
         System.out.println("Logging: " + request);
         if (next != null) next.handle(request);
     }
-}`
+}`,
             },
-        ]
+        ],
     },
 ];
 
@@ -403,26 +406,36 @@ function designpatternsRender(filter) {
     if (!container) return;
     container.innerHTML = '';
     let hasResult = false;
-    DESIGN_PATTERNS.forEach(group => {
+    DESIGN_PATTERNS.forEach((group) => {
         const matched = filter
-            ? group.items.filter(it =>
-                it.name.toLowerCase().includes(filter) ||
-                it.desc.toLowerCase().includes(filter))
+            ? group.items.filter(
+                (it) => it.name.toLowerCase().includes(filter) || it.desc.toLowerCase().includes(filter)
+            )
             : group.items;
         if (matched.length === 0) return;
         hasResult = true;
         const h = document.createElement('div');
-        h.style.cssText = 'font-size:13px;font-weight:600;color:var(--accent);padding:10px 0 6px;border-bottom:1px solid var(--border);margin-bottom:4px';
+        h.style.cssText =
+            'font-size:13px;font-weight:600;color:var(--accent);padding:10px 0 6px;border-bottom:1px solid var(--border);margin-bottom:4px';
         h.textContent = group.cat;
         container.appendChild(h);
-        matched.forEach(item => {
+        matched.forEach((item) => {
             const card = document.createElement('div');
             card.style.cssText = 'margin-bottom:8px;border:1px solid var(--border);border-radius:6px;overflow:hidden';
             const header = document.createElement('div');
-            header.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--glass);cursor:pointer';
-            let headerHtml = '<div><strong style="color:var(--accent2)">' + item.name + '</strong><span style="color:var(--text-dim);margin-left:8px;font-size:12px">' + item.desc + '</span></div>';
+            header.style.cssText =
+                'display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--glass);cursor:pointer';
+            let headerHtml =
+                '<div><strong style="color:var(--accent2)">' +
+                item.name +
+                '</strong><span style="color:var(--text-dim);margin-left:8px;font-size:12px">' +
+                item.desc +
+                '</span></div>';
             if (item.syntax) {
-                headerHtml += '<code style="font-size:11px;color:var(--accent);background:var(--bg-input);padding:2px 6px;border-radius:3px">' + item.syntax.replace(/</g, '&lt;') + '</code>';
+                headerHtml +=
+                    '<code style="font-size:11px;color:var(--accent);background:var(--bg-input);padding:2px 6px;border-radius:3px">' +
+                    item.syntax.replace(/</g, '&lt;') +
+                    '</code>';
             }
             headerHtml += '<i class="bi bi-chevron-down" style="color:var(--text-dim);transition:transform .2s"></i>';
             header.innerHTML = headerHtml;
@@ -430,9 +443,15 @@ function designpatternsRender(filter) {
             codeBlock.style.cssText = 'display:none;padding:12px;background:var(--bg-input);position:relative';
             let codeHtml = '';
             if (item.examples && item.examples.length > 0) {
-                codeHtml += '<div style="margin-bottom:8px;font-size:11px;color:var(--text-dim)"><strong>使用场景:</strong> ' + item.examples.join(' | ').replace(/</g, '&lt;') + '</div>';
+                codeHtml +=
+                    '<div style="margin-bottom:8px;font-size:11px;color:var(--text-dim)"><strong>使用场景:</strong> ' +
+                    item.examples.join(' | ').replace(/</g, '&lt;') +
+                    '</div>';
             }
-            codeHtml += '<pre style="margin:0;font-size:12px;font-family:var(--font);white-space:pre-wrap;overflow-x:auto"><code>' + item.code.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</code></pre><button style="position:absolute;top:8px;right:8px;font-size:11px;padding:2px 8px;background:var(--accent);color:#fff;border:none;border-radius:3px;cursor:pointer" onclick="safeCopy(this.parentElement.querySelector(\'code\').textContent)">复制</button>';
+            codeHtml +=
+                '<pre style="margin:0;font-size:12px;font-family:var(--font);white-space:pre-wrap;overflow-x:auto"><code>' +
+                item.code.replace(/</g, '&lt;').replace(/>/g, '&gt;') +
+                '</code></pre><button style="position:absolute;top:8px;right:8px;font-size:11px;padding:2px 8px;background:var(--accent);color:#fff;border:none;border-radius:3px;cursor:pointer" onclick="safeCopy(this.parentElement.querySelector(\'code\').textContent)">复制</button>';
             codeBlock.innerHTML = codeHtml;
             header.addEventListener('click', function () {
                 const isOpen = codeBlock.style.display !== 'none';

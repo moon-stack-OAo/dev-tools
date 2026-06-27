@@ -3,8 +3,8 @@
 // 全部使用 BigInt 保证 > 2^53 的大数精度
 
 const SNOWFLAKE_EPOCH = 1288834974657n; // Twitter Epoch: 2010-11-04 01:42:54.657 UTC
-const LEAF_EPOCH = 1577808000000n;      // Leaf Epoch: 2020-01-01 00:00:00.000 UTC
-const BAIDU_EPOCH = 1577808000000n;     // Baidu UID Epoch: 2020-01-01 00:00:00.000 UTC
+const LEAF_EPOCH = 1577808000000n; // Leaf Epoch: 2020-01-01 00:00:00.000 UTC
+const BAIDU_EPOCH = 1577808000000n; // Baidu UID Epoch: 2020-01-01 00:00:00.000 UTC
 
 // 状态变量（闭包外模拟 Worker 单例）
 let sfLastTimestamp = -1n;
@@ -15,8 +15,10 @@ let sfHistory = []; // [{ id, algorithm, timestamp, datetime, datacenterId, work
 function sfFormatTime(ms) {
     const d = new Date(Number(ms));
     const pad = (n, w = 2) => String(n).padStart(w, '0');
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ` +
-        `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}.${pad(d.getMilliseconds(), 3)}`;
+    return (
+        `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ` +
+        `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}.${pad(d.getMilliseconds(), 3)}`
+    );
 }
 
 // === 1. Twitter Snowflake 纯函数 ===
@@ -28,12 +30,9 @@ function snowflakeId(workerId, datacenterId, seq, ts, epoch) {
     ts = BigInt(ts || Date.now());
     const timestamp = ts - epoch;
     if (timestamp < 0n) throw new Error('时间戳小于 Epoch');
-    if (timestamp >= (1n << 41n)) throw new Error('时间戳超过 41 位');
+    if (timestamp >= 1n << 41n) throw new Error('时间戳超过 41 位');
 
-    const id = (timestamp << 22n) |
-        ((datacenterId & 0x1Fn) << 17n) |
-        ((workerId & 0x1Fn) << 12n) |
-        (seq & 0xFFFn);
+    const id = (timestamp << 22n) | ((datacenterId & 0x1fn) << 17n) | ((workerId & 0x1fn) << 12n) | (seq & 0xfffn);
     return id;
 }
 
@@ -42,7 +41,7 @@ function nextSnowflake(workerId, datacenterId, epoch) {
     let ts = BigInt(Date.now());
 
     if (ts === sfLastTimestamp) {
-        sfSequence = (sfSequence + 1n) & 0xFFFn;
+        sfSequence = (sfSequence + 1n) & 0xfffn;
         if (sfSequence === 0n) {
             // 当前毫秒序列号用尽，等待下一毫秒
             while (ts <= sfLastTimestamp) ts = BigInt(Date.now());
@@ -67,7 +66,7 @@ function baiduUid() {
     const buf = new Uint8Array(4);
     crypto.getRandomValues(buf);
     const seq = (BigInt(buf[0]) << 16n) | (BigInt(buf[1]) << 8n) | BigInt(buf[2]);
-    const id = (ts << 18n) | (seq & 0x3FFFFn);
+    const id = (ts << 18n) | (seq & 0x3ffffn);
     return id.toString(36);
 }
 
@@ -78,10 +77,10 @@ function parseSnowflake(idStr, epoch) {
         throw new Error('ID 必须为纯数字（10 进制或 Base36）');
     }
     const id = BigInt(idStr);
-    const timestamp = Number((id >> 22n) & 0x1FFFFFFFFFFn) + Number(epoch);
-    const datacenterId = Number((id >> 17n) & 0x1Fn);
-    const workerId = Number((id >> 12n) & 0x1Fn);
-    const sequence = Number(id & 0xFFFn);
+    const timestamp = Number((id >> 22n) & 0x1ffffffffffn) + Number(epoch);
+    const datacenterId = Number((id >> 17n) & 0x1fn);
+    const workerId = Number((id >> 12n) & 0x1fn);
+    const sequence = Number(id & 0xfffn);
 
     return {
         timestamp,
@@ -111,7 +110,7 @@ function parseBaiduUid(idStr) {
     }
     const id = sfBase36ToBigInt(idStr);
     const timestamp = Number((id >> 18n) + BAIDU_EPOCH);
-    const sequence = Number(id & 0x3FFFFn);
+    const sequence = Number(id & 0x3ffffn);
     return {
         timestamp,
         datetime: new Date(timestamp).toISOString(),
@@ -187,7 +186,7 @@ function sfGenerate(count) {
     }
 
     // 反向插入到顶部（最新的在上）
-    newItems.reverse().forEach(item => {
+    newItems.reverse().forEach((item) => {
         const div = document.createElement('div');
         div.className = 'uuid-item';
         const algoLabel = String(item.algorithm).replace(/</g, '&lt;');
@@ -252,7 +251,7 @@ function sfCopyAll() {
         setStatus('历史为空，无可复制内容');
         return;
     }
-    const text = sfHistory.map(h => h.id).join('\n');
+    const text = sfHistory.map((h) => h.id).join('\n');
     safeCopy(text, `已复制 ${sfHistory.length} 个 ID`);
 }
 
@@ -263,19 +262,21 @@ function sfExportCSV() {
         return;
     }
     const header = 'Algorithm,ID,Timestamp(ms),Datetime(ISO),LocalTime,DatacenterID,WorkerID,Sequence\n';
-    const rows = sfHistory.map(h => {
-        const esc = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
-        return [
-            esc(h.algorithm),
-            esc(h.id),
-            esc(h.timestamp),
-            esc(new Date(h.timestamp).toISOString()),
-            esc(h.datetime),
-            esc(h.datacenterId == null ? '' : h.datacenterId),
-            esc(h.workerId == null ? '' : h.workerId),
-            esc(h.sequence == null ? '' : h.sequence),
-        ].join(',');
-    }).join('\n');
+    const rows = sfHistory
+        .map((h) => {
+            const esc = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+            return [
+                esc(h.algorithm),
+                esc(h.id),
+                esc(h.timestamp),
+                esc(new Date(h.timestamp).toISOString()),
+                esc(h.datetime),
+                esc(h.datacenterId == null ? '' : h.datacenterId),
+                esc(h.workerId == null ? '' : h.workerId),
+                esc(h.sequence == null ? '' : h.sequence),
+            ].join(',');
+        })
+        .join('\n');
     // 加 BOM 让 Excel 正确识别 UTF-8
     const csv = '\uFEFF' + header + rows;
     const blob = new Blob([csv], {type: 'text/csv;charset=utf-8'});

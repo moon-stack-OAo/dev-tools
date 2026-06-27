@@ -19,8 +19,8 @@ const GRPC_STATUS_CODES = [
 ];
 
 function grpcSwitchTab(tab, name) {
-    document.querySelectorAll('#panel-grpc .tab-bar .tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('#panel-grpc .tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('#panel-grpc .tab-bar .tab').forEach((t) => t.classList.remove('active'));
+    document.querySelectorAll('#panel-grpc .tab-content').forEach((c) => c.classList.remove('active'));
     tab.classList.add('active');
     document.getElementById('grpc-tab-' + name).classList.add('active');
 }
@@ -37,7 +37,7 @@ function grpcAddMeta(key, val) {
 
 function grpcCollectMeta() {
     const result = [];
-    document.querySelectorAll('#grpcMetaList .api-kv-row').forEach(row => {
+    document.querySelectorAll('#grpcMetaList .api-kv-row').forEach((row) => {
         const inputs = row.querySelectorAll('input');
         const key = inputs[0].value.trim();
         const val = inputs[1].value;
@@ -199,7 +199,13 @@ const WIRE_TYPES = {
 function grpcDecodeProtobuf(bytes) {
     const lines = [];
     lines.push('总字节数: ' + bytes.length);
-    lines.push('Hex 预览: ' + Array.from(bytes.slice(0, 64)).map(b => b.toString(16).padStart(2, '0')).join(' ') + (bytes.length > 64 ? ' ...' : ''));
+    lines.push(
+        'Hex 预览: ' +
+        Array.from(bytes.slice(0, 64))
+            .map((b) => b.toString(16).padStart(2, '0'))
+            .join(' ') +
+        (bytes.length > 64 ? ' ...' : '')
+    );
     lines.push('---');
     let pos = 0;
     let idx = 0;
@@ -214,7 +220,9 @@ function grpcDecodeProtobuf(bytes) {
         if (wireType === 0) {
             const [val, np] = grpcReadVarint(bytes, pos);
             pos = np;
-            lines.push(`#${++idx} field=${fieldNumber} type=varint  value=${val} (0x${val.toString(16)})  bytes=${startPos}-${pos}`);
+            lines.push(
+                `#${++idx} field=${fieldNumber} type=varint  value=${val} (0x${val.toString(16)})  bytes=${startPos}-${pos}`
+            );
         } else if (wireType === 1) {
             if (pos + 8 > bytes.length) {
                 lines.push(`#${++idx} field=${fieldNumber} type=fixed64  [截断]`);
@@ -229,17 +237,26 @@ function grpcDecodeProtobuf(bytes) {
             const [len, np] = grpcReadVarint(bytes, pos);
             pos = np;
             if (pos + len > bytes.length) {
-                lines.push(`#${++idx} field=${fieldNumber} type=length-delimited  [截断: 需要 ${len} 字节, 剩余 ${bytes.length - pos}]`);
+                lines.push(
+                    `#${++idx} field=${fieldNumber} type=length-delimited  [截断: 需要 ${len} 字节, 剩余 ${bytes.length - pos}]`
+                );
                 break;
             }
             const slice = bytes.slice(pos, pos + len);
             const utf8 = grpcTryUtf8(slice);
             const ascii = grpcBytesToAscii(slice);
-            const hex = Array.from(slice.slice(0, 32)).map(b => b.toString(16).padStart(2, '0')).join(' ') + (slice.length > 32 ? ' ...' : '');
+            const hex =
+                Array.from(slice.slice(0, 32))
+                    .map((b) => b.toString(16).padStart(2, '0'))
+                    .join(' ') + (slice.length > 32 ? ' ...' : '');
             const maybeNested = len > 0 && ascii.printable === false && utf8 === null;
-            lines.push(`#${++idx} field=${fieldNumber} type=length-delimited length=${len}  bytes=${startPos}-${pos + len}`);
+            lines.push(
+                `#${++idx} field=${fieldNumber} type=length-delimited length=${len}  bytes=${startPos}-${pos + len}`
+            );
             if (utf8 !== null) {
-                lines.push('    UTF-8 : "' + utf8.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t') + '"');
+                lines.push(
+                    '    UTF-8 : "' + utf8.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t') + '"'
+                );
             }
             lines.push('    ASCII: "' + ascii.text + '"');
             lines.push('    HEX  : ' + hex);
@@ -254,9 +271,13 @@ function grpcDecodeProtobuf(bytes) {
             }
             const v = (bytes[pos] | (bytes[pos + 1] << 8) | (bytes[pos + 2] << 16) | (bytes[pos + 3] << 24)) >>> 0;
             pos += 4;
-            lines.push(`#${++idx} field=${fieldNumber} type=fixed32 value=${v} (0x${v.toString(16)})  bytes=${startPos}-${pos}`);
+            lines.push(
+                `#${++idx} field=${fieldNumber} type=fixed32 value=${v} (0x${v.toString(16)})  bytes=${startPos}-${pos}`
+            );
         } else {
-            lines.push(`#${++idx} field=${fieldNumber} wire_type=${wireType} (${WIRE_TYPES[wireType] || 'unknown'}) 无法解析，停止`);
+            lines.push(
+                `#${++idx} field=${fieldNumber} wire_type=${wireType} (${WIRE_TYPES[wireType] || 'unknown'}) 无法解析，停止`
+            );
             break;
         }
     }
@@ -269,8 +290,8 @@ function grpcDecodeProtobuf(bytes) {
 function grpcRenderStatusTable() {
     const tbody = document.getElementById('grpcStatusTbody');
     if (!tbody) return;
-    tbody.innerHTML = GRPC_STATUS_CODES.map(c =>
-        `<tr><td>${c.code}</td><td>${c.name}</td><td>${c.desc}</td></tr>`
+    tbody.innerHTML = GRPC_STATUS_CODES.map(
+        (c) => `<tr><td>${c.code}</td><td>${c.name}</td><td>${c.desc}</td></tr>`
     ).join('');
 }
 

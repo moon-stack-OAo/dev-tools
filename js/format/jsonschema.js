@@ -10,9 +10,9 @@ const JSONSCHEMA_SAMPLE_DATA = {
     tags: ['vip', 'beta'],
     address: {
         city: 'Shanghai',
-        zip: '200000'
+        zip: '200000',
     },
-    createdAt: '2024-01-15T10:30:00Z'
+    createdAt: '2024-01-15T10:30:00Z',
 };
 
 const JSONSCHEMA_SAMPLE_SCHEMA = {
@@ -29,26 +29,30 @@ const JSONSCHEMA_SAMPLE_SCHEMA = {
             type: 'object',
             properties: {
                 city: {type: 'string'},
-                zip: {type: 'string'}
+                zip: {type: 'string'},
             },
-            required: ['city']
+            required: ['city'],
         },
-        createdAt: {type: 'string', format: 'date-time'}
+        createdAt: {type: 'string', format: 'date-time'},
     },
-    required: ['id', 'name', 'email']
+    required: ['id', 'name', 'email'],
 };
 
-const JSONSCHEMA_SAMPLE_VALID_DATA = JSON.stringify({
-    id: 1001,
-    name: 'alice',
-    email: 'alice@example.com',
-    age: 30,
-    active: true,
-    role: 'admin',
-    tags: ['vip', 'beta'],
-    address: {city: 'Shanghai', zip: '200000'},
-    createdAt: '2024-01-15T10:30:00Z'
-}, null, 2);
+const JSONSCHEMA_SAMPLE_VALID_DATA = JSON.stringify(
+    {
+        id: 1001,
+        name: 'alice',
+        email: 'alice@example.com',
+        age: 30,
+        active: true,
+        role: 'admin',
+        tags: ['vip', 'beta'],
+        address: {city: 'Shanghai', zip: '200000'},
+        createdAt: '2024-01-15T10:30:00Z',
+    },
+    null,
+    2
+);
 
 let ajvInstance = null;
 
@@ -69,7 +73,7 @@ function jsonschemaSwitchTab(tab) {
         const map = ['gen', 'valid'];
         t.classList.toggle('active', map[i] === tab);
     });
-    contents.forEach(c => c.classList.toggle('active', c.id === 'jsonschemaTab-' + tab));
+    contents.forEach((c) => c.classList.toggle('active', c.id === 'jsonschemaTab-' + tab));
 }
 
 // === Schema 推断 ===
@@ -135,7 +139,7 @@ function jsonschemaGenerate() {
         const schema = inferSchema(data);
         const finalSchema = {
             $schema: 'http://json-schema.org/draft-07/schema#',
-            ...schema
+            ...schema,
         };
         out.textContent = JSON.stringify(finalSchema, null, 2);
         out.className = 'output-box';

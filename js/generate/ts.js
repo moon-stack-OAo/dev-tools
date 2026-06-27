@@ -2,8 +2,7 @@ function tsUpdateNow() {
     const el = document.getElementById('tsNow');
     if (!el) return;
     const now = Date.now();
-    el.innerHTML =
-        `Unix 秒: ${Math.floor(now / 1000)} | 毫秒: ${now} | 本地: ${new Date(now).toISOString().replace('T', ' ').slice(0, 19)}`;
+    el.innerHTML = `Unix 秒: ${Math.floor(now / 1000)} | 毫秒: ${now} | 本地: ${new Date(now).toISOString().replace('T', ' ').slice(0, 19)}`;
 }
 
 function tsInit() {

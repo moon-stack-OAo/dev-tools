@@ -7,16 +7,16 @@ const CRC32_TABLE = (() => {
     const t = new Uint32Array(256);
     for (let i = 0; i < 256; i++) {
         let c = i;
-        for (let j = 0; j < 8; j++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+        for (let j = 0; j < 8; j++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
         t[i] = c >>> 0;
     }
     return t;
 })();
 
 function crc32Bytes(bytes) {
-    let crc = 0xFFFFFFFF;
-    for (let i = 0; i < bytes.length; i++) crc = (crc >>> 8) ^ CRC32_TABLE[(crc ^ bytes[i]) & 0xFF];
-    return (crc ^ 0xFFFFFFFF) >>> 0;
+    let crc = 0xffffffff;
+    for (let i = 0; i < bytes.length; i++) crc = (crc >>> 8) ^ CRC32_TABLE[(crc ^ bytes[i]) & 0xff];
+    return (crc ^ 0xffffffff) >>> 0;
 }
 
 // === CRC32C (Castagnoli) ===
@@ -24,21 +24,22 @@ const CRC32C_TABLE = (() => {
     const t = new Uint32Array(256);
     for (let i = 0; i < 256; i++) {
         let c = i;
-        for (let j = 0; j < 8; j++) c = (c & 1) ? (0x82F63B78 ^ (c >>> 1)) : (c >>> 1);
+        for (let j = 0; j < 8; j++) c = c & 1 ? 0x82f63b78 ^ (c >>> 1) : c >>> 1;
         t[i] = c >>> 0;
     }
     return t;
 })();
 
 function crc32cBytes(bytes) {
-    let crc = 0xFFFFFFFF;
-    for (let i = 0; i < bytes.length; i++) crc = (crc >>> 8) ^ CRC32C_TABLE[(crc ^ bytes[i]) & 0xFF];
-    return (crc ^ 0xFFFFFFFF) >>> 0;
+    let crc = 0xffffffff;
+    for (let i = 0; i < bytes.length; i++) crc = (crc >>> 8) ^ CRC32C_TABLE[(crc ^ bytes[i]) & 0xff];
+    return (crc ^ 0xffffffff) >>> 0;
 }
 
 // === Adler32 ===
 function adler32Bytes(bytes) {
-    let a = 1, b = 0;
+    let a = 1,
+        b = 0;
     for (let i = 0; i < bytes.length; i++) {
         a = (a + bytes[i]) % 65521;
         b = (b + a) % 65521;
@@ -54,7 +55,9 @@ function ripemd160Bytes(_bytes) {
 }
 
 function bufToHex8(buf) {
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    return Array.from(new Uint8Array(buf))
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('');
 }
 
 async function hashextCompute() {
@@ -104,7 +107,7 @@ async function hashextCompute() {
         items.push({label: 'SM3 (国密)', value: '库未加载（请同时启用国密工具）', error: true});
     }
 
-    items.forEach(it => {
+    items.forEach((it) => {
         const div = document.createElement('div');
         div.className = 'uuid-item';
         div.innerHTML = `<span style="color:var(--text-dim);width:170px;flex-shrink:0">${it.label}</span><span class="hash-val" style="font-size:12px;${it.error ? 'color:var(--danger)' : ''}">${it.value}</span><button class="sm outline" onclick="copyText(this.parentElement.querySelector('.hash-val'))">复制</button>`;

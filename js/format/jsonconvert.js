@@ -7,7 +7,7 @@ function jsonconvertGetFxps() {
     }
     return {
         XMLParser: FXP.XMLParser,
-        XMLBuilder: FXP.XMLBuilder
+        XMLBuilder: FXP.XMLBuilder,
     };
 }
 
@@ -28,7 +28,7 @@ function jsonToXml(obj, rootName, attrPrefix) {
         ignoreAttributes: false,
         format: true,
         indentBy: '  ',
-        suppressEmptyNode: false
+        suppressEmptyNode: false,
     });
     const wrap = {};
     wrap[rootName || 'root'] = obj;
@@ -44,7 +44,7 @@ function xmlToJson(xmlStr, attrPrefix) {
         ignoreAttributes: false,
         parseAttributeValue: false,
         trimValues: true,
-        parseTagValue: false
+        parseTagValue: false,
     });
     const parsed = parser.parse(xmlStr);
     // 去掉根节点，保留内部对象
@@ -139,8 +139,11 @@ function jsonconvertBeautify() {
             const fxp = jsonconvertGetFxps();
             if (!fxp) return;
             const obj = xmlToJson(txt, document.getElementById('jsonconvertAttrPrefix').value || '@_');
-            out.textContent = jsonToXml(obj, document.getElementById('jsonconvertRoot').value || 'root',
-                document.getElementById('jsonconvertAttrPrefix').value || '@_');
+            out.textContent = jsonToXml(
+                obj,
+                document.getElementById('jsonconvertRoot').value || 'root',
+                document.getElementById('jsonconvertAttrPrefix').value || '@_'
+            );
         }
         setStatus('美化完成');
     } catch (e) {

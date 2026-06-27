@@ -3,24 +3,24 @@
 const TPL_PATTERNS = {
     js: {
         regex: /\$\{\s*([a-zA-Z_$][\w$]*)\s*\}/g,
-        label: '${var}'
+        label: '${var}',
     },
     mybatis: {
         regex: /#\{\s*([a-zA-Z_$][\w$]*)\s*\}/g,
-        label: '#{var}'
+        label: '#{var}',
     },
     mustache: {
         regex: /\{\{\s*([a-zA-Z_$][\w$]*)\s*\}\}/g,
-        label: '{{var}}'
+        label: '{{var}}',
     },
     spring: {
         regex: /\$([a-zA-Z_$][\w$]*)\$/g,
-        label: '$var$'
+        label: '$var$',
     },
     ibatis: {
         regex: /:\s*([a-zA-Z_$][\w$]*)/g,
-        label: ':var'
-    }
+        label: ':var',
+    },
 };
 
 function tplAddVar(key, val) {
@@ -35,7 +35,7 @@ function tplAddVar(key, val) {
 
 function tplCollectVars() {
     const result = {};
-    document.querySelectorAll('#tplVarsList .api-kv-row').forEach(row => {
+    document.querySelectorAll('#tplVarsList .api-kv-row').forEach((row) => {
         const inputs = row.querySelectorAll('input');
         const key = inputs[0].value.trim();
         if (key) result[key] = inputs[1].value;

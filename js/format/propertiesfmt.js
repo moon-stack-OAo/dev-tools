@@ -54,7 +54,9 @@ function parseProperties(text) {
         value = decodeUnicodeEscape(value);
 
         if (map.has(key)) {
-            const existing = duplicates.find(function (d) { return d.key === key; });
+            const existing = duplicates.find(function (d) {
+                return d.key === key;
+            });
             const origLine = map.get('_line_' + key);
             if (existing) {
                 existing.lines.push(finalLineNo);
@@ -172,18 +174,25 @@ function yamlToProperties(yamlText, options) {
     }
     if (obj === null || obj === undefined) return '';
     if (typeof obj !== 'object') {
-        return (options.useUnicode ? encodeUnicodeEscape(String(obj)) : String(obj));
+        return options.useUnicode ? encodeUnicodeEscape(String(obj)) : String(obj);
     }
     const flat = flattenYAML(obj, '');
-    return flat.map(function (pair) {
-        let value = pair[1];
-        if (options.useUnicode) {
-            value = encodeUnicodeEscape(value);
-        } else {
-            value = value.replace(/\\/g, '\\\\').replace(/=/g, '\\=').replace(/#/g, '\\#').replace(/!/g, '\\!').replace(/\n/g, '\\n');
-        }
-        return pair[0] + '=' + value;
-    }).join('\n');
+    return flat
+        .map(function (pair) {
+            let value = pair[1];
+            if (options.useUnicode) {
+                value = encodeUnicodeEscape(value);
+            } else {
+                value = value
+                    .replace(/\\/g, '\\\\')
+                    .replace(/=/g, '\\=')
+                    .replace(/#/g, '\\#')
+                    .replace(/!/g, '\\!')
+                    .replace(/\n/g, '\\n');
+            }
+            return pair[0] + '=' + value;
+        })
+        .join('\n');
 }
 
 // Properties 字符串 → YAML 字符串
@@ -281,10 +290,13 @@ function showPropWarning(text, direction) {
         warn.style.display = 'none';
         return;
     }
-    const lines = parsed.duplicates.map(function (d) {
-        return '<strong>' + d.key.replace(/</g, '&lt;') + '</strong> (第 ' + d.lines.join('、') + ' 行)';
-    }).join('；');
-    warn.innerHTML = '<i class="bi bi-exclamation-triangle"></i> 检测到 ' + parsed.duplicates.length + ' 个重复键：' + lines;
+    const lines = parsed.duplicates
+        .map(function (d) {
+            return '<strong>' + d.key.replace(/</g, '&lt;') + '</strong> (第 ' + d.lines.join('、') + ' 行)';
+        })
+        .join('；');
+    warn.innerHTML =
+        '<i class="bi bi-exclamation-triangle"></i> 检测到 ' + parsed.duplicates.length + ' 个重复键：' + lines;
     warn.style.display = '';
 }
 
@@ -300,7 +312,9 @@ function updatePropStats(direction, input, output) {
         const yamlLines = output.split('\n').length;
         stats.textContent = '解析 ' + propsCount + ' 个键 → 生成 ' + yamlLines + ' 行 YAML';
     } else {
-        const propsLines = output.split('\n').filter(function (l) { return l.trim(); }).length;
+        const propsLines = output.split('\n').filter(function (l) {
+            return l.trim();
+        }).length;
         stats.textContent = '生成 ' + propsLines + ' 行 Properties';
     }
 }

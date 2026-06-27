@@ -4,10 +4,13 @@ function parseStackTrace(text) {
         return null;
     }
 
-    const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+    const lines = text
+        .split('\n')
+        .map((l) => l.trim())
+        .filter((l) => l);
     const result = {
         exceptions: [],
-        currentException: null
+        currentException: null,
     };
 
     let currentEx = null;
@@ -21,7 +24,7 @@ function parseStackTrace(text) {
                 type: exMatch[1],
                 message: exMatch[2] || '',
                 frames: [],
-                causedBy: null
+                causedBy: null,
             };
             result.exceptions.push(currentEx);
             if (!result.currentException) {
@@ -37,7 +40,7 @@ function parseStackTrace(text) {
                 type: causedByMatch[1],
                 message: causedByMatch[2] || '',
                 frames: [],
-                causedBy: null
+                causedBy: null,
             };
             currentEx.causedBy = causedEx;
             currentEx = causedEx;
@@ -52,7 +55,7 @@ function parseStackTrace(text) {
                 class: frameMatch[1],
                 method: frameMatch[2],
                 file: frameMatch[3],
-                line: parseInt(frameMatch[4])
+                line: parseInt(frameMatch[4]),
             });
             continue;
         }
@@ -64,7 +67,7 @@ function parseStackTrace(text) {
                 class: nativeMatch[1],
                 method: nativeMatch[2],
                 file: 'Native Method',
-                line: -1
+                line: -1,
             });
             continue;
         }
@@ -73,7 +76,7 @@ function parseStackTrace(text) {
         const moreMatch = line.match(/^\.\.\.\s*(\d+)\s*more$/);
         if (moreMatch && currentEx) {
             currentEx.frames.push({
-                omitted: parseInt(moreMatch[1])
+                omitted: parseInt(moreMatch[1]),
             });
             continue;
         }
@@ -106,7 +109,7 @@ function formatStackTraceHtml(parsed) {
 
         // 堆栈帧
         html += '<div style="padding-left:16px">';
-        ex.frames.forEach(frame => {
+        ex.frames.forEach((frame) => {
             if (frame.omitted) {
                 html += '<div style="color:var(--text-dim)">... ' + frame.omitted + ' more</div>';
             } else {
@@ -136,10 +139,6 @@ function formatStackTraceHtml(parsed) {
 }
 
 // HTML 转义
-function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
 
 // 界面按钮：解析堆栈
 function stacktraceParse() {
@@ -175,11 +174,14 @@ function stacktraceFormat() {
     }
 
     try {
-        const lines = input.split('\n').map(l => l.trim()).filter(l => l);
+        const lines = input
+            .split('\n')
+            .map((l) => l.trim())
+            .filter((l) => l);
         let formatted = '';
         let indent = 0;
 
-        lines.forEach(line => {
+        lines.forEach((line) => {
             if (line.startsWith('Caused by:')) {
                 indent = 0;
                 formatted += '\n' + line + '\n';
@@ -207,6 +209,6 @@ function stacktraceClear() {
     setStatus('已清空');
 }
 
-registerInit('stacktrace', function() {
+registerInit('stacktrace', function () {
     // 初始化
 });

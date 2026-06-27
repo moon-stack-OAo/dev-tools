@@ -13,7 +13,7 @@ const MAVEN_CMDS = [
             {cmd: 'mvn clean', desc: '清理 target 目录'},
             {cmd: 'mvn clean package', desc: '清理后打包（最常用组合）'},
             {cmd: 'mvn clean install -DskipTests', desc: '清理 + 安装到本地仓库，跳过测试'},
-        ]
+        ],
     },
     {
         cat: '依赖管理',
@@ -27,7 +27,7 @@ const MAVEN_CMDS = [
             {cmd: 'mvn dependency:copy-dependencies -DoutputDirectory=lib', desc: '拷贝所有依赖到指定目录'},
             {cmd: 'mvn dependency:purge-local-repository', desc: '清空本地仓库依赖后重新下载'},
             {cmd: 'mvn versions:display-dependency-updates', desc: '检查依赖最新版本'},
-        ]
+        ],
     },
     {
         cat: '常用参数',
@@ -46,7 +46,7 @@ const MAVEN_CMDS = [
             {cmd: '-T 4', desc: '4 线程并行构建（提高多模块速度）'},
             {cmd: '-Dmaven.compiler.source=17 -Dmaven.compiler.target=17', desc: '指定 Java 编译版本'},
             {cmd: '-f pom.xml', desc: '指定 pom 文件'},
-        ]
+        ],
     },
     {
         cat: '插件调用',
@@ -57,9 +57,12 @@ const MAVEN_CMDS = [
             {cmd: 'mvn mybatis-generator:generate', desc: '运行 MyBatis Generator'},
             {cmd: 'mvn jib:build', desc: '使用 Jib 直接构建 Docker 镜像（无需 docker daemon）'},
             {cmd: 'mvn jib:dockerBuild', desc: 'Jib 构建镜像到本地 Docker'},
-            {cmd: 'mvn compile exec:java -Dexec.mainClass=com.example.Main', desc: '运行 main 方法（exec-maven-plugin）'},
+            {
+                cmd: 'mvn compile exec:java -Dexec.mainClass=com.example.Main',
+                desc: '运行 main 方法（exec-maven-plugin）',
+            },
             {cmd: 'mvn jar:jar', desc: '仅打包 jar（不经过 package 阶段）'},
-        ]
+        ],
     },
     {
         cat: '仓库 / 配置查询',
@@ -72,7 +75,7 @@ const MAVEN_CMDS = [
             {cmd: 'mvn help:evaluate -Dexpression=project.basedir', desc: '求值 Maven 表达式'},
             {cmd: 'mvn archetype:generate', desc: '从 archetype 生成项目骨架'},
             {cmd: 'mvn archetype:create-from-project', desc: '从现有项目生成 archetype'},
-        ]
+        ],
     },
     {
         cat: '发布 / 部署',
@@ -82,7 +85,7 @@ const MAVEN_CMDS = [
             {cmd: 'mvn release:perform', desc: '执行 release：检出 tag → deploy'},
             {cmd: 'mvn release:rollback', desc: '回滚 release 准备'},
             {cmd: 'mvn deploy -DrepositoryId=releases', desc: '指定仓库 id 部署'},
-        ]
+        ],
     },
 ];
 
@@ -94,18 +97,16 @@ function mavenrefRender(filter) {
     filter = (filter || '').trim().toLowerCase();
     container.innerHTML = '';
     let hasResult = false;
-    MAVEN_CMDS.forEach(group => {
+    MAVEN_CMDS.forEach((group) => {
         const matched = filter
-            ? group.items.filter(i =>
-                i.cmd.toLowerCase().includes(filter) ||
-                i.desc.toLowerCase().includes(filter))
+            ? group.items.filter((i) => i.cmd.toLowerCase().includes(filter) || i.desc.toLowerCase().includes(filter))
             : group.items;
         if (!matched.length) return;
         hasResult = true;
         const section = document.createElement('div');
         section.style.cssText = 'margin-bottom:16px';
         section.innerHTML = `<div style="font-size:12px;font-weight:600;color:var(--accent);padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:8px">${group.cat}</div>`;
-        matched.forEach(item => {
+        matched.forEach((item) => {
             const card = document.createElement('div');
             card.className = 'ref-card';
             card.innerHTML = `<div class="ref-cmd-head"><code class="ref-cmd-name">${item.cmd.replace(/</g, '&lt;')}</code><span class="ref-cmd-desc">${item.desc}</span><button class="sm outline" onclick="safeCopy('${item.cmd.replace(/'/g, "\\'")}')">复制</button></div>`;

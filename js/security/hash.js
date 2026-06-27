@@ -16,7 +16,7 @@ async function hashCompute(type) {
             const algo = {sha1: 'SHA-1', sha256: 'SHA-256', sha512: 'SHA-512'}[type];
             const hashBuffer = await crypto.subtle.digest(algo, data);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
-            result = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            result = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
         }
         let existing = container.querySelector(`[data-type="${type}"]`);
         if (existing) {

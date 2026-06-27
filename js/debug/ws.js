@@ -40,7 +40,7 @@ function wsDisconnect() {
     if (ws) {
         ws.onclose = null;
         ws.close();
-        ws = null
+        ws = null;
     }
     document.getElementById('wsStatus').className = 'ws-status disconnected';
     document.getElementById('wsStatus').innerHTML = '<span class="ws-dot"></span> 未连接';

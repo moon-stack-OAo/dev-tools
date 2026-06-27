@@ -7,13 +7,9 @@
 async function pbkdf2(password, salt, iterations, dkLen, algorithm) {
     if (algorithm == null) algorithm = 'SHA-256';
     const enc = new TextEncoder();
-    const keyMaterial = await crypto.subtle.importKey(
-        'raw',
-        enc.encode(password),
-        {name: 'PBKDF2'},
-        false,
-        ['deriveBits']
-    );
+    const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), {name: 'PBKDF2'}, false, [
+        'deriveBits',
+    ]);
     const saltBytes = typeof salt === 'string' ? enc.encode(salt) : salt;
     const bits = await crypto.subtle.deriveBits(
         {name: 'PBKDF2', salt: saltBytes, iterations: iterations, hash: algorithm},
@@ -38,9 +34,11 @@ function base64ToBytes(b64) {
 }
 
 function bytesToHex(bytes) {
-    return Array.from(bytes).map(function (b) {
-        return b.toString(16).padStart(2, '0');
-    }).join('');
+    return Array.from(bytes)
+        .map(function (b) {
+            return b.toString(16).padStart(2, '0');
+        })
+        .join('');
 }
 
 // === 3. 标准 PHC 格式编解码 ===
@@ -115,7 +113,8 @@ function _pbkdf2ShowOutput(formatted, hashBytes, iterations, elapsedMs) {
     document.getElementById('pbkdf2HashHex').textContent = bytesToHex(hashBytes);
     const meta = document.getElementById('pbkdf2Meta');
     meta.style.color = 'var(--text-muted)';
-    meta.textContent = hashBytes.length * 8 + ' bit · ' + iterations.toLocaleString() + ' 次迭代 · ' + elapsedMs + ' ms';
+    meta.textContent =
+        hashBytes.length * 8 + ' bit · ' + iterations.toLocaleString() + ' 次迭代 · ' + elapsedMs + ' ms';
     _pbkdf2LastFormatted = formatted;
 }
 
@@ -219,7 +218,14 @@ async function pbkdf2VerifyFormatted() {
         const elapsed = Math.round(performance.now() - start);
         if (constantTimeEquals(hash, params.hash)) {
             out.style.color = 'var(--accent)';
-            out.textContent = '✓ 匹配（' + params.algorithm + ' · ' + params.iterations.toLocaleString() + ' 次 · ' + elapsed + ' ms）';
+            out.textContent =
+                '✓ 匹配（' +
+                params.algorithm +
+                ' · ' +
+                params.iterations.toLocaleString() +
+                ' 次 · ' +
+                elapsed +
+                ' ms）';
         } else {
             out.style.color = 'var(--danger)';
             out.textContent = '✗ 不匹配（' + elapsed + ' ms）';
@@ -278,7 +284,8 @@ function pbkdf2Init() {
         const dk = parseInt(dkLenEl.value, 10) || 32;
         const sl = parseInt(saltLenEl.value, 10) || 16;
         meta.style.color = 'var(--text-muted)';
-        meta.textContent = '参数: ' + algoName + ' · ' + iters.toLocaleString() + ' 次 · Salt ' + sl + 'B · 输出 ' + dk + 'B';
+        meta.textContent =
+            '参数: ' + algoName + ' · ' + iters.toLocaleString() + ' 次 · Salt ' + sl + 'B · 输出 ' + dk + 'B';
     };
 
     iterEl.addEventListener('input', syncMeta);

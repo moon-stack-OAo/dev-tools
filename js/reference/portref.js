@@ -102,12 +102,14 @@ function portrefRender(filter) {
     filter = (filter || '').trim().toLowerCase();
     container.innerHTML = '';
     const list = filter
-        ? PORTS.filter(p =>
-            p.port.toString().includes(filter) ||
-            p.proto.toLowerCase().includes(filter) ||
-            p.service.toLowerCase().includes(filter) ||
-            p.cat.toLowerCase().includes(filter) ||
-            p.desc.toLowerCase().includes(filter))
+        ? PORTS.filter(
+            (p) =>
+                p.port.toString().includes(filter) ||
+                p.proto.toLowerCase().includes(filter) ||
+                p.service.toLowerCase().includes(filter) ||
+                p.cat.toLowerCase().includes(filter) ||
+                p.desc.toLowerCase().includes(filter)
+        )
         : PORTS;
     if (!list.length) {
         container.innerHTML = '<div style="color:var(--text-muted);padding:20px;text-align:center">无匹配结果</div>';
@@ -115,18 +117,19 @@ function portrefRender(filter) {
     }
 
     const catColor = {
-        'Web': '#2196f3',
-        '数据库': '#4caf50',
-        '消息队列': '#ff9800',
-        '搜索': '#9c27b0',
-        '远程': '#607d8b',
-        '容器': '#00bcd4',
-        '监控': '#f44336',
-        '其他': '#9e9e9e',
+        Web: '#2196f3',
+        数据库: '#4caf50',
+        消息队列: '#ff9800',
+        搜索: '#9c27b0',
+        远程: '#607d8b',
+        容器: '#00bcd4',
+        监控: '#f44336',
+        其他: '#9e9e9e',
     };
 
     const header = document.createElement('div');
-    header.style.cssText = 'display:grid;grid-template-columns:80px 80px 130px 100px 1fr;background:var(--bg-input);font-weight:600;border-radius:4px;padding:6px 0;margin-bottom:6px;font-size:12px;position:sticky;top:52px;z-index:5';
+    header.style.cssText =
+        'display:grid;grid-template-columns:80px 80px 130px 100px 1fr;background:var(--bg-input);font-weight:600;border-radius:4px;padding:6px 0;margin-bottom:6px;font-size:12px;position:sticky;top:52px;z-index:5';
     header.innerHTML = `
         <span style="padding:4px 10px">端口</span>
         <span style="padding:4px 10px">协议</span>
@@ -136,11 +139,12 @@ function portrefRender(filter) {
     `;
     container.appendChild(header);
 
-    list.forEach(p => {
+    list.forEach((p) => {
         const row = document.createElement('div');
-        row.style.cssText = 'display:grid;grid-template-columns:80px 80px 130px 100px 1fr;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;cursor:pointer;transition:background .12s;border-radius:4px';
-        row.onmouseenter = () => row.style.background = 'var(--glass)';
-        row.onmouseleave = () => row.style.background = '';
+        row.style.cssText =
+            'display:grid;grid-template-columns:80px 80px 130px 100px 1fr;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;cursor:pointer;transition:background .12s;border-radius:4px';
+        row.onmouseenter = () => (row.style.background = 'var(--glass)');
+        row.onmouseleave = () => (row.style.background = '');
         row.innerHTML = `
             <span style="padding:4px 10px"><code style="background:var(--bg-input);padding:2px 8px;border-radius:3px;color:var(--accent2);font-weight:600">${p.port}</code></span>
             <span style="padding:4px 10px;color:var(--text-muted)">${p.proto}</span>

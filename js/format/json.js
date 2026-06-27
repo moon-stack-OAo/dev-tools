@@ -18,11 +18,11 @@ function jsonProcess(fn) {
 }
 
 function jsonFormat() {
-    jsonProcess(v => JSON.stringify(v, null, 2));
+    jsonProcess((v) => JSON.stringify(v, null, 2));
 }
 
 function jsonCompress() {
-    jsonProcess(v => JSON.stringify(v));
+    jsonProcess((v) => JSON.stringify(v));
 }
 
 function jsonValidate() {

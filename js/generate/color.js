@@ -35,7 +35,9 @@ function colorConvert() {
     if (r === undefined) {
         m = raw.match(/hsl\s*\(\s*(\d+)\s*,\s*(\d+)%\s*,\s*(\d+)%\s*(?:,\s*[\d.]+\s*)?\)/i);
         if (m) {
-            const h = parseInt(m[1]) / 360, s = parseInt(m[2]) / 100, l = parseInt(m[3]) / 100;
+            const h = parseInt(m[1]) / 360,
+                s = parseInt(m[2]) / 100,
+                l = parseInt(m[3]) / 100;
             const rgb = hslToRgb(h, s, l);
             r = rgb[0];
             g = rgb[1];
@@ -65,7 +67,7 @@ function colorConvert() {
     r = Math.max(0, Math.min(255, Math.round(r)));
     g = Math.max(0, Math.min(255, Math.round(g)));
     b = Math.max(0, Math.min(255, Math.round(b)));
-    const hex = '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+    const hex = '#' + [r, g, b].map((x) => x.toString(16).padStart(2, '0')).join('');
     const hsl = rgbToHsl(r, g, b);
     outHex.textContent = hex.toUpperCase();
     outHex.className = 'output-box';
@@ -81,8 +83,11 @@ function rgbToHsl(r, g, b) {
     r /= 255;
     g /= 255;
     b /= 255;
-    const max = Math.max(r, g, b), min = Math.min(r, g, b);
-    let h, s, l = (max + min) / 2;
+    const max = Math.max(r, g, b),
+        min = Math.min(r, g, b);
+    let h,
+        s,
+        l = (max + min) / 2;
     if (max === min) {
         h = s = 0;
     } else {

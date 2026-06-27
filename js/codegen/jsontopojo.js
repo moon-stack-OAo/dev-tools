@@ -26,11 +26,11 @@ function jsonToPojo() {
     let code = '';
     if (lombok) code += 'import lombok.Data;\n';
     const sorted = [...imports].sort();
-    sorted.forEach(i => code += 'import ' + i + ';\n');
+    sorted.forEach((i) => (code += 'import ' + i + ';\n'));
     if (sorted.length || lombok) code += '\n';
     if (lombok) code += '@Data\n';
     code += 'public class ' + className + ' {\n\n';
-    fields.forEach(f => {
+    fields.forEach((f) => {
         code += '    private ' + f.type + ' ' + f.name + ';\n';
     });
     code += '\n}';

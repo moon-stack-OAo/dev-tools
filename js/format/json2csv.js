@@ -20,12 +20,12 @@ function jsonToCsv(jsonStr, options) {
     }
 
     // 展平嵌套对象
-    const flatData = data.map(item => flattenObject(item));
+    const flatData = data.map((item) => flattenObject(item));
 
     // 收集所有键
     const keys = new Set();
-    flatData.forEach(item => {
-        Object.keys(item).forEach(key => keys.add(key));
+    flatData.forEach((item) => {
+        Object.keys(item).forEach((key) => keys.add(key));
     });
     const headers = Array.from(keys);
 
@@ -34,12 +34,12 @@ function jsonToCsv(jsonStr, options) {
 
     // 表头
     if (includeHeader) {
-        lines.push(headers.map(h => csvEscape(h)).join(','));
+        lines.push(headers.map((h) => csvEscape(h)).join(','));
     }
 
     // 数据行
-    flatData.forEach(item => {
-        const row = headers.map(header => {
+    flatData.forEach((item) => {
+        const row = headers.map((header) => {
             const value = item[header];
             if (value === null || value === undefined) {
                 return '';
@@ -74,12 +74,12 @@ function csvToJson(csvStr, options) {
         dataLines = lines.slice(1);
     } else {
         // 生成默认表头
-        const maxCols = Math.max(...lines.map(l => l.length));
+        const maxCols = Math.max(...lines.map((l) => l.length));
         headers = Array.from({ length: maxCols }, (_, i) => 'column_' + (i + 1));
         dataLines = lines;
     }
 
-    const result = dataLines.map(line => {
+    const result = dataLines.map((line) => {
         const obj = {};
         headers.forEach((header, index) => {
             let value = line[index] || '';
@@ -110,9 +110,7 @@ function flattenObject(obj, prefix) {
         if (value === null || value === undefined) {
             result[newKey] = value;
         } else if (Array.isArray(value)) {
-            result[newKey] = value.map(item =>
-                typeof item === 'object' ? JSON.stringify(item) : item
-            );
+            result[newKey] = value.map((item) => (typeof item === 'object' ? JSON.stringify(item) : item));
         } else if (typeof value === 'object') {
             Object.assign(result, flattenObject(value, newKey));
         } else {
@@ -184,7 +182,7 @@ function parseCsvLines(csvStr) {
                 i++;
             } else if (char === '\n' || (char === '\r' && nextChar === '\n')) {
                 current.push(field.trim());
-                if (current.some(f => f !== '')) {
+                if (current.some((f) => f !== '')) {
                     lines.push(current);
                 }
                 current = [];
@@ -192,7 +190,7 @@ function parseCsvLines(csvStr) {
                 i += char === '\r' ? 2 : 1;
             } else if (char === '\r') {
                 current.push(field.trim());
-                if (current.some(f => f !== '')) {
+                if (current.some((f) => f !== '')) {
                     lines.push(current);
                 }
                 current = [];
@@ -208,7 +206,7 @@ function parseCsvLines(csvStr) {
     // 处理最后一个字段
     if (field || current.length > 0) {
         current.push(field.trim());
-        if (current.some(f => f !== '')) {
+        if (current.some((f) => f !== '')) {
             lines.push(current);
         }
     }

@@ -1,7 +1,7 @@
 // 字符串 → Hex
 function strToHex(str, options) {
     options = options || {};
-    const upper = options.upperCase !== false ? false : true;  // 默认小写
+    const upper = options.upperCase !== false ? false : true; // 默认小写
     const space = !!options.space;
     const prefix = !!options.prefix;
     if (!str) return '';
@@ -49,7 +49,7 @@ function hexEncode() {
         out.textContent = strToHex(raw, {
             upperCase: upper,
             space: space,
-            prefix: prefix
+            prefix: prefix,
         });
         out.className = 'output-box';
         setStatus('编码成功');

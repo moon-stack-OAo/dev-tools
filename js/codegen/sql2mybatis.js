@@ -35,13 +35,15 @@ const SQL2MB_TYPE_MAP = {
     longblob: {java: 'byte[]', jdbc: 'LONGVARBINARY'},
     mediumblob: {java: 'byte[]', jdbc: 'LONGVARBINARY'},
     binary: {java: 'byte[]', jdbc: 'BINARY'},
-    varbinary: {java: 'byte[]', jdbc: 'VARBINARY'}
+    varbinary: {java: 'byte[]', jdbc: 'VARBINARY'},
 };
 
 // ---------- 命名转换 ----------
 function sql2mbToCamel(s) {
     if (!s) return '';
-    return String(s).replace(/[_-](\w)/g, (_, c) => c.toUpperCase()).replace(/^\w/, c => c.toLowerCase());
+    return String(s)
+        .replace(/[_-](\w)/g, (_, c) => c.toUpperCase())
+        .replace(/^\w/, (c) => c.toLowerCase());
 }
 
 function sql2mbToPascal(s) {
@@ -64,7 +66,9 @@ function sql2mbParseDDL(ddl) {
     }
 
     // 提取表名：支持反引号、`db.table`、IF NOT EXISTS
-    const tableMatch = ddl.match(/CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?`?([A-Za-z0-9_]+)`?(?:\s*\.\s*`?([A-Za-z0-9_]+)`?)?/i);
+    const tableMatch = ddl.match(
+        /CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?`?([A-Za-z0-9_]+)`?(?:\s*\.\s*`?([A-Za-z0-9_]+)`?)?/i
+    );
     if (!tableMatch) {
         throw new Error('未识别到 CREATE TABLE 语句');
     }
@@ -95,7 +99,9 @@ function sql2mbParseDDL(ddl) {
         if (!line) continue;
 
         // 跳过 PRIMARY KEY / KEY / INDEX / UNIQUE / CONSTRAINT / FOREIGN KEY 等
-        if (/^(PRIMARY\s+KEY|UNIQUE\s+(?:KEY|INDEX)|KEY|INDEX|CONSTRAINT|FOREIGN\s+KEY|FULLTEXT|SPATIAL)\b/i.test(line)) {
+        if (
+            /^(PRIMARY\s+KEY|UNIQUE\s+(?:KEY|INDEX)|KEY|INDEX|CONSTRAINT|FOREIGN\s+KEY|FULLTEXT|SPATIAL)\b/i.test(line)
+        ) {
             continue;
         }
 
@@ -147,7 +153,7 @@ function sql2mbParseDDL(ddl) {
             jdbcType: typeInfo.jdbc,
             javaType: typeInfo.java,
             comment,
-            pk: false
+            pk: false,
         });
     }
 
@@ -157,7 +163,7 @@ function sql2mbParseDDL(ddl) {
 
     // 主键标记
     if (pk) {
-        const pkField = fields.find(f => f.name === pk);
+        const pkField = fields.find((f) => f.name === pk);
         if (pkField) pkField.pk = true;
         else {
             // 主键未在字段列表中（罕见情况），加一个占位字段
@@ -172,7 +178,7 @@ function sql2mbParseDDL(ddl) {
                 jdbcType: pkType.jdbc,
                 javaType: pkType.java,
                 comment: '主键',
-                pk: true
+                pk: true,
             });
         }
     } else {
@@ -246,7 +252,7 @@ function sql2mbAutoParse() {
     if (!entityEl.value.trim()) entityEl.value = sql2mbInferEntityName(parsed.table);
     if (!pkEl.value.trim()) pkEl.value = parsed.pk;
     if (!pkJdbcEl.value.trim()) {
-        const pkField = parsed.fields.find(f => f.name === parsed.pk);
+        const pkField = parsed.fields.find((f) => f.name === parsed.pk);
         if (pkField) pkJdbcEl.value = pkField.jdbcType;
     }
 }
@@ -292,9 +298,14 @@ function sql2mbGenerate() {
     const table = (document.getElementById('sql2mbTable').value || parsed.table).trim();
     const entity = (document.getElementById('sql2mbEntity').value || sql2mbInferEntityName(parsed.table)).trim();
     const pk = (document.getElementById('sql2mbPk').value || parsed.pk).trim();
-    const pkJdbc = (document.getElementById('sql2mbPkJdbc').value ||
-        (parsed.fields.find(f => f.name === parsed.pk) || {}).jdbcType || 'BIGINT').trim();
-    const namespace = (document.getElementById('sql2mbNamespace').value || 'com.example.mapper.' + entity + 'Mapper').trim();
+    const pkJdbc = (
+        document.getElementById('sql2mbPkJdbc').value ||
+        (parsed.fields.find((f) => f.name === parsed.pk) || {}).jdbcType ||
+        'BIGINT'
+    ).trim();
+    const namespace = (
+        document.getElementById('sql2mbNamespace').value || 'com.example.mapper.' + entity + 'Mapper'
+    ).trim();
     const useGen = document.getElementById('sql2mbUseGen').checked;
     const useParam = document.getElementById('sql2mbUseParam').checked;
 
@@ -320,20 +331,40 @@ function sql2mbBuildXml(cfg) {
     const baseColListId = 'Base_Column_List';
 
     lines.push('<?xml version="1.0" encoding="UTF-8"?>');
-    lines.push('<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">');
+    lines.push(
+        '<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">'
+    );
     lines.push('<mapper namespace="' + cfg.namespace + '">');
     lines.push('');
 
     // ----- resultMap -----
     lines.push('    <!-- 结果映射 -->');
     lines.push('    <resultMap id="' + resultMapId + '" type="' + sql2mbEntityQualifiedName(cfg) + '">');
-    cfg.fields.forEach(f => {
+    cfg.fields.forEach((f) => {
         const commentSuffix = f.comment ? ' <!-- ' + f.comment + ' -->' : '';
         if (f.pk) {
             const jdbc = f.jdbcType || cfg.pkJdbc || 'BIGINT';
-            lines.push('        <id column="' + f.name + '" property="' + sql2mbToCamel(f.name) + '" jdbcType="' + jdbc + '" />' + commentSuffix);
+            lines.push(
+                '        <id column="' +
+                f.name +
+                '" property="' +
+                sql2mbToCamel(f.name) +
+                '" jdbcType="' +
+                jdbc +
+                '" />' +
+                commentSuffix
+            );
         } else {
-            lines.push('        <result column="' + f.name + '" property="' + sql2mbToCamel(f.name) + '" jdbcType="' + f.jdbcType + '" />' + commentSuffix);
+            lines.push(
+                '        <result column="' +
+                f.name +
+                '" property="' +
+                sql2mbToCamel(f.name) +
+                '" jdbcType="' +
+                f.jdbcType +
+                '" />' +
+                commentSuffix
+            );
         }
     });
     lines.push('    </resultMap>');
@@ -342,12 +373,12 @@ function sql2mbBuildXml(cfg) {
     // ----- Base_Column_List -----
     lines.push('    <!-- 通用列 -->');
     lines.push('    <sql id="' + baseColListId + '">');
-    lines.push('        ' + cfg.fields.map(f => '`' + f.name + '`').join(', '));
+    lines.push('        ' + cfg.fields.map((f) => '`' + f.name + '`').join(', '));
     lines.push('    </sql>');
     lines.push('');
 
     // ----- selectByPrimaryKey -----
-    const pkField = cfg.fields.find(f => f.name === cfg.pk) || cfg.fields[0];
+    const pkField = cfg.fields.find((f) => f.name === cfg.pk) || cfg.fields[0];
     const pkJdbc = pkField.jdbcType || cfg.pkJdbc || 'BIGINT';
     const pkJava = pkField.javaType || 'Long';
     lines.push('    <!-- 主键查询 -->');
@@ -370,32 +401,48 @@ function sql2mbBuildXml(cfg) {
     // ----- insert (全量) -----
     lines.push('    <!-- 全量插入 -->');
     if (cfg.useGen && pkField.autoInc) {
-        lines.push('    <insert id="insert" parameterType="' + sql2mbEntityQualifiedName(cfg) + '" useGeneratedKeys="true" keyProperty="' + cfg.pk + '">');
+        lines.push(
+            '    <insert id="insert" parameterType="' +
+            sql2mbEntityQualifiedName(cfg) +
+            '" useGeneratedKeys="true" keyProperty="' +
+            cfg.pk +
+            '">'
+        );
     } else {
         lines.push('    <insert id="insert" parameterType="' + sql2mbEntityQualifiedName(cfg) + '">');
     }
-    lines.push('        insert into ' + cfg.table + ' (' + cfg.fields.map(f => '`' + f.name + '`').join(', ') + ')');
-    lines.push('        values (' + cfg.fields.map(f => '#{' + sql2mbToCamel(f.name) + ', jdbcType=' + f.jdbcType + '}').join(', ') + ')');
+    lines.push('        insert into ' + cfg.table + ' (' + cfg.fields.map((f) => '`' + f.name + '`').join(', ') + ')');
+    lines.push(
+        '        values (' +
+        cfg.fields.map((f) => '#{' + sql2mbToCamel(f.name) + ', jdbcType=' + f.jdbcType + '}').join(', ') +
+        ')'
+    );
     lines.push('    </insert>');
     lines.push('');
 
     // ----- insertSelective -----
     lines.push('    <!-- 选择性插入（NULL 字段不写入） -->');
     if (cfg.useGen && pkField.autoInc) {
-        lines.push('    <insert id="insertSelective" parameterType="' + sql2mbEntityQualifiedName(cfg) + '" useGeneratedKeys="true" keyProperty="' + cfg.pk + '">');
+        lines.push(
+            '    <insert id="insertSelective" parameterType="' +
+            sql2mbEntityQualifiedName(cfg) +
+            '" useGeneratedKeys="true" keyProperty="' +
+            cfg.pk +
+            '">'
+        );
     } else {
         lines.push('    <insert id="insertSelective" parameterType="' + sql2mbEntityQualifiedName(cfg) + '">');
     }
     lines.push('        insert into ' + cfg.table);
     lines.push('        <trim prefix="(" suffix=")" suffixOverrides=",">');
-    cfg.fields.forEach(f => {
+    cfg.fields.forEach((f) => {
         lines.push('            <if test="' + sql2mbToCamel(f.name) + ' != null">');
         lines.push('                `' + f.name + '`,');
         lines.push('            </if>');
     });
     lines.push('        </trim>');
     lines.push('        <trim prefix="values (" suffix=")" suffixOverrides=",">');
-    cfg.fields.forEach(f => {
+    cfg.fields.forEach((f) => {
         lines.push('            <if test="' + sql2mbToCamel(f.name) + ' != null">');
         lines.push('                #{' + sql2mbToCamel(f.name) + ', jdbcType=' + f.jdbcType + '},');
         lines.push('            </if>');
@@ -409,11 +456,15 @@ function sql2mbBuildXml(cfg) {
     lines.push('    <update id="updateByPrimaryKeySelective" parameterType="' + sql2mbEntityQualifiedName(cfg) + '">');
     lines.push('        update ' + cfg.table);
     lines.push('        <set>');
-    cfg.fields.filter(f => !f.pk).forEach(f => {
-        lines.push('            <if test="' + sql2mbToCamel(f.name) + ' != null">');
-        lines.push('                `' + f.name + '` = #{' + sql2mbToCamel(f.name) + ', jdbcType=' + f.jdbcType + '},');
-        lines.push('            </if>');
-    });
+    cfg.fields
+        .filter((f) => !f.pk)
+        .forEach((f) => {
+            lines.push('            <if test="' + sql2mbToCamel(f.name) + ' != null">');
+            lines.push(
+                '                `' + f.name + '` = #{' + sql2mbToCamel(f.name) + ', jdbcType=' + f.jdbcType + '},'
+            );
+            lines.push('            </if>');
+        });
     lines.push('        </set>');
     lines.push('        where `' + cfg.pk + '` = #{' + sql2mbToCamel(cfg.pk) + '}');
     lines.push('    </update>');
@@ -423,7 +474,13 @@ function sql2mbBuildXml(cfg) {
     lines.push('    <!-- 全量更新 -->');
     lines.push('    <update id="updateByPrimaryKey" parameterType="' + sql2mbEntityQualifiedName(cfg) + '">');
     lines.push('        update ' + cfg.table);
-    lines.push('        set ' + cfg.fields.filter(f => !f.pk).map(f => '`' + f.name + '` = #{' + sql2mbToCamel(f.name) + ', jdbcType=' + f.jdbcType + '}').join(',\n            '));
+    lines.push(
+        '        set ' +
+        cfg.fields
+            .filter((f) => !f.pk)
+            .map((f) => '`' + f.name + '` = #{' + sql2mbToCamel(f.name) + ', jdbcType=' + f.jdbcType + '}')
+            .join(',\n            ')
+    );
     lines.push('        where `' + cfg.pk + '` = #{' + sql2mbToCamel(cfg.pk) + '}');
     lines.push('    </update>');
     lines.push('');
@@ -465,7 +522,7 @@ function sql2mbResultMapAttr(cfg) {
 function sql2mbBuildMapperInterface(cfg) {
     const lines = [];
     const entityQualified = sql2mbEntityQualifiedName(cfg);
-    const pkField = cfg.fields.find(f => f.name === cfg.pk) || cfg.fields[0];
+    const pkField = cfg.fields.find((f) => f.name === cfg.pk) || cfg.fields[0];
     const pkJava = pkField.javaType || 'Long';
 
     const ns = cfg.namespace || '';
@@ -479,7 +536,7 @@ function sql2mbBuildMapperInterface(cfg) {
     if (cfg.useParam) lines.push('import org.apache.ibatis.annotations.Param;');
     lines.push('');
 
-    const interfaceName = ns.substring(dot + 1) || (cfg.entity + 'Mapper');
+    const interfaceName = ns.substring(dot + 1) || cfg.entity + 'Mapper';
     lines.push('public interface ' + interfaceName + ' {');
     lines.push('');
 
@@ -544,7 +601,7 @@ function sql2mbParam(cfg, javaType, name) {
 // ---------- 事件处理 ----------
 function sql2mbLoadExample() {
     const example = [
-        "CREATE TABLE `user` (",
+        'CREATE TABLE `user` (',
         "  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',",
         "  `user_name` varchar(50) DEFAULT NULL COMMENT '用户名',",
         "  `email` varchar(100) DEFAULT NULL COMMENT '邮箱',",
@@ -552,9 +609,9 @@ function sql2mbLoadExample() {
         "  `status` tinyint(4) DEFAULT '1' COMMENT '状态 1-正常 0-禁用',",
         "  `created_at` datetime DEFAULT NULL COMMENT '创建时间',",
         "  `updated_at` datetime DEFAULT NULL COMMENT '更新时间',",
-        "  PRIMARY KEY (`id`),",
-        "  KEY `idx_email` (`email`)",
-        ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';"
+        '  PRIMARY KEY (`id`),',
+        '  KEY `idx_email` (`email`)',
+        ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';",
     ].join('\n');
     document.getElementById('sql2mbInput').value = example;
     sql2mbAutoParse();
@@ -607,8 +664,8 @@ function sql2mbDownloadZip() {
     // 3. 推导包名路径与实体类名（与生成逻辑保持一致；空值兜底）
     const entityEl = document.getElementById('sql2mbEntity');
     const nsEl = document.getElementById('sql2mbNamespace');
-    const entityName = (entityEl && entityEl.value.trim()) ? entityEl.value.trim() : 'User';
-    const namespace = (nsEl && nsEl.value.trim()) ? nsEl.value.trim() : ('com.example.mapper.' + entityName + 'Mapper');
+    const entityName = entityEl && entityEl.value.trim() ? entityEl.value.trim() : 'User';
+    const namespace = nsEl && nsEl.value.trim() ? nsEl.value.trim() : 'com.example.mapper.' + entityName + 'Mapper';
 
     // 从 namespace（如 com.example.mapper.UserMapper）取包名 com.example.mapper
     const lastDot = namespace.lastIndexOf('.');
@@ -617,19 +674,20 @@ function sql2mbDownloadZip() {
     const mapperPackagePath = mapperPackage.replace(/\./g, '/');
 
     // 接口文件名：namespace 最后一段（无点号时回退到 <Entity>Mapper）
-    const interfaceSimpleName = lastDot > 0 ? namespace.substring(lastDot + 1) : (entityName + 'Mapper');
+    const interfaceSimpleName = lastDot > 0 ? namespace.substring(lastDot + 1) : entityName + 'Mapper';
     const xmlFileName = interfaceSimpleName + '.xml';
     const javaFileName = interfaceSimpleName + '.java';
 
     // 4. 生成带时间戳的下载文件名，避免重复覆盖
     const now = new Date();
-    const pad = n => String(n).padStart(2, '0');
-    const ts = now.getFullYear()
-        + pad(now.getMonth() + 1)
-        + pad(now.getDate())
-        + pad(now.getHours())
-        + pad(now.getMinutes())
-        + pad(now.getSeconds());
+    const pad = (n) => String(n).padStart(2, '0');
+    const ts =
+        now.getFullYear() +
+        pad(now.getMonth() + 1) +
+        pad(now.getDate()) +
+        pad(now.getHours()) +
+        pad(now.getMinutes()) +
+        pad(now.getSeconds());
     const downloadName = 'mybatis-' + entityName + '-' + ts + '.zip';
 
     // 5. 使用 JSZip 打包（全局 JSZip 由 index.html 引入）
@@ -648,7 +706,7 @@ function sql2mbDownloadZip() {
 
         // 6. 异步生成 Blob -> 触发浏览器下载（避免 data: URI 大文件卡顿）
         zip.generateAsync({type: 'blob', compression: 'DEFLATE', compressionOptions: {level: 6}})
-            .then(blob => {
+            .then((blob) => {
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
@@ -661,7 +719,7 @@ function sql2mbDownloadZip() {
                 setTimeout(() => URL.revokeObjectURL(url), 1000);
                 toast('已下载 ZIP');
             })
-            .catch(err => {
+            .catch((err) => {
                 console.error('[sql2mybatis] ZIP 生成失败', err);
                 toast('ZIP 打包失败: ' + (err && err.message ? err.message : err));
             });
@@ -673,7 +731,7 @@ function sql2mbDownloadZip() {
 
 function sql2mbSwitchTab(tab) {
     const tabs = ['xml', 'mapper'];
-    tabs.forEach(t => {
+    tabs.forEach((t) => {
         const tabEl = document.getElementById('sql2mbTab-' + t);
         const contentEl = document.getElementById('sql2mbTabContent-' + t);
         if (!tabEl || !contentEl) return;

@@ -14,10 +14,11 @@ function charsetDetect() {
         try {
             const decoded = new TextDecoder(enc, {fatal: true}).decode(bytes);
             if (decoded.length === raw.length) results.push(enc);
-        } catch (e) { /* not this encoding */
+        } catch (e) {
+            /* not this encoding */
         }
     }
-    sel.value = results.includes('utf-8') ? 'utf-8' : (results[0] || 'utf-8');
+    sel.value = results.includes('utf-8') ? 'utf-8' : results[0] || 'utf-8';
     charsetConvert();
 }
 

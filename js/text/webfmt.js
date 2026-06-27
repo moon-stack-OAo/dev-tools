@@ -7,7 +7,7 @@ function webfmtSwitchTab(tab) {
         const map = ['html', 'css', 'js'];
         t.classList.toggle('active', map[i] === tab);
     });
-    contents.forEach(c => c.classList.toggle('active', c.id === 'webfmtTab-' + tab));
+    contents.forEach((c) => c.classList.toggle('active', c.id === 'webfmtTab-' + tab));
 }
 
 function getBeautify() {

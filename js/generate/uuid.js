@@ -15,7 +15,8 @@ function genUUID(ver, count) {
 }
 
 function uuidClear() {
-    document.getElementById('uuidList').innerHTML = '<div style="color:var(--text-dim);font-size:13px;padding:8px 0">点击按钮生成 UUID</div>';
+    document.getElementById('uuidList').innerHTML =
+        '<div style="color:var(--text-dim);font-size:13px;padding:8px 0">点击按钮生成 UUID</div>';
     setStatus('已清空');
 }
 
@@ -35,6 +36,8 @@ function uuidV7() {
     b[6] = (b[6] & 0x0f) | 0x70;
     // 设置变体位（byte 8 高 2 位置 10，RFC 4122 / RFC 9562）
     b[8] = (b[8] & 0x3f) | 0x80;
-    const h = Array.from(b).map(x => x.toString(16).padStart(2, '0')).join('');
+    const h = Array.from(b)
+        .map((x) => x.toString(16).padStart(2, '0'))
+        .join('');
     return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
 }

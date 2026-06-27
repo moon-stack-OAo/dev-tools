@@ -38,7 +38,7 @@ function urlParserParse() {
             lines.push(`  ${i + 1}. ${p.key} = ${p.value}`);
         });
         const obj = {};
-        params.forEach(p => {
+        params.forEach((p) => {
             if (obj[p.key] !== undefined) {
                 if (!Array.isArray(obj[p.key])) obj[p.key] = [obj[p.key]];
                 obj[p.key].push(p.value);
@@ -59,7 +59,8 @@ function urlParserParse() {
 }
 
 function urlParserFillSample() {
-    document.getElementById('urlparserInput').value = 'https://user:pass@example.com:8080/path/to?a=1&b=hello%20world&c=3#section-2';
+    document.getElementById('urlparserInput').value =
+        'https://user:pass@example.com:8080/path/to?a=1&b=hello%20world&c=3#section-2';
     urlParserParse();
 }
 

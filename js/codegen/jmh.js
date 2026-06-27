@@ -10,11 +10,11 @@ function jmhGenerate() {
     const state = document.getElementById('jmhState').checked;
 
     const modeLabel = {
-        'Throughput': 'Mode.Throughput',
-        'AverageTime': 'Mode.AverageTime',
-        'SampleTime': 'Mode.SampleTime',
-        'SingleShotTime': 'Mode.SingleShotTime',
-        'All': 'Mode.All'
+        Throughput: 'Mode.Throughput',
+        AverageTime: 'Mode.AverageTime',
+        SampleTime: 'Mode.SampleTime',
+        SingleShotTime: 'Mode.SingleShotTime',
+        All: 'Mode.All',
     }[mode];
 
     let code = `import org.openjdk.jmh.annotations.*;

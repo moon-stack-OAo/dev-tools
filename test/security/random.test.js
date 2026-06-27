@@ -8,7 +8,7 @@ describe('随机字符串生成 randGen', () => {
     test('仅使用给定字符集', () => {
         const chars = 'AB';
         const out = randGen(80, chars);
-        expect([...out].every(c => chars.includes(c))).toBe(true);
+        expect([...out].every((c) => chars.includes(c))).toBe(true);
     });
 
     test('单字符集返回该字符重复', () => {

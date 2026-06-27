@@ -10,7 +10,7 @@ const EMAIL_TEMPLATES = {
                 key: 'actionUrl',
                 label: '按钮链接',
                 placeholder: 'https://example.com/start',
-                default: 'https://example.com/start'
+                default: 'https://example.com/start',
             },
             {key: 'actionText', label: '按钮文案', placeholder: '立即体验', default: '立即体验'},
             {
@@ -18,20 +18,24 @@ const EMAIL_TEMPLATES = {
                 label: '欢迎语段落',
                 type: 'textarea',
                 placeholder: '感谢您注册 XX 科技，我们已为您准备好一切。',
-                default: '感谢您注册 {{company}}，您的账户已激活。立即点击下方按钮开始体验完整功能。'
+                default: '感谢您注册 {{company}}，您的账户已激活。立即点击下方按钮开始体验完整功能。',
             },
         ],
-        build: (v, t) => baseLayout({
-            subject: `欢迎加入 ${v.company}`,
-            preheader: `${v.name}，欢迎加入 ${v.company}`,
-            primaryColor: t.primaryColor,
-            body: `
-                <tr><td class="title">👋 欢迎加入，${emailEscapeHtml(v.name)}！</td></tr>
-                <tr><td class="content">${emailEscapeHtml(v.welcomeText).replace(/\n/g, '<br>')}</td></tr>
-                <tr><td align="center" class="cta-wrap"><a href="${escapeAttr(v.actionUrl)}" class="btn">${emailEscapeHtml(v.actionText)}</a></td></tr>
-                <tr><td class="content muted small">如果您没有注册 ${emailEscapeHtml(v.company)} 账户，请忽略此邮件。</td></tr>
-            `
-        }, t)
+        build: (v, t) =>
+            baseLayout(
+                {
+                    subject: `欢迎加入 ${v.company}`,
+                    preheader: `${v.name}，欢迎加入 ${v.company}`,
+                    primaryColor: t.primaryColor,
+                    body: `
+                <tr><td class="title">👋 欢迎加入，${escapeHtml(v.name)}！</td></tr>
+                <tr><td class="content">${escapeHtml(v.welcomeText).replace(/\n/g, '<br>')}</td></tr>
+                <tr><td align="center" class="cta-wrap"><a href="${escapeAttr(v.actionUrl)}" class="btn">${escapeHtml(v.actionText)}</a></td></tr>
+                <tr><td class="content muted small">如果您没有注册 ${escapeHtml(v.company)} 账户，请忽略此邮件。</td></tr>
+            `,
+                },
+                t
+            ),
     },
 
     reset: {
@@ -45,22 +49,26 @@ const EMAIL_TEMPLATES = {
                 key: 'resetUrl',
                 label: '重置链接',
                 placeholder: 'https://example.com/reset?token=xxx',
-                default: 'https://example.com/reset?token=abc123'
+                default: 'https://example.com/reset?token=abc123',
             },
             {key: 'expireMinutes', label: '链接有效期（分钟）', placeholder: '60', default: '60'},
         ],
-        build: (v, t) => baseLayout({
-            subject: `重置您的 ${v.company} 密码`,
-            preheader: `密码重置请求，链接 ${v.expireMinutes} 分钟内有效`,
-            primaryColor: t.primaryColor,
-            body: `
+        build: (v, t) =>
+            baseLayout(
+                {
+                    subject: `重置您的 ${v.company} 密码`,
+                    preheader: `密码重置请求，链接 ${v.expireMinutes} 分钟内有效`,
+                    primaryColor: t.primaryColor,
+                    body: `
                 <tr><td class="title">🔑 密码重置请求</td></tr>
-                <tr><td class="content">您好，${emailEscapeHtml(v.name)}：</td></tr>
+                <tr><td class="content">您好，${escapeHtml(v.name)}：</td></tr>
                 <tr><td class="content">我们收到了您的密码重置请求。点击下方按钮重置您的密码：</td></tr>
                 <tr><td align="center" class="cta-wrap"><a href="${escapeAttr(v.resetUrl)}" class="btn">重置密码</a></td></tr>
-                <tr><td class="content muted small">⏱ 该链接将在 <strong>${emailEscapeHtml(v.expireMinutes)} 分钟</strong>后失效。如果您没有请求重置密码，请忽略此邮件，您的密码不会被修改。</td></tr>
-            `
-        }, t)
+                <tr><td class="content muted small">⏱ 该链接将在 <strong>${escapeHtml(v.expireMinutes)} 分钟</strong>后失效。如果您没有请求重置密码，请忽略此邮件，您的密码不会被修改。</td></tr>
+            `,
+                },
+                t
+            ),
     },
 
     order: {
@@ -77,27 +85,31 @@ const EMAIL_TEMPLATES = {
                 key: 'orderUrl',
                 label: '订单详情链接',
                 placeholder: 'https://example.com/orders/202506160001',
-                default: 'https://example.com/orders/202506160001'
+                default: 'https://example.com/orders/202506160001',
             },
         ],
-        build: (v, t) => baseLayout({
-            subject: `订单 ${v.orderNo} 已确认`,
-            preheader: `感谢您的订购，订单金额 ${v.amount}`,
-            primaryColor: t.primaryColor,
-            body: `
+        build: (v, t) =>
+            baseLayout(
+                {
+                    subject: `订单 ${v.orderNo} 已确认`,
+                    preheader: `感谢您的订购，订单金额 ${v.amount}`,
+                    primaryColor: t.primaryColor,
+                    body: `
                 <tr><td class="title">🧾 订单确认</td></tr>
-                <tr><td class="content">您好，${emailEscapeHtml(v.name)}：</td></tr>
-                <tr><td class="content">感谢您在 <strong>${emailEscapeHtml(v.company)}</strong> 下单，您的订单已确认。订单详情如下：</td></tr>
+                <tr><td class="content">您好，${escapeHtml(v.name)}：</td></tr>
+                <tr><td class="content">感谢您在 <strong>${escapeHtml(v.company)}</strong> 下单，您的订单已确认。订单详情如下：</td></tr>
                 <tr><td>
                     <table role="presentation" class="info-table" cellspacing="0" cellpadding="0" border="0" width="100%">
-                        <tr><td class="info-label">订单号</td><td class="info-val"><strong>${emailEscapeHtml(v.orderNo)}</strong></td></tr>
-                        <tr><td class="info-label">下单时间</td><td class="info-val">${emailEscapeHtml(v.orderDate)}</td></tr>
-                        <tr><td class="info-label">订单金额</td><td class="info-val"><span class="amount">${emailEscapeHtml(v.amount)}</span></td></tr>
+                        <tr><td class="info-label">订单号</td><td class="info-val"><strong>${escapeHtml(v.orderNo)}</strong></td></tr>
+                        <tr><td class="info-label">下单时间</td><td class="info-val">${escapeHtml(v.orderDate)}</td></tr>
+                        <tr><td class="info-label">订单金额</td><td class="info-val"><span class="amount">${escapeHtml(v.amount)}</span></td></tr>
                     </table>
                 </td></tr>
                 <tr><td align="center" class="cta-wrap"><a href="${escapeAttr(v.orderUrl)}" class="btn">查看订单详情</a></td></tr>
-            `
-        }, t)
+            `,
+                },
+                t
+            ),
     },
 
     event: {
@@ -112,39 +124,43 @@ const EMAIL_TEMPLATES = {
                 key: 'eventLocation',
                 label: '活动地点',
                 placeholder: '上海·浦东国际会议中心',
-                default: '上海·浦东国际会议中心'
+                default: '上海·浦东国际会议中心',
             },
             {
                 key: 'signupUrl',
                 label: '报名链接',
                 placeholder: 'https://example.com/event/signup',
-                default: 'https://example.com/event/signup'
+                default: 'https://example.com/event/signup',
             },
             {
                 key: 'eventDesc',
                 label: '活动简介',
                 type: 'textarea',
                 placeholder: '活动详情...',
-                default: '本次活动汇聚业内顶尖技术专家，分享最新技术趋势与最佳实践，现场还有精美礼品与抽奖环节。'
+                default: '本次活动汇聚业内顶尖技术专家，分享最新技术趋势与最佳实践，现场还有精美礼品与抽奖环节。',
             },
         ],
-        build: (v, t) => baseLayout({
-            subject: `邀请您参加 ${v.eventTitle}`,
-            preheader: `${v.eventTime} @ ${v.eventLocation}`,
-            primaryColor: t.primaryColor,
-            body: `
-                <tr><td class="title">📅 ${emailEscapeHtml(v.eventTitle)}</td></tr>
-                <tr><td class="content">您好，${emailEscapeHtml(v.name)}：</td></tr>
-                <tr><td class="content">${emailEscapeHtml(v.eventDesc).replace(/\n/g, '<br>')}</td></tr>
+        build: (v, t) =>
+            baseLayout(
+                {
+                    subject: `邀请您参加 ${v.eventTitle}`,
+                    preheader: `${v.eventTime} @ ${v.eventLocation}`,
+                    primaryColor: t.primaryColor,
+                    body: `
+                <tr><td class="title">📅 ${escapeHtml(v.eventTitle)}</td></tr>
+                <tr><td class="content">您好，${escapeHtml(v.name)}：</td></tr>
+                <tr><td class="content">${escapeHtml(v.eventDesc).replace(/\n/g, '<br>')}</td></tr>
                 <tr><td>
                     <table role="presentation" class="info-table" cellspacing="0" cellpadding="0" border="0" width="100%">
-                        <tr><td class="info-label">⏱ 时间</td><td class="info-val">${emailEscapeHtml(v.eventTime)}</td></tr>
-                        <tr><td class="info-label">📍 地点</td><td class="info-val">${emailEscapeHtml(v.eventLocation)}</td></tr>
+                        <tr><td class="info-label">⏱ 时间</td><td class="info-val">${escapeHtml(v.eventTime)}</td></tr>
+                        <tr><td class="info-label">📍 地点</td><td class="info-val">${escapeHtml(v.eventLocation)}</td></tr>
                     </table>
                 </td></tr>
                 <tr><td align="center" class="cta-wrap"><a href="${escapeAttr(v.signupUrl)}" class="btn">立即报名</a></td></tr>
-            `
-        }, t)
+            `,
+                },
+                t
+            ),
     },
 
     promo: {
@@ -161,32 +177,36 @@ const EMAIL_TEMPLATES = {
                 key: 'actionUrl',
                 label: '活动链接',
                 placeholder: 'https://example.com/sale',
-                default: 'https://example.com/sale'
+                default: 'https://example.com/sale',
             },
             {
                 key: 'promoText',
                 label: '活动文案',
                 type: 'textarea',
                 placeholder: '尊享专属优惠...',
-                default: '为感谢您的支持，我们为您准备了一份专属优惠。点击下方按钮立即使用优惠码，享受限时折扣！'
+                default: '为感谢您的支持，我们为您准备了一份专属优惠。点击下方按钮立即使用优惠码，享受限时折扣！',
             },
         ],
-        build: (v, t) => baseLayout({
-            subject: `🎁 ${v.discount} - 专属优惠`,
-            preheader: `优惠码 ${v.promoCode}，${v.expireDate} 前有效`,
-            primaryColor: t.primaryColor,
-            body: `
-                <tr><td class="title hero">🎉 ${emailEscapeHtml(v.discount)}</td></tr>
-                <tr><td class="content">您好，${emailEscapeHtml(v.name)}：</td></tr>
-                <tr><td class="content">${emailEscapeHtml(v.promoText).replace(/\n/g, '<br>')}</td></tr>
+        build: (v, t) =>
+            baseLayout(
+                {
+                    subject: `🎁 ${v.discount} - 专属优惠`,
+                    preheader: `优惠码 ${v.promoCode}，${v.expireDate} 前有效`,
+                    primaryColor: t.primaryColor,
+                    body: `
+                <tr><td class="title hero">🎉 ${escapeHtml(v.discount)}</td></tr>
+                <tr><td class="content">您好，${escapeHtml(v.name)}：</td></tr>
+                <tr><td class="content">${escapeHtml(v.promoText).replace(/\n/g, '<br>')}</td></tr>
                 <tr><td align="center" class="coupon-wrap">
-                    <div class="coupon">优惠码：<strong>${emailEscapeHtml(v.promoCode)}</strong></div>
+                    <div class="coupon">优惠码：<strong>${escapeHtml(v.promoCode)}</strong></div>
                 </td></tr>
                 <tr><td align="center" class="cta-wrap"><a href="${escapeAttr(v.actionUrl)}" class="btn">立即使用</a></td></tr>
-                <tr><td class="content muted small">⏱ 本优惠码将于 ${emailEscapeHtml(v.expireDate)} 失效。</td></tr>
-            `
-        }, t)
-    }
+                <tr><td class="content muted small">⏱ 本优惠码将于 ${escapeHtml(v.expireDate)} 失效。</td></tr>
+            `,
+                },
+                t
+            ),
+    },
 };
 
 const DEFAULT_THEME = {
@@ -200,18 +220,8 @@ const DEFAULT_THEME = {
     footerText: '此邮件由系统自动发送，请勿直接回复。',
     companyName: 'XX 科技',
     unsubscribeUrl: 'https://example.com/unsubscribe',
-    logoUrl: ''
+    logoUrl: '',
 };
-
-function emailEscapeHtml(s) {
-    if (s === undefined || s === null) return '';
-    return String(s)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-}
 
 function escapeAttr(s) {
     return String(s == null ? '' : s).replace(/"/g, '&quot;');
@@ -229,7 +239,7 @@ function baseLayout(opts, theme) {
     const btnFg = theme.btnTextColor;
     const logoBlock = theme.logoUrl
         ? `<tr><td align="center" class="logo-wrap"><img src="${escapeAttr(theme.logoUrl)}" alt="${escapeAttr(theme.companyName)}" class="logo"></td></tr>`
-        : `<tr><td align="center" class="logo-wrap"><div class="brand">${emailEscapeHtml(theme.companyName)}</div></td></tr>`;
+        : `<tr><td align="center" class="logo-wrap"><div class="brand">${escapeHtml(theme.companyName)}</div></td></tr>`;
 
     return `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -238,7 +248,7 @@ function baseLayout(opts, theme) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="x-apple-disable-message-reformatting">
-<title>${emailEscapeHtml(subject)}</title>
+<title>${escapeHtml(subject)}</title>
 <style>
   body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
   table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
@@ -284,7 +294,7 @@ function baseLayout(opts, theme) {
 </style>
 </head>
 <body>
-<span class="preheader">${emailEscapeHtml(preheader)}</span>
+<span class="preheader">${escapeHtml(preheader)}</span>
 <table role="presentation" class="email-wrap" cellspacing="0" cellpadding="0" border="0" width="100%">
   <tr>
     <td align="center">
@@ -293,8 +303,8 @@ function baseLayout(opts, theme) {
         ${opts.body}
         <tr><td><div class="divider"></div></td></tr>
         <tr><td class="footer">
-          ${emailEscapeHtml(theme.footerText)}<br>
-          © ${new Date().getFullYear()} ${emailEscapeHtml(theme.companyName)} · <a href="${escapeAttr(theme.unsubscribeUrl)}">取消订阅</a>
+          ${escapeHtml(theme.footerText)}<br>
+          © ${new Date().getFullYear()} ${escapeHtml(theme.companyName)} · <a href="${escapeAttr(theme.unsubscribeUrl)}">取消订阅</a>
         </td></tr>
       </table>
     </td>
@@ -308,14 +318,14 @@ function emailParseCss(cssText) {
     const rules = {};
     cssText = cssText.replace(/\/\*[\s\S]*?\*\//g, '');
     const blocks = cssText.split('}');
-    blocks.forEach(block => {
+    blocks.forEach((block) => {
         const idx = block.indexOf('{');
         if (idx < 0) return;
         const selector = block.substring(0, idx).trim();
         const body = block.substring(idx + 1).trim();
         if (!selector || !body) return;
         const decls = {};
-        body.split(';').forEach(d => {
+        body.split(';').forEach((d) => {
             const ci = d.indexOf(':');
             if (ci > 0) {
                 const prop = d.substring(0, ci).trim().toLowerCase();
@@ -353,7 +363,7 @@ function emailInlineCss(html) {
     const mediaBlocks = [];
     html = html.replace(/<style[^>]*>([\s\S]*?)<\/style>/gi, (m, body) => {
         const medias = emailExtractMediaRules(body);
-        medias.forEach(x => {
+        medias.forEach((x) => {
             mediaBlocks.push(x.full);
             body = body.replace(x.full, '');
         });
@@ -364,14 +374,17 @@ function emailInlineCss(html) {
     const rules = emailParseCss(styleBlocks.join('\n'));
 
     html = html.replace(/<(\w+)([^>]*)>/g, (match, tag, attrs) => {
-        if (['br', 'hr', 'img', 'meta', 'link', 'title', 'span'].indexOf(tag.toLowerCase()) >= 0 && tag.toLowerCase() === 'span') {
+        if (
+            ['br', 'hr', 'img', 'meta', 'link', 'title', 'span'].indexOf(tag.toLowerCase()) >= 0 &&
+            tag.toLowerCase() === 'span'
+        ) {
         }
         const classMatch = attrs.match(/class\s*=\s*"([^"]*)"/i);
         const idMatch = attrs.match(/id\s*=\s*"([^"]*)"/i);
         const styleMatch = attrs.match(/style\s*=\s*"([^"]*)"/i);
         const inline = {};
         if (styleMatch) {
-            styleMatch[1].split(';').forEach(d => {
+            styleMatch[1].split(';').forEach((d) => {
                 const ci = d.indexOf(':');
                 if (ci > 0) inline[d.substring(0, ci).trim().toLowerCase()] = d.substring(ci + 1).trim();
             });
@@ -380,10 +393,10 @@ function emailInlineCss(html) {
             if (rules[sel]) Object.assign(inline, rules[sel]);
         };
         apply(tag.toLowerCase());
-        if (idMatch) idMatch[1].split(/\s+/).forEach(id => apply('#' + id));
+        if (idMatch) idMatch[1].split(/\s+/).forEach((id) => apply('#' + id));
         if (classMatch) {
             const classes = classMatch[1].split(/\s+/);
-            classes.forEach(c => apply('.' + c));
+            classes.forEach((c) => apply('.' + c));
             if (classes.length > 1) {
                 for (let i = 0; i < classes.length; i++) {
                     let combined = '.' + classes[i];
@@ -394,11 +407,17 @@ function emailInlineCss(html) {
                 }
             }
         }
-        const styleStr = Object.keys(inline).map(k => k + ':' + inline[k]).join(';');
+        const styleStr = Object.keys(inline)
+            .map((k) => k + ':' + inline[k])
+            .join(';');
         let newAttrs = attrs;
         if (classMatch) newAttrs = newAttrs.replace(classMatch[0], '');
         if (styleMatch) newAttrs = newAttrs.replace(styleMatch[0], '');
-        newAttrs = (newAttrs + (newAttrs.endsWith(' ') || !newAttrs ? '' : ' ') + (styleStr ? 'style="' + styleStr + '"' : '')).trim();
+        newAttrs = (
+            newAttrs +
+            (newAttrs.endsWith(' ') || !newAttrs ? '' : ' ') +
+            (styleStr ? 'style="' + styleStr + '"' : '')
+        ).trim();
         return '<' + tag + (newAttrs ? ' ' + newAttrs : '') + '>';
     });
 
@@ -410,7 +429,7 @@ function emailInlineCss(html) {
 
 function emailResolveVars(template, vars) {
     let html = template;
-    Object.keys(vars).forEach(k => {
+    Object.keys(vars).forEach((k) => {
         const re = new RegExp('\\{\\{\\s*' + k + '\\s*\\}\\}', 'g');
         html = html.replace(re, vars[k] == null ? '' : vars[k]);
     });
@@ -430,14 +449,14 @@ function emailCurrentTheme() {
         footerText: document.getElementById('emailFooterText').value || DEFAULT_THEME.footerText,
         companyName: document.getElementById('emailCompany').value || DEFAULT_THEME.companyName,
         unsubscribeUrl: document.getElementById('emailUnsub').value || DEFAULT_THEME.unsubscribeUrl,
-        logoUrl: document.getElementById('emailLogo').value || ''
+        logoUrl: document.getElementById('emailLogo').value || '',
     };
 }
 
 function emailCurrentVars() {
     const tpl = EMAIL_TEMPLATES[document.getElementById('emailTpl').value];
     const vars = {};
-    tpl.fields.forEach(f => {
+    tpl.fields.forEach((f) => {
         const el = document.getElementById('emailVar_' + f.key);
         vars[f.key] = el ? el.value : '';
     });
@@ -500,7 +519,7 @@ function emailLoadTemplate() {
     const tpl = EMAIL_TEMPLATES[tplId];
     const container = document.getElementById('emailVars');
     container.innerHTML = '';
-    tpl.fields.forEach(f => {
+    tpl.fields.forEach((f) => {
         const div = document.createElement('div');
         div.className = 'mb-8';
         const label = document.createElement('div');
@@ -530,7 +549,7 @@ function emailInit() {
     const sel = document.getElementById('emailTpl');
     if (!sel) return;
     if (!sel.options.length) {
-        Object.keys(EMAIL_TEMPLATES).forEach(id => {
+        Object.keys(EMAIL_TEMPLATES).forEach((id) => {
             const opt = document.createElement('option');
             opt.value = id;
             opt.textContent = EMAIL_TEMPLATES[id].icon + ' ' + EMAIL_TEMPLATES[id].name;

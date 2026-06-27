@@ -6,7 +6,9 @@ async function rsaGenKeys() {
     try {
         rsaKeyPair = await crypto.subtle.generateKey(
             {name: 'RSA-OAEP', modulusLength: bits, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256'},
-            true, ['encrypt', 'decrypt']);
+            true,
+            ['encrypt', 'decrypt']
+        );
         const pub = await crypto.subtle.exportKey('spki', rsaKeyPair.publicKey);
         const priv = await crypto.subtle.exportKey('pkcs8', rsaKeyPair.privateKey);
         const pubB64 = btoa(String.fromCharCode(...new Uint8Array(pub)));
@@ -30,7 +32,7 @@ async function rsaEncrypt() {
     try {
         let key;
         if (pubKey) {
-            const raw = Uint8Array.from(atob(pubKey), c => c.charCodeAt(0));
+            const raw = Uint8Array.from(atob(pubKey), (c) => c.charCodeAt(0));
             key = await crypto.subtle.importKey('spki', raw, {name: 'RSA-OAEP', hash: 'SHA-256'}, false, ['encrypt']);
         } else if (rsaKeyPair) {
             key = rsaKeyPair.publicKey;
@@ -56,15 +58,17 @@ async function rsaDecrypt() {
     try {
         let key;
         if (privKey) {
-            const raw = Uint8Array.from(atob(privKey), c => c.charCodeAt(0));
-            key = await crypto.subtle.importKey('pkcs8', raw, {name: 'RSA-OAEP', hash: 'SHA-256'}, false, ['decrypt']);
+            const raw = Uint8Array.from(atob(privKey), (c) => c.charCodeAt(0));
+            key = await crypto.subtle.importKey('pkcs8', raw, {name: 'RSA-OAEP', hash: 'SHA-256'}, false, [
+                'decrypt',
+            ]);
         } else if (rsaKeyPair) {
             key = rsaKeyPair.privateKey;
         } else {
             out.textContent = '请先生成密钥对或粘贴私钥';
             return;
         }
-        const raw = Uint8Array.from(atob(input.trim()), c => c.charCodeAt(0));
+        const raw = Uint8Array.from(atob(input.trim()), (c) => c.charCodeAt(0));
         const decrypted = await crypto.subtle.decrypt({name: 'RSA-OAEP'}, key, raw);
         out.textContent = new TextDecoder().decode(decrypted);
     } catch (e) {

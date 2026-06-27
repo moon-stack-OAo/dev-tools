@@ -1,6 +1,7 @@
 const LINUX_CMDS = [
     {
-        cat: '文件操作', items: [
+        cat: '文件操作',
+        items: [
             {cmd: 'ls -la', desc: '列出文件 (含隐藏文件)'},
             {cmd: 'cd /path', desc: '切换目录'},
             {cmd: 'pwd', desc: '当前路径'},
@@ -16,10 +17,11 @@ const LINUX_CMDS = [
             {cmd: 'find . -name "*.java"', desc: '查找文件'},
             {cmd: 'grep -r "pattern" .', desc: '递归搜索文本'},
             {cmd: 'wc -l file', desc: '统计行数'},
-        ]
+        ],
     },
     {
-        cat: '权限与用户', items: [
+        cat: '权限与用户',
+        items: [
             {cmd: 'chmod 755 file', desc: '设置权限 rwxr-xr-x'},
             {cmd: 'chown user:group file', desc: '修改所有者'},
             {cmd: 'whoami', desc: '当前用户'},
@@ -28,10 +30,11 @@ const LINUX_CMDS = [
             {cmd: 'useradd -m user', desc: '创建新用户（含 home）'},
             {cmd: 'passwd user', desc: '修改用户密码'},
             {cmd: 'su - user', desc: '切换用户'},
-        ]
+        ],
     },
     {
-        cat: '进程与系统', items: [
+        cat: '进程与系统',
+        items: [
             {cmd: 'ps aux', desc: '查看所有进程'},
             {cmd: 'top', desc: '系统监控'},
             {cmd: 'htop', desc: '增强版系统监控'},
@@ -45,10 +48,11 @@ const LINUX_CMDS = [
             {cmd: 'pkill -f xxx', desc: '按名称批量杀进程'},
             {cmd: 'lsof -i:8080', desc: '查看端口占用进程'},
             {cmd: 'nice -n 19 cmd', desc: '低优先级运行命令'},
-        ]
+        ],
     },
     {
-        cat: '网络', items: [
+        cat: '网络',
+        items: [
             {cmd: 'ping host', desc: '测试网络连通'},
             {cmd: 'curl -v http://...', desc: 'HTTP 请求'},
             {cmd: 'wget url', desc: '下载文件'},
@@ -62,18 +66,20 @@ const LINUX_CMDS = [
             {cmd: 'dig +short xxx.com', desc: 'DNS 查询（精简输出）'},
             {cmd: 'nslookup xxx.com', desc: 'DNS 反向解析'},
             {cmd: 'rsync -avz src/ user@host:/dst/', desc: '远程同步文件'},
-        ]
+        ],
     },
     {
-        cat: '压缩与打包', items: [
+        cat: '压缩与打包',
+        items: [
             {cmd: 'tar -czf a.tar.gz dir/', desc: '打包并压缩 gzip'},
             {cmd: 'tar -xzf a.tar.gz', desc: '解压 tar.gz'},
             {cmd: 'zip -r a.zip dir/', desc: '压缩为 zip'},
             {cmd: 'unzip a.zip', desc: '解压 zip'},
-        ]
+        ],
     },
     {
-        cat: 'Java 相关', items: [
+        cat: 'Java 相关',
+        items: [
             {cmd: 'java -jar app.jar', desc: '运行 JAR'},
             {cmd: 'java -Xms512m -Xmx2g -jar app.jar', desc: '指定堆内存运行'},
             {cmd: 'jps', desc: '查看 Java 进程'},
@@ -82,10 +88,11 @@ const LINUX_CMDS = [
             {cmd: 'jmap -heap PID', desc: '堆内存信息'},
             {cmd: 'jcmd PID help', desc: '查看进程支持的 jcmd 命令'},
             {cmd: 'jinfo PID', desc: '查看 JVM 配置参数'},
-        ]
+        ],
     },
     {
-        cat: 'systemd 服务管理', items: [
+        cat: 'systemd 服务管理',
+        items: [
             {cmd: 'systemctl start nginx', desc: '启动服务'},
             {cmd: 'systemctl stop nginx', desc: '停止服务'},
             {cmd: 'systemctl restart nginx', desc: '重启服务'},
@@ -96,10 +103,11 @@ const LINUX_CMDS = [
             {cmd: 'systemctl daemon-reload', desc: '重载服务配置（修改 unit 后）'},
             {cmd: 'journalctl -u nginx -f', desc: '跟踪服务日志'},
             {cmd: 'journalctl --since "1 hour ago"', desc: '查看最近 1 小时日志'},
-        ]
+        ],
     },
     {
-        cat: '文本处理', items: [
+        cat: '文本处理',
+        items: [
             {cmd: "sed -i 's/old/new/g' file", desc: '替换文件中的字符串'},
             {cmd: "sed -n '10,20p' file", desc: '查看 10-20 行'},
             {cmd: "awk -F: '{print $1}' /etc/passwd", desc: '按分隔符取列'},
@@ -110,10 +118,11 @@ const LINUX_CMDS = [
             {cmd: "find . -name '*.log' | xargs rm", desc: '批量删除日志文件'},
             {cmd: "tr 'a-z' 'A-Z' < file", desc: '小写转大写'},
             {cmd: "echo $PATH | tr ':' '\\n'", desc: '分隔符转换'},
-        ]
+        ],
     },
     {
-        cat: '文件查找与系统信息', items: [
+        cat: '文件查找与系统信息',
+        items: [
             {cmd: 'which python', desc: '查找可执行文件路径'},
             {cmd: 'whereis nginx', desc: '查找二进制/源码/手册路径'},
             {cmd: 'stat file', desc: '查看文件详细属性（大小/权限/时间）'},
@@ -122,10 +131,11 @@ const LINUX_CMDS = [
             {cmd: 'uptime', desc: '系统运行时间与负载'},
             {cmd: 'date "+%Y-%m-%d %H:%M:%S"', desc: '格式化时间输出'},
             {cmd: 'hostname -I', desc: '查看本机 IP 地址'},
-        ]
+        ],
     },
     {
-        cat: '包管理与定时任务', items: [
+        cat: '包管理与定时任务',
+        items: [
             {cmd: 'apt update && apt upgrade -y', desc: 'Debian/Ubuntu 更新'},
             {cmd: 'apt install -y nginx', desc: 'Debian/Ubuntu 安装软件'},
             {cmd: 'apt remove nginx', desc: 'Debian/Ubuntu 卸载软件'},
@@ -136,7 +146,7 @@ const LINUX_CMDS = [
             {cmd: 'crontab -l', desc: '查看当前用户的定时任务'},
             {cmd: '* * * * * /path/script.sh', desc: 'crontab 格式：分 时 日 月 周 命令'},
             {cmd: 'crontab -r', desc: '删除当前用户的所有定时任务'},
-        ]
+        ],
     },
 ];
 
@@ -152,18 +162,18 @@ function linuxRender(filter) {
     if (!container) return;
     container.innerHTML = '';
     let hasResult = false;
-    LINUX_CMDS.forEach(group => {
+    LINUX_CMDS.forEach((group) => {
         const matched = filter
-            ? group.items.filter(it =>
-                it.cmd.toLowerCase().includes(filter) ||
-                it.desc.toLowerCase().includes(filter))
+            ? group.items.filter(
+                (it) => it.cmd.toLowerCase().includes(filter) || it.desc.toLowerCase().includes(filter)
+            )
             : group.items;
         if (matched.length === 0) return;
         hasResult = true;
         const section = document.createElement('div');
         section.style.cssText = 'margin-bottom:16px';
         section.innerHTML = `<div style="font-size:12px;font-weight:600;color:var(--accent);padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:8px">${group.cat}</div>`;
-        matched.forEach(item => {
+        matched.forEach((item) => {
             const card = document.createElement('div');
             card.className = 'ref-card';
             card.innerHTML = `<div class="ref-cmd-head"><code class="ref-cmd-name">${item.cmd.replace(/</g, '&lt;')}</code><span class="ref-cmd-desc">${item.desc.replace(/</g, '&lt;')}</span><button class="sm outline" onclick="safeCopy('${item.cmd.replace(/'/g, "\\'")}')">复制</button></div>`;

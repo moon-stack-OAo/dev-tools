@@ -1,6 +1,7 @@
 function jwtDecode() {
     const token = document.getElementById('jwtInput').value.trim();
-    const hEl = document.getElementById('jwtHeader'), pEl = document.getElementById('jwtPayload'),
+    const hEl = document.getElementById('jwtHeader'),
+        pEl = document.getElementById('jwtPayload'),
         sEl = document.getElementById('jwtSig');
     if (!token) {
         hEl.textContent = '请输入 JWT Token';

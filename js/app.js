@@ -38,7 +38,7 @@ const tools = [
         icon: 'bi-file-earmark-text',
         name: 'Properties 格式化',
         desc: 'Properties ↔ YAML 互转',
-        cat: 'format'
+        cat: 'format',
     },
     {id: 'sql', icon: 'bi-database', name: 'SQL 格式化', desc: 'SQL 美化 / 多方言支持', cat: 'format'},
     {
@@ -46,7 +46,7 @@ const tools = [
         icon: 'bi-arrow-left-right',
         name: 'JSON/XML/YAML 互转',
         desc: 'JSON / XML / YAML 格式互相转换',
-        cat: 'format'
+        cat: 'format',
     },
     {id: 'jsonpath', icon: 'bi-search', name: 'JSONPath 查询', desc: 'JSONPath 表达式查询 / 提取', cat: 'format'},
     {id: 'jsonschema', icon: 'bi-diagram-3', name: 'JSON Schema', desc: 'JSON Schema 生成 / 校验', cat: 'format'},
@@ -55,9 +55,15 @@ const tools = [
         icon: 'bi-translate',
         name: 'SQL 方言转换',
         desc: 'MySQL/Oracle/PG/SQLServer 互转',
-        cat: 'format'
+        cat: 'format',
     },
-    {id: 'dbtype', icon: 'bi-table', name: '数据库类型映射', desc: 'MySQL/Oracle/PG/SQLServer 类型对照', cat: 'format'},
+    {
+        id: 'dbtype',
+        icon: 'bi-table',
+        name: '数据库类型映射',
+        desc: 'MySQL/Oracle/PG/SQLServer 类型对照',
+        cat: 'format',
+    },
     {id: 'json2csv', icon: 'bi-filetype-csv', name: 'JSON ↔ CSV', desc: 'JSON 数组与 CSV 互转', cat: 'format'},
     {id: 'base64', icon: 'bi-lock', name: 'Base64', desc: 'Base64 编码解码 / 文件支持', cat: 'encode'},
     {id: 'url', icon: 'bi-link-45deg', name: 'URL 编码', desc: 'URL 编解码 / Component 模式', cat: 'encode'},
@@ -72,14 +78,17 @@ const tools = [
         icon: 'bi-file-earmark-binary',
         name: 'Protobuf 解码',
         desc: 'Protobuf ↔ JSON / Base64 / Hex',
-        cat: 'encode'
+        cat: 'encode',
     },
     {id: 'jwt', icon: 'bi-key', name: 'JWT 解码', desc: '解析 JWT Header / Payload', cat: 'security'},
     {id: 'jwtgen', icon: 'bi-pen', name: 'JWT 生成', desc: 'HS256/384/512 + RS256/384/512 签名', cat: 'security'},
     {id: 'hash', icon: 'bi-hash', name: 'Hash 计算', desc: 'MD5 / SHA-1 / SHA-256 / SHA-512', cat: 'security'},
     {
-        id: 'hmac', icon: 'bi-shield-lock', name: 'HMAC 计算',
-        desc: 'HMAC-MD5 / SHA-1 / SHA-256 / SHA-384 / SHA-512', cat: 'security'
+        id: 'hmac',
+        icon: 'bi-shield-lock',
+        name: 'HMAC 计算',
+        desc: 'HMAC-MD5 / SHA-1 / SHA-256 / SHA-384 / SHA-512',
+        cat: 'security',
     },
     {id: 'hashext', icon: 'bi-hash', name: 'Hash 扩展', desc: 'CRC32 / Adler32 / SHA-3 / SM3', cat: 'security'},
     {id: 'random', icon: 'bi-dice-6', name: '随机生成器', desc: '密码 / Token / PIN 生成', cat: 'security'},
@@ -93,33 +102,51 @@ const tools = [
         icon: 'bi-shield-shaded',
         name: 'PBKDF2 哈希',
         desc: 'PBKDF2-HMAC-SHA256/512 密码哈希（标准 PHC 格式）',
-        cat: 'security'
+        cat: 'security',
     },
     {
         id: 'certparser',
         icon: 'bi-patch-check',
         name: 'X.509 证书',
         desc: 'X.509 证书 PEM/DER 解析',
-        cat: 'security'
+        cat: 'security',
     },
     {id: 'uuid', icon: 'bi-fingerprint', name: 'UUID 生成', desc: 'UUID v4 / v7 / 批量生成', cat: 'generate'},
-    {id: 'snowflake', icon: 'bi-snow', name: '雪花 ID', desc: 'Snowflake / Leaf / UID 三合一生成解析', cat: 'generate'},
+    {
+        id: 'snowflake',
+        icon: 'bi-snow',
+        name: '雪花 ID',
+        desc: 'Snowflake / Leaf / UID 三合一生成解析',
+        cat: 'generate',
+    },
     {id: 'ts', icon: 'bi-clock', name: '时间戳转换', desc: 'Unix 毫秒/秒 ↔ 日期', cat: 'generate'},
     {id: 'color', icon: 'bi-palette', name: '颜色转换', desc: 'HEX / RGB / HSL 互转预览', cat: 'generate'},
     {id: 'baseconvert', icon: 'bi-calculator', name: '进制转换', desc: '2~36 进制互转', cat: 'generate'},
     {id: 'case', icon: 'bi-type', name: 'Case 转换', desc: 'camelCase / snake_case 等', cat: 'generate'},
     {id: 'jsontopojo', icon: 'bi-arrow-repeat', name: 'JSON → Java', desc: 'JSON 生成 Java POJO 类', cat: 'codegen'},
-    {id: 'sqltopojo', icon: 'bi-arrow-repeat', name: 'SQL → Java', desc: 'DDL 生成 MyBatis Plus 实体', cat: 'codegen'},
+    {
+        id: 'sqltopojo',
+        icon: 'bi-arrow-repeat',
+        name: 'SQL → Java',
+        desc: 'DDL 生成 MyBatis Plus 实体',
+        cat: 'codegen',
+    },
     {
         id: 'sql2mybatis',
         icon: 'bi-diagram-3',
         name: 'SQL → MyBatis',
         desc: 'DDL 生成 Mapper XML + Interface',
-        cat: 'codegen'
+        cat: 'codegen',
     },
     {id: 'datamock', icon: 'bi-people', name: '数据 Mock', desc: '生成姓名 / 手机号 / 邮箱等', cat: 'generate'},
     {id: 'datecalc', icon: 'bi-calendar', name: '日期计算器', desc: '日期加减 / 间隔 / 工作日', cat: 'generate'},
-    {id: 'email', icon: 'bi-envelope', name: '邮件模板', desc: '邮件 HTML 模板生成 / 预览 / 内联 CSS', cat: 'codegen'},
+    {
+        id: 'email',
+        icon: 'bi-envelope',
+        name: '邮件模板',
+        desc: '邮件 HTML 模板生成 / 预览 / 内联 CSS',
+        cat: 'codegen',
+    },
     {id: 'qrdecode', icon: 'bi-qr-code-scan', name: '二维码解析', desc: '图片 → URL / 文本 / WiFi', cat: 'text'},
     {id: 'diff', icon: 'bi-file-earmark-diff', name: '文本对比', desc: '文本差异对比高亮', cat: 'text'},
     {id: 'regex', icon: 'bi-asterisk', name: '正则表达式', desc: '正则匹配测试 / 分组查看', cat: 'text'},
@@ -145,7 +172,7 @@ const tools = [
         icon: 'bi-cloud-fog2',
         name: 'Spring Cloud',
         desc: 'Spring Cloud Alibaba 组件速查',
-        cat: 'reference'
+        cat: 'reference',
     },
     {id: 'docker', icon: 'bi-box-seam', name: 'Docker 命令', desc: 'Docker / K8s 命令速查', cat: 'reference'},
     {id: 'regexref', icon: 'bi-book', name: '正则速查表', desc: '常用正则表达式分类速查', cat: 'reference'},
@@ -158,7 +185,7 @@ const tools = [
         icon: 'bi-hdd-network',
         name: 'gRPC 调试',
         desc: 'Metadata 构造 / Protobuf 解码 / 状态码',
-        cat: 'debug'
+        cat: 'debug',
     },
     {id: 'urlparser', icon: 'bi-link-45deg', name: 'URL 解析', desc: 'URL 拆解 / 编码解码', cat: 'debug'},
     {id: 'uaparser', icon: 'bi-browser-chrome', name: 'UA 解析', desc: 'User-Agent 解析', cat: 'debug'},
@@ -168,23 +195,29 @@ const tools = [
         icon: 'bi-database-gear',
         name: 'MyBatis Plus',
         desc: 'MyBatis Plus 常用方法速查',
-        cat: 'reference'
+        cat: 'reference',
     },
     {
         id: 'mybatissql',
         icon: 'bi-filetype-xml',
         name: 'MyBatis XML',
         desc: 'MyBatis 动态 SQL 标签速查',
-        cat: 'reference'
+        cat: 'reference',
     },
     {id: 'lombok', icon: 'bi-magic', name: 'Lombok 注解', desc: 'Lombok 常用注解速查', cat: 'reference'},
-    {id: 'springboot', icon: 'bi-stars', name: 'Spring Boot 注解', desc: 'Spring Boot 常用注解速查', cat: 'reference'},
+    {
+        id: 'springboot',
+        icon: 'bi-stars',
+        name: 'Spring Boot 注解',
+        desc: 'Spring Boot 常用注解速查',
+        cat: 'reference',
+    },
     {
         id: 'txpropagation',
         icon: 'bi-diagram-3',
         name: '事务传播',
         desc: 'Spring 事务传播行为速查',
-        cat: 'reference'
+        cat: 'reference',
     },
     {id: 'mavenref', icon: 'bi-box', name: 'Maven 命令', desc: 'Maven 常用命令速查', cat: 'reference'},
     {id: 'jdkfeatures', icon: 'bi-cup-hot', name: 'JDK 新特性', desc: 'JDK 8/11/17/21 新特性速查', cat: 'reference'},
@@ -193,10 +226,22 @@ const tools = [
         icon: 'bi-list-columns-reverse',
         name: 'HTTP Header',
         desc: 'HTTP 通用 / 请求 / 响应头速查',
-        cat: 'reference'
+        cat: 'reference',
     },
-    {id: 'mqref', icon: 'bi-broadcast', name: '消息中间件', desc: 'Kafka / RabbitMQ / RocketMQ 速查', cat: 'reference'},
-    {id: 'mimetype', icon: 'bi-file-earmark', name: 'MIME 类型', desc: '文件扩展名 / MIME 类型对照', cat: 'reference'},
+    {
+        id: 'mqref',
+        icon: 'bi-broadcast',
+        name: '消息中间件',
+        desc: 'Kafka / RabbitMQ / RocketMQ 速查',
+        cat: 'reference',
+    },
+    {
+        id: 'mimetype',
+        icon: 'bi-file-earmark',
+        name: 'MIME 类型',
+        desc: '文件扩展名 / MIME 类型对照',
+        cat: 'reference',
+    },
     {id: 'portref', icon: 'bi-plug', name: '端口号速查', desc: '常用网络服务端口号对照', cat: 'reference'},
     {id: 'gradle', icon: 'bi-box-seam', name: 'Gradle 命令', desc: 'Gradle 常用命令速查', cat: 'reference'},
     {id: 'ideakeys', icon: 'bi-keyboard', name: 'IDEA 快捷键', desc: 'IntelliJ IDEA 快捷键速查', cat: 'reference'},
@@ -207,7 +252,7 @@ const tools = [
         icon: 'bi-shield-lock',
         name: 'Spring Security',
         desc: 'Spring Security 注解与配置速查',
-        cat: 'reference'
+        cat: 'reference',
     },
     {id: 'junit5', icon: 'bi-check2-square', name: 'JUnit 5', desc: 'JUnit 5 注解与断言速查', cat: 'reference'},
     {id: 'logfmt', icon: 'bi-file-text', name: '日志高亮', desc: '日志格式化 + 级别着色 + 堆栈折叠', cat: 'debug'},
@@ -218,7 +263,7 @@ const tools = [
         icon: 'bi-aspect-ratio',
         name: '分辨率计算',
         desc: '最简比例 / 总像素 / 标准比例匹配 / 反算',
-        cat: 'generate'
+        cat: 'generate',
     },
 ];
 
@@ -232,7 +277,10 @@ function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     const icon = document.getElementById('themeIcon');
     if (icon) icon.className = theme === 'light' ? 'bi bi-sun-fill' : 'bi bi-moon-stars-fill';
-    try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+    try {
+        localStorage.setItem(THEME_KEY, theme);
+    } catch (e) {
+    }
 }
 
 function toggleTheme() {
@@ -242,7 +290,10 @@ function toggleTheme() {
 
 (function initTheme() {
     let saved = 'dark';
-    try { saved = localStorage.getItem(THEME_KEY) || 'dark'; } catch (e) {}
+    try {
+        saved = localStorage.getItem(THEME_KEY) || 'dark';
+    } catch (e) {
+    }
     applyTheme(saved);
 })();
 
@@ -261,7 +312,9 @@ function getUsageStats() {
     try {
         const raw = localStorage.getItem(STATS_KEY);
         return raw ? JSON.parse(raw) : {};
-    } catch (e) { return {}; }
+    } catch (e) {
+        return {};
+    }
 }
 
 // 懒加载状态:工具的 JS 与 HTML 面板仅在首次打开时加载
@@ -270,11 +323,68 @@ const loadedPanels = new Set(['home']);
 const _scriptPromise = {};
 const _panelPromise = {};
 
+// 第三方库按需懒加载:各工具仅在首次打开时加载依赖库,避免首屏 19 个库(~1.6MB)全量阻塞。
+const loadedLibs = new Set();
+const _libPromise = {};
+
+function loadLib(name) {
+    if (loadedLibs.has(name)) return Promise.resolve();
+    if (_libPromise[name]) return _libPromise[name];
+    _libPromise[name] = new Promise((resolve, reject) => {
+        const el = document.createElement('script');
+        el.src = `lib/${name}${assetV('lib/' + name)}`;
+        el.onload = () => {
+            loadedLibs.add(name);
+            resolve();
+        };
+        el.onerror = () => {
+            delete _libPromise[name];
+            reject(new Error('加载库失败: ' + name));
+        };
+        document.head.appendChild(el);
+    });
+    return _libPromise[name];
+}
+
+// 工具→依赖库映射,openTool 在加载工具脚本前按此表先加载所需库
+const toolLibs = {
+    yaml: ['js-yaml.min.js'],
+    jsonconvert: ['js-yaml.min.js', 'fxp.min.js'],
+    propertiesfmt: ['js-yaml.min.js'],
+    sql: ['sql-formatter.min.js'],
+    sqldialect: ['sql-formatter.min.js'],
+    jsonpath: ['jsonpath.min.js'],
+    jsonschema: ['ajv.min.js'],
+    diff: ['diff.min.js'],
+    markdown: ['marked.min.js'],
+    webfmt: ['js-beautify.min.js'],
+    qrcode: ['qrcode.min.js'],
+    qrdecode: ['jsqr.min.js'],
+    hash: ['md5.min.js'],
+    bcrypt: ['bcrypt.min.js'],
+    gmsm: ['sm2.min.js', 'sm3.min.js', 'sm4.min.js'],
+    hashext: ['sm3.min.js'],
+    certparser: ['asn1js.min.js', 'pkijs.min.js'],
+    uaparser: ['ua-parser.min.js'],
+    sql2mybatis: ['jszip.min.js'],
+};
+
+// 公共 HTML 转义工具:统一所有工具的转义逻辑(原 15 处重复定义已收敛至此)。
+function escapeHtml(s) {
+    if (s === undefined || s === null) return '';
+    return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 // 生产构建内联的 window.__ASSET_MAP__ 提供逐文件内容哈希,用于动态资源强缓存;
 // dev 模式无该映射,返回空串(浏览器每次取最新)。
 function assetV(p) {
     const m = window.__ASSET_MAP__;
-    return (m && m[p]) ? '?v=' + m[p] : '';
+    return m && m[p] ? '?v=' + m[p] : '';
 }
 
 function debounce(fn, ms) {
@@ -310,6 +420,7 @@ let homeDividers = [];
 // 工具初始化注册表:各工具 JS 末尾调用 registerInit(id, fn) 自行登记,
 // openTool 打开工具后调用 toolInits[id]() 完成初始化(替代旧 renderMap + 启动 init 列表)。
 const toolInits = {};
+const initedTools = new Set();
 
 function registerInit(id, fn) {
     toolInits[id] = fn;
@@ -318,7 +429,7 @@ function registerInit(id, fn) {
 function loadToolScript(id) {
     if (loadedScripts.has(id)) return Promise.resolve();
     if (_scriptPromise[id]) return _scriptPromise[id];
-    const tool = tools.find(t => t.id === id);
+    const tool = tools.find((t) => t.id === id);
     if (!tool) return Promise.reject(new Error('未知工具: ' + id));
     const src = `js/${tool.cat}/${tool.id}.js${assetV('js/' + tool.cat + '/' + tool.id + '.js')}`;
     _scriptPromise[id] = new Promise((resolve, reject) => {
@@ -340,13 +451,13 @@ function loadToolScript(id) {
 function loadToolPanel(id) {
     if (loadedPanels.has(id)) return Promise.resolve();
     if (_panelPromise[id]) return _panelPromise[id];
-    const tool = tools.find(t => t.id === id);
+    const tool = tools.find((t) => t.id === id);
     if (!tool) return Promise.reject(new Error('未知工具: ' + id));
     const url = `html/panels/${tool.cat}/${tool.id}.html${assetV('html/panels/' + tool.cat + '/' + tool.id + '.html')}`;
     _panelPromise[id] = fetch(url)
-        .then(r => r.ok ? r.text() : '')
+        .then((r) => (r.ok ? r.text() : ''))
         .catch(() => '')
-        .then(html => {
+        .then((html) => {
             const container = document.getElementById('panels-container');
             container.insertAdjacentHTML('beforeend', html);
             loadedPanels.add(id);
@@ -359,15 +470,15 @@ function buildHomeGrid() {
     grid.innerHTML = '';
     const anchors = document.getElementById('homeCatAnchors');
     anchors.innerHTML = '';
-    categories.forEach(cat => {
-        const toolsInCat = tools.filter(t => t.cat === cat.id);
+    categories.forEach((cat) => {
+        const toolsInCat = tools.filter((t) => t.cat === cat.id);
         if (!toolsInCat.length) return;
         const divider = document.createElement('div');
         divider.className = 'home-cat-divider cat-' + cat.id;
         divider.id = 'cat-' + cat.id;
         divider.innerHTML = `<span class="hcd-icon"><i class="bi ${cat.icon}"></i></span><span>${cat.name}</span>`;
         grid.appendChild(divider);
-        toolsInCat.forEach(t => {
+        toolsInCat.forEach((t) => {
             const card = document.createElement('div');
             card.className = 'home-card cat-' + t.cat;
             card.dataset.cat = t.cat;
@@ -414,12 +525,15 @@ function highlightAnchor() {
 }
 
 async function openTool(id) {
-    const tool = tools.find(t => t.id === id);
+    const tool = tools.find((t) => t.id === id);
     if (!tool) return;
     clearHomeSearch();
     showLoading();
     setStatus('加载中...');
     try {
+        // 先按需加载依赖库(若有),再加载工具脚本与面板
+        const libs = toolLibs[id];
+        if (libs) await Promise.all(libs.map((l) => loadLib(l)));
         await Promise.all([loadToolPanel(id), loadToolScript(id)]);
     } catch (e) {
         toast('工具加载失败');
@@ -428,29 +542,43 @@ async function openTool(id) {
         hideLoading();
         return;
     }
-    document.querySelectorAll('.tool-panel.active').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tool-panel.active').forEach((p) => p.classList.remove('active'));
     document.getElementById('panel-' + id).classList.add('active');
     const homeTitle = document.getElementById('headerHomeTitle');
     if (homeTitle) homeTitle.style.display = 'none';
     const gh = document.getElementById('headerGithub');
     if (gh) gh.style.display = 'none';
     homeBtn.style.display = 'flex';
-    const cat = categories.find(c => c.id === tool.cat);
+    const cat = categories.find((c) => c.id === tool.cat);
     document.querySelector('.main-header').classList.add('tool-mode');
-    breadcrumb.innerHTML = '<span class="bc-item" onclick="goHome()">首页</span><span class="bc-sep">›</span><span class="bc-item" onclick="goHome(\'' + (cat ? cat.id : '') + '\')">' + (cat ? cat.name : '') + '</span><span class="bc-sep">›</span><span class="bc-current">' + tool.name + '</span>';
+    breadcrumb.innerHTML =
+        '<span class="bc-item" onclick="goHome()">首页</span><span class="bc-sep">›</span><span class="bc-item" onclick="goHome(\'' +
+        (cat ? cat.id : '') +
+        '\')">' +
+        (cat ? cat.name : '') +
+        '</span><span class="bc-sep">›</span><span class="bc-current">' +
+        tool.name +
+        '</span>';
     setStatus('就绪');
-    if (toolInits[id]) toolInits[id]();
+    // 工具初始化仅执行一次,避免重复绑定事件/重建 UI
+    if (toolInits[id] && !initedTools.has(id)) {
+        toolInits[id]();
+        initedTools.add(id);
+    }
     highlightSidebarTool(id);
     hideLoading();
-    // 工具面板滚动 → 返回顶部按钮
+    // 工具面板滚动 → 返回顶部按钮(仅绑定一次,避免监听器累积)
     const tp = document.getElementById('panel-' + id);
     const btt = document.getElementById('backToTop');
-    tp.addEventListener('scroll', () => btt.classList.toggle('visible', tp.scrollTop > 300));
+    if (!tp.dataset.scrollBound) {
+        tp.dataset.scrollBound = '1';
+        tp.addEventListener('scroll', () => btt.classList.toggle('visible', tp.scrollTop > 300));
+    }
     btt.onclick = () => tp.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function goHome(catId) {
-    document.querySelectorAll('.tool-panel.active').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tool-panel.active').forEach((p) => p.classList.remove('active'));
     document.getElementById('panel-home').classList.add('active');
     const homeTitle = document.getElementById('headerHomeTitle');
     if (homeTitle) homeTitle.style.display = '';
@@ -478,7 +606,7 @@ function filterHomeTools() {
     // 如果当前不在首页，自动切回首页再搜索
     const homePanel = document.getElementById('panel-home');
     if (!homePanel.classList.contains('active')) {
-        document.querySelectorAll('.tool-panel.active').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tool-panel.active').forEach((p) => p.classList.remove('active'));
         homePanel.classList.add('active');
         const homeTitle = document.getElementById('headerHomeTitle');
         if (homeTitle) homeTitle.style.display = '';
@@ -494,7 +622,7 @@ function filterHomeTools() {
 
     const matchedCats = new Set();
     let hasVisible = false;
-    homeCards.forEach(card => {
+    homeCards.forEach((card) => {
         const name = card.querySelector('.hc-name').textContent.toLowerCase();
         const desc = card.querySelector('.hc-desc').textContent.toLowerCase();
         const match = !q || name.includes(q) || desc.includes(q);
@@ -504,9 +632,9 @@ function filterHomeTools() {
             matchedCats.add(card.dataset.cat);
         }
     });
-    homeDividers.forEach(d => {
+    homeDividers.forEach((d) => {
         const catId = d.id.replace('cat-', '');
-        d.style.display = (!q || matchedCats.has(catId)) ? '' : 'none';
+        d.style.display = !q || matchedCats.has(catId) ? '' : 'none';
     });
     const empty = document.querySelector('.home-search-empty');
     if (empty) empty.remove();
@@ -548,8 +676,8 @@ function buildSidebar() {
     const nav = document.getElementById('sidebarNav');
     if (!nav) return;
     nav.innerHTML = '';
-    categories.forEach(cat => {
-        const toolsInCat = tools.filter(t => t.cat === cat.id);
+    categories.forEach((cat) => {
+        const toolsInCat = tools.filter((t) => t.cat === cat.id);
         if (!toolsInCat.length) return;
         const wrap = document.createElement('div');
         wrap.className = 'sb-cat cat-' + cat.id;
@@ -561,13 +689,13 @@ function buildSidebar() {
                 <i class="bi bi-chevron-right sb-cat-arrow"></i>
             </div>
             <div class="sb-tools">
-                ${toolsInCat.map(t => `<div class="sb-tool" data-tool="${t.id}" title="${t.name}"><i class="bi ${t.icon}"></i><span class="sb-tool-name">${t.name}</span></div>`).join('')}
+                ${toolsInCat.map((t) => `<div class="sb-tool" data-tool="${t.id}" title="${t.name}"><i class="bi ${t.icon}"></i><span class="sb-tool-name">${t.name}</span></div>`).join('')}
             </div>
         `;
         nav.appendChild(wrap);
     });
 
-    nav.addEventListener('click', e => {
+    nav.addEventListener('click', (e) => {
         const catHeader = e.target.closest('.sb-cat-header');
         if (catHeader) {
             const catEl = catHeader.parentElement;
@@ -576,7 +704,7 @@ function buildSidebar() {
                 sidebar.classList.remove('collapsed');
                 sidebarCollapsed = false;
                 saveSidebarState();
-                document.querySelectorAll('.sb-cat.expanded').forEach(el => el.classList.remove('expanded'));
+                document.querySelectorAll('.sb-cat.expanded').forEach((el) => el.classList.remove('expanded'));
                 catEl.classList.add('expanded');
             } else {
                 catEl.classList.toggle('expanded');
@@ -601,8 +729,8 @@ function buildSidebar() {
 }
 
 function highlightSidebarTool(id) {
-    document.querySelectorAll('.sb-tool.current').forEach(el => el.classList.remove('current'));
-    document.querySelectorAll('.sb-cat.expanded').forEach(el => el.classList.remove('expanded'));
+    document.querySelectorAll('.sb-tool.current').forEach((el) => el.classList.remove('current'));
+    document.querySelectorAll('.sb-cat.expanded').forEach((el) => el.classList.remove('expanded'));
     const toolEl = document.querySelector('.sb-tool[data-tool="' + id + '"]');
     if (!toolEl) return;
     toolEl.classList.add('current');
@@ -611,8 +739,8 @@ function highlightSidebarTool(id) {
 }
 
 function clearSidebarHighlight() {
-    document.querySelectorAll('.sb-tool.current').forEach(el => el.classList.remove('current'));
-    document.querySelectorAll('.sb-cat.expanded').forEach(el => el.classList.remove('expanded'));
+    document.querySelectorAll('.sb-tool.current').forEach((el) => el.classList.remove('current'));
+    document.querySelectorAll('.sb-cat.expanded').forEach((el) => el.classList.remove('expanded'));
 }
 
 // 首页静态就绪:立即显示容器并构建首页网格(工具面板/脚本按需懒加载)
@@ -677,7 +805,10 @@ function safeCopy(text, msg) {
         ta.remove();
     };
     if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(() => toast(msg)).catch(doFallback);
+        navigator.clipboard
+            .writeText(text)
+            .then(() => toast(msg))
+            .catch(doFallback);
     } else {
         doFallback();
     }

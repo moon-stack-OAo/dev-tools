@@ -95,15 +95,15 @@ const OID_EKU = {
 
 // RFC 5280 §4.2.1.3 Key Usage bit positions
 const KEY_USAGE_BITS = [
-    'digitalSignature',     // 0
-    'nonRepudiation',       // 1
-    'keyEncipherment',      // 2
-    'dataEncipherment',     // 3
-    'keyAgreement',         // 4
-    'keyCertSign',          // 5
-    'cRLSign',              // 6
-    'encipherOnly',         // 7
-    'decipherOnly',         // 8
+    'digitalSignature', // 0
+    'nonRepudiation', // 1
+    'keyEncipherment', // 2
+    'dataEncipherment', // 3
+    'keyAgreement', // 4
+    'keyCertSign', // 5
+    'cRLSign', // 6
+    'encipherOnly', // 7
+    'decipherOnly', // 8
 ];
 
 // ============================================================
@@ -117,7 +117,10 @@ function _cpBytesToHex(bytes) {
 }
 
 function _cpHexToBytes(hex) {
-    const clean = hex.replace(/0x/gi, '').replace(/[\s,:;\n\r-]/g, '').toLowerCase();
+    const clean = hex
+        .replace(/0x/gi, '')
+        .replace(/[\s,:;\n\r-]/g, '')
+        .toLowerCase();
     if (!/^[0-9a-f]*$/.test(clean) || clean.length % 2 !== 0) {
         throw new Error('HEX 格式无效（必须是偶数位的 0-9 a-f）');
     }
@@ -151,7 +154,7 @@ function parseCertInput(text) {
         if (!matches || matches.length === 0) {
             throw new Error('未找到有效的 CERTIFICATE PEM 块');
         }
-        const blocks = matches.map(pem => {
+        const blocks = matches.map((pem) => {
             const b64 = pem.replace(/-----[^-]+-----/g, '').replace(/\s/g, '');
             const der = _cpBase64ToBytes(b64);
             return { pem: pem.trim(), der: der };
@@ -167,7 +170,9 @@ function parseCertInput(text) {
     if (der[0] !== 0x30) {
         throw new Error('DER 头字节错误（应为 0x30 SEQUENCE）');
     }
-    const b64 = _cpBytesToBase64(der).match(/.{1,64}/g).join('\n');
+    const b64 = _cpBytesToBase64(der)
+        .match(/.{1,64}/g)
+        .join('\n');
     const pem = '-----BEGIN CERTIFICATE-----\n' + b64 + '\n-----END CERTIFICATE-----';
     return { format: 'der', blocks: [{ pem: pem, der: der }] };
 }
@@ -206,7 +211,9 @@ function _cpInitPkijs() {
     if (typeof pki.setEngine === 'function' && typeof crypto !== 'undefined' && crypto.subtle) {
         try {
             pki.setEngine('webcrypto', { name: 'webcrypto', crypto: crypto, subtle: crypto.subtle });
-        } catch (e) { /* 引擎可能已设置 */ }
+        } catch (e) {
+            /* 引擎可能已设置 */
+        }
     }
 }
 
@@ -223,7 +230,9 @@ function _cpParseOneCertificate(der) {
     if (asn1.result && !asn1.result.verified) {
         try {
             Object.defineProperty(asn1.result, 'verified', { value: true, writable: true, configurable: true });
-        } catch (e) { /* readonly */ }
+        } catch (e) {
+            /* readonly */
+        }
     }
     const CertCtor = PKI.Certificate;
     return new CertCtor({ schema: asn1.result });
@@ -234,8 +243,7 @@ function _cpFormatRdn(rdn, sep) {
     if (!rdn || !rdn.typesAndValues) return '';
     const parts = [];
     // 按 OID 顺序：CN / E / O / OU / L / ST / C / 其余
-    const order = ['2.5.4.3', '1.2.840.113549.1.9.1', '2.5.4.10', '2.5.4.11',
-        '2.5.4.7', '2.5.4.8', '2.5.4.6'];
+    const order = ['2.5.4.3', '1.2.840.113549.1.9.1', '2.5.4.10', '2.5.4.11', '2.5.4.7', '2.5.4.8', '2.5.4.6'];
     const map = {};
     for (const tv of rdn.typesAndValues) {
         const oid = tv.type;
@@ -244,7 +252,7 @@ function _cpFormatRdn(rdn, sep) {
         if (tv.value && tv.value.valueBlock) {
             val = tv.value.valueBlock.value;
         }
-        if (Array.isArray(val)) val = val.map(v => String.fromCharCode(v)).join('');
+        if (Array.isArray(val)) val = val.map((v) => String.fromCharCode(v)).join('');
         map[key] = String(val);
     }
     for (const oid of order) {
@@ -286,7 +294,10 @@ function _cpFormatTime(t) {
     if (!t || !t.value) return '';
     // pkijs 内部已解析为 Date 对象，按 ISO 输出
     const d = t.value;
-    return d.toISOString().replace('T', ' ').replace(/\.\d+Z$/, ' UTC');
+    return d
+        .toISOString()
+        .replace('T', ' ')
+        .replace(/\.\d+Z$/, ' UTC');
 }
 
 function _cpAlgorithmName(algObj) {
@@ -307,7 +318,7 @@ function _cpPublicKeyInfo(cert) {
             const curveOid = params.valueBlock.toString();
             curve = OID_CURVE[curveOid] || curveOid;
             // 估位数
-            const ecBits = { 'P-256': 256, 'P-384': 384, 'P-521': 521, 'P-224': 224, 'P-192': 192, 'secp256k1': 256 };
+            const ecBits = {'P-256': 256, 'P-384': 384, 'P-521': 521, 'P-224': 224, 'P-192': 192, secp256k1: 256};
             bits = ecBits[curve] || 0;
         }
     } else if (algoName === 'RSA') {
@@ -319,30 +330,34 @@ function _cpPublicKeyInfo(cert) {
                 const readLen = (start) => {
                     const first = v[start];
                     if ((first & 0x80) === 0) return { len: first, headLen: 1 };
-                    const n = first & 0x7F;
+                    const n = first & 0x7f;
                     let val = 0;
                     for (let i = 0; i < n; i++) val = (val << 8) | v[start + 1 + i];
                     return { len: val, headLen: 1 + n };
                 };
                 let p = 0;
                 if (v[p++] !== 0x03) throw new Error('no BIT STRING tag');
-                p += readLen(p).headLen + 1;  // 跳过 BIT STRING 长度 + unusedBits
+                p += readLen(p).headLen + 1; // 跳过 BIT STRING 长度 + unusedBits
                 if (v[p++] !== 0x30) throw new Error('no SEQUENCE tag');
                 p += readLen(p).headLen;
                 if (v[p++] !== 0x02) throw new Error('no INTEGER tag');
                 const intInfo = readLen(p);
                 p += intInfo.headLen;
                 let modulusBytes = intInfo.len;
-                if (v[p] === 0x00) { modulusBytes -= 1; }
+                if (v[p] === 0x00) {
+                    modulusBytes -= 1;
+                }
                 bits = modulusBytes * 8;
-            } catch (e) { /* fallback 留 0 */ }
+            } catch (e) {
+                /* fallback 留 0 */
+            }
         }
     }
     return { algo: algoName, curve: curve, bits: bits };
 }
 
 function _cpExtractSAN(extensions) {
-    const ext = extensions.find(e => e.extnID === '2.5.29.17');
+    const ext = extensions.find((e) => e.extnID === '2.5.29.17');
     if (!ext || !ext.parsedValue) return { dns: [], ip: [], uri: [], email: [] };
     // pkijs v3 SAN parsedValue 是 AltName
     const list = ext.parsedValue.altNames || ext.parsedValue.names || [];
@@ -351,9 +366,15 @@ function _cpExtractSAN(extensions) {
         // type 数字来自 RFC 5280 GeneralName
         // 1=rfc822Name(email)  2=dNSName  6=URI  7=iPAddress
         switch (n.type) {
-            case 1: out.email.push(n.value); break;
-            case 2: out.dns.push(n.value); break;
-            case 6: out.uri.push(n.value); break;
+            case 1:
+                out.email.push(n.value);
+                break;
+            case 2:
+                out.dns.push(n.value);
+                break;
+            case 6:
+                out.uri.push(n.value);
+                break;
             case 7: {
                 // iPAddress 在 v3 里可能是字符串 '127.0.0.1' 或字节数组 [127,0,0,1]
                 if (Array.isArray(n.value) || n.value instanceof Uint8Array) {
@@ -374,7 +395,8 @@ function _cpExtractSAN(extensions) {
                 }
                 break;
             }
-            default: break;
+            default:
+                break;
         }
     }
     return out;
@@ -401,14 +423,14 @@ function _cpExtractKeyUsage(ext) {
 function _cpExtractExtKeyUsage(ext) {
     if (!ext || !ext.parsedValue) return [];
     const kp = ext.parsedValue.keyPurposes || [];
-    return kp.map(oid => OID_EKU[oid] || oid);
+    return kp.map((oid) => OID_EKU[oid] || oid);
 }
 
 function _cpExtractCRL(extensions) {
-    const ext = extensions.find(e => e.extnID === '2.5.29.31');
+    const ext = extensions.find((e) => e.extnID === '2.5.29.31');
     if (!ext || !ext.parsedValue) return [];
     const out = [];
-    for (const dp of (ext.parsedValue.distributionPoints || [])) {
+    for (const dp of ext.parsedValue.distributionPoints || []) {
         // dp.distributionPoint 在 v3 中有两种形态：
         // 1) { fullName: [{type,value}, ...] }  对象形式
         // 2) [{type,value}, ...]  直接是 GeneralNames 数组
@@ -429,7 +451,7 @@ function _cpExtractCRL(extensions) {
 }
 
 function _cpExtractBasicConstraints(extensions) {
-    const ext = extensions.find(e => e.extnID === '2.5.29.19');
+    const ext = extensions.find((e) => e.extnID === '2.5.29.19');
     if (!ext || !ext.parsedValue) return null;
     return {
         ca: !!ext.parsedValue.cA,
@@ -438,7 +460,7 @@ function _cpExtractBasicConstraints(extensions) {
 }
 
 function _cpExtractSANID(extensions) {
-    const ext = extensions.find(e => e.extnID === '2.5.29.14');
+    const ext = extensions.find((e) => e.extnID === '2.5.29.14');
     if (!ext || !ext.parsedValue) return '';
     const v = ext.parsedValue.valueBlock && ext.parsedValue.valueBlock.valueHexView;
     if (!v) return '';
@@ -446,14 +468,15 @@ function _cpExtractSANID(extensions) {
 }
 
 function _cpExtractAIA(extensions) {
-    const ext = extensions.find(e => e.extnID === '1.3.6.1.5.5.7.1.1');
+    const ext = extensions.find((e) => e.extnID === '1.3.6.1.5.5.7.1.1');
     if (!ext || !ext.parsedValue) return { ocsp: [], caIssuers: [] };
     const out = { ocsp: [], caIssuers: [] };
-    for (const ad of (ext.parsedValue.accessDescriptions || [])) {
+    for (const ad of ext.parsedValue.accessDescriptions || []) {
         const oid = ad.accessMethod;
         const url = ad.accessLocation && ad.accessLocation.value;
-        if (oid === '1.3.6.1.5.5.7.48.1') out.ocsp.push(url);  // OCSP
-        else if (oid === '1.3.6.1.5.5.7.48.2') out.caIssuers.push(url);  // CA Issuers
+        if (oid === '1.3.6.1.5.5.7.48.1')
+            out.ocsp.push(url); // OCSP
+        else if (oid === '1.3.6.1.5.5.7.48.2') out.caIssuers.push(url); // CA Issuers
     }
     return out;
 }
@@ -468,7 +491,9 @@ async function sha256Fingerprint(der) {
     const bytes = der instanceof Uint8Array ? der : new Uint8Array(der);
     const hashBuf = await crypto.subtle.digest('SHA-256', bytes);
     const arr = new Uint8Array(hashBuf);
-    return Array.from(arr).map(b => b.toString(16).padStart(2, '0').toUpperCase()).join(':');
+    return Array.from(arr)
+        .map((b) => b.toString(16).padStart(2, '0').toUpperCase())
+        .join(':');
 }
 
 // 同步版：仅供 Node 测试（用 node:crypto）
@@ -477,7 +502,9 @@ function sha256FingerprintSync(der) {
     const nodeCrypto = require('crypto');
     const buf = Buffer.from(der);
     const hash = nodeCrypto.createHash('sha256').update(buf).digest();
-    return Array.from(hash).map(b => b.toString(16).padStart(2, '0').toUpperCase()).join(':');
+    return Array.from(hash)
+        .map((b) => b.toString(16).padStart(2, '0').toUpperCase())
+        .join(':');
 }
 
 // ============================================================
@@ -489,7 +516,7 @@ function expiryStatus(notAfter) {
     const now = new Date();
     const diffMs = d.getTime() - now.getTime();
     const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    if (diffMs < 0) return { status: 'expired', label: '已过期 ' + (-days) + ' 天', color: 'red', days: days };
+    if (diffMs < 0) return {status: 'expired', label: '已过期 ' + -days + ' 天', color: 'red', days: days};
     if (days < 30) return { status: 'expiring', label: '剩余 ' + days + ' 天', color: 'yellow', days: days };
     return { status: 'valid', label: '剩余 ' + days + ' 天', color: 'green', days: days };
 }
@@ -509,13 +536,13 @@ function parseAllCertificates(text) {
             out.push({ index: i + 1, error: e.message, der: blk.der, pem: blk.pem });
             continue;
         }
-        const extensions = (cert.extensions || []);
+        const extensions = cert.extensions || [];
         out.push({
             index: i + 1,
             pem: blk.pem,
             der: blk.der,
             derSize: blk.der.length,
-            version: (cert.version != null ? cert.version + 1 : 1),
+            version: cert.version != null ? cert.version + 1 : 1,
             serial: _cpFormatSerial(cert),
             subjectStr: _cpFormatRdn(cert.subject),
             issuerStr: _cpFormatRdn(cert.issuer),
@@ -530,8 +557,8 @@ function parseAllCertificates(text) {
             signatureAlgOid: cert.signatureAlgorithm.algorithmId,
             publicKey: _cpPublicKeyInfo(cert),
             san: _cpExtractSAN(extensions),
-            keyUsage: _cpExtractKeyUsage(extensions.find(e => e.extnID === '2.5.29.15')),
-            extKeyUsage: _cpExtractExtKeyUsage(extensions.find(e => e.extnID === '2.5.29.37')),
+            keyUsage: _cpExtractKeyUsage(extensions.find((e) => e.extnID === '2.5.29.15')),
+            extKeyUsage: _cpExtractExtKeyUsage(extensions.find((e) => e.extnID === '2.5.29.37')),
             crl: _cpExtractCRL(extensions),
             aia: _cpExtractAIA(extensions),
             basicConstraints: _cpExtractBasicConstraints(extensions),
@@ -545,14 +572,22 @@ function parseAllCertificates(text) {
 // ============================================================
 // === 7. UI 渲染
 // ============================================================
-let _cpResults = [];  // 上一次解析结果
+let _cpResults = []; // 上一次解析结果
 
 function _cpRenderOneCert(c) {
     if (c.error) {
-        return '<div class="certparser-card certparser-error">' +
-            '<div class="certparser-card-title">证书 ' + c.index + ' / ' + _cpResults.length + ' ✗ 解析失败</div>' +
-            '<div class="certparser-field"><span class="certparser-label">错误</span><span class="certparser-value">' + _cpEscape(c.error) + '</span></div>' +
-            '</div>';
+        return (
+            '<div class="certparser-card certparser-error">' +
+            '<div class="certparser-card-title">证书 ' +
+            c.index +
+            ' / ' +
+            _cpResults.length +
+            ' ✗ 解析失败</div>' +
+            '<div class="certparser-field"><span class="certparser-label">错误</span><span class="certparser-value">' +
+            _cpEscape(c.error) +
+            '</span></div>' +
+            '</div>'
+        );
     }
     const expiry = c.expiry;
     const expiryClass = 'certparser-expiry certparser-expiry-' + expiry.color;
@@ -562,78 +597,165 @@ function _cpRenderOneCert(c) {
     let sanHtml = '';
     if (c.san.dns.length || c.san.ip.length || c.san.uri.length || c.san.email.length) {
         const rows = [];
-        if (c.san.dns.length) rows.push('<div class="certparser-san-row"><b>DNS:</b> ' + c.san.dns.map(_cpEscape).join(', ') + '</div>');
-        if (c.san.ip.length) rows.push('<div class="certparser-san-row"><b>IP:</b> ' + c.san.ip.map(_cpEscape).join(', ') + '</div>');
-        if (c.san.uri.length) rows.push('<div class="certparser-san-row"><b>URI:</b> ' + c.san.uri.map(_cpEscape).join(', ') + '</div>');
-        if (c.san.email.length) rows.push('<div class="certparser-san-row"><b>Email:</b> ' + c.san.email.map(_cpEscape).join(', ') + '</div>');
-        sanHtml = '<div class="certparser-field"><span class="certparser-label">SAN</span><div class="certparser-value">' + rows.join('') + '</div></div>';
+        if (c.san.dns.length)
+            rows.push('<div class="certparser-san-row"><b>DNS:</b> ' + c.san.dns.map(_cpEscape).join(', ') + '</div>');
+        if (c.san.ip.length)
+            rows.push('<div class="certparser-san-row"><b>IP:</b> ' + c.san.ip.map(_cpEscape).join(', ') + '</div>');
+        if (c.san.uri.length)
+            rows.push('<div class="certparser-san-row"><b>URI:</b> ' + c.san.uri.map(_cpEscape).join(', ') + '</div>');
+        if (c.san.email.length)
+            rows.push(
+                '<div class="certparser-san-row"><b>Email:</b> ' + c.san.email.map(_cpEscape).join(', ') + '</div>'
+            );
+        sanHtml =
+            '<div class="certparser-field"><span class="certparser-label">SAN</span><div class="certparser-value">' +
+            rows.join('') +
+            '</div></div>';
     }
 
     let kuHtml = '';
     if (c.keyUsage.length) {
-        kuHtml = '<div class="certparser-field"><span class="certparser-label">Key Usage</span>' +
-            '<span class="certparser-value">' + c.keyUsage.map(_cpEscape).join(', ') + '</span></div>';
+        kuHtml =
+            '<div class="certparser-field"><span class="certparser-label">Key Usage</span>' +
+            '<span class="certparser-value">' +
+            c.keyUsage.map(_cpEscape).join(', ') +
+            '</span></div>';
     }
     let ekuHtml = '';
     if (c.extKeyUsage.length) {
-        ekuHtml = '<div class="certparser-field"><span class="certparser-label">Ext Key Usage</span>' +
-            '<span class="certparser-value">' + c.extKeyUsage.map(_cpEscape).join(', ') + '</span></div>';
+        ekuHtml =
+            '<div class="certparser-field"><span class="certparser-label">Ext Key Usage</span>' +
+            '<span class="certparser-value">' +
+            c.extKeyUsage.map(_cpEscape).join(', ') +
+            '</span></div>';
     }
     let crlHtml = '';
     if (c.crl.length) {
-        crlHtml = '<div class="certparser-field"><span class="certparser-label">CRL</span>' +
-            '<span class="certparser-value"><a class="certparser-link" href="' + _cpEscape(c.crl[0]) + '" target="_blank" rel="noopener noreferrer">' + _cpEscape(c.crl[0]) + '</a>' +
+        crlHtml =
+            '<div class="certparser-field"><span class="certparser-label">CRL</span>' +
+            '<span class="certparser-value"><a class="certparser-link" href="' +
+            _cpEscape(c.crl[0]) +
+            '" target="_blank" rel="noopener noreferrer">' +
+            _cpEscape(c.crl[0]) +
+            '</a>' +
             (c.crl.length > 1 ? ' <span class="certparser-dim">(+' + (c.crl.length - 1) + ')</span>' : '') +
             '</span></div>';
     }
     let aiaHtml = '';
     if (c.aia.ocsp.length || c.aia.caIssuers.length) {
         const parts = [];
-        if (c.aia.ocsp.length) parts.push('<div><b>OCSP:</b> <a class="certparser-link" href="' + _cpEscape(c.aia.ocsp[0]) + '" target="_blank" rel="noopener noreferrer">' + _cpEscape(c.aia.ocsp[0]) + '</a></div>');
-        if (c.aia.caIssuers.length) parts.push('<div><b>CA Issuers:</b> <a class="certparser-link" href="' + _cpEscape(c.aia.caIssuers[0]) + '" target="_blank" rel="noopener noreferrer">' + _cpEscape(c.aia.caIssuers[0]) + '</a></div>');
-        aiaHtml = '<div class="certparser-field"><span class="certparser-label">AIA</span><span class="certparser-value">' + parts.join('') + '</span></div>';
+        if (c.aia.ocsp.length)
+            parts.push(
+                '<div><b>OCSP:</b> <a class="certparser-link" href="' +
+                _cpEscape(c.aia.ocsp[0]) +
+                '" target="_blank" rel="noopener noreferrer">' +
+                _cpEscape(c.aia.ocsp[0]) +
+                '</a></div>'
+            );
+        if (c.aia.caIssuers.length)
+            parts.push(
+                '<div><b>CA Issuers:</b> <a class="certparser-link" href="' +
+                _cpEscape(c.aia.caIssuers[0]) +
+                '" target="_blank" rel="noopener noreferrer">' +
+                _cpEscape(c.aia.caIssuers[0]) +
+                '</a></div>'
+            );
+        aiaHtml =
+            '<div class="certparser-field"><span class="certparser-label">AIA</span><span class="certparser-value">' +
+            parts.join('') +
+            '</span></div>';
     }
     let bcHtml = '';
     if (c.basicConstraints) {
-        const t = (c.basicConstraints.ca ? 'CA: TRUE' : 'CA: FALSE') + (c.basicConstraints.pathLen != null ? ' · pathLen: ' + c.basicConstraints.pathLen : '');
-        bcHtml = '<div class="certparser-field"><span class="certparser-label">Basic Constraints</span><span class="certparser-value">' + t + '</span></div>';
+        const t =
+            (c.basicConstraints.ca ? 'CA: TRUE' : 'CA: FALSE') +
+            (c.basicConstraints.pathLen != null ? ' · pathLen: ' + c.basicConstraints.pathLen : '');
+        bcHtml =
+            '<div class="certparser-field"><span class="certparser-label">Basic Constraints</span><span class="certparser-value">' +
+            t +
+            '</span></div>';
     }
     let skiHtml = '';
     if (c.ski) {
-        skiHtml = '<div class="certparser-field"><span class="certparser-label">Subject Key ID</span>' +
-            '<span class="certparser-value certparser-mono">' + c.ski + '</span></div>';
+        skiHtml =
+            '<div class="certparser-field"><span class="certparser-label">Subject Key ID</span>' +
+            '<span class="certparser-value certparser-mono">' +
+            c.ski +
+            '</span></div>';
     }
 
-    return '<div class="certparser-card">' +
+    return (
+        '<div class="certparser-card">' +
         '<div class="certparser-card-head">' +
-        '<div class="certparser-card-title">证书 ' + c.index + ' / ' + _cpResults.length +
-        ' <span class="certparser-dim">(' + c.derSize + ' B · ' + (c.version === 3 ? 'v3' : 'v' + c.version) + ')</span></div>' +
+        '<div class="certparser-card-title">证书 ' +
+        c.index +
+        ' / ' +
+        _cpResults.length +
+        ' <span class="certparser-dim">(' +
+        c.derSize +
+        ' B · ' +
+        (c.version === 3 ? 'v3' : 'v' + c.version) +
+        ')</span></div>' +
         '<div class="certparser-card-actions">' +
-        '<button class="copy-btn" onclick="certparserCopyFp(' + c.index + ')">复制指纹</button>' +
-        '<button class="copy-btn" onclick="certparserCopyPem(' + c.index + ')" style="margin-left:6px">复制 PEM</button>' +
+        '<button class="copy-btn" onclick="certparserCopyFp(' +
+        c.index +
+        ')">复制指纹</button>' +
+        '<button class="copy-btn" onclick="certparserCopyPem(' +
+        c.index +
+        ')" style="margin-left:6px">复制 PEM</button>' +
         '</div>' +
         '</div>' +
         '<div class="certparser-field"><span class="certparser-label">主题 Subject</span>' +
-        '<span class="certparser-value certparser-strong">' + _cpEscape(c.subjectStr || '(empty)') + '</span></div>' +
+        '<span class="certparser-value certparser-strong">' +
+        _cpEscape(c.subjectStr || '(empty)') +
+        '</span></div>' +
         '<div class="certparser-field"><span class="certparser-label">颁发者 Issuer</span>' +
-        '<span class="certparser-value">' + _cpEscape(c.issuerStr || '(empty)') + '</span></div>' +
+        '<span class="certparser-value">' +
+        _cpEscape(c.issuerStr || '(empty)') +
+        '</span></div>' +
         '<div class="certparser-field"><span class="certparser-label">序列号</span>' +
-        '<span class="certparser-value certparser-mono">' + _cpEscape(c.serial) + '</span></div>' +
+        '<span class="certparser-value certparser-mono">' +
+        _cpEscape(c.serial) +
+        '</span></div>' +
         '<div class="certparser-field"><span class="certparser-label">有效期</span>' +
-        '<span class="certparser-value">' + _cpEscape(c.notBeforeStr) + ' <span class="certparser-dim">~</span> ' + _cpEscape(c.notAfterStr) +
-        '<div class="' + expiryClass + '">' + _cpEscape(expiry.label) + '</div>' +
+        '<span class="certparser-value">' +
+        _cpEscape(c.notBeforeStr) +
+        ' <span class="certparser-dim">~</span> ' +
+        _cpEscape(c.notAfterStr) +
+        '<div class="' +
+        expiryClass +
+        '">' +
+        _cpEscape(expiry.label) +
+        '</div>' +
         '</span></div>' +
         '<div class="certparser-field"><span class="certparser-label">签名算法</span>' +
-        '<span class="certparser-value">' + _cpEscape(c.signatureAlg) + ' <span class="certparser-dim">(' + _cpEscape(c.signatureAlgOid) + ')</span></span></div>' +
+        '<span class="certparser-value">' +
+        _cpEscape(c.signatureAlg) +
+        ' <span class="certparser-dim">(' +
+        _cpEscape(c.signatureAlgOid) +
+        ')</span></span></div>' +
         '<div class="certparser-field"><span class="certparser-label">公钥</span>' +
-        '<span class="certparser-value">' + _cpEscape(pkLabel) + '</span></div>' +
+        '<span class="certparser-value">' +
+        _cpEscape(pkLabel) +
+        '</span></div>' +
         '<div class="certparser-field"><span class="certparser-label">指纹 SHA-256</span>' +
-        '<span class="certparser-value certparser-mono" id="certparser-fp-' + c.index + '">计算中…</span></div>' +
-        sanHtml + kuHtml + ekuHtml + crlHtml + aiaHtml + bcHtml + skiHtml +
+        '<span class="certparser-value certparser-mono" id="certparser-fp-' +
+        c.index +
+        '">计算中…</span></div>' +
+        sanHtml +
+        kuHtml +
+        ekuHtml +
+        crlHtml +
+        aiaHtml +
+        bcHtml +
+        skiHtml +
         '<div class="certparser-field"><span class="certparser-label">扩展数量</span>' +
-        '<span class="certparser-value">' + c.extensionsCount + ' 个' +
+        '<span class="certparser-value">' +
+        c.extensionsCount +
+        ' 个' +
         ' <span class="certparser-dim">（部分标准扩展已展开展示）</span></span></div>' +
-        '</div>';
+        '</div>'
+    );
 }
 
 function _cpRenderAll() {
@@ -645,16 +767,18 @@ function _cpRenderAll() {
     }
     root.innerHTML = _cpResults.map(_cpRenderOneCert).join('');
     // 异步计算指纹
-    _cpResults.forEach(c => {
+    _cpResults.forEach((c) => {
         if (c.error) return;
-        sha256Fingerprint(c.der).then(fp => {
-            const el = document.getElementById('certparser-fp-' + c.index);
-            if (el) el.textContent = fp;
-            c.fingerprint = fp;
-        }).catch(e => {
-            const el = document.getElementById('certparser-fp-' + c.index);
-            if (el) el.textContent = '✗ ' + e.message;
-        });
+        sha256Fingerprint(c.der)
+            .then((fp) => {
+                const el = document.getElementById('certparser-fp-' + c.index);
+                if (el) el.textContent = fp;
+                c.fingerprint = fp;
+            })
+            .catch((e) => {
+                const el = document.getElementById('certparser-fp-' + c.index);
+                if (el) el.textContent = '✗ ' + e.message;
+            });
     });
 }
 
@@ -669,10 +793,20 @@ function certparserParse() {
         _cpResults = result.certs;
         const elapsed = Math.round(performance.now() - t0);
         const total = result.certs.length;
-        const ok = result.certs.filter(c => !c.error).length;
+        const ok = result.certs.filter((c) => !c.error).length;
         const err = total - ok;
-        meta.textContent = '✓ 解析完成：' + total + ' 张证书（成功 ' + ok + (err ? ' / 失败 ' + err : '') + '）' +
-            ' · 格式 ' + result.format.toUpperCase() + ' · 耗时 ' + elapsed + ' ms';
+        meta.textContent =
+            '✓ 解析完成：' +
+            total +
+            ' 张证书（成功 ' +
+            ok +
+            (err ? ' / 失败 ' + err : '') +
+            '）' +
+            ' · 格式 ' +
+            result.format.toUpperCase() +
+            ' · 耗时 ' +
+            elapsed +
+            ' ms';
         _cpRenderAll();
         setStatus('✓ 证书解析完成（' + ok + ' 张）');
     } catch (e) {
@@ -686,7 +820,7 @@ function certparserParse() {
 }
 
 function certparserCopyFp(index) {
-    const c = _cpResults.find(x => x.index === index);
+    const c = _cpResults.find((x) => x.index === index);
     if (!c) return;
     if (!c.fingerprint) {
         toast('指纹尚未计算完成');
@@ -696,7 +830,7 @@ function certparserCopyFp(index) {
 }
 
 function certparserCopyPem(index) {
-    const c = _cpResults.find(x => x.index === index);
+    const c = _cpResults.find((x) => x.index === index);
     if (!c) return;
     safeCopy(c.pem, '已复制 PEM');
 }
@@ -712,9 +846,9 @@ function certparserClear() {
 
 function certparserLoadSample(kind) {
     const samples = {
-        'letsencrypt': _CP_SAMPLE_LETSENCRYPT,
-        'github': _CP_SAMPLE_GITHUB,
-        'baidu': _CP_SAMPLE_BAIDU,
+        letsencrypt: _CP_SAMPLE_LETSENCRYPT,
+        github: _CP_SAMPLE_GITHUB,
+        baidu: _CP_SAMPLE_BAIDU,
     };
     const text = samples[kind] || '';
     if (!text) {

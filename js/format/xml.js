@@ -26,7 +26,10 @@ function xmlFormat() {
 
 function formatXmlStr(xml) {
     let indent = 0;
-    const lines = xml.replace(/>\s*</g, '>\n<').replace(/(\r\n|\r)/g, '\n').split('\n');
+    const lines = xml
+        .replace(/>\s*</g, '>\n<')
+        .replace(/(\r\n|\r)/g, '\n')
+        .split('\n');
     const result = [];
     const reIndent = /^<\/\w/;
     const reDec = /^<\?/;
@@ -36,7 +39,14 @@ function formatXmlStr(xml) {
         if (reIndent.test(line) || line.startsWith('</')) indent--;
         if (i > 0 && !reDec.test(line)) result.push('  '.repeat(Math.max(0, indent)) + line);
         else result.push(line);
-        if (!reIndent.test(line) && !line.startsWith('</') && !line.endsWith('/>') && !line.startsWith('<?') && !line.startsWith('<!')) indent++;
+        if (
+            !reIndent.test(line) &&
+            !line.startsWith('</') &&
+            !line.endsWith('/>') &&
+            !line.startsWith('<?') &&
+            !line.startsWith('<!')
+        )
+            indent++;
     }
     return result.join('\n');
 }

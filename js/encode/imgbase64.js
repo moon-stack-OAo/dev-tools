@@ -12,7 +12,7 @@ function imgbase64SwitchTab(tab) {
         const map = ['encode', 'decode'];
         t.classList.toggle('active', map[i] === tab);
     });
-    contents.forEach(c => c.classList.toggle('active', c.id === 'imgbase64Tab-' + tab));
+    contents.forEach((c) => c.classList.toggle('active', c.id === 'imgbase64Tab-' + tab));
 }
 
 function img2b64RenderList() {
@@ -28,7 +28,7 @@ function img2b64RenderList() {
         const item = document.createElement('div');
         item.className = 'img2b64-item' + (i === img2b64ActiveIdx ? ' active' : '');
         const sizeKb = (f.dataUrl.length / 1024).toFixed(1);
-        item.innerHTML = `<img class="img2b64-thumb" src="${f.dataUrl}"><div class="img2b64-info"><div class="img2b64-name">${escapeHtmlImg(f.name)}</div><div class="img2b64-meta">${f.mime || '?'} · ${f.size} bytes · Base64 ${sizeKb} KB</div></div><button class="outline sm" onclick="event.stopPropagation();img2b64Remove(${i})" title="删除">&#10005;</button>`;
+        item.innerHTML = `<img class="img2b64-thumb" src="${f.dataUrl}"><div class="img2b64-info"><div class="img2b64-name">${escapeHtml(f.name)}</div><div class="img2b64-meta">${f.mime || '?'} · ${f.size} bytes · Base64 ${sizeKb} KB</div></div><button class="outline sm" onclick="event.stopPropagation();img2b64Remove(${i})" title="删除">&#10005;</button>`;
         item.addEventListener('click', () => img2b64Select(i));
         list.appendChild(item);
     });
@@ -54,26 +54,30 @@ function img2b64Remove(i) {
 function img2b64HandleFiles(files) {
     if (!files || !files.length) return;
     const tasks = [];
-    Array.from(files).forEach(f => {
+    Array.from(files).forEach((f) => {
         if (!f.type.startsWith('image/')) {
             toast(`已跳过非图片: ${f.name}`);
             return;
         }
-        tasks.push(new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve({name: f.name, size: f.size, mime: f.type, dataUrl: reader.result});
-            reader.onerror = () => reject(reader.error);
-            reader.readAsDataURL(f);
-        }));
+        tasks.push(
+            new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve({name: f.name, size: f.size, mime: f.type, dataUrl: reader.result});
+                reader.onerror = () => reject(reader.error);
+                reader.readAsDataURL(f);
+            })
+        );
     });
-    Promise.all(tasks).then(results => {
-        img2b64Files = img2b64Files.concat(results);
-        if (img2b64ActiveIdx < 0 && img2b64Files.length) img2b64ActiveIdx = 0;
-        img2b64RenderList();
-        setStatus(`已加载 ${results.length} 个文件，共 ${img2b64Files.length} 个`);
-    }).catch(err => {
-        toast('读取文件失败: ' + err.message);
-    });
+    Promise.all(tasks)
+        .then((results) => {
+            img2b64Files = img2b64Files.concat(results);
+            if (img2b64ActiveIdx < 0 && img2b64Files.length) img2b64ActiveIdx = 0;
+            img2b64RenderList();
+            setStatus(`已加载 ${results.length} 个文件，共 ${img2b64Files.length} 个`);
+        })
+        .catch((err) => {
+            toast('读取文件失败: ' + err.message);
+        });
 }
 
 function img2b64CopyDataUrl() {
@@ -101,7 +105,7 @@ function img2b64Download() {
         return;
     }
     let text = '';
-    img2b64Files.forEach(f => {
+    img2b64Files.forEach((f) => {
         text += `# ${f.name}\n# ${f.mime} | ${f.size} bytes\n${f.dataUrl}\n\n`;
     });
     const blob = new Blob([text], {type: 'text/plain;charset=utf-8'});
@@ -159,7 +163,7 @@ function b642imgRender() {
     const img = new Image();
     img.onload = () => {
         const sizeKb = (data.length / 1024).toFixed(1);
-        meta.innerHTML = `<span><b>${escapeHtmlImg(mime)}</b></span><span>尺寸 <b>${img.naturalWidth} × ${img.naturalHeight}</b></span><span>Base64 <b>${sizeKb} KB</b></span><span>原文 <b>${data.length}</b> 字符</span>`;
+        meta.innerHTML = `<span><b>${escapeHtml(mime)}</b></span><span>尺寸 <b>${img.naturalWidth} × ${img.naturalHeight}</b></span><span>Base64 <b>${sizeKb} KB</b></span><span>原文 <b>${data.length}</b> 字符</span>`;
         preview.innerHTML = '';
         preview.appendChild(img);
         setStatus('图片渲染成功');
@@ -194,21 +198,17 @@ function b642imgClear() {
     b642imgCurrentUrl = null;
 }
 
-function escapeHtmlImg(s) {
-    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
 function imgbase64Init() {
     img2b64RenderList();
     document.getElementById('b642imgPreview').innerHTML = '<div class="placeholder">（请先输入 Base64 内容）</div>';
     const drop = document.getElementById('img2b64Drop');
     if (drop) {
-        drop.addEventListener('dragover', e => {
+        drop.addEventListener('dragover', (e) => {
             e.preventDefault();
             drop.classList.add('dragover');
         });
         drop.addEventListener('dragleave', () => drop.classList.remove('dragover'));
-        drop.addEventListener('drop', e => {
+        drop.addEventListener('drop', (e) => {
             e.preventDefault();
             drop.classList.remove('dragover');
             if (e.dataTransfer && e.dataTransfer.files) {

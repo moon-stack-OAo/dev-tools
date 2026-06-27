@@ -8,7 +8,7 @@ const REDIS_CMDS = [
                 desc: '设置字符串值，支持过期与分布式锁',
                 examples: ['SET user:1001 "alice" EX 3600', 'SET lock:order 1 NX EX 30'],
                 returns: 'OK / nil',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'GET',
@@ -16,7 +16,7 @@ const REDIS_CMDS = [
                 desc: '获取字符串值',
                 examples: ['GET user:1001'],
                 returns: '字符串值 / nil',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'GETSET',
@@ -24,7 +24,7 @@ const REDIS_CMDS = [
                 desc: '设置新值并返回旧值（6.2 起标记为废弃）',
                 examples: ['GETSET counter 100'],
                 returns: '旧值 / nil',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'MSET',
@@ -32,7 +32,7 @@ const REDIS_CMDS = [
                 desc: '批量设置多个键值',
                 examples: ['MSET user:1 "alice" user:2 "bob"'],
                 returns: 'OK',
-                complexity: 'O(N)'
+                complexity: 'O(N)',
             },
             {
                 cmd: 'MGET',
@@ -40,7 +40,7 @@ const REDIS_CMDS = [
                 desc: '批量获取多个值',
                 examples: ['MGET user:1 user:2 user:3'],
                 returns: '值列表（含 nil）',
-                complexity: 'O(N)'
+                complexity: 'O(N)',
             },
             {
                 cmd: 'SETEX',
@@ -48,7 +48,7 @@ const REDIS_CMDS = [
                 desc: '设置字符串值并指定过期秒数',
                 examples: ['SETEX session:abc 3600 "token-xyz"'],
                 returns: 'OK',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'PSETEX',
@@ -56,7 +56,7 @@ const REDIS_CMDS = [
                 desc: '设置字符串值并指定过期毫秒数',
                 examples: ['PSETEX cache:hot 5000 "data"'],
                 returns: 'OK',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'SETNX',
@@ -64,7 +64,7 @@ const REDIS_CMDS = [
                 desc: 'key 不存在时才设置（分布式锁基础命令）',
                 examples: ['SETNX lock:order 1'],
                 returns: '1 / 0',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'INCR',
@@ -72,7 +72,7 @@ const REDIS_CMDS = [
                 desc: '原子自增 1（用于计数器）',
                 examples: ['INCR article:1001:views'],
                 returns: '递增后的整数值',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'INCRBY',
@@ -80,7 +80,7 @@ const REDIS_CMDS = [
                 desc: '原子自增指定步长',
                 examples: ['INCRBY user:1001:score 50'],
                 returns: '递增后的整数值',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'DECR',
@@ -88,7 +88,7 @@ const REDIS_CMDS = [
                 desc: '原子自减 1',
                 examples: ['DECR stock:item:2001'],
                 returns: '递减后的整数值',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'DECRBY',
@@ -96,7 +96,7 @@ const REDIS_CMDS = [
                 desc: '原子自减指定步长',
                 examples: ['DECRBY stock:item:2001 5'],
                 returns: '递减后的整数值',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'APPEND',
@@ -104,9 +104,9 @@ const REDIS_CMDS = [
                 desc: '追加字符串到现有值末尾',
                 examples: ['APPEND log:access "GET /api\\n"'],
                 returns: '追加后的字符串长度',
-                complexity: 'O(1)'
-            }
-        ]
+                complexity: 'O(1)',
+            },
+        ],
     },
     {
         cat: 'Hash',
@@ -117,7 +117,7 @@ const REDIS_CMDS = [
                 desc: '设置哈希字段（支持批量）',
                 examples: ['HSET user:1001 name "alice" age 30'],
                 returns: '新增字段数',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'HMSET',
@@ -125,7 +125,7 @@ const REDIS_CMDS = [
                 desc: '批量设置（已废弃，推荐 HSET）',
                 examples: [],
                 returns: 'OK',
-                complexity: 'O(N)'
+                complexity: 'O(N)',
             },
             {
                 cmd: 'HGET',
@@ -133,7 +133,7 @@ const REDIS_CMDS = [
                 desc: '获取哈希字段值',
                 examples: ['HGET user:1001 name'],
                 returns: '字段值 / nil',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'HMGET',
@@ -141,7 +141,7 @@ const REDIS_CMDS = [
                 desc: '批量获取多个字段值',
                 examples: ['HMGET user:1001 name age email'],
                 returns: '值列表（含 nil）',
-                complexity: 'O(N)'
+                complexity: 'O(N)',
             },
             {
                 cmd: 'HGETALL',
@@ -149,7 +149,7 @@ const REDIS_CMDS = [
                 desc: '获取所有字段和值',
                 examples: ['HGETALL user:1001'],
                 returns: '字段-值映射 / 空',
-                complexity: 'O(N)'
+                complexity: 'O(N)',
             },
             {
                 cmd: 'HDEL',
@@ -157,7 +157,7 @@ const REDIS_CMDS = [
                 desc: '删除哈希字段',
                 examples: ['HDEL user:1001 phone tempCode'],
                 returns: '删除字段数',
-                complexity: 'O(N)'
+                complexity: 'O(N)',
             },
             {
                 cmd: 'HEXISTS',
@@ -165,7 +165,7 @@ const REDIS_CMDS = [
                 desc: '判断字段是否存在',
                 examples: ['HEXISTS user:1001 email'],
                 returns: '1 / 0',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'HKEYS',
@@ -173,7 +173,7 @@ const REDIS_CMDS = [
                 desc: '获取所有字段名',
                 examples: ['HKEYS user:1001'],
                 returns: '字段名列表',
-                complexity: 'O(N)'
+                complexity: 'O(N)',
             },
             {
                 cmd: 'HVALS',
@@ -181,7 +181,7 @@ const REDIS_CMDS = [
                 desc: '获取所有字段值',
                 examples: ['HVALS user:1001'],
                 returns: '值列表',
-                complexity: 'O(N)'
+                complexity: 'O(N)',
             },
             {
                 cmd: 'HLEN',
@@ -189,7 +189,7 @@ const REDIS_CMDS = [
                 desc: '获取字段数量',
                 examples: ['HLEN user:1001'],
                 returns: '字段数',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'HINCRBY',
@@ -197,7 +197,7 @@ const REDIS_CMDS = [
                 desc: '对字段值原子自增',
                 examples: ['HINCRBY user:1001:stat loginCount 1'],
                 returns: '递增后的整数值',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'HSETNX',
@@ -205,9 +205,9 @@ const REDIS_CMDS = [
                 desc: '字段不存在时才设置',
                 examples: ['HSETNX user:1001 firstLogin "2026-06-23"'],
                 returns: '1 / 0',
-                complexity: 'O(1)'
-            }
-        ]
+                complexity: 'O(1)',
+            },
+        ],
     },
     {
         cat: 'List',
@@ -218,7 +218,7 @@ const REDIS_CMDS = [
                 desc: '从左侧入队（批量按反向插入）',
                 examples: ['LPUSH queue:order "order-001"'],
                 returns: '列表长度',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'RPUSH',
@@ -226,7 +226,7 @@ const REDIS_CMDS = [
                 desc: '从右侧入队',
                 examples: ['RPUSH queue:order "order-001"'],
                 returns: '列表长度',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'LPOP',
@@ -234,7 +234,7 @@ const REDIS_CMDS = [
                 desc: '从左侧出队（Redis 6.2+ 支持 count）',
                 examples: ['LPOP queue:order'],
                 returns: '元素 / nil',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'RPOP',
@@ -242,7 +242,7 @@ const REDIS_CMDS = [
                 desc: '从右侧出队',
                 examples: ['RPOP queue:order'],
                 returns: '元素 / nil',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'LRANGE',
@@ -250,7 +250,7 @@ const REDIS_CMDS = [
                 desc: '获取区间元素（0 -1 表示全部）',
                 examples: ['LRANGE rank:top 0 9'],
                 returns: '元素列表',
-                complexity: 'O(S+N)'
+                complexity: 'O(S+N)',
             },
             {
                 cmd: 'LINDEX',
@@ -258,7 +258,7 @@ const REDIS_CMDS = [
                 desc: '按下标获取元素',
                 examples: ['LINDEX queue:order 0'],
                 returns: '元素 / nil',
-                complexity: 'O(N)'
+                complexity: 'O(N)',
             },
             {
                 cmd: 'LSET',
@@ -266,7 +266,7 @@ const REDIS_CMDS = [
                 desc: '按下标设置元素',
                 examples: ['LSET queue:order 0 "order-999"'],
                 returns: 'OK',
-                complexity: 'O(N)'
+                complexity: 'O(N)',
             },
             {
                 cmd: 'LREM',
@@ -274,7 +274,7 @@ const REDIS_CMDS = [
                 desc: '删除指定元素（count>0 头删，<0 尾删）',
                 examples: ['LREM queue:order 1 "order-001"'],
                 returns: '删除数量',
-                complexity: 'O(N)'
+                complexity: 'O(N)',
             },
             {
                 cmd: 'LLEN',
@@ -282,7 +282,7 @@ const REDIS_CMDS = [
                 desc: '获取列表长度',
                 examples: ['LLEN queue:order'],
                 returns: '列表长度',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'LINSERT',
@@ -290,7 +290,7 @@ const REDIS_CMDS = [
                 desc: '在 pivot 元素前/后插入新元素',
                 examples: ['LINSERT log:user BEFORE "login" "logout"'],
                 returns: '列表长度 / -1 (pivot 不存在)',
-                complexity: 'O(N)'
+                complexity: 'O(N)',
             },
             {
                 cmd: 'RPOPLPUSH',
@@ -298,7 +298,7 @@ const REDIS_CMDS = [
                 desc: '从 source 尾部弹出压入 destination 头部（已废弃，推荐 LMOVE）',
                 examples: [],
                 returns: '弹出元素 / nil',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'LMOVE',
@@ -306,7 +306,7 @@ const REDIS_CMDS = [
                 desc: '原子地从一端弹出并推入另一端',
                 examples: ['LMOVE queue:wait queue:run RIGHT LEFT'],
                 returns: '弹出元素 / nil',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'BRPOP',
@@ -314,9 +314,9 @@ const REDIS_CMDS = [
                 desc: '阻塞式右端出队（timeout 秒，0 永久阻塞）',
                 examples: ['BRPOP queue:order 5'],
                 returns: '[key, element] / nil',
-                complexity: 'O(1)'
-            }
-        ]
+                complexity: 'O(1)',
+            },
+        ],
     },
     {
         cat: 'Set',
@@ -327,7 +327,7 @@ const REDIS_CMDS = [
                 desc: '添加集合元素（已存在则忽略）',
                 examples: ['SADD tag:java "redis" "mysql"'],
                 returns: '新增元素数',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'SREM',
@@ -335,7 +335,7 @@ const REDIS_CMDS = [
                 desc: '删除集合元素',
                 examples: ['SREM tag:java "mysql"'],
                 returns: '删除元素数',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'SMEMBERS',
@@ -343,7 +343,7 @@ const REDIS_CMDS = [
                 desc: '获取所有元素',
                 examples: ['SMEMBERS tag:java'],
                 returns: '元素列表',
-                complexity: 'O(N)'
+                complexity: 'O(N)',
             },
             {
                 cmd: 'SISMEMBER',
@@ -351,7 +351,7 @@ const REDIS_CMDS = [
                 desc: '判断元素是否存在',
                 examples: ['SISMEMBER tag:java "redis"'],
                 returns: '1 / 0',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'SPOP',
@@ -359,7 +359,7 @@ const REDIS_CMDS = [
                 desc: '随机弹出一个或多个元素',
                 examples: ['SPOP lottery:users'],
                 returns: '弹出元素 / nil',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'SRANDMEMBER',
@@ -367,7 +367,7 @@ const REDIS_CMDS = [
                 desc: '随机返回一个或多个元素（不删除）',
                 examples: ['SRANDMEMBER lottery:users 3'],
                 returns: '元素 / 元素列表',
-                complexity: 'O(N)'
+                complexity: 'O(N)',
             },
             {
                 cmd: 'SCARD',
@@ -375,7 +375,7 @@ const REDIS_CMDS = [
                 desc: '获取集合元素数',
                 examples: ['SCARD tag:java'],
                 returns: '元素数量',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'SINTER',
@@ -383,7 +383,7 @@ const REDIS_CMDS = [
                 desc: '求多个集合的交集',
                 examples: ['SINTER tag:java tag:backend'],
                 returns: '交集元素列表',
-                complexity: 'O(N*M)'
+                complexity: 'O(N*M)',
             },
             {
                 cmd: 'SUNION',
@@ -391,7 +391,7 @@ const REDIS_CMDS = [
                 desc: '求多个集合的并集',
                 examples: ['SUNION tag:java tag:backend'],
                 returns: '并集元素列表',
-                complexity: 'O(N)'
+                complexity: 'O(N)',
             },
             {
                 cmd: 'SDIFF',
@@ -399,7 +399,7 @@ const REDIS_CMDS = [
                 desc: '求多个集合的差集',
                 examples: ['SDIFF tag:java tag:backend'],
                 returns: '差集元素列表',
-                complexity: 'O(N)'
+                complexity: 'O(N)',
             },
             {
                 cmd: 'SINTERSTORE',
@@ -407,7 +407,7 @@ const REDIS_CMDS = [
                 desc: '将交集结果保存到新集合',
                 examples: ['SINTERSTORE tag:common tag:java tag:backend'],
                 returns: '结果集元素数',
-                complexity: 'O(N*M)'
+                complexity: 'O(N*M)',
             },
             {
                 cmd: 'SMOVE',
@@ -415,9 +415,9 @@ const REDIS_CMDS = [
                 desc: '将元素从一个集合移到另一个',
                 examples: ['SMOVE tag:java tag:backend "spring"'],
                 returns: '1 / 0',
-                complexity: 'O(1)'
-            }
-        ]
+                complexity: 'O(1)',
+            },
+        ],
     },
     {
         cat: 'Sorted Set',
@@ -428,7 +428,7 @@ const REDIS_CMDS = [
                 desc: '添加有序集合元素（默认更新分数）',
                 examples: ['ZADD rank:game 100 "alice" 200 "bob"'],
                 returns: '新增元素数',
-                complexity: 'O(log N)'
+                complexity: 'O(log N)',
             },
             {
                 cmd: 'ZRANGE',
@@ -436,7 +436,7 @@ const REDIS_CMDS = [
                 desc: '按排名或分数返回区间元素（6.2+ 增强）',
                 examples: ['ZRANGE rank:game 0 9 WITHSCORES'],
                 returns: '元素列表',
-                complexity: 'O(log N + M)'
+                complexity: 'O(log N + M)',
             },
             {
                 cmd: 'ZREVRANGE',
@@ -444,7 +444,7 @@ const REDIS_CMDS = [
                 desc: '按排名倒序获取（已废弃，推荐 ZRANGE REV）',
                 examples: [],
                 returns: '元素列表',
-                complexity: 'O(log N + M)'
+                complexity: 'O(log N + M)',
             },
             {
                 cmd: 'ZRANGEBYSCORE',
@@ -452,7 +452,7 @@ const REDIS_CMDS = [
                 desc: '按分数区间获取元素',
                 examples: ['ZRANGEBYSCORE rank:game 100 200 WITHSCORES'],
                 returns: '元素列表',
-                complexity: 'O(log N + M)'
+                complexity: 'O(log N + M)',
             },
             {
                 cmd: 'ZSCORE',
@@ -460,7 +460,7 @@ const REDIS_CMDS = [
                 desc: '获取元素分数',
                 examples: ['ZSCORE rank:game "alice"'],
                 returns: '分数 / nil',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'ZINCRBY',
@@ -468,7 +468,7 @@ const REDIS_CMDS = [
                 desc: '对元素分数原子自增',
                 examples: ['ZINCRBY rank:game 50 "alice"'],
                 returns: '递增后分数',
-                complexity: 'O(log N)'
+                complexity: 'O(log N)',
             },
             {
                 cmd: 'ZREM',
@@ -476,7 +476,7 @@ const REDIS_CMDS = [
                 desc: '删除一个或多个元素',
                 examples: ['ZREM rank:game "bob"'],
                 returns: '删除元素数',
-                complexity: 'O(log N)'
+                complexity: 'O(log N)',
             },
             {
                 cmd: 'ZCARD',
@@ -484,7 +484,7 @@ const REDIS_CMDS = [
                 desc: '获取元素总数',
                 examples: ['ZCARD rank:game'],
                 returns: '元素数量',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'ZRANK',
@@ -492,7 +492,7 @@ const REDIS_CMDS = [
                 desc: '获取元素升序排名（从 0 开始）',
                 examples: ['ZRANK rank:game "alice"'],
                 returns: '排名 / nil',
-                complexity: 'O(log N)'
+                complexity: 'O(log N)',
             },
             {
                 cmd: 'ZCOUNT',
@@ -500,9 +500,9 @@ const REDIS_CMDS = [
                 desc: '统计分数区间内的元素数',
                 examples: ['ZCOUNT rank:game 100 200'],
                 returns: '元素数量',
-                complexity: 'O(log N)'
-            }
-        ]
+                complexity: 'O(log N)',
+            },
+        ],
     },
     {
         cat: '通用',
@@ -513,7 +513,7 @@ const REDIS_CMDS = [
                 desc: '设置 key 过期时间（秒）',
                 examples: ['EXPIRE session:abc 3600'],
                 returns: '1 / 0',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'TTL',
@@ -521,7 +521,7 @@ const REDIS_CMDS = [
                 desc: '查看 key 剩余过期秒数',
                 examples: ['TTL session:abc'],
                 returns: '秒数 / -1 (无过期) / -2 (key 不存在)',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'PERSIST',
@@ -529,7 +529,7 @@ const REDIS_CMDS = [
                 desc: '移除 key 的过期时间',
                 examples: ['PERSIST session:abc'],
                 returns: '1 / 0',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'KEYS',
@@ -537,7 +537,7 @@ const REDIS_CMDS = [
                 desc: '查找匹配 pattern 的所有 key（生产慎用，会阻塞）',
                 examples: ['KEYS user:*', 'KEYS session:???:*'],
                 returns: 'key 列表',
-                complexity: 'O(N)'
+                complexity: 'O(N)',
             },
             {
                 cmd: 'SCAN',
@@ -545,7 +545,7 @@ const REDIS_CMDS = [
                 desc: '增量迭代 key（生产推荐替代 KEYS）',
                 examples: ['SCAN 0 MATCH user:* COUNT 100'],
                 returns: '[新游标, key 列表]',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'TYPE',
@@ -553,7 +553,7 @@ const REDIS_CMDS = [
                 desc: '查看 key 的数据结构类型',
                 examples: ['TYPE user:1001'],
                 returns: 'string/list/hash/set/zset/... / none',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'DEL',
@@ -561,7 +561,7 @@ const REDIS_CMDS = [
                 desc: '删除一个或多个 key',
                 examples: ['DEL user:1001', 'DEL user:1001 user:1002'],
                 returns: '删除数量',
-                complexity: 'O(N)'
+                complexity: 'O(N)',
             },
             {
                 cmd: 'EXISTS',
@@ -569,7 +569,7 @@ const REDIS_CMDS = [
                 desc: '判断 key 是否存在',
                 examples: ['EXISTS user:1001'],
                 returns: '存在数量',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'RENAME',
@@ -577,7 +577,7 @@ const REDIS_CMDS = [
                 desc: '重命名 key（newkey 已存在则覆盖）',
                 examples: ['RENAME user:1001 user:2001'],
                 returns: 'OK',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'FLUSHDB',
@@ -585,7 +585,7 @@ const REDIS_CMDS = [
                 desc: '清空当前数据库（生产慎用）',
                 examples: ['FLUSHDB ASYNC'],
                 returns: 'OK',
-                complexity: 'O(N)'
+                complexity: 'O(N)',
             },
             {
                 cmd: 'RANDOMKEY',
@@ -593,7 +593,7 @@ const REDIS_CMDS = [
                 desc: '随机返回一个 key',
                 examples: ['RANDOMKEY'],
                 returns: '随机 key / nil',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'OBJECT',
@@ -601,9 +601,9 @@ const REDIS_CMDS = [
                 desc: '查看 key 内部信息（ENCODING/REFCOUNT/IDLETIME/FREQ/HELP）',
                 examples: ['OBJECT ENCODING user:1001', 'OBJECT IDLETIME session:abc'],
                 returns: '取决于子命令',
-                complexity: 'O(1)'
-            }
-        ]
+                complexity: 'O(1)',
+            },
+        ],
     },
     {
         cat: '集群',
@@ -614,7 +614,7 @@ const REDIS_CMDS = [
                 desc: '查看集群状态（节点数、槽位覆盖等）',
                 examples: ['CLUSTER INFO'],
                 returns: '集群状态文本',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'CLUSTER NODES',
@@ -622,7 +622,7 @@ const REDIS_CMDS = [
                 desc: '列出集群所有节点及其角色',
                 examples: ['CLUSTER NODES'],
                 returns: '节点列表文本',
-                complexity: 'O(N)'
+                complexity: 'O(N)',
             },
             {
                 cmd: 'CLUSTER KEYSLOT',
@@ -630,7 +630,7 @@ const REDIS_CMDS = [
                 desc: '计算 key 的哈希槽编号',
                 examples: ['CLUSTER KEYSLOT user:1001'],
                 returns: '槽位编号（0-16383）',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'CLUSTER MEET',
@@ -638,7 +638,7 @@ const REDIS_CMDS = [
                 desc: '将指定节点加入集群',
                 examples: ['CLUSTER MEET 192.168.1.20 6379'],
                 returns: 'OK',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'CLUSTER REPLICATE',
@@ -646,7 +646,7 @@ const REDIS_CMDS = [
                 desc: '将当前节点设为指定主节点的从节点',
                 examples: ['CLUSTER REPLICATE 07c37dfeb235213a872192d90877d0cd55635b91'],
                 returns: 'OK',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'CLUSTER FAILOVER',
@@ -654,7 +654,7 @@ const REDIS_CMDS = [
                 desc: '手动触发从节点切换为主节点',
                 examples: ['CLUSTER FAILOVER FORCE'],
                 returns: 'OK',
-                complexity: 'O(1)'
+                complexity: 'O(1)',
             },
             {
                 cmd: 'SENTINEL masters',
@@ -662,7 +662,7 @@ const REDIS_CMDS = [
                 desc: '查看 Sentinel 监控的所有主节点',
                 examples: ['SENTINEL masters'],
                 returns: '主节点列表',
-                complexity: 'O(N)'
+                complexity: 'O(N)',
             },
             {
                 cmd: 'SENTINEL get-master-addr-by-name',
@@ -670,10 +670,10 @@ const REDIS_CMDS = [
                 desc: '根据主节点名获取当前 IP 与端口',
                 examples: ['SENTINEL get-master-addr-by-name mymaster'],
                 returns: '[ip, port]',
-                complexity: 'O(1)'
-            }
-        ]
-    }
+                complexity: 'O(1)',
+            },
+        ],
+    },
 ];
 
 let _redisrefSearchTimer = null;
@@ -686,18 +686,17 @@ function redisrefRender() {
     const searchEl = document.getElementById('redisrefSearch');
     const filter = ((searchEl && searchEl.value) || '').toLowerCase().trim();
     let hasResult = false;
-    REDIS_CMDS.forEach(group => {
+    REDIS_CMDS.forEach((group) => {
         if (_redisrefCurrentCat !== 'all' && group.cat !== _redisrefCurrentCat) return;
-        const matched = filter
-            ? group.items.filter(it => redisrefItemMatches(it, filter))
-            : group.items;
+        const matched = filter ? group.items.filter((it) => redisrefItemMatches(it, filter)) : group.items;
         if (matched.length === 0) return;
         hasResult = true;
         const h = document.createElement('div');
-        h.style.cssText = 'font-size:13px;font-weight:600;color:var(--accent);padding:10px 0 6px;border-bottom:1px solid var(--border);margin-bottom:4px';
+        h.style.cssText =
+            'font-size:13px;font-weight:600;color:var(--accent);padding:10px 0 6px;border-bottom:1px solid var(--border);margin-bottom:4px';
         h.textContent = group.cat;
         container.appendChild(h);
-        matched.forEach(item => {
+        matched.forEach((item) => {
             container.appendChild(redisrefBuildCard(item));
         });
     });
@@ -760,7 +759,7 @@ function redisrefBuildCard(item) {
     if (item.examples && item.examples.length) {
         const exWrap = document.createElement('div');
         exWrap.className = 'redisref-examples';
-        item.examples.forEach(ex => {
+        item.examples.forEach((ex) => {
             const exEl = document.createElement('div');
             exEl.className = 'redisref-ex';
             exEl.textContent = ex;
@@ -787,7 +786,7 @@ function redisrefSearch() {
 function redisrefFilter(cat) {
     _redisrefCurrentCat = cat;
     const tabs = document.querySelectorAll('#redisrefTabs button');
-    tabs.forEach(btn => {
+    tabs.forEach((btn) => {
         btn.classList.toggle('active', btn.dataset.cat === cat);
     });
     redisrefRender();

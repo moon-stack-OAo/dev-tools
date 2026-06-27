@@ -33,10 +33,7 @@ function removeGithubPlugin(mode) {
         name: 'remove-github-link',
         transformIndexHtml(html) {
             if (mode !== 'dev') return html;
-            return html.replace(
-                /\s*<a[^>]*class="header-github"[^>]*>[\s\S]*?<\/a>\s*/g,
-                ''
-            );
+            return html.replace(/\s*<a[^>]*class="header-github"[^>]*>[\s\S]*?<\/a>\s*/g, '');
         },
     };
 }
@@ -89,8 +86,15 @@ function injectAssetMapPlugin(mode) {
                     }
                 }
             };
-            walk('js', n => n.endsWith('.js') && n !== 'app.js');
-            walk('html', n => n.endsWith('.html'));
+            walk('js', (n) => n.endsWith('.js') && n !== 'app.js');
+            walk('html', (n) => n.endsWith('.html'));
+            // 扫描 public/lib 下的第三方库,用于 loadLib 按需懒加载的缓存失效
+            const libDir = 'public/lib';
+            if (fs.existsSync(libDir)) {
+                for (const e of fs.readdirSync(libDir)) {
+                    if (e.endsWith('.js')) map['lib/' + e] = stamp(path.join(libDir, e));
+                }
+            }
             const inline = `<script>window.__ASSET_MAP__=${JSON.stringify(map)};</script>`;
             const idx = path.join('dist', 'index.html');
             if (fs.existsSync(idx)) {
@@ -117,18 +121,15 @@ export default defineConfig(({mode}) => ({
         {
             name: 'cache-bust',
             transformIndexHtml(html) {
-                return html.replace(
-                    /(src|href)="([^"]+\.(js|css))"/g,
-                    (m, attr, file) => {
-                        try {
-                            const buf = fs.readFileSync(file);
-                            const hash = crypto.createHash('md5').update(buf).digest('hex').slice(0, 8);
-                            return `${attr}="${file}?v=${hash}"`;
-                        } catch (e) {
-                            return m;
-                        }
+                return html.replace(/(src|href)="([^"]+\.(js|css))"/g, (m, attr, file) => {
+                    try {
+                        const buf = fs.readFileSync(file);
+                        const hash = crypto.createHash('md5').update(buf).digest('hex').slice(0, 8);
+                        return `${attr}="${file}?v=${hash}"`;
+                    } catch (e) {
+                        return m;
                     }
-                );
+                });
             },
         },
         {

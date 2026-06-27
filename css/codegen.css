@@ -8,7 +8,7 @@
 
 @media (max-width: 1100px) {
     .email-layout {
-        grid-template-columns: 1fr
+        grid-template-columns: 1fr;
     }
 }
 
@@ -36,7 +36,7 @@
     user-select: none;
     background: var(--bg-card2);
     border-bottom: 1px solid transparent;
-    transition: border-color .15s;
+    transition: border-color 0.15s;
 }
 
 .email-section[open] > summary {
@@ -74,7 +74,7 @@
     gap: 4px;
 }
 
-.email-color-grid input[type=color] {
+.email-color-grid input[type='color'] {
     width: 100%;
     height: 32px;
     padding: 2px;
@@ -99,7 +99,7 @@
     color: var(--text-dim);
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: .5px;
+    letter-spacing: 0.5px;
 }
 
 .email-iframe {
@@ -107,7 +107,7 @@
     width: 100%;
     border: none;
     background: var(--bg);
-    transition: width .2s;
+    transition: width 0.2s;
     margin: 0 auto;
     display: block;
 }
@@ -149,8 +149,8 @@
 }
 
 .email-tips {
-    background: rgba(var(--accent2-rgb), .06);
-    border: 1px solid rgba(var(--accent2-rgb), .2);
+    background: rgba(var(--accent2-rgb), 0.06);
+    border: 1px solid rgba(var(--accent2-rgb), 0.2);
     border-radius: var(--radius);
     padding: 12px 16px;
     font-size: 12px;

@@ -5,6 +5,9 @@
   "description": "Java 开发工具箱",
   "scripts": {
     "dev": "vite",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"js/**/*.js\" \"css/**/*.css\" \"scripts/**/*.js\" \"test/**/*.js\" *.config.js *.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "build": "node scripts/copy-libs.js && vite build",
@@ -34,6 +37,11 @@
     "ua-parser-js": "^1.0.41"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.6.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.7.0",
+    "prettier": "^3.8.5",
     "vite": "^6.0.0",
     "vitest": "^4.1.9"
   }

@@ -31,7 +31,7 @@ function curlAddQuery(key, val) {
 
 function curlCollectKv(listId) {
     const result = [];
-    document.querySelectorAll('#' + listId + ' .api-kv-row').forEach(row => {
+    document.querySelectorAll('#' + listId + ' .api-kv-row').forEach((row) => {
         const inputs = row.querySelectorAll('input');
         const key = inputs[0].value.trim();
         const val = inputs[1].value;
@@ -118,7 +118,10 @@ function curlParse() {
         return;
     }
     let s = text.replace(/^curl\s+/i, '');
-    s = s.replace(/\\\r?\n/g, ' ').replace(/\s+/g, ' ').trim();
+    s = s
+        .replace(/\\\r?\n/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
 
     let method = 'GET';
     const xMatch = s.match(/-X\s+('([^']*)'|"([^"]*)"|(\S+))/);
@@ -152,7 +155,13 @@ function curlParse() {
             i++;
         } else if (t === '-G' || t === '--get') {
             i++;
-        } else if (t === '-d' || t === '--data' || t === '--data-raw' || t === '--data-binary' || t === '--data-urlencode') {
+        } else if (
+            t === '-d' ||
+            t === '--data' ||
+            t === '--data-raw' ||
+            t === '--data-binary' ||
+            t === '--data-urlencode'
+        ) {
             const v = tokens[++i] || '';
             bodyVal += (bodyVal ? '&' : '') + v;
             hasBodyFlag = true;
@@ -210,7 +219,17 @@ function curlParse() {
         document.getElementById('curlBodyType').value = 'none';
     }
 
-    out.textContent = '解析完成，请检查左侧表单。已填入 URL=' + (url || '(空)') + ' / 方法=' + method + ' / ' + headers.length + ' 个 Header / ' + (queries.length || 0) + ' 个 Query' + (hasBodyFlag ? ' / Body=' + bodyVal.length + ' 字符' : '');
+    out.textContent =
+        '解析完成，请检查左侧表单。已填入 URL=' +
+        (url || '(空)') +
+        ' / 方法=' +
+        method +
+        ' / ' +
+        headers.length +
+        ' 个 Header / ' +
+        (queries.length || 0) +
+        ' 个 Query' +
+        (hasBodyFlag ? ' / Body=' + bodyVal.length + ' 字符' : '');
     out.className = 'output-box';
     setStatus('curl 解析完成');
 }

@@ -60,12 +60,21 @@ function httpStatusRender() {
     if (!container) return;
     container.innerHTML = '';
 
-    const methodColors = {GET: '#4caf50', HEAD: '#607d8b', POST: '#ff9800', PUT: '#2196f3', PATCH: '#9c27b0', DELETE: '#f44336', OPTIONS: '#607d8b'};
+    const methodColors = {
+        GET: '#4caf50',
+        HEAD: '#607d8b',
+        POST: '#ff9800',
+        PUT: '#2196f3',
+        PATCH: '#9c27b0',
+        DELETE: '#f44336',
+        OPTIONS: '#607d8b',
+    };
 
     const methodSection = document.createElement('div');
     methodSection.style.cssText = 'margin-bottom:16px';
-    methodSection.innerHTML = '<div style="font-size:12px;font-weight:600;color:var(--accent);padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:8px">HTTP 方法</div>';
-    HTTP_METHODS.forEach(m => {
+    methodSection.innerHTML =
+        '<div style="font-size:12px;font-weight:600;color:var(--accent);padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:8px">HTTP 方法</div>';
+    HTTP_METHODS.forEach((m) => {
         const card = document.createElement('div');
         card.className = 'ref-card';
         const col = methodColors[m.method] || 'var(--text)';
@@ -77,12 +86,24 @@ function httpStatusRender() {
     Object.entries(HTTP_STATUS).forEach(([cat, items]) => {
         const section = document.createElement('div');
         section.style.cssText = 'margin-bottom:16px';
-        const catLabel = cat + ' ' + ({'1xx': '信息', '2xx': '成功', '3xx': '重定向', '4xx': '客户端错误', '5xx': '服务器错误'}[cat] || '');
+        const catLabel =
+            cat +
+            ' ' +
+            ({'1xx': '信息', '2xx': '成功', '3xx': '重定向', '4xx': '客户端错误', '5xx': '服务器错误'}[cat] || '');
         section.innerHTML = `<div style="font-size:12px;font-weight:600;color:var(--accent);padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:8px">${catLabel}</div>`;
-        items.forEach(item => {
+        items.forEach((item) => {
             const card = document.createElement('div');
             card.className = 'ref-card';
-            const statusCol = item.code < 200 ? '#607d8b' : item.code < 300 ? '#4caf50' : item.code < 400 ? '#2196f3' : item.code < 500 ? '#ff9800' : '#f44336';
+            const statusCol =
+                item.code < 200
+                    ? '#607d8b'
+                    : item.code < 300
+                        ? '#4caf50'
+                        : item.code < 400
+                            ? '#2196f3'
+                            : item.code < 500
+                                ? '#ff9800'
+                                : '#f44336';
             card.innerHTML = `<div class="ref-cmd-head"><code style="background:var(--bg-input);padding:2px 10px;border-radius:4px;font-size:13px;color:${statusCol};font-weight:600;min-width:42px;text-align:center">${item.code}</code><span style="color:var(--accent2);font-weight:500;min-width:120px">${item.text}</span><span class="ref-cmd-desc">${item.desc}</span></div>`;
             section.appendChild(card);
         });

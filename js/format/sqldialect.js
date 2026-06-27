@@ -11,7 +11,7 @@ function buildCaseInsensitiveRegex(src) {
 function replaceWord(sql, word, replacement) {
     // 用单词边界匹配，保留大小写形态
     const re = new RegExp('\\b' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'gi');
-    return sql.replace(re, match => {
+    return sql.replace(re, (match) => {
         // 保留原大小写形式（全大写 -> 全大写；混合 -> replacement 原样）
         if (match === match.toUpperCase()) return replacement.toUpperCase();
         if (match[0] === match[0].toUpperCase()) {
@@ -24,7 +24,7 @@ function replaceWord(sql, word, replacement) {
 // 各方言函数/类型映射
 const DIALECT_FUNCTIONS = {
     // ROWNUM -> LIMIT
-    rownumToLimit: sql => {
+    rownumToLimit: (sql) => {
         // 把 `WHERE ROWNUM <= N` / `WHERE ROWNUM < N` / `WHERE ROWNUM = N` 转换为 LIMIT N
         let out = sql;
         out = out.replace(/\bWHERE\s+ROWNUM\s*<=\s*(\d+)/gi, (m, n) => `LIMIT ${n}`);
@@ -36,61 +36,65 @@ const DIALECT_FUNCTIONS = {
         }
         return out;
     },
-    limitToRownum: sql => {
+    limitToRownum: (sql) => {
         // 把 LIMIT N 转换为 WHERE ROWNUM <= N（仅在 SELECT 顶层，且没有已有 WHERE）
         return sql.replace(/\bLIMIT\s+(\d+)\b/gi, (m, n) => `WHERE ROWNUM <= ${n}`);
     },
 
     // NVL -> COALESCE / ISNULL
-    nvlToCoalesce: sql => replaceWord(sql, 'NVL', 'COALESCE'),
-    nvlToIsnull: sql => replaceWord(sql, 'NVL', 'ISNULL'),
-    coalesceToNvl: sql => replaceWord(sql, 'COALESCE', 'NVL'),
-    isnullToNvl: sql => {
+    nvlToCoalesce: (sql) => replaceWord(sql, 'NVL', 'COALESCE'),
+    nvlToIsnull: (sql) => replaceWord(sql, 'NVL', 'ISNULL'),
+    coalesceToNvl: (sql) => replaceWord(sql, 'COALESCE', 'NVL'),
+    isnullToNvl: (sql) => {
         // SQL Server 用 ISNULL(a,b) 表示两参数 NVL；需要和 IS NULL 区分
         return sql.replace(/\bISNULL\s*\(/gi, 'NVL(');
     },
-    isnullToCoalesce: sql => {
+    isnullToCoalesce: (sql) => {
         return sql.replace(/\bISNULL\s*\(/gi, 'COALESCE(');
     },
 
     // sysdate -> now() / getdate()
-    sysdateToNow: sql => sql.replace(/\bSYSDATE\b/gi, () => 'NOW()'),
-    sysdateToGetdate: sql => sql.replace(/\bSYSDATE\b/gi, () => 'GETDATE()'),
-    nowToSysdate: sql => sql.replace(/\bNOW\s*\(\s*\)/gi, 'SYSDATE'),
-    getdateToSysdate: sql => sql.replace(/\bGETDATE\s*\(\s*\)/gi, 'SYSDATE'),
+    sysdateToNow: (sql) => sql.replace(/\bSYSDATE\b/gi, () => 'NOW()'),
+    sysdateToGetdate: (sql) => sql.replace(/\bSYSDATE\b/gi, () => 'GETDATE()'),
+    nowToSysdate: (sql) => sql.replace(/\bNOW\s*\(\s*\)/gi, 'SYSDATE'),
+    getdateToSysdate: (sql) => sql.replace(/\bGETDATE\s*\(\s*\)/gi, 'SYSDATE'),
 
     // to_date / str_to_date / to_char / date_format
-    toDateToStrToDate: sql => replaceWord(sql, 'TO_DATE', 'STR_TO_DATE'),
-    toCharToDateFormat: sql => replaceWord(sql, 'TO_CHAR', 'DATE_FORMAT'),
-    strToDateToToDate: sql => replaceWord(sql, 'STR_TO_DATE', 'TO_DATE'),
-    dateFormatToToChar: sql => replaceWord(sql, 'DATE_FORMAT', 'TO_CHAR'),
+    toDateToStrToDate: (sql) => replaceWord(sql, 'TO_DATE', 'STR_TO_DATE'),
+    toCharToDateFormat: (sql) => replaceWord(sql, 'TO_CHAR', 'DATE_FORMAT'),
+    strToDateToToDate: (sql) => replaceWord(sql, 'STR_TO_DATE', 'TO_DATE'),
+    dateFormatToToChar: (sql) => replaceWord(sql, 'DATE_FORMAT', 'TO_CHAR'),
 
     // 类型名
-    varchar2ToVarchar: sql => replaceWord(sql, 'VARCHAR2', 'VARCHAR'),
-    varcharToVarchar2: sql => replaceWord(sql, 'VARCHAR', 'VARCHAR2'),
-    clobToText: sql => replaceWord(sql, 'CLOB', 'TEXT'),
-    textToClob: sql => replaceWord(sql, 'TEXT', 'CLOB'),
-    clobToNvarcharMax: sql => replaceWord(sql, 'CLOB', 'NVARCHAR(MAX)'),
-    nvarcharMaxToClob: sql => replaceWord(sql, 'NVARCHAR(MAX)', 'CLOB'),
-    numberToDecimal: sql => {
+    varchar2ToVarchar: (sql) => replaceWord(sql, 'VARCHAR2', 'VARCHAR'),
+    varcharToVarchar2: (sql) => replaceWord(sql, 'VARCHAR', 'VARCHAR2'),
+    clobToText: (sql) => replaceWord(sql, 'CLOB', 'TEXT'),
+    textToClob: (sql) => replaceWord(sql, 'TEXT', 'CLOB'),
+    clobToNvarcharMax: (sql) => replaceWord(sql, 'CLOB', 'NVARCHAR(MAX)'),
+    nvarcharMaxToClob: (sql) => replaceWord(sql, 'NVARCHAR(MAX)', 'CLOB'),
+    numberToDecimal: (sql) => {
         // NUMBER / NUMBER(p) / NUMBER(p,s) -> DECIMAL(p,s) 或 DECIMAL(p)
-        return sql.replace(/\bNUMBER\s*\(\s*(\d+)\s*,\s*(\d+)\s*\)/gi, 'DECIMAL($1,$2)')
+        return sql
+            .replace(/\bNUMBER\s*\(\s*(\d+)\s*,\s*(\d+)\s*\)/gi, 'DECIMAL($1,$2)')
             .replace(/\bNUMBER\s*\(\s*(\d+)\s*\)/gi, 'DECIMAL($1)');
     },
-    decimalToNumber: sql => {
-        return sql.replace(/\bDECIMAL\s*\(\s*(\d+)\s*,\s*(\d+)\s*\)/gi, 'NUMBER($1,$2)')
+    decimalToNumber: (sql) => {
+        return sql
+            .replace(/\bDECIMAL\s*\(\s*(\d+)\s*,\s*(\d+)\s*\)/gi, 'NUMBER($1,$2)')
             .replace(/\bDECIMAL\s*\(\s*(\d+)\s*\)/gi, 'NUMBER($1)');
     },
 
     // || 字符串拼接 -> CONCAT() (MySQL)
-    concatToPipe: sql => {
+    concatToPipe: (sql) => {
         // CONCAT(a, b, c) -> a || b || c (仅在 Oracle/PG)
         return sql.replace(/\bCONCAT\s*\(([^()]*(?:\([^()]*\)[^()]*)*)\)/gi, (m, args) => {
             // 简单按顶层逗号拆分（不支持嵌套函数参数中的逗号）
-            return splitTopLevelCommas(args).map(a => a.trim()).join(' || ');
+            return splitTopLevelCommas(args)
+                .map((a) => a.trim())
+                .join(' || ');
         });
     },
-    pipeToConcat: sql => {
+    pipeToConcat: (sql) => {
         // 简单地把 `a || b` -> `CONCAT(a, b)`（保守：仅处理简单标识符/字符串字面量）
         // 用 regex 匹配 X || Y，其中 X、Y 不包含 ||、括号、逗号
         const re = /(\w+(?:\.\w+)*|\([^()]*\)|'[^']*')\s*\|\|\s*(\w+(?:\.\w+)*|\([^()]*\)|'[^']*')/g;
@@ -98,11 +102,11 @@ const DIALECT_FUNCTIONS = {
     },
 
     // DECODE -> CASE WHEN
-    decodeToCase: sql => {
+    decodeToCase: (sql) => {
         // DECODE(expr, k1, v1, k2, v2, default) -> CASE expr WHEN k1 THEN v1 ... ELSE default END
         const re = /\bDECODE\s*\(\s*([^,()]+(?:\([^()]*\)[^,()]*)*)\s*,([^()]*(?:\([^()]*\)[^()]*)*)\)/gi;
         return sql.replace(re, (m, expr, rest) => {
-            const parts = splitTopLevelCommas(rest).map(s => s.trim());
+            const parts = splitTopLevelCommas(rest).map((s) => s.trim());
             if (parts.length < 2) return m;
             const exprTrim = expr.trim();
             const out = ['CASE', exprTrim];
@@ -116,14 +120,14 @@ const DIALECT_FUNCTIONS = {
             return out.join(' ');
         });
     },
-    caseToDecode: sql => {
+    caseToDecode: (sql) => {
         // 简单 CASE WHEN expr THEN ... ELSE ... END -> DECODE(expr, ..., default)
         // 这里只做极简转换（不处理复杂搜索型 CASE）
         const re = /\bCASE\s+([A-Za-z_]\w*)\s+WHEN\s+([^]+?)\s+END\b/gi;
         return sql.replace(re, (m, expr, body) => {
             const parts = body.split(/\s+WHEN\s+/i);
             const flat = [];
-            parts.forEach(p => {
+            parts.forEach((p) => {
                 const t = p.split(/\s+THEN\s+/i);
                 if (t.length === 2) {
                     flat.push(t[0].trim(), t[1].trim());
@@ -136,29 +140,34 @@ const DIALECT_FUNCTIONS = {
     },
 
     // BITAND -> &, BITOR -> |
-    bitandToAmp: sql => {
-        return sql.replace(/\bBITAND\s*\(\s*([^,()]+(?:\([^()]*\)[^,()]*)*)\s*,\s*([^()]+(?:\([^()]*\)[^()]*)*)\s*\)/gi,
-            (m, a, b) => `(${a.trim()} & ${b.trim()})`);
+    bitandToAmp: (sql) => {
+        return sql.replace(
+            /\bBITAND\s*\(\s*([^,()]+(?:\([^()]*\)[^,()]*)*)\s*,\s*([^()]+(?:\([^()]*\)[^()]*)*)\s*\)/gi,
+            (m, a, b) => `(${a.trim()} & ${b.trim()})`
+        );
     },
-    bitorToPipe: sql => {
-        return sql.replace(/\bBITOR\s*\(\s*([^,()]+(?:\([^()]*\)[^,()]*)*)\s*,\s*([^()]+(?:\([^()]*\)[^()]*)*)\s*\)/gi,
-            (m, a, b) => `(${a.trim()} | ${b.trim()})`);
+    bitorToPipe: (sql) => {
+        return sql.replace(
+            /\bBITOR\s*\(\s*([^,()]+(?:\([^()]*\)[^,()]*)*)\s*,\s*([^()]+(?:\([^()]*\)[^()]*)*)\s*\)/gi,
+            (m, a, b) => `(${a.trim()} | ${b.trim()})`
+        );
     },
-    ampToBitand: sql => {
+    ampToBitand: (sql) => {
         // 简单把 `a & b` 替换为 BITAND(a, b)，但要注意 & 可能出现在其他位置
         const re = /(\w+(?:\.\w+)*|\([^()]*\))\s*&\s*(\w+(?:\.\w+)*|\([^()]*\))/g;
         return sql.replace(re, (m, a, b) => `BITAND(${a.trim()}, ${b.trim()})`);
     },
 
     // CONNECT BY -> WITH RECURSIVE
-    connectByToRecursive: sql => {
+    connectByToRecursive: (sql) => {
         // 仅替换关键字
-        return sql.replace(/\bCONNECT\s+BY\b/gi, '/* TODO */ -- 递归查询，请改写为 WITH RECURSIVE')
+        return sql
+            .replace(/\bCONNECT\s+BY\b/gi, '/* TODO */ -- 递归查询，请改写为 WITH RECURSIVE')
             .replace(/\bSTART\s+WITH\b/gi, '-- START WITH');
     },
 
     // 字符串引号转义：SQL Server 把 '' 改成 \' 之类（保守不动，只提示）
-    stringEscapeSrv: sql => sql, // 占位：不做修改
+    stringEscapeSrv: (sql) => sql, // 占位：不做修改
 };
 
 // 拆分顶层逗号（不进入括号）
@@ -197,39 +206,60 @@ function splitTopLevelCommas(str) {
 // 方言转换矩阵：from -> to 时执行哪些函数
 const CONVERSION_MATRIX = {
     mysql: {
-        mysql: sql => sql,
+        mysql: (sql) => sql,
         oracle: applyChain([
-            'limitToRownum', 'nowToSysdate', 'coalesceToNvl', 'strToDateToToDate', 'dateFormatToToChar',
-            'varcharToVarchar2', 'clobToNvarcharMax', 'pipeToConcat', 'decimalToNumber', 'caseToDecode'
+            'limitToRownum',
+            'nowToSysdate',
+            'coalesceToNvl',
+            'strToDateToToDate',
+            'dateFormatToToChar',
+            'varcharToVarchar2',
+            'clobToNvarcharMax',
+            'pipeToConcat',
+            'decimalToNumber',
+            'caseToDecode',
         ]),
-        postgresql: applyChain([
-            'limitToRownum', 'nowToSysdate', 'clobToText', 'pipeToConcat', 'decimalToNumber'
-        ]),
-        sqlserver: applyChain([
-            'limitToRownum', 'nowToGetdate', 'clobToNvarcharMax', 'pipeToConcat'
-        ]),
+        postgresql: applyChain(['limitToRownum', 'nowToSysdate', 'clobToText', 'pipeToConcat', 'decimalToNumber']),
+        sqlserver: applyChain(['limitToRownum', 'nowToGetdate', 'clobToNvarcharMax', 'pipeToConcat']),
     },
     oracle: {
-        oracle: sql => sql,
+        oracle: (sql) => sql,
         mysql: applyChain([
-            'rownumToLimit', 'sysdateToNow', 'nvlToCoalesce', 'toDateToStrToDate', 'toCharToDateFormat',
-            'varchar2ToVarchar', 'clobToText', 'pipeToConcat', 'numberToDecimal', 'decodeToCase'
+            'rownumToLimit',
+            'sysdateToNow',
+            'nvlToCoalesce',
+            'toDateToStrToDate',
+            'toCharToDateFormat',
+            'varchar2ToVarchar',
+            'clobToText',
+            'pipeToConcat',
+            'numberToDecimal',
+            'decodeToCase',
         ]),
         postgresql: applyChain([
-            'rownumToLimit', 'sysdateToNow', 'nvlToCoalesce', 'clobToText', 'pipeToConcat', 'numberToDecimal'
+            'rownumToLimit',
+            'sysdateToNow',
+            'nvlToCoalesce',
+            'clobToText',
+            'pipeToConcat',
+            'numberToDecimal',
         ]),
         sqlserver: applyChain([
-            'rownumToLimit', 'sysdateToGetdate', 'nvlToIsnull', 'clobToNvarcharMax', 'numberToDecimal'
+            'rownumToLimit',
+            'sysdateToGetdate',
+            'nvlToIsnull',
+            'clobToNvarcharMax',
+            'numberToDecimal',
         ]),
     },
     postgresql: {
-        postgresql: sql => sql,
+        postgresql: (sql) => sql,
         mysql: applyChain(['sysdateToNow', 'pipeToConcat']),
         oracle: applyChain(['nowToSysdate', 'coalesceToNvl']),
         sqlserver: applyChain(['nowToGetdate', 'coalesceToIsnull' /* 占位 */]),
     },
     sqlserver: {
-        sqlserver: sql => sql,
+        sqlserver: (sql) => sql,
         mysql: applyChain(['getdateToSysdate', 'sysdateToNow', 'isnullToCoalesce', 'pipeToConcat']),
         oracle: applyChain(['isnullToNvl', 'getdateToSysdate']),
         postgresql: applyChain(['getdateToSysdate']),
@@ -237,9 +267,9 @@ const CONVERSION_MATRIX = {
 };
 
 function applyChain(names) {
-    return sql => {
+    return (sql) => {
         let out = sql;
-        names.forEach(n => {
+        names.forEach((n) => {
             if (DIALECT_FUNCTIONS[n]) out = DIALECT_FUNCTIONS[n](out);
         });
         return out;
@@ -295,7 +325,7 @@ function sqldialectBeautify() {
         const formatted = sqlFormatter.format(raw, {
             language: langMap[to] || 'sql',
             indent: '  ',
-            uppercase: true
+            uppercase: true,
         });
         out.textContent = formatted;
         out.className = 'output-box';

@@ -25,9 +25,9 @@ function qrcodeGenerate() {
         errorCorrectionLevel: level,
         width: size,
         margin: margin,
-        color: {dark: fg, light: bg}
+        color: {dark: fg, light: bg},
     };
-    QRCode.toCanvas(canvas, text, opts, err => {
+    QRCode.toCanvas(canvas, text, opts, (err) => {
         if (err) {
             meta.textContent = '生成失败: ' + err.message;
             meta.style.color = 'var(--danger)';
@@ -66,7 +66,7 @@ async function qrcodeCopyImage() {
         return;
     }
     try {
-        const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+        const blob = await new Promise((res) => canvas.toBlob(res, 'image/png'));
         await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
         toast('图片已复制到剪贴板');
     } catch (e) {
@@ -82,7 +82,7 @@ function qrcodeSyncColor(pickerId, textId) {
 }
 
 // 事件代理
-document.addEventListener('input', e => {
+document.addEventListener('input', (e) => {
     if (!e.target) return;
     if (e.target.id === 'qrcodeFg') qrcodeSyncColor('qrcodeFg', 'qrcodeFgText');
     if (e.target.id === 'qrcodeBg') qrcodeSyncColor('qrcodeBg', 'qrcodeBgText');
