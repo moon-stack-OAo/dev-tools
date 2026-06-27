@@ -12,7 +12,8 @@
 - 🧰 **97 个工具 / 8 大分类**：覆盖 Java 开发日常所需，工具持续扩充
 - 🎨 **深色主题 + 响应式**：桌面 / 平板 / 手机均可使用
 - 🐳 **多种部署方式**：Vite 开发、Docker 容器、Nginx 静态托管
-- 📦 **依赖本地化**：19 个常用库全部内置到 `public/lib/`，断网仍可使用（图标字体 `bootstrap-icons` 随 `npm install` 注入到
+- 📦 **依赖本地化**：19 个常用库全部内置到 `public/lib/`，**按需懒加载**（打开对应工具时才加载），断网仍可使用（图标字体
+  `bootstrap-icons` 随 `npm install` 注入到
   `node_modules` 后由 Vite 构建产物发布）
 
 ---
@@ -60,7 +61,7 @@ npm run build     # 输出到 dist/
 ## 📁 项目结构
 
 ```
-├── index.html                      # 入口（含首页 + 本地化依赖库；工具脚本/面板按需懒加载）
+├── index.html                      # 入口（首页；工具脚本/面板/依赖库均按需懒加载）
 ├── html/panels/                    # 工具面板（86 个文件，每个工具一个 HTML）
 │   ├── format/                     #  格式化：json / xml / yaml / sql / ...
 │   ├── encode/                     #  编解码：base64 / url / unicode / ...
@@ -255,9 +256,9 @@ npm run build     # 输出到 dist/
 
 ### 模块加载机制
 
-- **懒加载（按需加载）**：首屏仅加载 `index.html` + `app.js` + 本地化依赖库，首页网格立即可用；打开某工具时才动态加载该工具的
-  JS（`loadToolScript`，注入 `<script>`，`loadedScripts` 去重）与 HTML 面板（`loadToolPanel`，`fetch` 后注入
-  `#panels-container`，`loadedPanels` 去重）
+- **懒加载（按需加载）**：首屏仅加载 `index.html` + `app.js`（~50KB），首页网格立即可用；打开某工具时才动态加载该工具依赖的
+  第三方库（`loadLib`，注入 `<script>`，`loadedLibs` 去重）、工具 JS（`loadToolScript`，`loadedScripts` 去重）与 HTML 面板
+  （`loadToolPanel`，`fetch` 后注入 `#panels-container`，`loadedPanels` 去重）
 - **文件组织**：JS 按类别目录拆分 `js/{cat}/{toolId}.js`，HTML 面板 `html/panels/{cat}/{toolId}.html`（目录必须与注册表中的
   `cat` 一致）
 - **工具注册表**：`app.js` 中 `tools[]` 集中维护所有工具元信息（id、名称、分类、入口），是懒加载路径构造与首页网格的单一事实来源
@@ -283,15 +284,21 @@ npm run build     # 输出到 dist/
     - `remove-github-link`：从 `dev` 构建产物中移除 GitHub 入口链接
     - `inject-devtools-flag`：生产构建注入 `window.__DEVTOOLS__ = { withGithub: true }`，由 app.js 据此动态创建 GitHub 链接
 
+### 代码规范
+
+- **ESLint**（flat config）：`npm run lint` / `npm run lint:fix`
+- **Prettier**：`npm run format`（4 空格缩进 / 单引号 / 分号 / 120 列宽）
+
 ### 测试
 
-- 单元测试基于 **Vitest**，覆盖从工具中抽离的纯逻辑（无 DOM 耦合）
+- 单元测试基于 **Vitest**，覆盖从工具中抽离的纯逻辑（无 DOM 耦合），共 **91 个测试**
 - 工具文件通过 `module.exports` 守卫导出纯函数，测试用 `require()` 直接加载真实生产代码（零重复）
 - `test/setup.js` 提供 `registerInit` 等浏览器全局的 Node 环境垫片
-- 已覆盖：`hex`、`unicode`、`random`（编解码与安全类纯逻辑）
+- 已覆盖：`hex`(7)、`unicode`(6)、`random`(4)、`json2csv`(16)、`pbkdf2`(18)、`totp`(30, 含 RFC 4226/6238 标准向量)、`logfmt`(
+  10)
 
 ```bash
-npm test           # 运行一次
+npm test           # 运行一次（91 个测试）
 npm run test:watch # 监听模式
 ```
 
@@ -308,6 +315,7 @@ npm run test:watch # 监听模式
     - gzip 压缩
     - 静态资源 30 天浏览器缓存
     - SPA fallback（未匹配路由回退到 `index.html`）
+  - 安全响应头（X-Frame-Options / X-Content-Type-Options / Referrer-Policy）
 
 ### 浏览器兼容
 

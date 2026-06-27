@@ -551,7 +551,14 @@ async function openTool(id) {
         panel.dataset.titled = '1';
         const hdr = document.createElement('div');
         hdr.className = 'tool-header cat-' + tool.cat;
-        hdr.innerHTML = '<i class="bi ' + tool.icon + '"></i><span class="tool-header-name">' + escapeHtml(tool.name) + '</span><span class="tool-header-desc">' + escapeHtml(tool.desc) + '</span>';
+        hdr.innerHTML =
+            '<i class="bi ' +
+            tool.icon +
+            '"></i><span class="tool-header-name">' +
+            escapeHtml(tool.name) +
+            '</span><span class="tool-header-desc">' +
+            escapeHtml(tool.desc) +
+            '</span>';
         panel.insertBefore(hdr, panel.firstChild);
     }
     const homeTitle = document.getElementById('headerHomeTitle');
