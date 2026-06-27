@@ -325,6 +325,86 @@ function getUsageStats() {
     }
 }
 
+function clearUsageStats() {
+    try {
+        localStorage.removeItem(STATS_KEY);
+    } catch (e) {
+    }
+    renderHomeHeatmap();
+}
+
+function renderHomeHeatmap() {
+    const panel = document.getElementById('homeHeatmap');
+    if (!panel) return;
+    const stats = getUsageStats();
+    const entries = Object.entries(stats)
+        .map(([id, count]) => ({id: id, count: count, tool: tools.find((t) => t.id === id)}))
+        .filter((e) => e.tool)
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 10);
+    if (!entries.length) {
+        panel.innerHTML =
+            '<div class="home-heatmap-empty"><i class="bi bi-clock-history"></i>暂无使用记录，开始使用工具后会在这里展示 Top 10 常用工具</div>';
+        return;
+    }
+    const max = entries[0].count;
+    const total = entries.reduce((s, e) => s + e.count, 0);
+    const flames = ['🔥🔥🔥', '🔥🔥', '🔥', '', '', '', '', '', '', ''];
+    const medals = ['🥇', '🥈', '🥉'];
+    const tierClass = ['top-1', 'top-2', 'top-3'];
+    panel.innerHTML =
+        '<div class="home-heatmap-header"><i class="bi bi-fire"></i> 常用工具 Top ' +
+        entries.length +
+        '</div>' +
+        entries
+            .map((e, i) => {
+                const pct = Math.round((e.count / max) * 100);
+                const share = total > 0 ? Math.round((e.count / total) * 100) : 0;
+                const rank = i < 3 ? ' ' + tierClass[i] : '';
+                const medal = i < 3 ? '<span class="home-heatmap-medal">' + medals[i] + '</span>' : '<span class="home-heatmap-rank">' + (i + 1) + '</span>';
+                const flame = i < 10 ? '<span class="home-heatmap-flame">' + flames[i] + '</span>' : '';
+                return (
+                    '<div class="home-heatmap-item cat-' +
+                    e.tool.cat +
+                    rank +
+                    '" onclick="openTool(\'' +
+                    e.id +
+                    '\');hideHomeHeatmap()">' +
+                    medal +
+                    '<span class="home-heatmap-icon"><i class="bi ' +
+                    e.tool.icon +
+                    '"></i></span>' +
+                    '<span class="home-heatmap-name">' +
+                    escapeHtml(e.tool.name) +
+                    flame +
+                    '</span>' +
+                    '<span class="home-heatmap-bar"><i style="width:' +
+                    pct +
+                    '%"></i></span>' +
+                    '<span class="home-heatmap-count"><b>' +
+                    e.count +
+                    '</b><span class="home-heatmap-share">' +
+                    share +
+                    '%</span></span>' +
+                    '</div>'
+                );
+            })
+            .join('');
+}
+
+function showHomeHeatmap() {
+    const input = document.getElementById('homeSearch');
+    if (!input || input.value.trim()) return;
+    renderHomeHeatmap();
+    const panel = document.getElementById('homeHeatmap');
+    if (panel) panel.style.display = '';
+}
+
+function hideHomeHeatmap() {
+    const panel = document.getElementById('homeHeatmap');
+    if (panel) panel.style.display = 'none';
+}
+
 // 懒加载状态:工具的 JS 与 HTML 面板仅在首次打开时加载
 const loadedScripts = new Set();
 const loadedPanels = new Set(['home']);
@@ -551,6 +631,7 @@ async function openTool(id) {
         hideLoading();
         return;
     }
+    bumpUsage(id);
     document.querySelectorAll('.tool-panel.active').forEach((p) => p.classList.remove('active'));
     const panel = document.getElementById('panel-' + id);
     panel.classList.add('active');
@@ -669,11 +750,13 @@ function filterHomeTools() {
         msg.innerHTML = '<i class="bi bi-search"></i> 没有匹配的工具';
         document.getElementById('homeGrid').appendChild(msg);
     }
+    if (q) hideHomeHeatmap();
 }
 
 function clearHomeSearch() {
     const input = document.getElementById('homeSearch');
     if (input) input.value = '';
+    hideHomeHeatmap();
 }
 
 // === Sidebar ===

@@ -153,8 +153,8 @@
 
 .main-header .home-search-wrap {
     position: relative;
-    width: 320px;
-    flex: 0 0 320px;
+    width: 400px;
+    flex: 0 0 400px;
     flex-shrink: 0;
     margin: 0 auto;
 }
@@ -206,6 +206,208 @@
 
 .main-header .home-search-wrap input:focus ~ .search-icon {
     color: var(--accent);
+}
+
+/* 首页搜索框 - 工具使用热力榜浮层 */
+.home-heatmap {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    z-index: 200;
+    overflow: hidden auto;
+    max-height: calc(100vh - 120px);
+    animation: homeHeatmapIn 0.18s ease;
+}
+
+@keyframes homeHeatmapIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.home-heatmap-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-dim);
+    background: var(--bg-card2);
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.3px;
+}
+
+.home-heatmap-header i {
+    color: var(--warning);
+    font-size: 14px;
+}
+
+.home-heatmap-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 12px;
+    cursor: pointer;
+    transition: background 0.12s;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.home-heatmap-item:last-child {
+    border-bottom: none;
+}
+
+.home-heatmap-item:hover {
+    background: var(--glass-hover);
+}
+
+.home-heatmap-item.top-1 {
+    background: linear-gradient(90deg, rgba(251, 191, 36, 0.18), rgba(251, 191, 36, 0.02) 60%);
+    border-left: 2px solid #fbbf24;
+}
+
+.home-heatmap-item.top-2 {
+    background: linear-gradient(90deg, rgba(167, 139, 250, 0.14), rgba(167, 139, 250, 0.02) 60%);
+    border-left: 2px solid #a78bfa;
+}
+
+.home-heatmap-item.top-3 {
+    background: linear-gradient(90deg, rgba(56, 189, 248, 0.12), rgba(56, 189, 248, 0.02) 60%);
+    border-left: 2px solid #38bdf8;
+}
+
+.home-heatmap-item.top-1:hover,
+.home-heatmap-item.top-2:hover,
+.home-heatmap-item.top-3:hover {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02) 60%);
+}
+
+.home-heatmap-medal {
+    flex-shrink: 0;
+    width: 22px;
+    text-align: center;
+    font-size: 15px;
+    line-height: 1;
+}
+
+.home-heatmap-rank {
+    flex-shrink: 0;
+    width: 22px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: var(--font);
+    font-weight: 600;
+}
+
+.home-heatmap-icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cat-glow, var(--accent-glow));
+    color: var(--cat-color, var(--accent));
+    font-size: 14px;
+}
+
+.home-heatmap-name {
+    flex: 1;
+    min-width: 0;
+    font-size: 13px;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.home-heatmap-item.top-1 .home-heatmap-name,
+.home-heatmap-item.top-2 .home-heatmap-name,
+.home-heatmap-item.top-3 .home-heatmap-name {
+    font-weight: 600;
+}
+
+.home-heatmap-flame {
+    flex-shrink: 0;
+    font-size: 11px;
+    line-height: 1;
+    letter-spacing: -1px;
+}
+
+.home-heatmap-bar {
+    flex-shrink: 0;
+    width: 54px;
+    height: 5px;
+    background: var(--bg-input);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.home-heatmap-bar i {
+    display: block;
+    height: 100%;
+    background: var(--cat-color, var(--accent));
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.home-heatmap-count {
+    flex-shrink: 0;
+    min-width: 38px;
+    text-align: right;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: var(--font);
+    font-weight: 600;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1px;
+    line-height: 1.1;
+}
+
+.home-heatmap-count b {
+    color: var(--text);
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.home-heatmap-share {
+    font-size: 9.5px;
+    color: var(--text-muted);
+    font-weight: 500;
+    opacity: 0.75;
+}
+
+.home-heatmap-empty {
+    padding: 24px 16px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.home-heatmap-empty i {
+    display: block;
+    font-size: 28px;
+    margin-bottom: 8px;
+    color: var(--text-muted);
+    opacity: 0.5;
 }
 
 .breadcrumb {
@@ -660,15 +862,15 @@
 
 @media (max-width: 900px) {
     .main-header .home-search-wrap {
-        width: 200px;
-        flex: 0 0 200px;
+        width: 240px;
+        flex: 0 0 240px;
     }
 }
 
 @media (max-width: 640px) {
     .main-header .home-search-wrap {
-        width: 140px;
-        flex: 0 0 140px;
+        width: 180px;
+        flex: 0 0 180px;
     }
 }
 
