@@ -1,6 +1,6 @@
 # Java 开发工具箱
 
-> 一个面向 Java 开发者的**纯前端**在线工具集 —— **97 个工具、8 大分类**
+> 一个面向 Java 开发者的**纯前端**在线工具集 —— **96 个工具、8 大分类**
 > ，覆盖格式化、编解码、安全、生成与转换、代码生成、文本、调试、参考速查。无需后端、无需联网、无需上传数据，所有计算均在浏览器本地完成。支持
 > Vite 开发、Docker 一键部署、Nginx 静态托管，开箱即用。
 
@@ -9,7 +9,7 @@
 - 🚀 **零依赖开箱即用**：纯静态 HTML / CSS / JavaScript，无任何前端框架；业务代码无构建期编译，第三方库通过 Vite + esbuild
   打包为 IIFE
 - 🔒 **数据 100% 本地处理**：所有计算在浏览器内完成，不会上传任何内容到服务器，支持离线使用
-- 🧰 **97 个工具 / 8 大分类**：覆盖 Java 开发日常所需，工具持续扩充
+- 🧰 **96 个工具 / 8 大分类**：覆盖 Java 开发日常所需，工具持续扩充
 - 🎨 **深色主题 + 响应式**：桌面 / 平板 / 手机均可使用
 - 🐳 **多种部署方式**：Vite 开发、Docker 容器、Nginx 静态托管
 - 📦 **依赖本地化**：19 个常用库全部内置到 `public/lib/`，**按需懒加载**（打开对应工具时才加载），断网仍可使用（图标字体
@@ -62,13 +62,13 @@ npm run build     # 输出到 dist/
 
 ```
 ├── index.html                      # 入口（首页；工具脚本/面板/依赖库均按需懒加载）
-├── html/panels/                    # 工具面板（86 个文件，每个工具一个 HTML）
+├── html/panels/                    # 工具面板（96 个文件，每个工具一个 HTML）
 │   ├── format/                     #  格式化：json / xml / yaml / sql / ...
 │   ├── encode/                     #  编解码：base64 / url / unicode / ...
 │   ├── security/                   #  安全：jwt / hash / aes / rsa / ...
 │   ├── generate/                   #  生成与转换：uuid / ts / color / ...
 │   ├── text/                       #  文本：regex / diff / markdown / ...
-│   ├── debug/                      #  调试：cron / ws / stomp / api / ...
+│   ├── debug/                      #  调试：cron / ws / stomp / httpdebug / ...
 │   └── reference/                  #  参考：arthas / jmh / springboot / ...
 ├── css/                            # 样式（通用层 + 布局层 + 类别专属）
 │   ├── base.css                    #  CSS 变量 / reset / 按钮 / 表单 / toast / 滚动条
@@ -87,7 +87,7 @@ npm run build     # 输出到 dist/
 │   ├── security/                   #  安全：jwt / hash / aes / rsa / ...
 │   ├── generate/                   #  生成与转换：uuid / ts / color / ...
 │   ├── text/                       #  文本：regex / diff / markdown / ...
-│   ├── debug/                      #  调试：cron / ws / stomp / api / ...
+│   ├── debug/                      #  调试：cron / ws / stomp / httpdebug / ...
 │   └── reference/                  #  参考：arthas / jmh / springboot / ...
 ├── public/lib/                     # 本地化的第三方库（19 个，详见下方依赖列表）
 ├── scripts/
@@ -195,16 +195,15 @@ npm run build     # 输出到 dist/
 | 模板替换     | 占位符 `{{key}}` 批量替换 + 预览          |
 | 二维码解析    | 上传图片识别二维码内容（基于 jsQR）             |
 
-### 七、调试（12）
+### 七、调试（11）
 
 | 工具        | 功能                                                                   |
 |-----------|----------------------------------------------------------------------|
 | Cron 表达式  | 可视化 Cron 构建器，支持 5~7 段，计算未来 N 次执行时间                                   |
 | WebSocket | WebSocket 连接 / 收发消息调试（ws/wss 协议）                                     |
 | STOMP     | STOMP over WebSocket 调试：CONNECT/SUBSCRIBE/SEND/MESSAGE、ACK/NACK、心跳保活 |
-| API 调用    | HTTP 请求调试，支持 Headers / Authorization / Body                          |
 | IP 工具     | IP 信息查询（类别 / 私有 / 回环）、子网计算（网络地址 / 广播地址 / 可用 IP 范围）                   |
-| cURL 生成   | 界面化生成 cURL 命令，一键复制到终端                                                |
+| HTTP 调试   | 发送 HTTP 请求查看响应（状态/耗时/Body），生成 / 反向解析 cURL，含 Auth/Headers/Options     |
 | gRPC 调试   | gRPC 请求构造与响应解析（Unary 调用）                                             |
 | URL 解析    | URL 各组成部分解析（协议 / 域名 / 端口 / 路径 / 参数）                                  |
 | UA 解析     | User-Agent 解析：浏览器、操作系统、设备类型                                          |
