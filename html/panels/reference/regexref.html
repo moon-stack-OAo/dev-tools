@@ -1,5 +1,17 @@
 <div class="tool-panel" id="panel-regexref">
-    <div class="mb-8">
-        <div id="regexRefContent"></div>
+    <div class="ref-search-bar">
+        <div class="ref-search-input-wrap">
+            <i class="bi bi-search search-icon"></i>
+            <input
+                id="regexRefSearch"
+                oninput="regexRefSearch(); toggleRefClear(this);"
+                placeholder="搜索正则模式或描述 (如: 密码 / 邮箱 / \\d+)..."
+                type="text"
+            />
+            <button class="ref-search-clear" onclick="clearRefSearch(this)" type="button">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
     </div>
+    <div id="regexRefContent"></div>
 </div>

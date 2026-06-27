@@ -779,10 +779,9 @@ button.active {
     min-height: 0;
 }
 
-/* 无搜索栏的面板（docker / gitref / regexref / httpstatus） */
+/* 无搜索栏的面板（docker / gitref / httpstatus） */
 #panel-docker.active,
 #panel-gitref.active,
-#panel-regexref.active,
 #panel-httpstatus.active {
     display: flex;
     flex-direction: column;
@@ -791,14 +790,12 @@ button.active {
 
 #panel-docker > .tool-header,
 #panel-gitref > .tool-header,
-#panel-regexref > .tool-header,
 #panel-httpstatus > .tool-header {
     flex-shrink: 0;
 }
 
 #panel-docker > .mb-8,
 #panel-gitref > .mb-8,
-#panel-regexref > .mb-8,
 #panel-httpstatus > .mb-8 {
     flex: 1;
     overflow: auto;
