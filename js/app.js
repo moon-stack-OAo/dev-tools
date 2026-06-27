@@ -678,9 +678,46 @@ async function openTool(id) {
     const btt = document.getElementById('backToTop');
     if (!tp.dataset.scrollBound) {
         tp.dataset.scrollBound = '1';
-        tp.addEventListener('scroll', () => btt.classList.toggle('visible', tp.scrollTop > 300));
+        // 参考类工具的 panel 自身 overflow:hidden,真正的滚动容器是内部数据子元素
+        // 普通工具的 panel 自身 overflow-y:auto,直接用 panel
+        const getScrollEl = () => {
+            const ps = getComputedStyle(tp);
+            if ((ps.overflowY === 'auto' || ps.overflowY === 'scroll') && tp.scrollHeight > tp.clientHeight + 1)
+                return tp;
+            for (const c of tp.children) {
+                const s = getComputedStyle(c);
+                if ((s.overflowY === 'auto' || s.overflowY === 'scroll') && c.scrollHeight > c.clientHeight + 1)
+                    return c;
+            }
+            return tp;
+        };
+        let scrollEl = getScrollEl();
+        const onScroll = () => btt.classList.toggle('visible', scrollEl.scrollTop > 300);
+        scrollEl.addEventListener('scroll', onScroll);
+        // 内容可能异步渲染,延迟再确认一次
+        setTimeout(() => {
+            const newEl = getScrollEl();
+            if (newEl !== scrollEl) {
+                scrollEl.removeEventListener('scroll', onScroll);
+                scrollEl = newEl;
+                scrollEl.addEventListener('scroll', onScroll);
+            }
+            onScroll();
+        }, 200);
     }
-    btt.onclick = () => tp.scrollTo({top: 0, behavior: 'smooth'});
+    btt.onclick = () => {
+        const ps = getComputedStyle(tp);
+        const target =
+            (ps.overflowY === 'auto' || ps.overflowY === 'scroll') && tp.scrollHeight > tp.clientHeight + 1
+                ? tp
+                : Array.from(tp.children).find((c) => {
+                      const s = getComputedStyle(c);
+                      return (
+                          (s.overflowY === 'auto' || s.overflowY === 'scroll') && c.scrollHeight > c.clientHeight + 1
+                      );
+                  }) || tp;
+        target.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 }
 
 function goHome(catId) {
