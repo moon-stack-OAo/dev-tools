@@ -678,46 +678,71 @@ async function openTool(id) {
     const btt = document.getElementById('backToTop');
     if (!tp.dataset.scrollBound) {
         tp.dataset.scrollBound = '1';
-        // 参考类工具的 panel 自身 overflow:hidden,真正的滚动容器是内部数据子元素
-        // 普通工具的 panel 自身 overflow-y:auto,直接用 panel
-        const getScrollEl = () => {
-            const ps = getComputedStyle(tp);
-            if ((ps.overflowY === 'auto' || ps.overflowY === 'scroll') && tp.scrollHeight > tp.clientHeight + 1)
-                return tp;
-            for (const c of tp.children) {
-                const s = getComputedStyle(c);
-                if ((s.overflowY === 'auto' || s.overflowY === 'scroll') && c.scrollHeight > c.clientHeight + 1)
-                    return c;
+        // 递归查找第一个真正可滚动的元素(panel 自身 或 任意深度的后代)
+        // 普通工具: panel overflow-y:auto → 用 panel
+        // 参考类:  panel overflow:hidden + 内部数据子元素 flex:1;overflow:auto → 用子元素
+        // 复杂布局(httpdebug 等): 深层 .api-tab-panel 等 → 用该元素
+        const findScrollable = (root) => {
+            const rs = getComputedStyle(root);
+            if ((rs.overflowY === 'auto' || rs.overflowY === 'scroll') && root.scrollHeight > root.clientHeight + 1)
+                return root;
+            const queue = [...root.children];
+            while (queue.length) {
+                const el = queue.shift();
+                const s = getComputedStyle(el);
+                if ((s.overflowY === 'auto' || s.overflowY === 'scroll') && el.scrollHeight > el.clientHeight + 1)
+                    return el;
+                for (const c of el.children) queue.push(c);
             }
-            return tp;
+            return root;
         };
-        let scrollEl = getScrollEl();
-        const onScroll = () => btt.classList.toggle('visible', scrollEl.scrollTop > 300);
-        scrollEl.addEventListener('scroll', onScroll);
-        // 内容可能异步渲染,延迟再确认一次
-        setTimeout(() => {
-            const newEl = getScrollEl();
+        let scrollEl = null;
+        let ro = null;
+        const updateBtn = () => {
+            btt.classList.toggle('visible', scrollEl && scrollEl.scrollTop > 300);
+        };
+        const rebind = () => {
+            const newEl = findScrollable(tp);
             if (newEl !== scrollEl) {
-                scrollEl.removeEventListener('scroll', onScroll);
+                if (scrollEl) scrollEl.removeEventListener('scroll', updateBtn);
                 scrollEl = newEl;
-                scrollEl.addEventListener('scroll', onScroll);
+                scrollEl.addEventListener('scroll', updateBtn, { passive: true });
             }
-            onScroll();
-        }, 200);
+            updateBtn();
+        };
+        rebind();
+        // 监听 panel 大小/内容变化,内容异步填充时自动重新检测滚动元素
+        if (typeof ResizeObserver !== 'undefined') {
+            ro = new ResizeObserver(rebind);
+            ro.observe(tp);
+        } else {
+            setTimeout(rebind, 100);
+            setTimeout(rebind, 500);
+            setTimeout(rebind, 1500);
+        }
     }
     btt.onclick = () => {
-        const ps = getComputedStyle(tp);
-        const target =
-            (ps.overflowY === 'auto' || ps.overflowY === 'scroll') && tp.scrollHeight > tp.clientHeight + 1
-                ? tp
-                : Array.from(tp.children).find((c) => {
-                      const s = getComputedStyle(c);
-                      return (
-                          (s.overflowY === 'auto' || s.overflowY === 'scroll') && c.scrollHeight > c.clientHeight + 1
-                      );
-                  }) || tp;
-        target.scrollTo({ top: 0, behavior: 'smooth' });
-    };
+        // 实时找当前可滚动的元素(布局可能已变),然后平滑回顶
+        const root = tp;
+        const rs = getComputedStyle(root);
+        let target =
+            (rs.overflowY === 'auto' || rs.overflowY === 'scroll') && root.scrollHeight > root.clientHeight + 1
+                ? root
+                : null;
+        if (!target) {
+            const queue = [...root.children];
+            while (queue.length && !target) {
+                const el = queue.shift();
+                const s = getComputedStyle(el);
+                if ((s.overflowY === 'auto' || s.overflowY === 'scroll') && el.scrollHeight > el.clientHeight + 1) {
+                    target = el;
+                } else {
+                    for (const c of el.children) queue.push(c);
+                }
+            }
+        }
+        (target || root).scrollTo({ top: 0, behavior: 'smooth' });
+    };;
 }
 
 function goHome(catId) {
