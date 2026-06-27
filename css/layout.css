@@ -45,6 +45,10 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    background: linear-gradient(135deg, var(--text) 30%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .main-header .header-home-title .hh-logo {
@@ -261,6 +265,36 @@
 .tool-panel::-webkit-scrollbar-thumb:hover {
     background: var(--text-muted);
     background-clip: content-box;
+}
+
+/* 工具面板标题(JS 动态注入) */
+.tool-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+}
+
+.tool-header > i {
+    font-size: 18px;
+    color: var(--cat-color, var(--accent));
+    flex-shrink: 0;
+}
+
+.tool-header-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+}
+
+.tool-header-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 400;
+    margin-left: 2px;
 }
 
 .home-panel .home-title {
@@ -483,70 +517,44 @@
     animation: cardIn 0.4s ease both;
 }
 
-.home-card:nth-child(1) {
-    animation-delay: 0.02s;
-}
-
-.home-card:nth-child(2) {
-    animation-delay: 0.04s;
-}
-
-.home-card:nth-child(3) {
-    animation-delay: 0.06s;
-}
-
-.home-card:nth-child(4) {
-    animation-delay: 0.08s;
-}
-
-.home-card:nth-child(5) {
-    animation-delay: 0.1s;
-}
-
-.home-card:nth-child(6) {
-    animation-delay: 0.12s;
-}
-
-.home-card:nth-child(7) {
-    animation-delay: 0.14s;
-}
-
-.home-card:nth-child(8) {
-    animation-delay: 0.16s;
-}
-
-.home-card:nth-child(9) {
-    animation-delay: 0.18s;
-}
-
-.home-card:nth-child(10) {
-    animation-delay: 0.2s;
-}
-
-.home-card:nth-child(11) {
-    animation-delay: 0.22s;
-}
-
-.home-card:nth-child(12) {
-    animation-delay: 0.24s;
-}
+/* 卡片入场交错延迟由 JS 按分类内索引设置（见 app.js buildHomeGrid），
+   替代原先 nth-child 硬编码（仅覆盖前 12 个，分类工具超过 12 个时失效） */
 
 @keyframes cardIn {
     from {
         opacity: 0;
         transform: translateY(12px) scale(0.97);
     }
+
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
     }
 }
 
+/* 卡片顶部彩色光带（hover 时显示分类色） */
+.home-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--cat-color, var(--accent)), transparent);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
 .home-card:hover {
-    border-color: var(--accent);
+    border-color: var(--cat-color, var(--accent));
     background: var(--bg-card);
     transform: translateY(-4px);
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4),
+    0 0 24px var(--cat-glow, var(--accent-glow));
+}
+
+.home-card:hover::before {
+    opacity: 1;
 }
 
 .home-card .hc-icon {
@@ -581,7 +589,7 @@
 }
 
 .home-card:hover .hc-name {
-    color: var(--accent);
+    color: var(--cat-color, var(--accent));
 }
 
 .home-card .hc-desc {

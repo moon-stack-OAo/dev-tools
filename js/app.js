@@ -478,10 +478,11 @@ function buildHomeGrid() {
         divider.id = 'cat-' + cat.id;
         divider.innerHTML = `<span class="hcd-icon"><i class="bi ${cat.icon}"></i></span><span>${cat.name}</span>`;
         grid.appendChild(divider);
-        toolsInCat.forEach((t) => {
+        toolsInCat.forEach((t, ci) => {
             const card = document.createElement('div');
             card.className = 'home-card cat-' + t.cat;
             card.dataset.cat = t.cat;
+            card.style.animationDelay = Math.min(ci, 11) * 0.03 + 's';
             card.innerHTML = `<div class="hc-icon"><i class="bi ${t.icon}"></i></div><div class="hc-name">${t.name}</div><div class="hc-desc">${t.desc}</div>`;
             card.addEventListener('click', () => openTool(t.id));
             grid.appendChild(card);
@@ -543,7 +544,16 @@ async function openTool(id) {
         return;
     }
     document.querySelectorAll('.tool-panel.active').forEach((p) => p.classList.remove('active'));
-    document.getElementById('panel-' + id).classList.add('active');
+    const panel = document.getElementById('panel-' + id);
+    panel.classList.add('active');
+    // 注入工具标题(仅一次)
+    if (!panel.dataset.titled) {
+        panel.dataset.titled = '1';
+        const hdr = document.createElement('div');
+        hdr.className = 'tool-header cat-' + tool.cat;
+        hdr.innerHTML = '<i class="bi ' + tool.icon + '"></i><span class="tool-header-name">' + escapeHtml(tool.name) + '</span><span class="tool-header-desc">' + escapeHtml(tool.desc) + '</span>';
+        panel.insertBefore(hdr, panel.firstChild);
+    }
     const homeTitle = document.getElementById('headerHomeTitle');
     if (homeTitle) homeTitle.style.display = 'none';
     const gh = document.getElementById('headerGithub');
@@ -568,7 +578,7 @@ async function openTool(id) {
     highlightSidebarTool(id);
     hideLoading();
     // 工具面板滚动 → 返回顶部按钮(仅绑定一次,避免监听器累积)
-    const tp = document.getElementById('panel-' + id);
+    const tp = panel;
     const btt = document.getElementById('backToTop');
     if (!tp.dataset.scrollBound) {
         tp.dataset.scrollBound = '1';

@@ -2,6 +2,7 @@
   "name": "dev-tools",
   "version": "1.0.0",
   "private": true,
+  "license": "MIT",
   "description": "Java 开发工具箱",
   "scripts": {
     "dev": "vite",
