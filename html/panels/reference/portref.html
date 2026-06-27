@@ -2,9 +2,17 @@
     <div class="ref-search-bar">
         <div class="ref-search-input-wrap">
             <i class="bi bi-search search-icon"></i>
-            <input id="portrefSearch" oninput="portrefSearch();toggleRefClear(this)"
-                   placeholder="搜索端口号、服务或描述..." type="text">
-            <button class="ref-search-clear" onclick="clearRefSearch(this)" type="button"><i class="bi bi-x-lg"></i>
+            <input
+                    id="portrefSearch"
+                    oninput="
+                    portrefSearch();
+                    toggleRefClear(this);
+                "
+                    placeholder="搜索端口号、服务或描述..."
+                    type="text"
+            />
+            <button class="ref-search-clear" onclick="clearRefSearch(this)" type="button">
+                <i class="bi bi-x-lg"></i>
             </button>
         </div>
     </div>

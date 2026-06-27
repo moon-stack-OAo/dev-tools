@@ -53,9 +53,9 @@ function asciiRender() {
     const container = document.getElementById('asciiContent');
     container.innerHTML = '';
     const tbl = document.createElement('div');
-    tbl.style.cssText = 'font-family:var(--font);font-size:12px;overflow:auto';
+    tbl.style.cssText = 'font-family:var(--font);font-size:12px;overflow:auto;max-height:calc(100vh - 200px)';
     let html =
-        '<div style="display:flex;background:var(--bg-input);font-weight:600;border-radius:4px;padding:4px 0;position:sticky;top:0">';
+        '<div style="display:flex;background:var(--bg-input);font-weight:600;border-radius:4px;padding:4px 0;position:sticky;top:0;z-index:1">';
     html += '<span style="width:50px;padding:4px 8px">DEC</span>';
     html += '<span style="width:40px;padding:4px 8px">HEX</span>';
     html += '<span style="width:50px;padding:4px 8px">OCT</span>';

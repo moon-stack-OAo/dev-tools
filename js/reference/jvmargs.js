@@ -298,8 +298,8 @@ function jvmargsRender() {
         if (matched.length === 0) return;
         hasResult = true;
         const section = document.createElement('div');
-        section.style.cssText = 'margin-bottom:16px';
-        section.innerHTML = `<div style="font-size:12px;font-weight:600;color:var(--accent);padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:8px">${group.cat}</div>`;
+        section.className = 'ref-group';
+        section.innerHTML = `<div class="ref-group-title">${group.cat}</div>`;
         matched.forEach((item) => {
             const card = document.createElement('div');
             card.className = 'ref-card';
@@ -364,6 +364,8 @@ function jvmargsFilter(cat) {
         btn.classList.toggle('active', btn.textContent === cat);
     });
     jvmargsRender();
+    const _sa = document.querySelector('#panel-jvmargs > .ref-scroll-area');
+    if (_sa) _sa.scrollTop = 0;
 }
 
 registerInit('jvmargs', function () {

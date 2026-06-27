@@ -87,9 +87,10 @@ function mybatissqlRender(filter) {
     list.forEach((group) => {
         const card = document.createElement('div');
         card.className = 'ref-card';
-        let html = `<div class="ref-cmd-head"><code class="ref-cmd-name">${group.cat}</code><span class="ref-cmd-desc">${group.desc}</span><button class="sm outline" onclick="safeCopy('${group.syntax.replace(/'/g, "\\'")}')">复制语法</button></div>`;
-        html += `<div class="ref-syntax">${group.syntax.replace(/</g, '&lt;')}</div>`;
-        html += `<div class="ref-copy-wrap"><pre class="ref-pre"><code>${group.example.replace(/</g, '&lt;')}</code></pre><button class="ref-copy-btn" onclick="safeCopy(this.parentElement.querySelector('pre').innerText)">复制</button></div>`;
+        const copySyntax = group.syntax.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        let html = `<div class="ref-cmd-head"><code class="ref-cmd-name">${escapeHtml(group.cat)}</code><span class="ref-cmd-desc">${group.desc}</span><button class="sm outline" onclick="safeCopy('${copySyntax}')">复制语法</button></div>`;
+        html += `<div class="ref-syntax">${escapeHtml(group.syntax)}</div>`;
+        html += `<div class="ref-copy-wrap"><pre class="ref-pre"><code>${escapeHtml(group.example)}</code></pre><button class="ref-copy-btn" onclick="safeCopy(this.parentElement.querySelector('pre').innerText)">复制</button></div>`;
         card.innerHTML = html;
         container.appendChild(card);
     });

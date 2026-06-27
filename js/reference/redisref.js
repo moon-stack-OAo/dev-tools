@@ -790,6 +790,8 @@ function redisrefFilter(cat) {
         btn.classList.toggle('active', btn.dataset.cat === cat);
     });
     redisrefRender();
+    const _c = document.getElementById('redisrefContent');
+    if (_c) _c.scrollTop = 0;
 }
 
 registerInit('redisref', redisrefRender);

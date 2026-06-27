@@ -129,7 +129,7 @@ function portrefRender(filter) {
 
     const header = document.createElement('div');
     header.style.cssText =
-        'display:grid;grid-template-columns:80px 80px 130px 100px 1fr;background:var(--bg-input);font-weight:600;border-radius:4px;padding:6px 0;margin-bottom:6px;font-size:12px;position:sticky;top:52px;z-index:5';
+        'display:grid;grid-template-columns:80px 80px 130px 100px 1fr;background:var(--bg-input);font-weight:600;border-radius:4px;padding:6px 0;margin-bottom:6px;font-size:12px;position:sticky;top:0;z-index:5';
     header.innerHTML = `
         <span style="padding:4px 10px">端口</span>
         <span style="padding:4px 10px">协议</span>

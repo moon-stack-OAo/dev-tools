@@ -521,6 +521,8 @@ function springcloudFilter(cat) {
         btn.classList.toggle('active', btn.dataset.cat === cat);
     });
     springcloudRender();
+    const _c = document.getElementById('springcloudContent');
+    if (_c) _c.scrollTop = 0;
 }
 
 registerInit('springcloud', springcloudRender);

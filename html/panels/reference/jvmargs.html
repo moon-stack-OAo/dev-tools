@@ -1,13 +1,22 @@
 <div class="tool-panel" id="panel-jvmargs">
     <div class="ref-search-bar">
-        <div class="label"><i class="bi bi-search"></i>JVM 参数速查 (基于 JDK 17 · 点击复制)</div>
         <div class="ref-search-input-wrap">
             <i class="bi bi-search search-icon"></i>
-            <input id="jvmargsSearch" oninput="jvmargsSearch();toggleRefClear(this)" placeholder="搜索参数、说明、示例..." type="text">
-            <button class="ref-search-clear" onclick="clearRefSearch(this)" type="button"><i class="bi bi-x-lg"></i></button>
+            <input
+                    id="jvmargsSearch"
+                    oninput="
+                    jvmargsSearch();
+                    toggleRefClear(this);
+                "
+                    placeholder="搜索参数、说明、示例..."
+                    type="text"
+            />
+            <button class="ref-search-clear" onclick="clearRefSearch(this)" type="button">
+                <i class="bi bi-x-lg"></i>
+            </button>
         </div>
     </div>
-    <div id="jvmargsTabs" style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
+    <div id="jvmargsTabs" style="display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap">
         <button class="sm outline active" onclick="jvmargsFilter('全部')">全部</button>
         <button class="sm outline" onclick="jvmargsFilter('堆内存')">堆内存</button>
         <button class="sm outline" onclick="jvmargsFilter('GC')">GC</button>
@@ -15,9 +24,11 @@
         <button class="sm outline" onclick="jvmargsFilter('元空间')">元空间</button>
         <button class="sm outline" onclick="jvmargsFilter('其他')">其他</button>
     </div>
-    <div id="jvmargsContent"></div>
-    <div class="mb-8" style="margin-top:20px">
-        <div class="label">常用启动模板</div>
-        <div id="jvmargsTemplates" style="display:flex;flex-direction:column;gap:6px"></div>
+    <div class="ref-scroll-area">
+        <div id="jvmargsContent"></div>
+        <div class="mb-8" style="margin-top: 20px">
+            <div class="label">常用启动模板</div>
+            <div id="jvmargsTemplates" style="display: flex; flex-direction: column; gap: 6px"></div>
+        </div>
     </div>
 </div>

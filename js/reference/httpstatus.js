@@ -71,9 +71,8 @@ function httpStatusRender() {
     };
 
     const methodSection = document.createElement('div');
-    methodSection.style.cssText = 'margin-bottom:16px';
-    methodSection.innerHTML =
-        '<div style="font-size:12px;font-weight:600;color:var(--accent);padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:8px">HTTP 方法</div>';
+    methodSection.className = 'ref-group';
+    methodSection.innerHTML = '<div class="ref-group-title">HTTP 方法</div>';
     HTTP_METHODS.forEach((m) => {
         const card = document.createElement('div');
         card.className = 'ref-card';
@@ -85,12 +84,12 @@ function httpStatusRender() {
 
     Object.entries(HTTP_STATUS).forEach(([cat, items]) => {
         const section = document.createElement('div');
-        section.style.cssText = 'margin-bottom:16px';
+        section.className = 'ref-group';
         const catLabel =
             cat +
             ' ' +
             ({'1xx': '信息', '2xx': '成功', '3xx': '重定向', '4xx': '客户端错误', '5xx': '服务器错误'}[cat] || '');
-        section.innerHTML = `<div style="font-size:12px;font-weight:600;color:var(--accent);padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:8px">${catLabel}</div>`;
+        section.innerHTML = `<div class="ref-group-title">${catLabel}</div>`;
         items.forEach((item) => {
             const card = document.createElement('div');
             card.className = 'ref-card';

@@ -77,8 +77,8 @@ function gitRender() {
     container.innerHTML = '';
     GIT_CMDS.forEach((group) => {
         const section = document.createElement('div');
-        section.style.cssText = 'margin-bottom:16px';
-        section.innerHTML = `<div style="font-size:12px;font-weight:600;color:var(--accent);padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:8px">${group.cat}</div>`;
+        section.className = 'ref-group';
+        section.innerHTML = `<div class="ref-group-title">${group.cat}</div>`;
         group.items.forEach((item) => {
             const card = document.createElement('div');
             card.className = 'ref-card';

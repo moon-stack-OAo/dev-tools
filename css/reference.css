@@ -685,3 +685,135 @@ button.active {
 .ref-copy-wrap:hover .ref-copy-btn {
     opacity: 1;
 }
+
+/* === 统一优化（替代各文件内联 style） === */
+
+/* 分组容器 */
+.ref-group {
+    margin-bottom: 16px;
+}
+
+.ref-group:last-child {
+    margin-bottom: 0;
+}
+
+/* 分组标题（左侧色条 + 底部双线） */
+.ref-group-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    padding: 6px 0 6px 10px;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.ref-group-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 7px;
+    bottom: 9px;
+    width: 3px;
+    border-radius: 2px;
+    background: var(--accent);
+}
+
+/* 卡片间距统一 */
+.arthas-card,
+.redisref-card,
+.springcloud-card,
+.mqref-card,
+.ref-card {
+    padding: 10px 14px;
+    margin-bottom: 10px;
+}
+
+/* 卡片 hover 统一增强 */
+.arthas-card:hover,
+.redisref-card:hover,
+.springcloud-card:hover,
+.mqref-card:hover,
+.ref-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
+}
+
+/* tool-header 在 reference 面板中去 border-bottom（避免与 ref-search-bar 双重边框） */
+.tool-panel:has(> .ref-search-bar) > .tool-header {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 10px;
+}
+
+/* 带标签页的搜索栏（redisref / springcloud / mqref） */
+.ref-search-bar-tabs {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.ref-search-bar-tabs > .ref-search-input-wrap {
+    flex: 1;
+    max-width: 400px;
+}
+
+/* 所有 reference 面板：flex 布局，面板不滚动，搜索栏/标题固定，数据区域独立滚动 */
+
+/* 有搜索栏的面板（通用） */
+.tool-panel.active:has(> .ref-search-bar) {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.tool-panel:has(> .ref-search-bar) > .tool-header,
+.tool-panel:has(> .ref-search-bar) > .ref-search-bar {
+    flex-shrink: 0;
+}
+
+.tool-panel:has(> .ref-search-bar) > *:not(.tool-header):not(.ref-search-bar) {
+    flex: 1;
+    overflow: auto;
+    min-height: 0;
+}
+
+/* 无搜索栏的面板（docker / gitref / regexref / httpstatus） */
+#panel-docker.active,
+#panel-gitref.active,
+#panel-regexref.active,
+#panel-httpstatus.active {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#panel-docker > .tool-header,
+#panel-gitref > .tool-header,
+#panel-regexref > .tool-header,
+#panel-httpstatus > .tool-header {
+    flex-shrink: 0;
+}
+
+#panel-docker > .mb-8,
+#panel-gitref > .mb-8,
+#panel-regexref > .mb-8,
+#panel-httpstatus > .mb-8 {
+    flex: 1;
+    overflow: auto;
+    min-height: 0;
+}
+
+/* jvmargs: 搜索栏+标签页固定，数据+模板在 ref-scroll-area 内一起滚动 */
+#panel-jvmargs.active > #jvmargsTabs {
+    flex: none;
+    overflow: visible;
+    min-height: auto;
+}
+
+#panel-jvmargs.active > .ref-scroll-area {
+    flex: 1;
+    overflow: auto;
+    min-height: 0;
+}

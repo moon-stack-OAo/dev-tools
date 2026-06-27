@@ -180,7 +180,7 @@ function httpheaderRender(filter) {
     const dirColor = {通用: '#607d8b', 请求: '#2196f3', 响应: '#4caf50'};
     const header = document.createElement('div');
     header.style.cssText =
-        'display:grid;grid-template-columns:240px 60px 240px 1fr;background:var(--bg-input);font-weight:600;border-radius:4px;padding:6px 0;margin-bottom:6px;font-size:12px;position:sticky;top:52px;z-index:5';
+        'display:grid;grid-template-columns:240px 60px 240px 1fr;background:var(--bg-input);font-weight:600;border-radius:4px;padding:6px 0;margin-bottom:6px;font-size:12px;position:sticky;top:0;z-index:5';
     header.innerHTML = `
         <span style="padding:4px 10px">Header</span>
         <span style="padding:4px 10px">方向</span>
