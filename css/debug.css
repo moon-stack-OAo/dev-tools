@@ -869,10 +869,6 @@
 }
 
 .http-format-toggle {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
     display: flex;
     gap: 2px;
     padding: 2px;
@@ -882,13 +878,17 @@
 }
 
 .http-fmt-btn {
-    padding: 3px 12px !important;
+    padding: 0 12px !important;
+    height: 22px !important;
+    line-height: 22px !important;
     font-size: 11px !important;
+    font-weight: 500 !important;
     background: transparent !important;
     color: var(--text-muted) !important;
     border: none !important;
     box-shadow: none !important;
     border-radius: 4px !important;
+    transition: color 0.15s, background 0.15s !important;
 }
 
 .http-fmt-btn.active {
@@ -1046,9 +1046,6 @@
     }
 
     .http-format-toggle {
-        position: static;
-        transform: none;
-        margin-left: auto;
         margin-bottom: 6px;
     }
 }

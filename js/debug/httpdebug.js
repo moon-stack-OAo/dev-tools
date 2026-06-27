@@ -30,6 +30,23 @@ function httpSwitchSideTab(el, name) {
     document.getElementById('http-' + name + '-panel').classList.add('active');
 }
 
+function httpSwitchSideTabByName(name) {
+    const tabs = document.querySelectorAll('.http-side-tabs .api-tab');
+    for (const t of tabs) {
+        const oc = t.getAttribute('onclick') || '';
+        if (oc.indexOf("'" + name + "'") >= 0) {
+            httpSwitchSideTab(t, name);
+            return;
+        }
+    }
+    const root = document.querySelector('.http-side');
+    if (root) {
+        root.querySelectorAll('.api-tab-panel').forEach((p) => p.classList.remove('active'));
+        const panel = document.getElementById('http-' + name + '-panel');
+        if (panel) panel.classList.add('active');
+    }
+}
+
 function httpSetFormat(fmt) {
     _httpFormat = fmt;
     document.getElementById('httpFmtMulti').classList.toggle('active', fmt === 'multi');
@@ -295,6 +312,8 @@ function httpGenerate() {
     document.getElementById('httpStatHeaders').textContent = cfg.headers.length;
     document.getElementById('httpStatBody').textContent = cfg.body ? cfg.body.length : 0;
     stats.style.display = 'flex';
+
+    httpSwitchSideTabByName('curl');
 
     setStatus('已生成 cURL 命令');
 }
