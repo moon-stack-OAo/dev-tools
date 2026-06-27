@@ -244,7 +244,7 @@
 .tool-panel {
     flex: 1;
     overflow-y: auto;
-    padding: 20px clamp(20px, 5vw, 96px) 32px;
+    padding: 20px clamp(20px, 4vw, 56px) 32px;
     display: none;
     animation: panelIn 0.2s ease;
 }
