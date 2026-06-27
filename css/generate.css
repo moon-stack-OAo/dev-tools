@@ -37,6 +37,36 @@
     background: var(--bg-card2);
 }
 
+.uuid-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    letter-spacing: 0.5px;
+    line-height: 1.5;
+    margin-right: 10px;
+}
+
+.uuid-badge-v4 {
+    background: rgba(var(--accent-rgb), 0.15);
+    color: var(--accent);
+}
+
+.uuid-badge-v7 {
+    background: rgba(var(--accent2-rgb), 0.15);
+    color: var(--accent2);
+}
+
+.uuid-val {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-right: 8px;
+}
+
 /* Color */
 .color-preview {
     height: 64px;
@@ -61,4 +91,38 @@
 #tzOutput {
     background: var(--bg-terminal);
     color: var(--accent2);
+}
+
+/* UUID */
+.uuid-empty {
+    color: var(--text-dim);
+    font-size: 13px;
+    padding: 8px 0;
+}
+
+.uuid-opt {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--text-muted);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+/* UUID 面板：列表区域独立滚动，工具栏固定 */
+#panel-uuid.active {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#panel-uuid.active > .toolbar {
+    flex-shrink: 0;
+}
+
+#panel-uuid.active > .uuid-list {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
 }

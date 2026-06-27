@@ -1,23 +1,45 @@
-function genUUID(ver, count) {
-    count = count || 1;
+function genUUID() {
+    const ver = (document.getElementById('uuidVer') || {}).value || 'v4';
+    const count = Math.min(Math.max(parseInt((document.getElementById('uuidCount') || {}).value) || 1, 1), 100);
+    const hyphen = (document.getElementById('uuidHyphen') || {}).checked !== false;
+    const upper = (document.getElementById('uuidUpper') || {}).checked;
     const list = document.getElementById('uuidList');
+    if (!list) return;
+    const empty = list.querySelector('.uuid-empty');
+    if (empty) empty.remove();
     const frag = document.createDocumentFragment();
     for (let i = 0; i < count; i++) {
-        const uuid = ver === 'v7' ? uuidV7() : crypto.randomUUID();
+        let uuid = ver === 'v7' ? uuidV7() : crypto.randomUUID();
+        if (!hyphen) uuid = uuid.replace(/-/g, '');
+        if (upper) uuid = uuid.toUpperCase();
         const div = document.createElement('div');
         div.className = 'uuid-item';
-        div.innerHTML = `<span>${uuid}</span><button class="sm outline" onclick="copyText(this.parentElement.querySelector('span'))">复制</button>`;
+        div.innerHTML = `<span class="uuid-badge uuid-badge-${ver}">${ver.toUpperCase()}</span><span class="uuid-val">${uuid}</span><button class="sm outline" onclick="copyText(this.parentElement.querySelector('.uuid-val'))">复制</button>`;
         frag.appendChild(div);
     }
     list.insertBefore(frag, list.firstChild);
-    while (list.children.length > 20) list.removeChild(list.lastChild);
+    while (list.children.length > 50) list.removeChild(list.lastChild);
+    const copyAllBtn = document.getElementById('uuidCopyAllBtn');
+    if (copyAllBtn) copyAllBtn.style.display = '';
     setStatus(`已生成 ${count} 个 UUID ${ver}`);
 }
 
 function uuidClear() {
-    document.getElementById('uuidList').innerHTML =
-        '<div style="color:var(--text-dim);font-size:13px;padding:8px 0">点击按钮生成 UUID</div>';
+    const list = document.getElementById('uuidList');
+    if (!list) return;
+    list.innerHTML = '<div class="uuid-empty">点击「生成」按钮创建 UUID</div>';
+    const copyAllBtn = document.getElementById('uuidCopyAllBtn');
+    if (copyAllBtn) copyAllBtn.style.display = 'none';
     setStatus('已清空');
+}
+
+function uuidCopyAll() {
+    const spans = document.querySelectorAll('#uuidList .uuid-item .uuid-val');
+    if (!spans.length) return;
+    const text = Array.from(spans)
+        .map((s) => s.textContent)
+        .join('\n');
+    safeCopy(text, `已复制 ${spans.length} 个 UUID`);
 }
 
 function uuidV7() {
@@ -28,13 +50,9 @@ function uuidV7() {
     crypto.getRandomValues(b);
     const ts = Date.now();
     const v = new DataView(b.buffer);
-    // 高 32 位写入 byte 0-3（大端序）：48 位时间戳 = 高 32 位（byte 0-3）+ 低 16 位（byte 4-5）
     v.setUint32(0, Math.floor(ts / 0x10000), false);
-    // 低 16 位写入 byte 4-5（大端序），与上一步合起来共 48 位时间戳
     v.setUint16(4, ts & 0xffff, false);
-    // 设置版本位 v7（byte 6 高 4 位置 0111）
     b[6] = (b[6] & 0x0f) | 0x70;
-    // 设置变体位（byte 8 高 2 位置 10，RFC 4122 / RFC 9562）
     b[8] = (b[8] & 0x3f) | 0x80;
     const h = Array.from(b)
         .map((x) => x.toString(16).padStart(2, '0'))

@@ -713,6 +713,8 @@ function mqrefSwitchTab(tab) {
     const searchEl = document.getElementById('mqrefSearch');
     if (searchEl) searchEl.value = '';
     mqrefRender();
+    const _c = document.getElementById('mqrefList');
+    if (_c) _c.scrollTop = 0;
 }
 
 function mqrefSearch() {
@@ -729,7 +731,7 @@ function mqrefFilter(cat) {
         btn.classList.toggle('active', btn.dataset.cat === cat);
     });
     mqrefRender();
-    const _c = document.getElementById('mqrefContent');
+    const _c = document.getElementById('mqrefList');
     if (_c) _c.scrollTop = 0;
 }
 
