@@ -198,7 +198,7 @@ function injectAssetMapPlugin(mode) {
             const libDir = 'public/lib';
             if (fs.existsSync(libDir)) {
                 for (const e of fs.readdirSync(libDir)) {
-                    if (e.endsWith('.js')) map['lib/' + e] = stamp(path.join(libDir, e));
+                    if (e.endsWith('.js')) map['lib/' + e] = md5(path.join(libDir, e));
                 }
             }
             const inline = `<script>window.__ASSET_MAP__=${JSON.stringify(map)};</script>`;
