@@ -1,6 +1,6 @@
 # Java 开发工具箱
 
-> 一个面向 Java 开发者的**纯前端**在线工具集 —— **106 个工具、8 大分类**
+> 一个面向 Java 开发者的**纯前端**在线工具集 —— **104 个工具、8 大分类**
 > ，覆盖格式化、编解码、安全、生成与转换、代码生成、文本、调试、参考速查。无需后端、无需联网、无需上传数据，所有计算均在浏览器本地完成。支持
 > Vite 开发、Docker 一键部署、Nginx 静态托管，开箱即用。
 
@@ -9,10 +9,10 @@
 - 🚀 **零依赖开箱即用**：纯静态 HTML / CSS / JavaScript，无任何前端框架；业务代码无构建期编译，第三方库通过 Vite + esbuild
   打包为 IIFE
 - 🔒 **数据 100% 本地处理**：所有计算在浏览器内完成，不会上传任何内容到服务器，支持离线使用
-- 🧰 **106 个工具 / 8 大分类**：覆盖 Java 开发日常所需，工具持续扩充
+- 🧰 **104 个工具 / 8 大分类**：覆盖 Java 开发日常所需，工具持续扩充
 - 🎨 **深色主题 + 响应式**：桌面 / 平板 / 手机均可使用
 - 🐳 **多种部署方式**：Vite 开发、Docker 容器、Nginx 静态托管
-- 📦 **依赖本地化**：19 个常用库全部内置到 `public/lib/`，**按需懒加载**（打开对应工具时才加载），断网仍可使用（图标字体
+- 📦 **依赖本地化**：18 个 npm 包全部内置到 `public/lib/`，**按需懒加载**（打开对应工具时才加载），断网仍可使用（图标字体
   `bootstrap-icons` 随 `npm install` 注入到
   `node_modules` 后由 Vite 构建产物发布）
 
@@ -62,7 +62,7 @@ npm run build     # 输出到 dist/
 
 ```
 ├── index.html                      # 入口（首页；工具脚本/面板/依赖库均按需懒加载）
-├── html/panels/                    # 工具面板（106 个文件，每个工具一个 HTML）
+├── html/panels/                    # 工具面板（105 个文件，每个工具一个 HTML）
 │   ├── format/                     #  格式化：json / xml / yaml / sql / javafmt / jsonexcel / ddldiff / sqlexplain / nginxfmt / ...
 │   ├── encode/                     #  编解码：base64 / url / unicode / ...
 │   ├── security/                   #  安全：jwt / hash / aes / rsa / ...
@@ -89,14 +89,14 @@ npm run build     # 输出到 dist/
 │   ├── text/                       #  文本：regex / diff / markdown / ...
 │   ├── debug/                      #  调试：cron / ws / stomp / httpdebug / ...
 │   └── reference/                  #  参考：arthas / jmh / springboot / ...
-├── public/lib/                     # 本地化的第三方库（20 个，详见下方依赖列表）
+├── public/lib/                     # 本地化的第三方库（20 个文件，18 个 npm 包，详见下方依赖列表）
 ├── scripts/
 │   └── copy-libs.js                # 从 node_modules 复制依赖到 public/lib（构建前执行）
 ├── docs/                           # 开发文档（各 ticket 需求 / 设计 / 验收记录）
 ├── test/                           # 单元测试（Vitest，抽离工具纯逻辑）
 ├── .github/workflows/static.yml    # GitHub Pages 自动部署
 ├── package.json                    # 依赖管理与 npm 脚本
-├── vite.config.js                  # Vite 6 配置（cache-bust / copy-js-assets / inject-asset-map 自定义插件）
+├── vite.config.js                  # Vite 6 配置（cors-proxy / cache-bust / copy-js-assets / inject-asset-map / remove-github-link / inject-devtools-flag 自定义插件）
 ├── vitest.config.js                # Vitest 单元测试配置
 ├── Dockerfile                      # 多阶段构建：node:20-alpine → nginx:alpine
 ├── nginx.conf                      # Nginx 配置（gzip + 30 天静态资源缓存 + SPA fallback）
@@ -160,21 +160,19 @@ npm run build     # 输出到 dist/
 | PBKDF2 哈希 | PBKDF2-HMAC-SHA1/SHA256/SHA512 密钥派生 + PHC 格式                              |
 | X.509 证书  | 解析证书主体/签发者/SAN/指纹/有效期/链，DER↔PEM 互转                                        |
 
-### 四、生成与转换（11）
+### 四、生成与转换（9）
 
 | 工具      | 功能                                                |
 |---------|---------------------------------------------------|
 | UUID 生成 | UUID v4 / v7，批量生成                                 |
 | 雪花 ID   | Twitter Snowflake / 百度 UID-Generator 分布式 ID 生成与解析 |
 | 时间戳转换   | Unix 秒 / 毫秒 ↔ 日期字符串互转，含时区与格式化选项                   |
-| 时间戳批量转换 | 多行时间戳 / 日期字符串批量解析，自动识别格式，导出 TSV / JSON            |
 | Case 转换 | camelCase / PascalCase / snake_case / kebab-case  |
 | 颜色转换    | HEX / RGB / HSL 互转 + 颜色预览                         |
 | 进制转换    | 2~36 进制互转，Dec→Hex/Bin/Oct 快捷按钮                    |
 | 数据 Mock | 姓名 / 手机号 / 邮箱 / 身份证 / 地址等模拟数据批量生成                 |
 | 日期计算器   | 日期加减 / 日期间隔 / 工作日统计 + 时间戳互转                       |
 | 时区转换    | 全球时区互转 + 夏令时感知                                    |
-| 分辨率计算   | 屏幕分辨率 DPI / 物理尺寸 / 对角线换算                          |
 
 ### 五、代码生成（10）
 
@@ -286,6 +284,8 @@ npm run build     # 输出到 dist/
 
 - **Vite 6**：仅作为开发服务器 + 静态资源打包
 - **自定义插件**：
+  - `cors-proxy`：开发模式下提供 CORS 代理端点（`/__cors_proxy?target=<url>`），将前端跨域请求转发到目标 URL，避开浏览器
+    CORS 限制（仅 vite dev server 生效）
     - `cache-bust`：为 index.html 中的 JS / CSS 引用按文件内容 md5 追加 `?v=<hash>`（前 8 位），内容变更自动失效
     - `copy-js-assets`：构建时将 `js/` 和 `html/` 目录同步到 `dist/`
     - `inject-asset-map`：扫描 `js/`、`html/` 所有资源生成 `window.__ASSET_MAP__`（逐文件 md5）内联进 `dist/index.html`
@@ -300,7 +300,7 @@ npm run build     # 输出到 dist/
 
 ### 测试
 
-- 单元测试基于 **Vitest**，覆盖从工具中抽离的纯逻辑（无 DOM 耦合），共 **474 个测试**
+- 单元测试基于 **Vitest**，覆盖从工具中抽离的纯逻辑（无 DOM 耦合），共 **467 个测试**
 - 工具文件通过 `module.exports` 守卫导出纯函数，测试用 `require()` 直接加载真实生产代码（零重复）
 - `test/setup.js` 提供 `registerInit` 等浏览器全局的 Node 环境垫片
 - 已覆盖：`hex`(7)、`unicode`(6)、`random`(4)、`json2csv`(16)、`pbkdf2`(18)、`totp`(30, 含 RFC 4226/6238 标准向量)、`logfmt`(
@@ -308,7 +308,7 @@ npm run build     # 输出到 dist/
   `nginxfmt`(53)、`beanval`(47)、`plantuml`(44)
 
 ```bash
-npm test           # 运行一次（474 个测试）
+npm test           # 运行一次（467 个测试）
 npm run test:watch # 监听模式
 ```
 
