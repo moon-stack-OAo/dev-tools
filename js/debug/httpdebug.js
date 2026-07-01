@@ -807,7 +807,13 @@ function httpParse() {
         } else if (t === '-G' || t === '--get') {
             useGetFlag = true;
             i++;
-        } else if (t === '-d' || t === '--data' || t === '--data-raw' || t === '--data-binary' || t === '--data-urlencode') {
+        } else if (
+            t === '-d' ||
+            t === '--data' ||
+            t === '--data-raw' ||
+            t === '--data-binary' ||
+            t === '--data-urlencode'
+        ) {
             let v = tokens[++i] || '';
             if (t === '--data-urlencode') {
                 try {
@@ -877,8 +883,7 @@ function httpParse() {
             const u = new URL(url);
             u.searchParams.forEach((v, k) => queries.push([k, v]));
             url = u.origin + u.pathname;
-        } catch (e) {
-        }
+        } catch (e) {}
     }
 
     document.getElementById('httpHeadersList').innerHTML = '';
@@ -945,8 +950,8 @@ function httpTokenize(s) {
         if (s[i] === "'") {
             let buf = '';
             i++;
-            while (i < s.length && s[i] !=='\''") {
-                if (s[i] === '\\' && i + 1 < s.length && (s[i + 1] ==='\''" || s[i + 1] === '\\')) {
+            while (i < s.length && s[i] !== "'") {
+                if (s[i] === '\\' && i + 1 < s.length && (s[i + 1] === "'" || s[i + 1] === '\\')) {
                     buf += s[i + 1];
                     i += 2;
                 } else {
@@ -1078,8 +1083,7 @@ function httpSaveHistory(cfg) {
         if (list.length > _httpHistoryMax) list = list.slice(0, _httpHistoryMax);
         localStorage.setItem(_httpHistoryKey, JSON.stringify(list));
         httpRenderHistory();
-    } catch (e) {
-    }
+    } catch (e) {}
 }
 
 function httpLoadHistory() {
