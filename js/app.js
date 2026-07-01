@@ -420,6 +420,7 @@ function clearRecent() {
         localStorage.removeItem(RECENT_KEY);
     } catch (e) {}
     refreshRecentBlock();
+    refreshSidebarRecent();
 }
 
 function renderHomeHeatmap() {
@@ -810,6 +811,7 @@ async function openTool(id) {
     bumpUsage(id);
     pushRecent(id);
     refreshRecentBlock();
+    refreshSidebarRecent();
     document.querySelectorAll('.tool-panel.active').forEach((p) => p.classList.remove('active'));
     const panel = document.getElementById('panel-' + id);
     if (!panel) {
@@ -987,15 +989,25 @@ function buildSidebar() {
     if (!nav) return;
     nav.innerHTML = '';
     categories.forEach((cat) => {
-        const toolsInCat = tools.filter((t) => t.cat === cat.id);
+        let toolsInCat;
+        if (cat.id === 'recent') {
+            toolsInCat = getRecent().map((e) => e.tool);
+        } else {
+            toolsInCat = tools.filter((t) => t.cat === cat.id);
+        }
         if (!toolsInCat.length) return;
         const wrap = document.createElement('div');
         wrap.className = 'sb-cat cat-' + cat.id;
         wrap.dataset.cat = cat.id;
+        const clearBtn =
+            cat.id === 'recent'
+                ? '<i class="bi bi-x-circle sb-cat-clear" title="清空最近使用" onclick="event.stopPropagation();clearRecent()"></i>'
+                : '';
         wrap.innerHTML = `
             <div class="sb-cat-header" data-cat="${escapeHtml(cat.id)}" title="${escapeHtml(cat.name)}">
                 <i class="bi ${cat.icon} sb-cat-icon"></i>
                 <span class="sb-cat-name">${escapeHtml(cat.name)}</span>
+                ${clearBtn}
                 <i class="bi bi-chevron-right sb-cat-arrow"></i>
             </div>
             <div class="sb-tools">
@@ -1036,6 +1048,48 @@ function buildSidebar() {
     if (sidebarCollapsed) {
         document.getElementById('sidebar').classList.add('collapsed');
     }
+}
+
+// 重绘侧边栏"最近使用"分类:每次打开工具后调用,使其与首页最近块保持同步。
+// 未产生过最近使用时整段不渲染,与普通分类"无工具则隐藏"的约定一致。
+function refreshSidebarRecent() {
+    const nav = document.getElementById('sidebarNav');
+    if (!nav) return;
+    nav.querySelector('.sb-cat[data-cat="recent"]')?.remove();
+    const items = getRecent();
+    if (!items.length) return;
+    const cat = categories.find((c) => c.id === 'recent');
+    if (!cat) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'sb-cat cat-recent';
+    wrap.dataset.cat = 'recent';
+    wrap.innerHTML =
+        '<div class="sb-cat-header" data-cat="recent" title="' +
+        escapeHtml(cat.name) +
+        '"><i class="bi ' +
+        cat.icon +
+        ' sb-cat-icon"></i><span class="sb-cat-name">' +
+        escapeHtml(cat.name) +
+        '</span>' +
+        '<i class="bi bi-x-circle sb-cat-clear" title="清空最近使用" onclick="event.stopPropagation();clearRecent()"></i>' +
+        '<i class="bi bi-chevron-right sb-cat-arrow"></i></div>' +
+        '<div class="sb-tools">' +
+        items
+            .map(
+                (e) =>
+                    '<div class="sb-tool" data-tool="' +
+                    escapeHtml(e.tool.id) +
+                    '" title="' +
+                    escapeHtml(e.tool.name) +
+                    '"><i class="bi ' +
+                    e.tool.icon +
+                    '"></i><span class="sb-tool-name">' +
+                    escapeHtml(e.tool.name) +
+                    '</span></div>'
+            )
+            .join('') +
+        '</div>';
+    nav.insertBefore(wrap, nav.firstChild);
 }
 
 function highlightSidebarTool(id) {
