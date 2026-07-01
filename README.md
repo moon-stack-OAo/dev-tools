@@ -1,6 +1,6 @@
 # Java 开发工具箱
 
-> 一个面向 Java 开发者的**纯前端**在线工具集 —— **104 个工具、8 大分类**
+> 一个面向 Java 开发者的**纯前端**在线工具集 —— **105 个工具、8 大分类**
 > ，覆盖格式化、编解码、安全、生成与转换、代码生成、文本、调试、参考速查。无需后端、无需联网、无需上传数据，所有计算均在浏览器本地完成。支持
 > Vite 开发、Docker 一键部署、Nginx 静态托管，开箱即用。
 
@@ -9,7 +9,7 @@
 - 🚀 **零依赖开箱即用**：纯静态 HTML / CSS / JavaScript，无任何前端框架；业务代码无构建期编译，第三方库通过 Vite + esbuild
   打包为 IIFE
 - 🔒 **数据 100% 本地处理**：所有计算在浏览器内完成，不会上传任何内容到服务器，支持离线使用
-- 🧰 **104 个工具 / 8 大分类**：覆盖 Java 开发日常所需，工具持续扩充
+- 🧰 **105 个工具 / 8 大分类**：覆盖 Java 开发日常所需，工具持续扩充
 - 🎨 **深色主题 + 响应式**：桌面 / 平板 / 手机均可使用
 - 🐳 **多种部署方式**：Vite 开发、Docker 容器、Nginx 静态托管
 - 📦 **依赖本地化**：18 个 npm 包全部内置到 `public/lib/`，**按需懒加载**（打开对应工具时才加载），断网仍可使用（图标字体
@@ -160,7 +160,7 @@ npm run build     # 输出到 dist/
 | PBKDF2 哈希 | PBKDF2-HMAC-SHA1/SHA256/SHA512 密钥派生 + PHC 格式                              |
 | X.509 证书  | 解析证书主体/签发者/SAN/指纹/有效期/链，DER↔PEM 互转                                        |
 
-### 四、生成与转换（9）
+### 四、生成与转换（10）
 
 | 工具      | 功能                                                |
 |---------|---------------------------------------------------|
@@ -170,6 +170,7 @@ npm run build     # 输出到 dist/
 | Case 转换 | camelCase / PascalCase / snake_case / kebab-case  |
 | 颜色转换    | HEX / RGB / HSL 互转 + 颜色预览                         |
 | 进制转换    | 2~36 进制互转，Dec→Hex/Bin/Oct 快捷按钮                    |
+| 图片压缩    | 图片压缩，支持 JPEG / PNG / GIF / WebP 格式转换与压缩           |
 | 数据 Mock | 姓名 / 手机号 / 邮箱 / 身份证 / 地址等模拟数据批量生成                 |
 | 日期计算器   | 日期加减 / 日期间隔 / 工作日统计 + 时间戳互转                       |
 | 时区转换    | 全球时区互转 + 夏令时感知                                    |
@@ -284,14 +285,15 @@ npm run build     # 输出到 dist/
 
 - **Vite 6**：仅作为开发服务器 + 静态资源打包
 - **自定义插件**：
-  - `cors-proxy`：开发模式下提供 CORS 代理端点（`/__cors_proxy?target=<url>`），将前端跨域请求转发到目标 URL，避开浏览器
-    CORS 限制（仅 vite dev server 生效）
-    - `cache-bust`：为 index.html 中的 JS / CSS 引用按文件内容 md5 追加 `?v=<hash>`（前 8 位），内容变更自动失效
-    - `copy-js-assets`：构建时将 `js/` 和 `html/` 目录同步到 `dist/`
-    - `inject-asset-map`：扫描 `js/`、`html/` 所有资源生成 `window.__ASSET_MAP__`（逐文件 md5）内联进 `dist/index.html`
-      ；动态懒加载的工具脚本 / 面板据此附加 `?v=<hash>`，实现强缓存与更新自动失效（生产与 `build:dev` 均注入）
-    - `remove-github-link`：从 `dev` 构建产物中移除 GitHub 入口链接
-    - `inject-devtools-flag`：生产构建注入 `window.__DEVTOOLS__ = { withGithub: true }`，由 app.js 据此动态创建 GitHub 链接
+    - `cors-proxy`：开发模式下提供 CORS 代理端点（`/__cors_proxy?target=<url>`），将前端跨域请求转发到目标 URL，避开浏览器
+      CORS 限制（仅 vite dev server 生效）
+        - `cache-bust`：为 index.html 中的 JS / CSS 引用按文件内容 md5 追加 `?v=<hash>`（前 8 位），内容变更自动失效
+        - `copy-js-assets`：构建时将 `js/` 和 `html/` 目录同步到 `dist/`
+        - `inject-asset-map`：扫描 `js/`、`html/` 所有资源生成 `window.__ASSET_MAP__`（逐文件 md5）内联进 `dist/index.html`
+          ；动态懒加载的工具脚本 / 面板据此附加 `?v=<hash>`，实现强缓存与更新自动失效（生产与 `build:dev` 均注入）
+        - `remove-github-link`：从 `dev` 构建产物中移除 GitHub 入口链接
+        - `inject-devtools-flag`：生产构建注入 `window.__DEVTOOLS__ = { withGithub: true }`，由 app.js 据此动态创建 GitHub
+          链接
 
 ### 代码规范
 

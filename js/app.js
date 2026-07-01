@@ -20,15 +20,15 @@
 
 // === Tools Data ===
 const categories = [
-    { id: 'recent', name: '最近使用', icon: 'bi-clock-history' },
-    { id: 'format', name: '格式化', icon: 'bi-file-earmark-code' },
-    { id: 'encode', name: '编解码', icon: 'bi-arrow-left-right' },
-    { id: 'security', name: '安全', icon: 'bi-shield-lock' },
-    { id: 'generate', name: '生成与转换', icon: 'bi-magic' },
-    { id: 'codegen', name: '代码生成', icon: 'bi-code-square' },
-    { id: 'text', name: '文本', icon: 'bi-fonts' },
-    { id: 'debug', name: '调试', icon: 'bi-bug' },
-    { id: 'reference', name: '参考', icon: 'bi-book' },
+    { id: 'recent', name: '最近使用', icon: 'bi-clock-history', virtual: true },
+    { id: 'format', name: '格式化', icon: 'bi-file-earmark-code', virtual: false },
+    { id: 'encode', name: '编解码', icon: 'bi-arrow-left-right', virtual: false },
+    { id: 'security', name: '安全', icon: 'bi-shield-lock', virtual: false },
+    { id: 'generate', name: '生成与转换', icon: 'bi-magic', virtual: false },
+    { id: 'codegen', name: '代码生成', icon: 'bi-code-square', virtual: false },
+    { id: 'text', name: '文本', icon: 'bi-fonts', virtual: false },
+    { id: 'debug', name: '调试', icon: 'bi-bug', virtual: false },
+    { id: 'reference', name: '参考', icon: 'bi-book', virtual: false },
 ];
 const tools = [
     { id: 'json', icon: 'bi-braces', name: 'JSON 格式化', desc: '格式化 / 压缩 / 验证 JSON', cat: 'format' },
@@ -399,8 +399,7 @@ function pushRecent(id) {
         filtered.unshift({ id: id, ts: Date.now() });
         const truncated = filtered.slice(0, RECENT_MAX);
         localStorage.setItem(RECENT_KEY, JSON.stringify(truncated));
-    } catch (e) {
-    }
+    } catch (e) {}
 }
 
 function getRecent() {
@@ -419,8 +418,7 @@ function getRecent() {
 function clearRecent() {
     try {
         localStorage.removeItem(RECENT_KEY);
-    } catch (e) {
-    }
+    } catch (e) {}
     refreshRecentBlock();
 }
 
@@ -570,6 +568,31 @@ function assetV(p) {
     return m && m[p] ? '?v=' + m[p] : '';
 }
 
+// 递归查找首个真正可滚动的元素:工具面板自身或其任意后代。
+// 用于 backToTop 与 ResizeObserver 监听切换。
+function findScrollable(root) {
+    if (!root) return null;
+    const rs = getComputedStyle(root);
+    if ((rs.overflowY === 'auto' || rs.overflowY === 'scroll') && root.scrollHeight > root.clientHeight + 1)
+        return root;
+    const queue = [...root.children];
+    while (queue.length) {
+        const el = queue.shift();
+        const s = getComputedStyle(el);
+        if ((s.overflowY === 'auto' || s.overflowY === 'scroll') && el.scrollHeight > el.clientHeight + 1) return el;
+        for (const c of el.children) queue.push(c);
+    }
+    return root;
+}
+
+// backToTop 统一 handler:实时定位当前激活面板的滚动元素,平滑回顶。
+function scrollActiveToTop() {
+    const active = document.querySelector('.tool-panel.active') || document.getElementById('panel-home');
+    if (!active) return;
+    const target = findScrollable(active);
+    (target || active).scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 function debounce(fn, ms) {
     let t;
     return function (...args) {
@@ -665,14 +688,15 @@ function buildHomeGrid() {
         const divider = document.createElement('div');
         divider.className = 'home-cat-divider cat-' + cat.id;
         divider.id = 'cat-' + cat.id;
-        divider.innerHTML = `<span class="hcd-icon"><i class="bi ${cat.icon}"></i></span><span>${cat.name}</span>`;
+        divider.innerHTML = `<span class="hcd-icon"><i class="bi ${cat.icon}"></i></span><span>${escapeHtml(cat.name)}</span>`;
         grid.appendChild(divider);
         toolsInCat.forEach((t, ci) => {
+            const cardCat = cat.id === 'recent' ? 'recent' : t.cat;
             const card = document.createElement('div');
-            card.className = 'home-card cat-' + t.cat;
-            card.dataset.cat = t.cat;
+            card.className = 'home-card cat-' + cardCat;
+            card.dataset.cat = cardCat;
             card.style.animationDelay = Math.min(ci, 11) * 0.03 + 's';
-            card.innerHTML = `<div class="hc-icon"><i class="bi ${t.icon}"></i></div><div class="hc-name">${t.name}</div><div class="hc-desc">${t.desc}</div>`;
+            card.innerHTML = `<div class="hc-icon"><i class="bi ${t.icon}"></i></div><div class="hc-name">${escapeHtml(t.name)}</div><div class="hc-desc">${escapeHtml(t.desc)}</div>`;
             card.addEventListener('click', () => openTool(t.id));
             grid.appendChild(card);
         });
@@ -688,11 +712,7 @@ function buildHomeGrid() {
 
     // 滚动高亮当前分类
     const homePanel = document.getElementById('panel-home');
-    homePanel.addEventListener('scroll', highlightAnchor);
-
-    // 返回顶部按钮
-    const btt = document.getElementById('backToTop');
-    btt.addEventListener('click', () => homePanel.scrollTo({ top: 0, behavior: 'smooth' }));
+    homePanel.addEventListener('scroll', debounce(highlightAnchor, 50));
 }
 
 function refreshRecentBlock() {
@@ -726,6 +746,7 @@ function refreshRecentBlock() {
             anchor.innerHTML = '<span class="cat-icon"><i class="bi bi-clock-history"></i></span>最近使用';
             anchorsBox.insertBefore(anchor, anchorsBox.firstChild);
         }
+        let prev = divider;
         recentItems.forEach((e, ci) => {
             const card = document.createElement('div');
             card.className = 'home-card cat-recent';
@@ -735,12 +756,13 @@ function refreshRecentBlock() {
                 '<div class="hc-icon"><i class="bi ' +
                 e.tool.icon +
                 '"></i></div><div class="hc-name">' +
-                e.tool.name +
+                escapeHtml(e.tool.name) +
                 '</div><div class="hc-desc">' +
-                e.tool.desc +
+                escapeHtml(e.tool.desc) +
                 '</div>';
             card.addEventListener('click', () => openTool(e.tool.id));
-            divider.after(card);
+            prev.after(card);
+            prev = card;
         });
     }
 
@@ -790,6 +812,13 @@ async function openTool(id) {
     refreshRecentBlock();
     document.querySelectorAll('.tool-panel.active').forEach((p) => p.classList.remove('active'));
     const panel = document.getElementById('panel-' + id);
+    if (!panel) {
+        toast('面板加载失败');
+        console.error('面板元素缺失: panel-' + id);
+        setStatus('就绪');
+        hideLoading();
+        return;
+    }
     panel.classList.add('active');
     // 注入工具标题(仅一次)
     if (!panel.dataset.titled) {
@@ -829,29 +858,12 @@ async function openTool(id) {
     }
     highlightSidebarTool(id);
     hideLoading();
-    // 工具面板滚动 → 返回顶部按钮(仅绑定一次,避免监听器累积)
+    // 工具面板滚动 → 返回顶部按钮显隐(仅绑定一次,避免监听器累积)
+    // click handler 在 init 末尾统一绑定为 scrollActiveToTop,无需此处分发。
     const tp = panel;
     const btt = document.getElementById('backToTop');
     if (!tp.dataset.scrollBound) {
         tp.dataset.scrollBound = '1';
-        // 递归查找第一个真正可滚动的元素(panel 自身 或 任意深度的后代)
-        // 普通工具: panel overflow-y:auto → 用 panel
-        // 参考类:  panel overflow:hidden + 内部数据子元素 flex:1;overflow:auto → 用子元素
-        // 复杂布局(httpdebug 等): 深层 .api-tab-panel 等 → 用该元素
-        const findScrollable = (root) => {
-            const rs = getComputedStyle(root);
-            if ((rs.overflowY === 'auto' || rs.overflowY === 'scroll') && root.scrollHeight > root.clientHeight + 1)
-                return root;
-            const queue = [...root.children];
-            while (queue.length) {
-                const el = queue.shift();
-                const s = getComputedStyle(el);
-                if ((s.overflowY === 'auto' || s.overflowY === 'scroll') && el.scrollHeight > el.clientHeight + 1)
-                    return el;
-                for (const c of el.children) queue.push(c);
-            }
-            return root;
-        };
         let scrollEl = null;
         let ro = null;
         const updateBtn = () => {
@@ -877,31 +889,10 @@ async function openTool(id) {
             setTimeout(rebind, 1500);
         }
     }
-    btt.onclick = () => {
-        // 实时找当前可滚动的元素(布局可能已变),然后平滑回顶
-        const root = tp;
-        const rs = getComputedStyle(root);
-        let target =
-            (rs.overflowY === 'auto' || rs.overflowY === 'scroll') && root.scrollHeight > root.clientHeight + 1
-                ? root
-                : null;
-        if (!target) {
-            const queue = [...root.children];
-            while (queue.length && !target) {
-                const el = queue.shift();
-                const s = getComputedStyle(el);
-                if ((s.overflowY === 'auto' || s.overflowY === 'scroll') && el.scrollHeight > el.clientHeight + 1) {
-                    target = el;
-                } else {
-                    for (const c of el.children) queue.push(c);
-                }
-            }
-        }
-        (target || root).scrollTo({ top: 0, behavior: 'smooth' });
-    };
 }
 
-function goHome(catId) {
+// 切回首页 UI 状态(由 goHome / filterHomeTools 复用)
+function showHome() {
     document.querySelectorAll('.tool-panel.active').forEach((p) => p.classList.remove('active'));
     document.getElementById('panel-home').classList.add('active');
     const homeTitle = document.getElementById('headerHomeTitle');
@@ -911,8 +902,13 @@ function goHome(catId) {
     homeBtn.style.display = 'none';
     document.querySelector('.main-header').classList.remove('tool-mode');
     breadcrumb.innerHTML = '';
-    clearHomeSearch();
     clearSidebarHighlight();
+    setStatus('就绪');
+}
+
+function goHome(catId) {
+    showHome();
+    clearHomeSearch();
     document.getElementById('backToTop').classList.remove('visible');
     setTimeout(() => {
         highlightAnchor();
@@ -921,7 +917,6 @@ function goHome(catId) {
             if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }, 50);
-    setStatus('就绪');
 }
 
 function filterHomeTools() {
@@ -930,17 +925,7 @@ function filterHomeTools() {
     // 如果当前不在首页，自动切回首页再搜索
     const homePanel = document.getElementById('panel-home');
     if (!homePanel.classList.contains('active')) {
-        document.querySelectorAll('.tool-panel.active').forEach((p) => p.classList.remove('active'));
-        homePanel.classList.add('active');
-        const homeTitle = document.getElementById('headerHomeTitle');
-        if (homeTitle) homeTitle.style.display = '';
-        const gh = document.getElementById('headerGithub');
-        if (gh) gh.style.display = '';
-        homeBtn.style.display = 'none';
-        document.querySelector('.main-header').classList.remove('tool-mode');
-        breadcrumb.innerHTML = '';
-        clearSidebarHighlight();
-        setStatus('就绪');
+        showHome();
         setTimeout(highlightAnchor, 50);
     }
 
@@ -1008,13 +993,13 @@ function buildSidebar() {
         wrap.className = 'sb-cat cat-' + cat.id;
         wrap.dataset.cat = cat.id;
         wrap.innerHTML = `
-            <div class="sb-cat-header" data-cat="${cat.id}" title="${cat.name}">
+            <div class="sb-cat-header" data-cat="${escapeHtml(cat.id)}" title="${escapeHtml(cat.name)}">
                 <i class="bi ${cat.icon} sb-cat-icon"></i>
-                <span class="sb-cat-name">${cat.name}</span>
+                <span class="sb-cat-name">${escapeHtml(cat.name)}</span>
                 <i class="bi bi-chevron-right sb-cat-arrow"></i>
             </div>
             <div class="sb-tools">
-                ${toolsInCat.map((t) => `<div class="sb-tool" data-tool="${t.id}" title="${t.name}"><i class="bi ${t.icon}"></i><span class="sb-tool-name">${t.name}</span></div>`).join('')}
+                ${toolsInCat.map((t) => `<div class="sb-tool" data-tool="${escapeHtml(t.id)}" title="${escapeHtml(t.name)}"><i class="bi ${t.icon}"></i><span class="sb-tool-name">${escapeHtml(t.name)}</span></div>`).join('')}
             </div>
         `;
         nav.appendChild(wrap);
@@ -1077,6 +1062,8 @@ function clearSidebarHighlight() {
 }
 buildHomeGrid();
 buildSidebar();
+// 返回顶部按钮(全局一次性绑定,自动适配当前激活面板)
+document.getElementById('backToTop').onclick = scrollActiveToTop;
 
 // === Utils ===
 function setStatus(msg) {

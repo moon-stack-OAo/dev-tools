@@ -101,8 +101,8 @@ function icRender() {
     icItems.forEach((it, idx) => {
         const row = document.createElement('div');
         row.className = 'ic-item';
-        const ratioStr =
-            it.outBlob && it.file.size ? ((1 - it.outBlob.size / it.file.size) * 100).toFixed(1) + '%' : '-';
+        const ratioNum = it.outBlob && it.file.size ? (1 - it.outBlob.size / it.file.size) * 100 : 0;
+        const ratioStr = it.outBlob && it.file.size ? ratioNum.toFixed(1) + '%' : '-';
         const status =
             it.status === 'done'
                 ? '✓ 已完成'
@@ -129,7 +129,7 @@ function icRender() {
                 <div class="ic-result">
                     ${
                         it.outBlob
-                            ? `<span>→ ${it.outMime}</span><span>${it.outWidth}×${it.outHeight}</span><span>${icFormatBytes(it.outBlob.size)}</span><span class="ic-ratio">${ratioStr >= 0 ? '↓ ' : '↑ '}${Math.abs(ratioStr === '-' ? 0 : ratioStr)}</span>`
+                            ? `<span>→ ${it.outMime}</span><span>${it.outWidth}×${it.outHeight}</span><span>${icFormatBytes(it.outBlob.size)}</span><span class="ic-ratio">${ratioNum >= 0 ? '↓ ' : '↑ '}${ratioStr === '-' ? '-' : Math.abs(ratioNum).toFixed(1) + '%'}</span>`
                             : '<span style="color:var(--text-muted)">尚未处理</span>'
                     }
                 </div>

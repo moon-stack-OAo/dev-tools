@@ -665,7 +665,7 @@
 }
 
 /* Image Compress */
-#panel-image-compress {
+#panel-image-compress.active {
     display: flex;
     flex-direction: column;
     overflow: hidden;
