@@ -20,19 +20,19 @@
 
 // === Tools Data ===
 const categories = [
-    {id: 'format', name: '格式化', icon: 'bi-file-earmark-code'},
-    {id: 'encode', name: '编解码', icon: 'bi-arrow-left-right'},
-    {id: 'security', name: '安全', icon: 'bi-shield-lock'},
-    {id: 'generate', name: '生成与转换', icon: 'bi-magic'},
-    {id: 'codegen', name: '代码生成', icon: 'bi-code-square'},
-    {id: 'text', name: '文本', icon: 'bi-fonts'},
-    {id: 'debug', name: '调试', icon: 'bi-bug'},
-    {id: 'reference', name: '参考', icon: 'bi-book'},
+    { id: 'format', name: '格式化', icon: 'bi-file-earmark-code' },
+    { id: 'encode', name: '编解码', icon: 'bi-arrow-left-right' },
+    { id: 'security', name: '安全', icon: 'bi-shield-lock' },
+    { id: 'generate', name: '生成与转换', icon: 'bi-magic' },
+    { id: 'codegen', name: '代码生成', icon: 'bi-code-square' },
+    { id: 'text', name: '文本', icon: 'bi-fonts' },
+    { id: 'debug', name: '调试', icon: 'bi-bug' },
+    { id: 'reference', name: '参考', icon: 'bi-book' },
 ];
 const tools = [
-    {id: 'json', icon: 'bi-braces', name: 'JSON 格式化', desc: '格式化 / 压缩 / 验证 JSON', cat: 'format'},
-    {id: 'xml', icon: 'bi-code', name: 'XML 格式化', desc: '格式化 / 压缩 / 验证 XML', cat: 'format'},
-    {id: 'yaml', icon: 'bi-filetype-yml', name: 'YAML 格式化', desc: 'YAML 格式化 / JSON 互转', cat: 'format'},
+    { id: 'json', icon: 'bi-braces', name: 'JSON 格式化', desc: '格式化 / 压缩 / 验证 JSON', cat: 'format' },
+    { id: 'xml', icon: 'bi-code', name: 'XML 格式化', desc: '格式化 / 压缩 / 验证 XML', cat: 'format' },
+    { id: 'yaml', icon: 'bi-filetype-yml', name: 'YAML 格式化', desc: 'YAML 格式化 / JSON 互转', cat: 'format' },
     {
         id: 'propertiesfmt',
         icon: 'bi-file-earmark-text',
@@ -40,7 +40,7 @@ const tools = [
         desc: 'Properties ↔ YAML 互转',
         cat: 'format',
     },
-    {id: 'sql', icon: 'bi-database', name: 'SQL 格式化', desc: 'SQL 美化 / 多方言支持', cat: 'format'},
+    { id: 'sql', icon: 'bi-database', name: 'SQL 格式化', desc: 'SQL 美化 / 多方言支持', cat: 'format' },
     {
         id: 'jsonconvert',
         icon: 'bi-arrow-left-right',
@@ -48,8 +48,8 @@ const tools = [
         desc: 'JSON / XML / YAML 格式互相转换',
         cat: 'format',
     },
-    {id: 'jsonpath', icon: 'bi-search', name: 'JSONPath 查询', desc: 'JSONPath 表达式查询 / 提取', cat: 'format'},
-    {id: 'jsonschema', icon: 'bi-diagram-3', name: 'JSON Schema', desc: 'JSON Schema 生成 / 校验', cat: 'format'},
+    { id: 'jsonpath', icon: 'bi-search', name: 'JSONPath 查询', desc: 'JSONPath 表达式查询 / 提取', cat: 'format' },
+    { id: 'jsonschema', icon: 'bi-diagram-3', name: 'JSON Schema', desc: 'JSON Schema 生成 / 校验', cat: 'format' },
     {
         id: 'sqldialect',
         icon: 'bi-translate',
@@ -64,15 +64,44 @@ const tools = [
         desc: 'MySQL/Oracle/PG/SQLServer 类型对照',
         cat: 'format',
     },
-    {id: 'json2csv', icon: 'bi-filetype-csv', name: 'JSON ↔ CSV', desc: 'JSON 数组与 CSV 互转', cat: 'format'},
-    {id: 'base64', icon: 'bi-lock', name: 'Base64', desc: 'Base64 编码解码 / 文件支持', cat: 'encode'},
-    {id: 'url', icon: 'bi-link-45deg', name: 'URL 编码', desc: 'URL 编解码 / Component 模式', cat: 'encode'},
-    {id: 'unicode', icon: 'bi-translate', name: 'Unicode', desc: '\\uXXXX 编码 / 解码', cat: 'encode'},
-    {id: 'javaescape', icon: 'bi-slash-lg', name: 'Java 转义', desc: 'Java 字符串转义 / 反转义', cat: 'encode'},
-    {id: 'charset', icon: 'bi-fonts', name: '编码转换', desc: '字符编码互转 / 检测', cat: 'encode'},
-    {id: 'htmlescape', icon: 'bi-filetype-html', name: 'HTML 转义', desc: 'HTML 实体编码 / 解码', cat: 'encode'},
-    {id: 'imgbase64', icon: 'bi-image', name: '图片 Base64', desc: '图片与 Base64 互转 / DataURL', cat: 'encode'},
-    {id: 'hex', icon: 'bi-123', name: 'Hex 编码', desc: '字符串 ↔ Hex 互转（UTF-8）', cat: 'encode'},
+    { id: 'json2csv', icon: 'bi-filetype-csv', name: 'JSON ↔ CSV', desc: 'JSON 数组与 CSV 互转', cat: 'format' },
+    {
+        id: 'sqlexplain',
+        icon: 'bi-diagram-3',
+        name: 'SQL 执行计划',
+        desc: 'MySQL/PostgreSQL EXPLAIN 格式化 / 可视化',
+        cat: 'format',
+    },
+    { id: 'nginxfmt', icon: 'bi-gear', name: 'Nginx 格式化', desc: 'Nginx 配置格式化 / 压缩 / Lint', cat: 'format' },
+    {
+        id: 'javafmt',
+        icon: 'bi-code-square',
+        name: 'Java 代码格式化',
+        desc: 'Java 美化 / 缩进 / 大括号风格 / import 排序',
+        cat: 'format',
+    },
+    {
+        id: 'ddldiff',
+        icon: 'bi-database-fill-gear',
+        name: 'DDL Schema 对比',
+        desc: '两个 DDL 字段粒度 diff / 跨方言',
+        cat: 'format',
+    },
+    {
+        id: 'jsonexcel',
+        icon: 'bi-file-earmark-spreadsheet',
+        name: 'JSON ↔ Excel/CSV',
+        desc: 'JSON 数组与 Excel/CSV 批量互转 / 嵌套展平',
+        cat: 'format',
+    },
+    { id: 'base64', icon: 'bi-lock', name: 'Base64', desc: 'Base64 编码解码 / 文件支持', cat: 'encode' },
+    { id: 'url', icon: 'bi-link-45deg', name: 'URL 编码', desc: 'URL 编解码 / Component 模式', cat: 'encode' },
+    { id: 'unicode', icon: 'bi-translate', name: 'Unicode', desc: '\\uXXXX 编码 / 解码', cat: 'encode' },
+    { id: 'javaescape', icon: 'bi-slash-lg', name: 'Java 转义', desc: 'Java 字符串转义 / 反转义', cat: 'encode' },
+    { id: 'charset', icon: 'bi-fonts', name: '编码转换', desc: '字符编码互转 / 检测', cat: 'encode' },
+    { id: 'htmlescape', icon: 'bi-filetype-html', name: 'HTML 转义', desc: 'HTML 实体编码 / 解码', cat: 'encode' },
+    { id: 'imgbase64', icon: 'bi-image', name: '图片 Base64', desc: '图片与 Base64 互转 / DataURL', cat: 'encode' },
+    { id: 'hex', icon: 'bi-123', name: 'Hex 编码', desc: '字符串 ↔ Hex 互转（UTF-8）', cat: 'encode' },
     {
         id: 'protobuf',
         icon: 'bi-file-earmark-binary',
@@ -80,9 +109,9 @@ const tools = [
         desc: 'Protobuf ↔ JSON / Base64 / Hex',
         cat: 'encode',
     },
-    {id: 'jwt', icon: 'bi-key', name: 'JWT 解码', desc: '解析 JWT Header / Payload', cat: 'security'},
-    {id: 'jwtgen', icon: 'bi-pen', name: 'JWT 生成', desc: 'HS256/384/512 + RS256/384/512 签名', cat: 'security'},
-    {id: 'hash', icon: 'bi-hash', name: 'Hash 计算', desc: 'MD5 / SHA-1 / SHA-256 / SHA-512', cat: 'security'},
+    { id: 'jwt', icon: 'bi-key', name: 'JWT 解码', desc: '解析 JWT Header / Payload', cat: 'security' },
+    { id: 'jwtgen', icon: 'bi-pen', name: 'JWT 生成', desc: 'HS256/384/512 + RS256/384/512 签名', cat: 'security' },
+    { id: 'hash', icon: 'bi-hash', name: 'Hash 计算', desc: 'MD5 / SHA-1 / SHA-256 / SHA-512', cat: 'security' },
     {
         id: 'hmac',
         icon: 'bi-shield-lock',
@@ -90,13 +119,13 @@ const tools = [
         desc: 'HMAC-MD5 / SHA-1 / SHA-256 / SHA-384 / SHA-512',
         cat: 'security',
     },
-    {id: 'hashext', icon: 'bi-hash', name: 'Hash 扩展', desc: 'CRC32 / Adler32 / SHA-3 / SM3', cat: 'security'},
-    {id: 'random', icon: 'bi-dice-6', name: '随机生成器', desc: '密码 / Token / PIN 生成', cat: 'security'},
-    {id: 'aes', icon: 'bi-shield-check', name: 'AES 加解密', desc: 'AES 对称加密 / 解密', cat: 'security'},
-    {id: 'rsa', icon: 'bi-shield-exclamation', name: 'RSA 工具', desc: '密钥生成 / 加解密 / 签名', cat: 'security'},
-    {id: 'bcrypt', icon: 'bi-asterisk', name: 'bcrypt 加密', desc: 'bcrypt 哈希 / 验证', cat: 'security'},
-    {id: 'totp', icon: 'bi-stopwatch', name: 'TOTP 动态令牌', desc: 'TOTP/HOTP 本地生成 + URI 解析', cat: 'security'},
-    {id: 'gmsm', icon: 'bi-flag', name: '国密 SM2/3/4', desc: '国密 SM2 公钥 / SM3 摘要 / SM4 对称', cat: 'security'},
+    { id: 'hashext', icon: 'bi-hash', name: 'Hash 扩展', desc: 'CRC32 / Adler32 / SHA-3 / SM3', cat: 'security' },
+    { id: 'random', icon: 'bi-dice-6', name: '随机生成器', desc: '密码 / Token / PIN 生成', cat: 'security' },
+    { id: 'aes', icon: 'bi-shield-check', name: 'AES 加解密', desc: 'AES 对称加密 / 解密', cat: 'security' },
+    { id: 'rsa', icon: 'bi-shield-exclamation', name: 'RSA 工具', desc: '密钥生成 / 加解密 / 签名', cat: 'security' },
+    { id: 'bcrypt', icon: 'bi-asterisk', name: 'bcrypt 加密', desc: 'bcrypt 哈希 / 验证', cat: 'security' },
+    { id: 'totp', icon: 'bi-stopwatch', name: 'TOTP 动态令牌', desc: 'TOTP/HOTP 本地生成 + URI 解析', cat: 'security' },
+    { id: 'gmsm', icon: 'bi-flag', name: '国密 SM2/3/4', desc: '国密 SM2 公钥 / SM3 摘要 / SM4 对称', cat: 'security' },
     {
         id: 'pbkdf2',
         icon: 'bi-shield-shaded',
@@ -111,7 +140,7 @@ const tools = [
         desc: 'X.509 证书 PEM/DER 解析',
         cat: 'security',
     },
-    {id: 'uuid', icon: 'bi-fingerprint', name: 'UUID 生成', desc: 'UUID v4 / v7 / 批量生成', cat: 'generate'},
+    { id: 'uuid', icon: 'bi-fingerprint', name: 'UUID 生成', desc: 'UUID v4 / v7 / 批量生成', cat: 'generate' },
     {
         id: 'snowflake',
         icon: 'bi-snow',
@@ -119,21 +148,14 @@ const tools = [
         desc: 'Snowflake / Leaf / UID 三合一生成解析',
         cat: 'generate',
     },
-    {id: 'ts', icon: 'bi-clock', name: '时间戳转换', desc: 'Unix 毫秒/秒 ↔ 日期', cat: 'generate'},
-    {id: 'color', icon: 'bi-palette', name: '颜色转换', desc: 'HEX / RGB / HSL 互转预览', cat: 'generate'},
-    {id: 'baseconvert', icon: 'bi-calculator', name: '进制转换', desc: '2~36 进制互转', cat: 'generate'},
-    {id: 'case', icon: 'bi-type', name: 'Case 转换', desc: 'camelCase / snake_case 等', cat: 'generate'},
-    {id: 'datamock', icon: 'bi-people', name: '数据 Mock', desc: '生成姓名 / 手机号 / 邮箱等', cat: 'generate'},
-    {id: 'datecalc', icon: 'bi-calendar', name: '日期计算器', desc: '日期加减 / 间隔 / 工作日', cat: 'generate'},
-    {id: 'timezone', icon: 'bi-globe', name: '时区转换', desc: '跨时区时间换算', cat: 'generate'},
-    {
-        id: 'resratio',
-        icon: 'bi-aspect-ratio',
-        name: '分辨率计算',
-        desc: '最简比例 / 总像素 / 标准比例匹配 / 反算',
-        cat: 'generate',
-    },
-    {id: 'jsontopojo', icon: 'bi-arrow-repeat', name: 'JSON → Java', desc: 'JSON 生成 Java POJO 类', cat: 'codegen'},
+    { id: 'ts', icon: 'bi-clock', name: '时间戳转换', desc: 'Unix 毫秒/秒 ↔ 日期', cat: 'generate' },
+    { id: 'color', icon: 'bi-palette', name: '颜色转换', desc: 'HEX / RGB / HSL 互转预览', cat: 'generate' },
+    { id: 'baseconvert', icon: 'bi-calculator', name: '进制转换', desc: '2~36 进制互转', cat: 'generate' },
+    { id: 'case', icon: 'bi-type', name: 'Case 转换', desc: 'camelCase / snake_case 等', cat: 'generate' },
+    { id: 'datamock', icon: 'bi-people', name: '数据 Mock', desc: '生成姓名 / 手机号 / 邮箱等', cat: 'generate' },
+    { id: 'datecalc', icon: 'bi-calendar', name: '日期计算器', desc: '日期加减 / 间隔 / 工作日', cat: 'generate' },
+    { id: 'timezone', icon: 'bi-globe', name: '时区转换', desc: '跨时区时间换算', cat: 'generate' },
+    { id: 'jsontopojo', icon: 'bi-arrow-repeat', name: 'JSON → Java', desc: 'JSON 生成 Java POJO 类', cat: 'codegen' },
     {
         id: 'sqltopojo',
         icon: 'bi-arrow-repeat',
@@ -155,20 +177,48 @@ const tools = [
         desc: '邮件 HTML 模板生成 / 预览 / 内联 CSS',
         cat: 'codegen',
     },
-    {id: 'jmh', icon: 'bi-speedometer2', name: 'JMH 模板', desc: 'JMH 基准测试代码生成', cat: 'codegen'},
-    {id: 'testgen', icon: 'bi-check2-square', name: '测试模板', desc: 'JUnit 5 + Mockito 测试生成', cat: 'codegen'},
-    {id: 'qrdecode', icon: 'bi-qr-code-scan', name: '二维码解析', desc: '图片 → URL / 文本 / WiFi', cat: 'text'},
-    {id: 'diff', icon: 'bi-file-earmark-diff', name: '文本对比', desc: '文本差异对比高亮', cat: 'text'},
-    {id: 'regex', icon: 'bi-asterisk', name: '正则表达式', desc: '正则匹配测试 / 分组查看', cat: 'text'},
-    {id: 'stats', icon: 'bi-bar-chart', name: '文本统计', desc: '字符 / 单词 / 行数 / 字节', cat: 'text'},
-    {id: 'csv', icon: 'bi-table', name: 'CSV 格式化', desc: 'CSV 表格化查看 / 校对', cat: 'text'},
-    {id: 'markdown', icon: 'bi-markdown', name: 'Markdown 预览', desc: 'Markdown 实时预览 / 导出 HTML', cat: 'text'},
-    {id: 'webfmt', icon: 'bi-filetype-html', name: 'Web 格式化', desc: 'HTML / CSS / JS 格式化压缩', cat: 'text'},
-    {id: 'qrcode', icon: 'bi-qr-code', name: '二维码生成', desc: '文本 / URL 生成二维码下载', cat: 'text'},
-    {id: 'tplreplace', icon: 'bi-braces-asterisk', name: '模板替换', desc: '多种语法字符串变量替换', cat: 'text'},
-    {id: 'cron', icon: 'bi-clock-history', name: 'Cron 表达式', desc: 'Cron 解析 / 下次执行时间', cat: 'debug'},
-    {id: 'ws', icon: 'bi-plug', name: 'WebSocket', desc: 'WebSocket 连接调试', cat: 'debug'},
-    {id: 'stomp', icon: 'bi-hdd-network', name: 'STOMP', desc: 'STOMP over WebSocket 调试', cat: 'debug'},
+    { id: 'jmh', icon: 'bi-speedometer2', name: 'JMH 模板', desc: 'JMH 基准测试代码生成', cat: 'codegen' },
+    { id: 'testgen', icon: 'bi-check2-square', name: '测试模板', desc: 'JUnit 5 + Mockito 测试生成', cat: 'codegen' },
+    {
+        id: 'javastream',
+        icon: 'bi-funnel',
+        name: 'Java Stream 生成',
+        desc: '可视化组装 Stream API 链 / 自动 import',
+        cat: 'codegen',
+    },
+    {
+        id: 'jmhpro',
+        icon: 'bi-speedometer',
+        name: 'JMH 进阶',
+        desc: 'JMH 完整注解 / Group / Compiler Control / Timeout',
+        cat: 'codegen',
+    },
+    {
+        id: 'beanval',
+        icon: 'bi-check-circle',
+        name: 'Bean Validation',
+        desc: 'javax.validation 注解自动推导 / DTO 生成',
+        cat: 'codegen',
+    },
+    {
+        id: 'plantuml',
+        icon: 'bi-diagram-2',
+        name: 'PlantUML 类图',
+        desc: 'Java/JSON 转 PlantUML 类图源码',
+        cat: 'codegen',
+    },
+    { id: 'qrdecode', icon: 'bi-qr-code-scan', name: '二维码解析', desc: '图片 → URL / 文本 / WiFi', cat: 'text' },
+    { id: 'diff', icon: 'bi-file-earmark-diff', name: '文本对比', desc: '文本差异对比高亮', cat: 'text' },
+    { id: 'regex', icon: 'bi-asterisk', name: '正则表达式', desc: '正则匹配测试 / 分组查看', cat: 'text' },
+    { id: 'stats', icon: 'bi-bar-chart', name: '文本统计', desc: '字符 / 单词 / 行数 / 字节', cat: 'text' },
+    { id: 'csv', icon: 'bi-table', name: 'CSV 格式化', desc: 'CSV 表格化查看 / 校对', cat: 'text' },
+    { id: 'markdown', icon: 'bi-markdown', name: 'Markdown 预览', desc: 'Markdown 实时预览 / 导出 HTML', cat: 'text' },
+    { id: 'webfmt', icon: 'bi-filetype-html', name: 'Web 格式化', desc: 'HTML / CSS / JS 格式化压缩', cat: 'text' },
+    { id: 'qrcode', icon: 'bi-qr-code', name: '二维码生成', desc: '文本 / URL 生成二维码下载', cat: 'text' },
+    { id: 'tplreplace', icon: 'bi-braces-asterisk', name: '模板替换', desc: '多种语法字符串变量替换', cat: 'text' },
+    { id: 'cron', icon: 'bi-clock-history', name: 'Cron 表达式', desc: 'Cron 解析 / 下次执行时间', cat: 'debug' },
+    { id: 'ws', icon: 'bi-plug', name: 'WebSocket', desc: 'WebSocket 连接调试', cat: 'debug' },
+    { id: 'stomp', icon: 'bi-hdd-network', name: 'STOMP', desc: 'STOMP over WebSocket 调试', cat: 'debug' },
     {
         id: 'httpdebug',
         icon: 'bi-cloud-arrow-down',
@@ -176,7 +226,7 @@ const tools = [
         desc: '发送请求 / 查看响应 / cURL 生成解析',
         cat: 'debug',
     },
-    {id: 'ip', icon: 'bi-globe2', name: 'IP 工具', desc: 'IP 归属 / 子网计算', cat: 'debug'},
+    { id: 'ip', icon: 'bi-globe2', name: 'IP 工具', desc: 'IP 归属 / 子网计算', cat: 'debug' },
     {
         id: 'grpc',
         icon: 'bi-hdd-network',
@@ -184,15 +234,15 @@ const tools = [
         desc: 'Metadata 构造 / Protobuf 解码 / 状态码',
         cat: 'debug',
     },
-    {id: 'urlparser', icon: 'bi-link-45deg', name: 'URL 解析', desc: 'URL 拆解 / 编码解码', cat: 'debug'},
-    {id: 'uaparser', icon: 'bi-browser-chrome', name: 'UA 解析', desc: 'User-Agent 解析', cat: 'debug'},
-    {id: 'logfmt', icon: 'bi-file-text', name: '日志高亮', desc: '日志格式化 + 级别着色 + 堆栈折叠', cat: 'debug'},
-    {id: 'stacktrace', icon: 'bi-list-ol', name: '异常分析', desc: 'Java 堆栈跟踪解析 / 格式化', cat: 'debug'},
-    {id: 'sse', icon: 'bi-broadcast', name: 'SSE 调试', desc: 'Server-Sent Events 实时调试', cat: 'debug'},
-    {id: 'arthas', icon: 'bi-terminal', name: 'Arthas 命令', desc: 'Arthas 诊断命令速查', cat: 'reference'},
-    {id: 'linux', icon: 'bi-terminal-fill', name: 'Linux 命令', desc: '常用 Linux 命令速查', cat: 'reference'},
-    {id: 'jvmargs', icon: 'bi-cpu', name: 'JVM 参数', desc: 'JVM 启动参数速查', cat: 'reference'},
-    {id: 'redisref', icon: 'bi-database-fill-gear', name: 'Redis 命令', desc: 'Redis 常用命令速查', cat: 'reference'},
+    { id: 'urlparser', icon: 'bi-link-45deg', name: 'URL 解析', desc: 'URL 拆解 / 编码解码', cat: 'debug' },
+    { id: 'uaparser', icon: 'bi-browser-chrome', name: 'UA 解析', desc: 'User-Agent 解析', cat: 'debug' },
+    { id: 'logfmt', icon: 'bi-file-text', name: '日志高亮', desc: '日志格式化 + 级别着色 + 堆栈折叠', cat: 'debug' },
+    { id: 'stacktrace', icon: 'bi-list-ol', name: '异常分析', desc: 'Java 堆栈跟踪解析 / 格式化', cat: 'debug' },
+    { id: 'sse', icon: 'bi-broadcast', name: 'SSE 调试', desc: 'Server-Sent Events 实时调试', cat: 'debug' },
+    { id: 'arthas', icon: 'bi-terminal', name: 'Arthas 命令', desc: 'Arthas 诊断命令速查', cat: 'reference' },
+    { id: 'linux', icon: 'bi-terminal-fill', name: 'Linux 命令', desc: '常用 Linux 命令速查', cat: 'reference' },
+    { id: 'jvmargs', icon: 'bi-cpu', name: 'JVM 参数', desc: 'JVM 启动参数速查', cat: 'reference' },
+    { id: 'redisref', icon: 'bi-database-fill-gear', name: 'Redis 命令', desc: 'Redis 常用命令速查', cat: 'reference' },
     {
         id: 'springcloud',
         icon: 'bi-cloud-fog2',
@@ -200,11 +250,11 @@ const tools = [
         desc: 'Spring Cloud Alibaba 组件速查',
         cat: 'reference',
     },
-    {id: 'docker', icon: 'bi-box-seam', name: 'Docker 命令', desc: 'Docker / K8s 命令速查', cat: 'reference'},
-    {id: 'regexref', icon: 'bi-book', name: '正则速查表', desc: '常用正则表达式分类速查', cat: 'reference'},
-    {id: 'gitref', icon: 'bi-git', name: 'Git 命令', desc: 'Git 常用操作速查', cat: 'reference'},
-    {id: 'httpstatus', icon: 'bi-info-circle', name: 'HTTP 状态码', desc: 'HTTP 状态码 / 方法速查', cat: 'reference'},
-    {id: 'ascii', icon: 'bi-keyboard', name: 'ASCII 表', desc: 'ASCII / 控制字符速查', cat: 'reference'},
+    { id: 'docker', icon: 'bi-box-seam', name: 'Docker 命令', desc: 'Docker / K8s 命令速查', cat: 'reference' },
+    { id: 'regexref', icon: 'bi-book', name: '正则速查表', desc: '常用正则表达式分类速查', cat: 'reference' },
+    { id: 'gitref', icon: 'bi-git', name: 'Git 命令', desc: 'Git 常用操作速查', cat: 'reference' },
+    { id: 'httpstatus', icon: 'bi-info-circle', name: 'HTTP 状态码', desc: 'HTTP 状态码 / 方法速查', cat: 'reference' },
+    { id: 'ascii', icon: 'bi-keyboard', name: 'ASCII 表', desc: 'ASCII / 控制字符速查', cat: 'reference' },
     {
         id: 'mybatisplus',
         icon: 'bi-database-gear',
@@ -219,7 +269,7 @@ const tools = [
         desc: 'MyBatis 动态 SQL 标签速查',
         cat: 'reference',
     },
-    {id: 'lombok', icon: 'bi-magic', name: 'Lombok 注解', desc: 'Lombok 常用注解速查', cat: 'reference'},
+    { id: 'lombok', icon: 'bi-magic', name: 'Lombok 注解', desc: 'Lombok 常用注解速查', cat: 'reference' },
     {
         id: 'springboot',
         icon: 'bi-stars',
@@ -234,9 +284,9 @@ const tools = [
         desc: 'Spring 事务传播行为速查',
         cat: 'reference',
     },
-    {id: 'mavenref', icon: 'bi-box', name: 'Maven 命令', desc: 'Maven 常用命令速查', cat: 'reference'},
-    {id: 'gradle', icon: 'bi-box-seam', name: 'Gradle 命令', desc: 'Gradle 常用命令速查', cat: 'reference'},
-    {id: 'jdkfeatures', icon: 'bi-cup-hot', name: 'JDK 新特性', desc: 'JDK 8/11/17/21 新特性速查', cat: 'reference'},
+    { id: 'mavenref', icon: 'bi-box', name: 'Maven 命令', desc: 'Maven 常用命令速查', cat: 'reference' },
+    { id: 'gradle', icon: 'bi-box-seam', name: 'Gradle 命令', desc: 'Gradle 常用命令速查', cat: 'reference' },
+    { id: 'jdkfeatures', icon: 'bi-cup-hot', name: 'JDK 新特性', desc: 'JDK 8/11/17/21 新特性速查', cat: 'reference' },
     {
         id: 'httpheader',
         icon: 'bi-list-columns-reverse',
@@ -258,10 +308,10 @@ const tools = [
         desc: '文件扩展名 / MIME 类型对照',
         cat: 'reference',
     },
-    {id: 'portref', icon: 'bi-plug', name: '端口号速查', desc: '常用网络服务端口号对照', cat: 'reference'},
-    {id: 'ideakeys', icon: 'bi-keyboard', name: 'IDEA 快捷键', desc: 'IntelliJ IDEA 快捷键速查', cat: 'reference'},
-    {id: 'designpatterns', icon: 'bi-diagram-3', name: '设计模式', desc: '23 种设计模式示例代码', cat: 'reference'},
-    {id: 'gcref', icon: 'bi-cpu', name: 'GC 调优', desc: 'JVM 垃圾回收算法与参数速查', cat: 'reference'},
+    { id: 'portref', icon: 'bi-plug', name: '端口号速查', desc: '常用网络服务端口号对照', cat: 'reference' },
+    { id: 'ideakeys', icon: 'bi-keyboard', name: 'IDEA 快捷键', desc: 'IntelliJ IDEA 快捷键速查', cat: 'reference' },
+    { id: 'designpatterns', icon: 'bi-diagram-3', name: '设计模式', desc: '23 种设计模式示例代码', cat: 'reference' },
+    { id: 'gcref', icon: 'bi-cpu', name: 'GC 调优', desc: 'JVM 垃圾回收算法与参数速查', cat: 'reference' },
     {
         id: 'securityref',
         icon: 'bi-shield-lock',
@@ -269,7 +319,7 @@ const tools = [
         desc: 'Spring Security 注解与配置速查',
         cat: 'reference',
     },
-    {id: 'junit5', icon: 'bi-check2-square', name: 'JUnit 5', desc: 'JUnit 5 注解与断言速查', cat: 'reference'},
+    { id: 'junit5', icon: 'bi-check2-square', name: 'JUnit 5', desc: 'JUnit 5 注解与断言速查', cat: 'reference' },
 ];
 
 // === Navigation ===
@@ -285,8 +335,7 @@ function applyTheme(theme) {
     if (icon) icon.className = theme === 'light' ? 'bi bi-sun-fill' : 'bi bi-moon-stars-fill';
     try {
         localStorage.setItem(THEME_KEY, theme);
-    } catch (e) {
-    }
+    } catch (e) {}
 }
 
 function toggleTheme() {
@@ -298,8 +347,7 @@ function toggleTheme() {
     let saved = 'dark';
     try {
         saved = localStorage.getItem(THEME_KEY) || 'dark';
-    } catch (e) {
-    }
+    } catch (e) {}
     applyTheme(saved);
 })();
 
@@ -312,8 +360,7 @@ function bumpUsage(id) {
         const stats = raw ? JSON.parse(raw) : {};
         stats[id] = (stats[id] || 0) + 1;
         localStorage.setItem(STATS_KEY, JSON.stringify(stats));
-    } catch (e) {
-    }
+    } catch (e) {}
 }
 
 function getUsageStats() {
@@ -328,8 +375,7 @@ function getUsageStats() {
 function clearUsageStats() {
     try {
         localStorage.removeItem(STATS_KEY);
-    } catch (e) {
-    }
+    } catch (e) {}
     renderHomeHeatmap();
 }
 
@@ -338,7 +384,7 @@ function renderHomeHeatmap() {
     if (!panel) return;
     const stats = getUsageStats();
     const entries = Object.entries(stats)
-        .map(([id, count]) => ({id: id, count: count, tool: tools.find((t) => t.id === id)}))
+        .map(([id, count]) => ({ id: id, count: count, tool: tools.find((t) => t.id === id) }))
         .filter((e) => e.tool)
         .sort((a, b) => b.count - a.count)
         .slice(0, 10);
@@ -361,7 +407,10 @@ function renderHomeHeatmap() {
                 const pct = Math.round((e.count / max) * 100);
                 const share = total > 0 ? Math.round((e.count / total) * 100) : 0;
                 const rank = i < 3 ? ' ' + tierClass[i] : '';
-                const medal = i < 3 ? '<span class="home-heatmap-medal">' + medals[i] + '</span>' : '<span class="home-heatmap-rank">' + (i + 1) + '</span>';
+                const medal =
+                    i < 3
+                        ? '<span class="home-heatmap-medal">' + medals[i] + '</span>'
+                        : '<span class="home-heatmap-rank">' + (i + 1) + '</span>';
                 const flame = i < 10 ? '<span class="home-heatmap-flame">' + flames[i] + '</span>' : '';
                 return (
                     '<div class="home-heatmap-item cat-' +
@@ -497,7 +546,7 @@ function clearRefSearch(btn) {
     const input = wrap && wrap.querySelector('input');
     if (!input) return;
     input.value = '';
-    input.dispatchEvent(new Event('input', {bubbles: true}));
+    input.dispatchEvent(new Event('input', { bubbles: true }));
     btn.classList.remove('visible');
     input.focus();
 }
@@ -591,7 +640,7 @@ function buildHomeGrid() {
 
     // 返回顶部按钮
     const btt = document.getElementById('backToTop');
-    btt.addEventListener('click', () => homePanel.scrollTo({top: 0, behavior: 'smooth'}));
+    btt.addEventListener('click', () => homePanel.scrollTo({ top: 0, behavior: 'smooth' }));
 }
 
 function highlightAnchor() {
@@ -742,7 +791,7 @@ async function openTool(id) {
             }
         }
         (target || root).scrollTo({ top: 0, behavior: 'smooth' });
-    };;
+    };
 }
 
 function goHome(catId) {
@@ -762,7 +811,7 @@ function goHome(catId) {
         highlightAnchor();
         if (catId) {
             const el = document.getElementById('cat-' + catId);
-            if (el) el.scrollIntoView({behavior: 'smooth', block: 'start'});
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }, 50);
     setStatus('就绪');
@@ -836,9 +885,8 @@ function readSidebarState() {
 
 function saveSidebarState() {
     try {
-        localStorage.setItem(SIDEBAR_KEY, JSON.stringify({collapsed: sidebarCollapsed}));
-    } catch (e) {
-    }
+        localStorage.setItem(SIDEBAR_KEY, JSON.stringify({ collapsed: sidebarCollapsed }));
+    } catch (e) {}
 }
 
 function buildSidebar() {

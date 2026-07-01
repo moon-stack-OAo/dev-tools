@@ -1,0 +1,158 @@
+<div class="tool-panel" id="panel-beanval">
+    <div class="bv-layout">
+        <div class="bv-config">
+            <div class="bv-section">
+                <div class="bv-section-header">
+                    <span><i class="bi bi-list-ul"></i> 字段列表</span>
+                    <div class="flex gap-6" style="display:flex;gap:6px;flex-wrap:wrap">
+                        <button class="outline" onclick="bvAddField()" type="button">
+                            <i class="bi bi-plus-lg"></i> 添加字段
+                        </button>
+                        <button class="outline" onclick="bvOpenImport()" type="button">
+                            <i class="bi bi-clipboard-data"></i> 批量导入
+                        </button>
+                        <button class="outline" onclick="bvClearAll()" type="button">
+                            <i class="bi bi-arrow-counterclockwise"></i> 清空
+                        </button>
+                    </div>
+                </div>
+                <div class="bv-section-body">
+                    <table class="bv-field-table" id="bvFieldTable">
+                        <thead>
+                        <tr>
+                            <th style="width:32%">字段名</th>
+                            <th style="width:18%">类型</th>
+                            <th style="width:8%">必填</th>
+                            <th>自定义注解</th>
+                            <th style="width:32px"></th>
+                        </tr>
+                        </thead>
+                        <tbody id="bvFieldBody"></tbody>
+                    </table>
+                    <div class="bv-empty" id="bvEmpty">尚未添加字段，点击「添加字段」开始</div>
+                </div>
+            </div>
+
+            <div class="bv-section">
+                <div class="bv-section-header">
+                    <span><i class="bi bi-sliders"></i> 推导选项</span>
+                </div>
+                <div class="bv-section-body">
+                    <div class="bv-options">
+                        <label>
+                            <input checked id="bvOptString" type="checkbox">
+                            String 自动 <code>@NotBlank</code> + <code>@Size(max=255)</code>
+                        </label>
+                        <label>
+                            <input checked id="bvOptNumber" type="checkbox">
+                            Integer/Long 自动 <code>@Min(0)</code>
+                            <input id="bvOptIntMax" type="number" value="9223372036854775807">
+                        </label>
+                        <label>
+                            <input checked id="bvOptDecimal" type="checkbox">
+                            BigDecimal <code>@Digits(integer=10, fraction=2)</code>
+                        </label>
+                        <label>
+                            <input checked id="bvOptDate" type="checkbox">
+                            Date/LocalDate 用户选 Past/Future
+                            <select id="bvOptDateType"
+                                    style="margin-left:6px;background:var(--bg-input);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:2px 4px;font-size:11px">
+                                <option value="">不指定</option>
+                                <option value="Past">Past</option>
+                                <option value="Future">Future</option>
+                            </select>
+                        </label>
+                        <label>
+                            <input checked id="bvOptHeuristic" type="checkbox">
+                            启发式 (email/phone/url/name/age/birthday/expiry)
+                        </label>
+                        <label>
+                            <input checked id="bvOptRequired" type="checkbox">
+                            必填字段自动加 <code>@NotNull</code>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bv-section">
+                <div class="bv-section-header">
+                    <span><i class="bi bi-gear"></i> 生成配置</span>
+                </div>
+                <div class="bv-section-body">
+                    <div class="bv-cfg-grid">
+                        <div>
+                            <div class="label">包名</div>
+                            <input id="bvPackage" placeholder="com.example.demo.dto" type="text"
+                                   value="com.example.demo.dto">
+                        </div>
+                        <div>
+                            <div class="label">类名</div>
+                            <input id="bvClassName" placeholder="UserDTO" type="text" value="UserDTO">
+                        </div>
+                    </div>
+                    <div class="bv-toggles">
+                        <label>
+                            <input checked id="bvCfgData" type="checkbox"> Lombok <code>@Data</code>
+                        </label>
+                        <label>
+                            <input checked id="bvCfgGetterSetter" type="checkbox"> 生成 getter/setter
+                        </label>
+                        <label>
+                            <input id="bvCfgValidated" type="checkbox"> 类级 <code>@Validated</code>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="toolbar">
+                <button onclick="bvGenerate()" type="button">
+                    <i class="bi bi-magic"></i> 生成代码
+                </button>
+                <button class="outline" onclick="bvCopy()" type="button">
+                    <i class="bi bi-clipboard"></i> 复制
+                </button>
+            </div>
+        </div>
+
+        <div class="bv-output">
+            <div class="bv-output-header">
+                <span><i class="bi bi-file-earmark-code"></i> 生成的 Java 类</span>
+                <div class="bv-stats">
+                    <span>字段 <b id="bvStatFields">0</b></span>
+                    <span>注解 <b id="bvStatAnnos">0</b></span>
+                    <span>import <b id="bvStatImports">0</b></span>
+                </div>
+            </div>
+            <pre id="bvOutput">// 左侧编辑字段，点击「生成代码」开始</pre>
+        </div>
+    </div>
+</div>
+
+<div class="bv-modal-backdrop" id="bvImportModal" style="display:none">
+    <div class="bv-modal">
+        <div class="bv-modal-header">
+            <span>批量导入 Java 字段</span>
+            <button class="bv-del-btn" onclick="bvCloseImport()" title="关闭" type="button">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <div class="bv-modal-body">
+            <div style="font-size:12px;color:var(--text-dim);line-height:1.6">
+                每行一个字段声明，支持
+                <code>private</code> / <code>public</code> / <code>protected</code> /
+                <code>static</code> / <code>final</code> / <code>transient</code> 修饰符。<br>
+                示例：<br>
+                <code>private String username;</code><br>
+                <code>private Integer age;</code><br>
+                <code>private java.time.LocalDate birthday;</code>
+            </div>
+            <textarea id="bvImportText"
+                      placeholder="private String username;&#10;private Integer age;&#10;private java.time.LocalDate birthday;"></textarea>
+            <div id="bvImportMsg" style="font-size:12px;color:var(--text-muted);min-height:18px"></div>
+        </div>
+        <div class="bv-modal-footer">
+            <button class="outline" onclick="bvCloseImport()" type="button">取消</button>
+            <button onclick="bvDoImport()" type="button">解析导入</button>
+        </div>
+    </div>
+</div>

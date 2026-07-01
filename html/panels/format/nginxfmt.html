@@ -1,0 +1,47 @@
+<!-- Nginx 配置格式化 -->
+<div class="tool-panel" id="panel-nginxfmt">
+    <div class="alert jf-alert">
+        ⚠️ 简化版 nginx 配置美化器。自实现 tokenizer + AST；支持缩进选择 / 压缩 / 基础 lint。
+        不解析 include 引用的外部文件；map / geo / limit_except 等仅按语法解析。
+    </div>
+
+    <div class="toolbar jf-options nfm-toolbar">
+        <label style="display:flex;align-items:center;gap:6px">
+            缩进：
+            <select id="nfmIndent">
+                <option value="2">2 空格</option>
+                <option selected value="4">4 空格</option>
+                <option value="\\t">Tab</option>
+            </select>
+        </label>
+        <span style="color:var(--text-muted)">|</span>
+        <span class="nfm-stats" id="nfmStats"></span>
+        <button class="outline" onclick="nfmClear()" style="margin-left:auto">清空</button>
+        <button class="outline" onclick="nfmSample()">加载示例</button>
+    </div>
+
+    <div class="grid-2col nfm-grid">
+        <div style="display:flex;flex-direction:column;min-width:0">
+            <div class="label">Nginx 输入</div>
+            <textarea class="json-input" id="nfmInput" placeholder="粘贴 nginx.conf 内容..."
+                      spellcheck="false" style="min-height:360px"></textarea>
+        </div>
+        <div style="display:flex;flex-direction:column;min-width:0">
+            <div class="label">格式化 / 压缩结果</div>
+            <textarea class="json-input" id="nfmOutput" readonly spellcheck="false"
+                      style="background:var(--bg-input);min-height:360px"></textarea>
+        </div>
+    </div>
+
+    <div class="copy-wrap" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="_nfmFormat()">格式化</button>
+        <button class="btn" onclick="_nfmMinify()">压缩</button>
+        <button class="btn" onclick="_nfmCopy()">复制</button>
+        <span class="nfm-status" id="nfmStatus"></span>
+    </div>
+
+    <div class="nfm-lint-section">
+        <div class="label" style="margin-top:14px">Lint 检查结果</div>
+        <div class="nfm-lint-list" id="nfmLint"><span class="nfm-lint-empty">未发现问题</span></div>
+    </div>
+</div>

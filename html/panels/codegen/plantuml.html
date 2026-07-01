@@ -1,0 +1,68 @@
+<div class="tool-panel" id="panel-plantuml">
+    <div class="pl-layout">
+        <div class="pl-source">
+            <div class="flex gap-6 mb-8" style="align-items:flex-end;flex-wrap:wrap">
+                <div>
+                    <div class="label">源类型</div>
+                    <select id="plSrcType" style="width:140px">
+                        <option value="java">Java 源码</option>
+                        <option value="json">JSON 数据</option>
+                    </select>
+                </div>
+                <div class="toolbar" style="margin-left:auto">
+                    <button id="plBtnSampleJava" title="加载 Java 示例">Java 示例</button>
+                    <button id="plBtnSampleJson" title="加载 JSON 示例">JSON 示例</button>
+                    <button id="plBtnGen">生成</button>
+                </div>
+            </div>
+            <div class="flex gap-12"
+                 style="flex-wrap:wrap;align-items:center;font-size:12px;color:var(--text-dim);margin-bottom:8px">
+                <label style="display:flex;align-items:center;gap:4px"><input checked id="plOptFields" style="accent-color:var(--accent)"
+                                                                              type="checkbox"> 显示字段</label>
+                <label style="display:flex;align-items:center;gap:4px"><input checked id="plOptMethods" style="accent-color:var(--accent)"
+                                                                              type="checkbox"> 显示方法</label>
+                <label style="display:flex;align-items:center;gap:4px"><input checked id="plOptCtors" style="accent-color:var(--accent)"
+                                                                              type="checkbox"> 显示构造器</label>
+                <label style="display:flex;align-items:center;gap:4px"><input checked id="plOptMods" style="accent-color:var(--accent)"
+                                                                              type="checkbox">
+                    显示访问修饰符</label>
+                <label style="display:flex;align-items:center;gap:4px"><input checked id="plOptGens" style="accent-color:var(--accent)"
+                                                                              type="checkbox"> 显示泛型</label>
+            </div>
+            <textarea class="pl-input" id="plSrcInput" placeholder="public class Foo { ... }"
+                      spellcheck="false"></textarea>
+        </div>
+        <div class="pl-output">
+            <div class="pl-section">
+                <div class="pl-section-header">
+                    <span><i class="bi bi-code-slash"></i> PlantUML 文本</span>
+                    <div class="flex gap-6" style="align-items:center">
+                        <a href="#" id="plOpenLink" rel="noopener" target="_blank"
+                           title="在新窗口打开 plantuml.com 在线查看">
+                            <i class="bi bi-box-arrow-up-right"></i> 在 plantuml.com 打开
+                        </a>
+                        <button id="plBtnCopy">复制</button>
+                    </div>
+                </div>
+                <textarea class="pl-output-box" id="plOutput" readonly spellcheck="false"></textarea>
+            </div>
+            <div class="pl-section pl-section-preview">
+                <div class="pl-section-header">
+                    <span><i class="bi bi-image"></i> 在线预览</span>
+                    <button id="plBtnReset" title="重置预览">重试</button>
+                </div>
+                <div class="pl-preview-wrap">
+                    <img alt="PlantUML preview" id="plPreview"
+                         style="display:none;max-width:100%;height:auto;background:#fff" />
+                    <div class="pl-preview-error" id="plPreviewError" style="display:none"></div>
+                    <div class="pl-preview-placeholder" id="plPreviewPlaceholder">
+                        <div>
+                            <i class="bi bi-diagram-2"></i>
+                            <div>请先生成 PlantUML 内容</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

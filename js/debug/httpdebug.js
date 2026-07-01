@@ -236,18 +236,19 @@ function httpBuildRequestConfig() {
         }
     }
 
-    return {method, url, headers: mergedHeaders, body, bodyType, isBodyDisabled, hasContentType};
+    return { method, url, headers: mergedHeaders, body, bodyType, isBodyDisabled, hasContentType };
 }
 
 function httpBuildFetchOpts(cfg) {
-    const opts = {method: cfg.method};
+    const opts = { method: cfg.method };
     const headerObj = {};
     cfg.headers.forEach(([k, v]) => (headerObj[k] = v));
 
     const usesBody = cfg.body && !cfg.isBodyDisabled && cfg.bodyType !== 'none';
     if (usesBody) {
         if (cfg.bodyType === 'json' && !cfg.hasContentType) headerObj['Content-Type'] = 'application/json';
-        else if (cfg.bodyType === 'form' && !cfg.hasContentType) headerObj['Content-Type'] = 'application/x-www-form-urlencoded';
+        else if (cfg.bodyType === 'form' && !cfg.hasContentType)
+            headerObj['Content-Type'] = 'application/x-www-form-urlencoded';
         else if (cfg.bodyType === 'text' && !cfg.hasContentType) headerObj['Content-Type'] = 'text/plain';
         opts.body = cfg.body;
     }
@@ -283,9 +284,12 @@ function httpGenerate() {
     cfg.headers.forEach(([k, v]) => parts.push(`  -H ${httpShellQuote(k + ': ' + v)}`));
 
     if (usesBody) {
-        if (cfg.bodyType === 'json' && !cfg.hasContentType) parts.push(`  -H ${httpShellQuote('Content-Type: application/json')}`);
-        else if (cfg.bodyType === 'form' && !cfg.hasContentType) parts.push(`  -H ${httpShellQuote('Content-Type: application/x-www-form-urlencoded')}`);
-        else if (cfg.bodyType === 'text' && !cfg.hasContentType) parts.push(`  -H ${httpShellQuote('Content-Type: text/plain')}`);
+        if (cfg.bodyType === 'json' && !cfg.hasContentType)
+            parts.push(`  -H ${httpShellQuote('Content-Type: application/json')}`);
+        else if (cfg.bodyType === 'form' && !cfg.hasContentType)
+            parts.push(`  -H ${httpShellQuote('Content-Type: application/x-www-form-urlencoded')}`);
+        else if (cfg.bodyType === 'text' && !cfg.hasContentType)
+            parts.push(`  -H ${httpShellQuote('Content-Type: text/plain')}`);
         parts.push(`  --data-raw ${httpShellQuote(cfg.body)}`);
     }
 
@@ -318,6 +322,118 @@ function httpGenerate() {
     setStatus('已生成 cURL 命令');
 }
 
+let _httpLastBlob = null;
+let _httpLastContentType = '';
+let _httpLastFilename = '';
+
+function httpIsTextType(contentType) {
+    if (!contentType) return true;
+    const ct = contentType.toLowerCase();
+    if (ct.startsWith('text/')) return true;
+    if (ct.includes('json')) return true;
+    if (ct.includes('xml')) return true;
+    if (ct.includes('javascript')) return true;
+    if (ct.includes('x-www-form-urlencoded')) return true;
+    if (ct.includes('html')) return true;
+    if (ct.includes('plain')) return true;
+    return false;
+}
+
+function httpIsPreviewable(contentType) {
+    if (!contentType) return false;
+    const ct = contentType.toLowerCase();
+    if (ct.startsWith('image/')) return true;
+    if (ct === 'application/pdf') return true;
+    if (ct.startsWith('video/')) return true;
+    if (ct.startsWith('audio/')) return true;
+    return false;
+}
+
+function httpFormatBytes(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    if (bytes < 1024 * 1024 * 1024) return (bytes / 1024 / 1024).toFixed(2) + ' MB';
+    return (bytes / 1024 / 1024 / 1024).toFixed(2) + ' GB';
+}
+
+function httpExtractFilename(disposition, url, contentType) {
+    const m = disposition && disposition.match(/filename\*?=(?:UTF-8'')?["']?([^"';]+)/i);
+    if (m) {
+        try {
+            return decodeURIComponent(m[1]);
+        } catch (e) {
+            return m[1];
+        }
+    }
+    const extMap = {
+        'application/pdf': '.pdf',
+        'application/zip': '.zip',
+        'application/json': '.json',
+        'application/xml': '.xml',
+        'application/octet-stream': '.bin',
+        'application/x-gzip': '.gz',
+        'application/x-tar': '.tar',
+        'application/msword': '.doc',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': '.xlsx',
+        'application/vnd.ms-excel': '.xls',
+        'text/plain': '.txt',
+        'text/html': '.html',
+        'text/csv': '.csv',
+        'text/xml': '.xml',
+        'image/png': '.png',
+        'image/jpeg': '.jpg',
+        'image/gif': '.gif',
+        'image/svg+xml': '.svg',
+        'image/webp': '.webp',
+    };
+    try {
+        const u = new URL(url, location.href);
+        const pathname = u.pathname;
+        const last = pathname.substring(pathname.lastIndexOf('/') + 1);
+        if (last && /\.[a-zA-Z0-9]{1,5}$/.test(last)) return last;
+        if (last && last.length > 0 && last.length < 100) {
+            const ext = extMap[contentType] || '';
+            return last + ext;
+        }
+    } catch (e) {
+        /* ignore */
+    }
+    const ext = extMap[contentType] || '';
+    return 'response' + ext;
+}
+
+function httpDownloadResponse() {
+    if (!_httpLastBlob) {
+        toast('暂无响应可下载');
+        return;
+    }
+    const url = URL.createObjectURL(_httpLastBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = _httpLastFilename || 'response.bin';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    toast('已触发下载: ' + (_httpLastFilename || 'response.bin'));
+}
+
+function httpOpenInNewTab() {
+    if (!_httpLastBlob) {
+        toast('暂无响应可打开');
+        return;
+    }
+    const url = URL.createObjectURL(_httpLastBlob);
+    window.open(url, '_blank');
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+    toast('已在新窗口打开');
+}
+
+function httpApplyProxy(url, useProxy) {
+    if (!useProxy) return url;
+    return '/__cors_proxy?target=' + encodeURIComponent(url);
+}
+
 function httpSend() {
     if (_httpInflight) {
         _httpInflight.abort();
@@ -339,13 +455,20 @@ function httpSend() {
     const bodyEl = document.getElementById('httpBodyOutput');
     const respEl = document.getElementById('httpResponse');
     const emptyEl = document.getElementById('httpResponseEmpty');
+    const actionsEl = document.getElementById('httpRespActions');
+    const openBtn = document.getElementById('httpOpenBtn');
 
     respEl.style.display = 'block';
     emptyEl.style.display = 'none';
+    actionsEl.style.display = 'none';
     statusEl.textContent = '请求中...';
     statusEl.className = 'resp-status';
     metaEl.textContent = '';
     bodyEl.textContent = '';
+    bodyEl.className = 'resp-body';
+    _httpLastBlob = null;
+    _httpLastContentType = '';
+    _httpLastFilename = '';
 
     const sideTabs = document.querySelectorAll('.http-side-tabs .api-tab');
     sideTabs.forEach((t) => t.classList.remove('active'));
@@ -353,39 +476,241 @@ function httpSend() {
     document.querySelectorAll('.http-side-panel').forEach((p) => p.classList.remove('active'));
     document.getElementById('http-response-panel').classList.add('active');
 
+    const useProxy = !!document.getElementById('httpOptProxy') && document.getElementById('httpOptProxy').checked;
+    const requestUrl = httpApplyProxy(cfg.url, useProxy);
+
     const start = performance.now();
-    setStatus('HTTP 请求中...');
-    _httpInflight = fetch(cfg.url, opts);
+    setStatus('HTTP 请求中...' + (useProxy ? ' (本地代理)' : ''));
+    _httpInflight = fetch(requestUrl, opts);
     _httpInflight
         .then(async (resp) => {
             const elapsed = ((performance.now() - start) / 1000).toFixed(2);
             const code = resp.status;
-            const cls = code < 300 ? 'status-2xx' : code < 400 ? 'status-3xx' : code < 500 ? 'status-4xx' : 'status-5xx';
+            const cls =
+                code < 300 ? 'status-2xx' : code < 400 ? 'status-3xx' : code < 500 ? 'status-4xx' : 'status-5xx';
             statusEl.textContent = code + ' ' + resp.statusText;
             statusEl.className = 'resp-status ' + cls;
-            const text = await resp.text();
-            metaEl.textContent = elapsed + 's  |  ' + text.length + ' bytes  |  ' + (resp.headers.get('content-type') || '-');
-            try {
-                bodyEl.textContent = JSON.stringify(JSON.parse(text), null, 2);
-            } catch (e) {
-                bodyEl.textContent = text;
+
+            const contentType = (resp.headers.get('content-type') || '').toLowerCase().split(';')[0].trim();
+            const disposition = resp.headers.get('content-disposition') || '';
+            const blob = await resp.blob();
+            const size = blob.size;
+            _httpLastBlob = blob;
+            _httpLastContentType = contentType;
+            _httpLastFilename = httpExtractFilename(disposition, cfg.url, contentType);
+
+            metaEl.textContent = elapsed + 's  |  ' + httpFormatBytes(size) + '  |  ' + (contentType || '-');
+            actionsEl.style.display = 'flex';
+
+            const previewable = httpIsPreviewable(contentType);
+            openBtn.style.display = previewable ? '' : 'none';
+
+            const isText = httpIsTextType(contentType);
+            if (isText && size < 5 * 1024 * 1024) {
+                const text = await blob.text();
+                bodyEl.className = 'resp-body';
+                try {
+                    bodyEl.textContent = JSON.stringify(JSON.parse(text), null, 2);
+                } catch (e) {
+                    bodyEl.textContent = text;
+                }
+            } else {
+                bodyEl.className = 'resp-body http-blob-hint';
+                let iconCls = 'bi-file-earmark';
+                let label = (contentType || '二进制文件') + ' 已就绪';
+                if (previewable && contentType.startsWith('image/')) iconCls = 'bi-image';
+                else if (contentType === 'application/pdf') iconCls = 'bi-file-earmark-pdf';
+                else if (contentType.startsWith('video/')) iconCls = 'bi-film';
+                else if (contentType.startsWith('audio/')) iconCls = 'bi-music-note-beamed';
+                else iconCls = 'bi-file-earmark-zip';
+
+                const tip = previewable ? '点击「打开」在新窗口预览，或「下载」保存文件' : '点击「下载」保存文件';
+                let html =
+                    '<div class="http-blob-icon"><i class="bi ' +
+                    iconCls +
+                    '"></i></div>' +
+                    '<div class="http-blob-info">' +
+                    label +
+                    '<br><span class="http-blob-meta">' +
+                    httpFormatBytes(size) +
+                    (contentType ? ' · ' + contentType : '') +
+                    '</span></div>' +
+                    '<div class="http-blob-tip">' +
+                    tip +
+                    '</div>';
+
+                if (previewable && contentType.startsWith('image/')) {
+                    const blobUrl = URL.createObjectURL(blob);
+                    html += '<div class="http-blob-preview"><img src="' + blobUrl + '" alt="preview"></div>';
+                    setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+                }
+                bodyEl.innerHTML = html;
             }
+
             setStatus('HTTP 请求完成 (' + resp.status + ')');
         })
         .catch((err) => {
-            statusEl.textContent = err.name === 'TimeoutError' ? '超时' : '错误';
+            const isTimeout = err.name === 'TimeoutError' || /timeout/i.test(err.message || '');
+            const isAbort = err.name === 'AbortError' || /aborted/i.test(err.message || '');
+            statusEl.textContent = isTimeout ? '超时' : isAbort ? '已取消' : '错误';
             statusEl.className = 'resp-status status-5xx';
             metaEl.textContent = '';
-            bodyEl.textContent = '请求失败: ' + (err.message || err);
+            bodyEl.innerHTML = httpBuildErrorDiagnosis(err, cfg);
+            bodyEl.className = 'resp-body http-error-body';
+            actionsEl.style.display = 'none';
+            _httpLastBlob = null;
             setStatus('HTTP 请求失败');
         })
         .finally(() => {
             _httpInflight = null;
+            httpSaveHistory(cfg);
         });
 }
 
+function httpBodyTypeChange() {
+    const t = document.getElementById('httpBodyType').value;
+    const hint = document.getElementById('httpBodyHint');
+    const body = document.getElementById('httpBody');
+    const map = {
+        none: '不发送请求体',
+        json: 'json 格式将自动添加 Content-Type: application/json',
+        form: 'form-urlencoded 格式（key=value&key2=value2），自动添加 Content-Type: application/x-www-form-urlencoded',
+        text: '纯文本格式，自动添加 Content-Type: text/plain',
+        raw: '原始数据，请手动在 Headers 中设置 Content-Type',
+    };
+    hint.textContent = map[t] || '';
+    const phMap = {
+        json: '{"name":"张三","age":25}',
+        form: 'key1=value1&key2=value2',
+        text: '任意文本内容...',
+        raw: '任意原始数据，由 Content-Type 决定解析方式',
+        none: '当前类型为 none，不会发送 body',
+    };
+    body.placeholder = phMap[t] || '';
+}
+
+function httpFormatJson() {
+    const body = document.getElementById('httpBody');
+    const text = body.value.trim();
+    if (!text) {
+        toast('Body 为空');
+        return;
+    }
+    try {
+        const obj = JSON.parse(text);
+        body.value = JSON.stringify(obj, null, 2);
+        toast('已美化');
+    } catch (e) {
+        toast('不是合法 JSON: ' + e.message);
+    }
+}
+
+function httpCompressJson() {
+    const body = document.getElementById('httpBody');
+    const text = body.value.trim();
+    if (!text) {
+        toast('Body 为空');
+        return;
+    }
+    try {
+        const obj = JSON.parse(text);
+        body.value = JSON.stringify(obj);
+        toast('已压缩');
+    } catch (e) {
+        toast('不是合法 JSON: ' + e.message);
+    }
+}
+
+function httpClearBody() {
+    const body = document.getElementById('httpBody');
+    if (!body.value) return;
+    body.value = '';
+    toast('已清空');
+}
+
+function httpBuildErrorDiagnosis(err, cfg) {
+    const msg = err.message || String(err);
+    let title = '请求失败';
+    let icon = 'bi-exclamation-triangle';
+    let causes = [];
+    let solutions = [];
+
+    if (err.name === 'TimeoutError' || /timeout/i.test(msg)) {
+        title = '请求超时';
+        icon = 'bi-hourglass-bottom';
+        causes.push('目标服务器在 ' + (cfg.timeout || 30) + ' 秒内未响应');
+        solutions.push('检查网络是否通畅');
+        solutions.push('确认目标服务是否在运行');
+        solutions.push('在 Options 标签增大超时时间');
+    } else if (err.name === 'AbortError' || /aborted/i.test(msg)) {
+        title = '请求已取消';
+        icon = 'bi-x-circle';
+        causes.push('用户主动中止或页面切换');
+    } else if (err instanceof TypeError && /failed to fetch/i.test(msg)) {
+        title = '网络请求失败 (Failed to fetch)';
+        icon = 'bi-wifi-off';
+        const isHttps = location.protocol === 'https:';
+        const isHttp = /^http:\/\//i.test(cfg.url);
+        const LOCAL_HOST = /^(localhost|127\.0\.0\.1|::1|192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/i;
+        const isTargetLocal = LOCAL_HOST.test((cfg.url.match(/^https?:\/\/([^\/:?#]+)/i) || [])[1] || cfg.url);
+        const isPageLocal = location.protocol === 'file:' || LOCAL_HOST.test(location.hostname);
+
+        if (isHttps && isHttp) {
+            causes.push('HTTPS 页面访问 HTTP 资源（混合内容被浏览器拦截）');
+            solutions.push('将目标服务升级到 HTTPS，或在 HTTP 服务端设置重定向到 HTTPS');
+        } else if (isTargetLocal && isPageLocal) {
+            causes.push('如果浏览器直接访问 URL 能打开，但工具 fetch 失败，常见原因：');
+            causes.push(
+                '1) CORS 跨域拦截：服务端未返回 Access-Control-Allow-Origin（浏览器地址栏不受限，fetch 才受限）'
+            );
+            causes.push('2) 鉴权缺失：网关需要 Cookie / Token / Referer，浏览器地址栏会自动带，fetch 不会');
+            causes.push('3) 服务只监听 127.0.0.1，局域网其他机器访问不到（应监听 0.0.0.0）');
+            causes.push('4) 端口被防火墙拦截');
+            solutions.push('终端验证网络层：curl ' + cfg.url + '（能通 = 网络 OK，问题在 HTTP 层）');
+            solutions.push('curl + 响应头：curl -I ' + cfg.url + ' 查看 Access-Control-Allow-Origin');
+            solutions.push('若是 CORS：让后端加响应头 Access-Control-Allow-Origin: *');
+            solutions.push('若是鉴权：在 Auth 标签加 Cookie / Authorization，在 Headers 加 Referer/Origin');
+            solutions.push('按 F12 网络面板看 OPTIONS 预检 / 401 / 403 等具体状态');
+        } else if (isTargetLocal && !isPageLocal) {
+            causes.push('当前页面部署在公网，无法访问本机 / 局域网地址（CORS + 浏览器安全策略）');
+            solutions.push('仅在本机 / VPN 内网使用本工具访问本地服务');
+            solutions.push('团队共享：部署 API 代理（ngrok / Cloudflare Tunnel / 自建 relay）');
+            solutions.push('或给目标服务加 HTTPS + CORS 后部署到公网');
+        } else {
+            causes.push('可能原因：');
+            causes.push('1) CORS 跨域限制 — 服务端未返回 Access-Control-Allow-Origin 响应头');
+            causes.push('2) 网络断开 / DNS 解析失败 / 目标主机不可达');
+            causes.push('3) 协议错误（HTTPS 证书无效、TLS 握手失败）');
+            solutions.push('按 F12 打开「网络」面板查看具体失败请求详情');
+            solutions.push('若是 CORS 错误：在目标服务端响应头添加 Access-Control-Allow-Origin: *（开发环境）');
+            solutions.push('若是公司 API：联系后端确认已开启跨域白名单');
+        }
+    } else {
+        causes.push(msg);
+    }
+
+    let html = '<div class="http-error-diagnosis">';
+    html += '<div class="http-error-title"><i class="bi ' + icon + '"></i> ' + title + '</div>';
+    html += '<div class="http-error-section"><b>可能原因：</b><ul>';
+    causes.forEach((c) => (html += '<li>' + escapeHtml(c) + '</li>'));
+    html += '</ul></div>';
+    if (solutions.length) {
+        html += '<div class="http-error-section"><b>建议：</b><ul>';
+        solutions.forEach((s) => (html += '<li>' + escapeHtml(s) + '</li>'));
+        html += '</ul></div>';
+    }
+    html += '<div class="http-error-tech">原始错误: ' + escapeHtml(msg) + '</div>';
+    html += '</div>';
+    return html;
+}
+
 function httpCopyResponse() {
-    const body = document.getElementById('httpBodyOutput').textContent;
+    const bodyEl = document.getElementById('httpBodyOutput');
+    if (bodyEl.classList.contains('http-blob-hint')) {
+        toast('二进制响应请使用「下载」按钮');
+        return;
+    }
+    const body = bodyEl.textContent;
     if (!body) {
         toast('响应为空');
         return;
@@ -394,6 +719,10 @@ function httpCopyResponse() {
         .writeText(body)
         .then(() => toast('已复制响应 Body'))
         .catch(() => toast('复制失败'));
+}
+
+function httpClearCurlInput() {
+    document.getElementById('httpCurlInput').value = '';
 }
 
 function httpParse() {
@@ -407,13 +736,16 @@ function httpParse() {
         return;
     }
     let s = text.replace(/^curl\s+/i, '');
-    s = s.replace(/\\\r?\n/g, ' ').replace(/\s+/g, ' ').trim();
+    s = s
+        .replace(/\\\r?\n/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
 
     let method = 'GET';
-    const xMatch = s.match(/-X\s+('([^']*)'|"([^"]*)"|(\S+))/);
+    const xMatch = s.match(/(?:-X|--request)\s+('([^']*)'|"([^"]*)"|(\S+))/);
     if (xMatch) {
         method = (xMatch[2] || xMatch[3] || xMatch[4] || 'GET').toUpperCase();
-        s = s.replace(/-X\s+('([^']*)'|"([^"]*)"|(\S+))/, '');
+        s = s.replace(/(?:-X|--request)\s+('([^']*)'|"([^"]*)"|(\S+))/, '');
     }
     const methodSel = document.getElementById('httpMethod');
     methodSel.value = method;
@@ -426,6 +758,7 @@ function httpParse() {
     let hasBodyFlag = false;
     let bodyType = 'none';
     let url = '';
+    let useGetFlag = false;
     const opts = {
         follow: false,
         insecure: false,
@@ -434,7 +767,7 @@ function httpParse() {
         includeHeader: false,
         silent: false,
         timeout: '',
-        ua: ''
+        ua: '',
     };
 
     let i = 0;
@@ -462,8 +795,7 @@ function httpParse() {
                             const p = document.getElementById('httpAuthPwd');
                             if (u) u.value = idx2 >= 0 ? decoded.slice(0, idx2) : decoded;
                             if (p) p.value = idx2 >= 0 ? decoded.slice(idx2 + 1) : '';
-                        } catch (e) {
-                        }
+                        } catch (e) {}
                     } else {
                         headers.push([k, val]);
                     }
@@ -473,18 +805,26 @@ function httpParse() {
             }
             i++;
         } else if (t === '-G' || t === '--get') {
+            useGetFlag = true;
             i++;
-        } else if (
-            t === '-d' ||
-            t === '--data' ||
-            t === '--data-raw' ||
-            t === '--data-binary' ||
-            t === '--data-urlencode'
-        ) {
-            const v = tokens[++i] || '';
-            bodyVal += (bodyVal ? '&' : '') + v;
-            hasBodyFlag = true;
-            bodyType = t === '--data-urlencode' ? 'form' : 'raw';
+        } else if (t === '-d' || t === '--data' || t === '--data-raw' || t === '--data-binary' || t === '--data-urlencode') {
+            let v = tokens[++i] || '';
+            if (t === '--data-urlencode') {
+                try {
+                    v = decodeURIComponent(v);
+                } catch (e) {}
+            }
+            if (useGetFlag) {
+                v.split('&').forEach(function (seg) {
+                    const eq = seg.indexOf('=');
+                    if (eq > 0) queries.push([seg.slice(0, eq), seg.slice(eq + 1)]);
+                    else if (seg) queries.push([seg, '']);
+                });
+            } else {
+                bodyVal += (bodyVal ? '&' : '') + v;
+                hasBodyFlag = true;
+                bodyType = t === '--data-urlencode' ? 'form' : 'raw';
+            }
             i++;
         } else if (t === '-L' || t === '--location') {
             opts.follow = true;
@@ -555,8 +895,23 @@ function httpParse() {
         document.getElementById('httpBody').value = bodyVal;
         if (bodyType === 'form' && bodyVal.includes('=')) {
             document.getElementById('httpBodyType').value = 'form';
-        } else if (bodyType === 'raw' && (bodyVal.trim().startsWith('{') || bodyVal.trim().startsWith('['))) {
-            document.getElementById('httpBodyType').value = 'json';
+        } else if (bodyType === 'raw') {
+            const trimmed = bodyVal.trim();
+            if (
+                (trimmed.startsWith('{') || trimmed.startsWith('[')) &&
+                (function () {
+                    try {
+                        JSON.parse(trimmed);
+                        return true;
+                    } catch (e) {
+                        return false;
+                    }
+                })()
+            ) {
+                document.getElementById('httpBodyType').value = 'json';
+            } else {
+                document.getElementById('httpBodyType').value = 'raw';
+            }
         } else {
             document.getElementById('httpBodyType').value = bodyType === 'form' ? 'form' : 'raw';
         }
@@ -588,21 +943,33 @@ function httpTokenize(s) {
         while (i < s.length && /\s/.test(s[i])) i++;
         if (i >= s.length) break;
         if (s[i] === "'") {
-            const end = s.indexOf("'", i + 1);
-            if (end === -1) {
-                tokens.push(s.slice(i + 1));
-                break;
+            let buf = '';
+            i++;
+            while (i < s.length && s[i] !=='\''") {
+                if (s[i] === '\\' && i + 1 < s.length && (s[i + 1] ==='\''" || s[i + 1] === '\\')) {
+                    buf += s[i + 1];
+                    i += 2;
+                } else {
+                    buf += s[i];
+                    i++;
+                }
             }
-            tokens.push(s.slice(i + 1, end));
-            i = end + 1;
+            tokens.push(buf);
+            if (i < s.length) i++;
         } else if (s[i] === '"') {
-            const end = s.indexOf('"', i + 1);
-            if (end === -1) {
-                tokens.push(s.slice(i + 1));
-                break;
+            let buf = '';
+            i++;
+            while (i < s.length && s[i] !== '"') {
+                if (s[i] === '\\' && i + 1 < s.length) {
+                    buf += s[i + 1];
+                    i += 2;
+                } else {
+                    buf += s[i];
+                    i++;
+                }
             }
-            tokens.push(s.slice(i + 1, end));
-            i = end + 1;
+            tokens.push(buf);
+            if (i < s.length) i++;
         } else {
             let j = i;
             while (j < s.length && !/\s/.test(s[j]) && s[j] !== "'" && s[j] !== '"') j++;
@@ -624,7 +991,7 @@ function httpFillSample() {
     httpAddQuery('page', '1');
     httpAddQuery('size', '20');
     document.getElementById('httpBodyType').value = 'json';
-    document.getElementById('httpBody').value = JSON.stringify({name: '张三', age: 25}, null, 2);
+    document.getElementById('httpBody').value = JSON.stringify({ name: '张三', age: 25 }, null, 2);
     document.getElementById('httpAuthType').value = 'none';
     httpAuthChange();
     document.getElementById('httpOptFollow').checked = true;
@@ -678,6 +1045,7 @@ function httpInit() {
     if (sel) httpMethodChange(sel);
     httpAuthChange();
     httpUpdateTabCounts();
+    httpRenderHistory();
 
     const urlInput = document.getElementById('httpUrl');
     if (urlInput) {
@@ -690,3 +1058,109 @@ function httpInit() {
 }
 
 registerInit('httpdebug', httpInit);
+
+const _httpHistoryKey = 'httpdebug_history';
+const _httpHistoryMax = 50;
+
+function httpSaveHistory(cfg) {
+    try {
+        const item = {
+            id: Date.now(),
+            method: cfg.method,
+            url: cfg.url,
+            headers: cfg.headers,
+            body: cfg.body,
+            bodyType: cfg.bodyType,
+            time: new Date().toLocaleString(),
+        };
+        let list = JSON.parse(localStorage.getItem(_httpHistoryKey) || '[]');
+        list.unshift(item);
+        if (list.length > _httpHistoryMax) list = list.slice(0, _httpHistoryMax);
+        localStorage.setItem(_httpHistoryKey, JSON.stringify(list));
+        httpRenderHistory();
+    } catch (e) {
+    }
+}
+
+function httpLoadHistory() {
+    try {
+        return JSON.parse(localStorage.getItem(_httpHistoryKey) || '[]');
+    } catch (e) {
+        return [];
+    }
+}
+
+function httpRenderHistory() {
+    const container = document.getElementById('httpHistoryList');
+    if (!container) return;
+    const list = httpLoadHistory();
+    if (!list.length) {
+        container.innerHTML = '<div class="http-history-empty">暂无历史记录</div>';
+        return;
+    }
+    const methodColors = { GET: 'get', POST: 'post', PUT: 'put', DELETE: 'delete', PATCH: 'patch' };
+    container.innerHTML = list
+        .map((item) => {
+            const cls = methodColors[item.method] || 'get';
+            const shortUrl = item.url.length > 50 ? item.url.slice(0, 47) + '...' : item.url;
+            return (
+                '<div class="http-history-item" onclick="httpRestoreHistory(' +
+                item.id +
+                ')">' +
+                '<span class="http-history-method ' +
+                cls +
+                '">' +
+                item.method +
+                '</span>' +
+                '<span class="http-history-url" title="' +
+                escapeHtml(item.url) +
+                '">' +
+                escapeHtml(shortUrl) +
+                '</span>' +
+                '<span class="http-history-time">' +
+                escapeHtml(item.time || '') +
+                '</span>' +
+                '<button class="outline sm" onclick="event.stopPropagation();httpDeleteHistory(' +
+                item.id +
+                ')" title="删除">&#10005;</button>' +
+                '</div>'
+            );
+        })
+        .join('');
+}
+
+function httpRestoreHistory(id) {
+    const list = httpLoadHistory();
+    const item = list.find((h) => h.id === id);
+    if (!item) return;
+    document.getElementById('httpMethod').value = item.method;
+    httpMethodChange(document.getElementById('httpMethod'));
+    document.getElementById('httpUrl').value = item.url;
+    document.getElementById('httpHeadersList').innerHTML = '';
+    if (item.headers && item.headers.length) {
+        item.headers.forEach(([k, v]) => httpAddHeader(k, v));
+    } else {
+        httpAddHeader();
+    }
+    document.getElementById('httpBodyType').value = item.bodyType || 'none';
+    httpBodyTypeChange();
+    document.getElementById('httpBody').value = item.body || '';
+    httpUpdateTabCounts();
+    httpSwitchTab(document.querySelector('.http-tabs .api-tab'), 'params');
+    toast('已恢复历史请求');
+}
+
+function httpDeleteHistory(id) {
+    let list = httpLoadHistory();
+    list = list.filter((h) => h.id !== id);
+    localStorage.setItem(_httpHistoryKey, JSON.stringify(list));
+    httpRenderHistory();
+    toast('已删除');
+}
+
+function httpClearHistory() {
+    if (!confirm('确定清空所有历史记录？')) return;
+    localStorage.removeItem(_httpHistoryKey);
+    httpRenderHistory();
+    toast('历史已清空');
+}

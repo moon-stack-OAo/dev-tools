@@ -28,6 +28,9 @@
                 <div class="api-tab" onclick="httpSwitchTab(this,'body')">Body</div>
                 <div class="api-tab" onclick="httpSwitchTab(this,'auth')">Auth</div>
                 <div class="api-tab" onclick="httpSwitchTab(this,'options')">Options</div>
+                <div class="api-tab" onclick="httpSwitchTab(this,'history')">
+                    <i class="bi bi-clock-history"></i> 历史
+                </div>
             </div>
 
             <div class="api-tab-panel active" id="http-params-panel">
@@ -73,13 +76,26 @@
             <div class="api-tab-panel" id="http-body-panel">
                 <div class="flex gap-6 mb-8" style="align-items:center">
                     <span class="label" style="margin:0">类型</span>
-                    <select id="httpBodyType" style="width:220px">
+                    <select id="httpBodyType" onchange="httpBodyTypeChange()" style="width:220px">
                         <option value="none">none</option>
                         <option value="json">json (application/json)</option>
                         <option value="form">form-urlencoded</option>
                         <option value="text">text/plain</option>
                         <option value="raw">raw</option>
                     </select>
+                </div>
+                <div class="http-body-toolbar">
+                    <span class="http-body-hint"
+                          id="httpBodyHint">json 格式将自动添加 Content-Type: application/json</span>
+                    <div class="http-body-actions">
+                        <button class="outline sm" onclick="httpFormatJson()" title="格式化 JSON（2 空格缩进）">美化
+                            JSON
+                        </button>
+                        <button class="outline sm" onclick="httpCompressJson()" title="压缩 JSON（去除空白）">压缩
+                            JSON
+                        </button>
+                        <button class="outline sm" onclick="httpClearBody()" title="清空 body">清空</button>
+                    </div>
                 </div>
                 <textarea class="api-body-input" id="httpBody"
                           placeholder='{"name":"张三","age":25}'></textarea>
@@ -134,6 +150,11 @@
                         <span class="http-option-label">静默模式</span>
                         <code class="http-option-flag">-s</code>
                     </label>
+                    <label class="http-option-row http-option-row-highlight">
+                        <input checked id="httpOptProxy" type="checkbox">
+                        <span class="http-option-label">通过本地代理（解决 CORS）</span>
+                        <code class="http-option-flag">__cors_proxy</code>
+                    </label>
                     <label class="http-option-row">
                         <span class="http-option-label">超时 (秒)</span>
                         <input id="httpOptTimeout" min="0" placeholder="30" step="1" style="width:90px"
@@ -146,6 +167,19 @@
                                type="text">
                         <code class="http-option-flag">-A</code>
                     </label>
+                </div>
+            </div>
+
+            <div class="api-tab-panel" id="http-history-panel">
+                <div class="http-panel-hint">
+                    <i class="bi bi-info-circle"></i>
+                    自动保存最近 50 条请求记录
+                </div>
+                <div class="http-history-list" id="httpHistoryList">
+                    <div class="http-history-empty">暂无历史记录</div>
+                </div>
+                <div class="http-history-actions">
+                    <button class="outline sm" onclick="httpClearHistory()">清空历史</button>
                 </div>
             </div>
         </div>
@@ -170,8 +204,18 @@
                     <div class="resp-header">
                         <span class="resp-status" id="httpStatus"></span>
                         <span class="resp-meta" id="httpMeta"></span>
-                        <button class="outline sm" onclick="httpCopyResponse()" style="margin-left:auto">复制 Body
-                        </button>
+                        <div class="resp-actions" id="httpRespActions" style="display:none">
+                            <button class="outline sm" id="httpOpenBtn" onclick="httpOpenInNewTab()"
+                                    style="display:none" title="在新窗口打开预览">
+                                <i class="bi bi-box-arrow-up-right"></i> 打开
+                            </button>
+                            <button class="outline sm" id="httpDownloadBtn" onclick="httpDownloadResponse()"
+                                    title="下载响应文件">
+                                <i class="bi bi-download"></i> 下载
+                            </button>
+                            <button class="outline sm" onclick="httpCopyResponse()">复制 Body
+                            </button>
+                        </div>
                     </div>
                     <div class="resp-body" id="httpBodyOutput"></div>
                 </div>
@@ -195,11 +239,11 @@
                 </div>
                 <div class="http-stats" id="httpStats" style="display:none">
                     <span class="http-stat-item"><i class="bi bi-link-45deg"></i> <b id="httpStatMethod">GET</b> <span
-                            id="httpStatUrl">-</span></span>
+                        id="httpStatUrl">-</span></span>
                     <span class="http-stat-item"><i class="bi bi-list-ul"></i> <b
-                            id="httpStatHeaders">0</b> Header</span>
+                        id="httpStatHeaders">0</b> Header</span>
                     <span class="http-stat-item"><i class="bi bi-file-text"></i> <b
-                            id="httpStatBody">0</b> 字节 Body</span>
+                        id="httpStatBody">0</b> 字节 Body</span>
                 </div>
                 <div class="http-parse-section">
                     <div class="http-parse-title">
@@ -211,7 +255,7 @@
                               style="min-height:100px"></textarea>
                     <div class="http-parse-actions">
                         <button onclick="httpParse()">解析到表单</button>
-                        <button class="outline" onclick="document.getElementById('httpCurlInput').value=''">清空
+                        <button class="outline" onclick="httpClearCurlInput()">清空
                         </button>
                     </div>
                 </div>

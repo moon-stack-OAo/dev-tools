@@ -1,6 +1,6 @@
 # Java 开发工具箱
 
-> 一个面向 Java 开发者的**纯前端**在线工具集 —— **96 个工具、8 大分类**
+> 一个面向 Java 开发者的**纯前端**在线工具集 —— **106 个工具、8 大分类**
 > ，覆盖格式化、编解码、安全、生成与转换、代码生成、文本、调试、参考速查。无需后端、无需联网、无需上传数据，所有计算均在浏览器本地完成。支持
 > Vite 开发、Docker 一键部署、Nginx 静态托管，开箱即用。
 
@@ -9,7 +9,7 @@
 - 🚀 **零依赖开箱即用**：纯静态 HTML / CSS / JavaScript，无任何前端框架；业务代码无构建期编译，第三方库通过 Vite + esbuild
   打包为 IIFE
 - 🔒 **数据 100% 本地处理**：所有计算在浏览器内完成，不会上传任何内容到服务器，支持离线使用
-- 🧰 **96 个工具 / 8 大分类**：覆盖 Java 开发日常所需，工具持续扩充
+- 🧰 **106 个工具 / 8 大分类**：覆盖 Java 开发日常所需，工具持续扩充
 - 🎨 **深色主题 + 响应式**：桌面 / 平板 / 手机均可使用
 - 🐳 **多种部署方式**：Vite 开发、Docker 容器、Nginx 静态托管
 - 📦 **依赖本地化**：19 个常用库全部内置到 `public/lib/`，**按需懒加载**（打开对应工具时才加载），断网仍可使用（图标字体
@@ -62,8 +62,8 @@ npm run build     # 输出到 dist/
 
 ```
 ├── index.html                      # 入口（首页；工具脚本/面板/依赖库均按需懒加载）
-├── html/panels/                    # 工具面板（96 个文件，每个工具一个 HTML）
-│   ├── format/                     #  格式化：json / xml / yaml / sql / ...
+├── html/panels/                    # 工具面板（106 个文件，每个工具一个 HTML）
+│   ├── format/                     #  格式化：json / xml / yaml / sql / javafmt / jsonexcel / ddldiff / sqlexplain / nginxfmt / ...
 │   ├── encode/                     #  编解码：base64 / url / unicode / ...
 │   ├── security/                   #  安全：jwt / hash / aes / rsa / ...
 │   ├── generate/                   #  生成与转换：uuid / ts / color / ...
@@ -82,14 +82,14 @@ npm run build     # 输出到 dist/
 │   └── reference.css               #  参考类别样式
 ├── js/
 │   ├── app.js                      # 核心：导航 / 工具注册表 / registerInit / 懒加载 / 通用工具函数
-│   ├── format/                     #  格式化：json / xml / yaml / sql / ...
+│   ├── format/                     #  格式化：json / xml / yaml / sql / javafmt / jsonexcel / ddldiff / sqlexplain / nginxfmt / ...
 │   ├── encode/                     #  编解码：base64 / url / unicode / ...
 │   ├── security/                   #  安全：jwt / hash / aes / rsa / ...
 │   ├── generate/                   #  生成与转换：uuid / ts / color / ...
 │   ├── text/                       #  文本：regex / diff / markdown / ...
 │   ├── debug/                      #  调试：cron / ws / stomp / httpdebug / ...
 │   └── reference/                  #  参考：arthas / jmh / springboot / ...
-├── public/lib/                     # 本地化的第三方库（19 个，详见下方依赖列表）
+├── public/lib/                     # 本地化的第三方库（20 个，详见下方依赖列表）
 ├── scripts/
 │   └── copy-libs.js                # 从 node_modules 复制依赖到 public/lib（构建前执行）
 ├── docs/                           # 开发文档（各 ticket 需求 / 设计 / 验收记录）
@@ -107,21 +107,26 @@ npm run build     # 输出到 dist/
 
 ## 🧰 工具列表
 
-### 一、格式化（11）
+### 一、格式化（16）
 
-| 工具             | 功能                                                            |
-|----------------|---------------------------------------------------------------|
-| JSON 格式化       | 格式化 / 压缩 / 校验 JSON，支持树形预览                                     |
-| XML 格式化        | 格式化 / 压缩 / 校验 XML                                             |
-| YAML 格式化       | YAML 格式化 / YAML↔JSON 互转                                       |
-| SQL 格式化        | SQL 美化，支持 MySQL / PostgreSQL / Oracle / SQL Server / BigQuery |
-| JSONPath       | JSONPath 表达式测试，支持实时取值与链式导航                                    |
-| JSON Schema    | JSON Schema 校验与生成                                             |
-| JSON 转换        | JSON ↔ XML / YAML / CSV 互转                                    |
-| SQL 方言转        | MySQL / PostgreSQL / Oracle / SQLServer 方言互转                  |
-| DB 类型映射        | Java 数据库类型映射 + JDBC URL 生成                                    |
-| Properties 格式化 | `.properties` 配置文件格式化、键值排序、转义                                 |
-| JSON ↔ CSV     | JSON 数组与 CSV 互转，支持嵌套对象展平                                      |
+| 工具               | 功能                                                            |
+|------------------|---------------------------------------------------------------|
+| JSON 格式化         | 格式化 / 压缩 / 校验 JSON，支持树形预览                                     |
+| XML 格式化          | 格式化 / 压缩 / 校验 XML                                             |
+| YAML 格式化         | YAML 格式化 / YAML↔JSON 互转                                       |
+| SQL 格式化          | SQL 美化，支持 MySQL / PostgreSQL / Oracle / SQL Server / BigQuery |
+| JSONPath         | JSONPath 表达式测试，支持实时取值与链式导航                                    |
+| JSON Schema      | JSON Schema 校验与生成                                             |
+| JSON 转换          | JSON ↔ XML / YAML / CSV 互转                                    |
+| SQL 方言转          | MySQL / PostgreSQL / Oracle / SQLServer 方言互转                  |
+| DB 类型映射          | Java 数据库类型映射 + JDBC URL 生成                                    |
+| Properties 格式化   | `.properties` 配置文件格式化、键值排序、转义                                 |
+| JSON ↔ CSV       | JSON 数组与 CSV 互转，支持嵌套对象展平                                      |
+| Java 代码格式化       | 简化版 Java 美化器（自实现 tokenizer），支持缩进/大括号风格/import 排序分组/方法链换行      |
+| JSON ↔ Excel/CSV | JSON 数组与 Excel/CSV 批量互转，支持嵌套对象展平与表格预览（基于 SheetJS）             |
+| DDL Schema 对比    | 对比两个 DDL（CREATE TABLE），按字段粒度 diff，识别新增/删除/类型变更/null/default   |
+| SQL 执行计划         | 解析 MySQL / PG EXPLAIN 输出为树状结构，区分全表扫描与索引命中                     |
+| Nginx 配置格式化      | nginx.conf 格式化 / 压缩 + 重复指令与分号检查                               |
 
 ### 二、编解码（9）
 
@@ -155,13 +160,14 @@ npm run build     # 输出到 dist/
 | PBKDF2 哈希 | PBKDF2-HMAC-SHA1/SHA256/SHA512 密钥派生 + PHC 格式                              |
 | X.509 证书  | 解析证书主体/签发者/SAN/指纹/有效期/链，DER↔PEM 互转                                        |
 
-### 四、生成与转换（10）
+### 四、生成与转换（11）
 
 | 工具      | 功能                                                |
 |---------|---------------------------------------------------|
 | UUID 生成 | UUID v4 / v7，批量生成                                 |
 | 雪花 ID   | Twitter Snowflake / 百度 UID-Generator 分布式 ID 生成与解析 |
 | 时间戳转换   | Unix 秒 / 毫秒 ↔ 日期字符串互转，含时区与格式化选项                   |
+| 时间戳批量转换 | 多行时间戳 / 日期字符串批量解析，自动识别格式，导出 TSV / JSON            |
 | Case 转换 | camelCase / PascalCase / snake_case / kebab-case  |
 | 颜色转换    | HEX / RGB / HSL 互转 + 颜色预览                         |
 | 进制转换    | 2~36 进制互转，Dec→Hex/Bin/Oct 快捷按钮                    |
@@ -170,16 +176,20 @@ npm run build     # 输出到 dist/
 | 时区转换    | 全球时区互转 + 夏令时感知                                    |
 | 分辨率计算   | 屏幕分辨率 DPI / 物理尺寸 / 对角线换算                          |
 
-### 五、代码生成（6）
+### 五、代码生成（10）
 
-| 工具          | 功能                                                        |
-|-------------|-----------------------------------------------------------|
-| JSON→POJO   | JSON 生成 Java POJO 类（支持 Lombok @Data）                      |
-| SQL→POJO    | DDL 建表语句生成 MyBatis Plus 实体                                |
-| SQL→MyBatis | DDL 建表语句生成 MyBatis @Select/@Insert/@Update/@Delete Mapper |
-| 邮件模板        | 5 套邮件 HTML 模板，填变量实时预览 + 一键内联 CSS                          |
-| JMH 模板      | JMH 基准测试代码生成器，可配置 Mode / Fork / 预热 / 测量                   |
-| 测试模板        | JUnit 5 + Mockito 测试代码生成，支持 Service / Controller / Mapper |
+| 工具          | 功能                                                                |
+|-------------|-------------------------------------------------------------------|
+| JSON→POJO   | JSON 生成 Java POJO 类（支持 Lombok @Data）                              |
+| SQL→POJO    | DDL 建表语句生成 MyBatis Plus 实体                                        |
+| SQL→MyBatis | DDL 建表语句生成 MyBatis @Select/@Insert/@Update/@Delete Mapper         |
+| 邮件模板        | 5 套邮件 HTML 模板，填变量实时预览 + 一键内联 CSS                                  |
+| JMH 模板      | JMH 基准测试代码生成器，可配置 Mode / Fork / 预热 / 测量                           |
+| JMH 进阶      | 完整 JMH 基准类生成：Mode/Threads/@Param/Warmup/Measurement/@Group/Phaser |
+| 测试模板        | JUnit 5 + Mockito 测试代码生成，支持 Service / Controller / Mapper         |
+| Java Stream | 可视化构建 Java Stream 链，自动生成 stream().filter().map().collect()        |
+| Bean 校验     | 根据字段类型推导 javax.validation 注解，输出完整 DTO 类（含 Lombok）                 |
+| PlantUML    | Java 源码 / JSON 实时转 PlantUML 类图（含 plantuml.com 在线预览）               |
 
 ### 六、文本（9）
 
@@ -290,14 +300,15 @@ npm run build     # 输出到 dist/
 
 ### 测试
 
-- 单元测试基于 **Vitest**，覆盖从工具中抽离的纯逻辑（无 DOM 耦合），共 **91 个测试**
+- 单元测试基于 **Vitest**，覆盖从工具中抽离的纯逻辑（无 DOM 耦合），共 **474 个测试**
 - 工具文件通过 `module.exports` 守卫导出纯函数，测试用 `require()` 直接加载真实生产代码（零重复）
 - `test/setup.js` 提供 `registerInit` 等浏览器全局的 Node 环境垫片
 - 已覆盖：`hex`(7)、`unicode`(6)、`random`(4)、`json2csv`(16)、`pbkdf2`(18)、`totp`(30, 含 RFC 4226/6238 标准向量)、`logfmt`(
-  10)
+  10)、`javafmt`(27)、`javastream`(23)、`jsonexcel`(43)、`ddldiff`(37)、`jmhpro`(32)、`sqlexplain`(51)、
+  `nginxfmt`(53)、`beanval`(47)、`plantuml`(44)
 
 ```bash
-npm test           # 运行一次（91 个测试）
+npm test           # 运行一次（474 个测试）
 npm run test:watch # 监听模式
 ```
 
@@ -326,26 +337,27 @@ Chrome / Firefox / Edge / Safari 现代浏览器（支持 ES2020+ 语法）。
 
 所有第三方库已下载到 `public/lib/`，构建时随静态资源一起发布，**无需联网即可使用**。
 
-| #  | 库               | 用途                 |
-|----|-----------------|--------------------|
-| 1  | ajv             | JSON Schema 校验     |
-| 2  | asn1js          | X.509 证书 ASN.1 解码  |
-| 3  | bcryptjs        | Bcrypt 哈希加盐        |
-| 4  | blueimp-md5     | MD5 计算             |
-| 5  | diff            | 文本差异对比             |
-| 6  | fast-xml-parser | XML 解析与生成          |
-| 7  | js-beautify     | HTML / CSS / JS 美化 |
-| 8  | jsqr            | 二维码识别              |
-| 9  | js-yaml         | YAML 解析与生成         |
-| 10 | jszip           | ZIP 文件处理（辅助二维码识别）  |
-| 11 | jsonpath-plus   | JSONPath 查询        |
-| 12 | marked          | Markdown 渲染        |
-| 13 | pkijs           | X.509 证书高级 API     |
-| 14 | qrcode          | 二维码生成              |
-| 15 | sm-crypto       | 国密 SM2 / SM3 / SM4 |
-| 16 | sql-formatter   | SQL 美化与方言转换        |
-| 17 | ua-parser-js    | User-Agent 解析      |
-| 18 | 上述依赖的 .min 版    | 生产环境使用压缩版减小体积      |
+| #  | 库               | 用途                                          |
+|----|-----------------|---------------------------------------------|
+| 1  | ajv             | JSON Schema 校验                              |
+| 2  | asn1js          | X.509 证书 ASN.1 解码                           |
+| 3  | bcryptjs        | Bcrypt 哈希加盐                                 |
+| 4  | blueimp-md5     | MD5 计算                                      |
+| 5  | diff            | 文本差异对比                                      |
+| 6  | fast-xml-parser | XML 解析与生成                                   |
+| 7  | js-beautify     | HTML / CSS / JS 美化                          |
+| 8  | jsqr            | 二维码识别                                       |
+| 9  | js-yaml         | YAML 解析与生成                                  |
+| 10 | jszip           | ZIP 文件处理（辅助二维码识别）                           |
+| 11 | jsonpath-plus   | JSONPath 查询                                 |
+| 12 | marked          | Markdown 渲染                                 |
+| 13 | pkijs           | X.509 证书高级 API                              |
+| 14 | qrcode          | 二维码生成                                       |
+| 15 | sm-crypto       | 国密 SM2 / SM3 / SM4                          |
+| 16 | sql-formatter   | SQL 美化与方言转换                                 |
+| 17 | ua-parser-js    | User-Agent 解析                               |
+| 18 | xlsx            | SheetJS，Excel/CSV 读写(JSON ↔ Excel/CSV 工具专用) |
+| 19 | 上述依赖的 .min 版    | 生产环境使用压缩版减小体积                               |
 
 > 💡 **依赖管理**：`npm install` 会自动触发 `postinstall` 钩子同步依赖到 `public/lib/`；新增依赖后也可手动执行
 `npm run copy-libs`。

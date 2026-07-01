@@ -1,0 +1,235 @@
+<div class="tool-panel" id="panel-jmhpro">
+    <div class="jmp-tabs" role="tablist">
+        <button class="jmp-tab" id="jmpTabBasic" role="tab" type="button">
+            <i class="bi bi-lightning-charge"></i> 基础模式
+        </button>
+        <button class="jmp-tab active" id="jmpTabAdvanced" role="tab" type="button">
+            <i class="bi bi-sliders"></i> 进阶模式
+        </button>
+    </div>
+
+    <!-- 基础模式 (等价于原 jmh 工具) -->
+    <div id="jmpBasicPanel" style="display:none">
+        <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+            <div class="flex-1">
+                <div class="label">类名</div>
+                <input id="jmpBasicClass" placeholder="MyBenchmark" type="text" value="MyBenchmark">
+            </div>
+            <div class="flex-1">
+                <div class="label">方法名</div>
+                <input id="jmpBasicMethod" placeholder="myMethod" type="text" value="myMethod">
+            </div>
+        </div>
+        <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+            <div>
+                <div class="label">Benchmark Mode</div>
+                <select id="jmpBasicMode" style="width:150px">
+                    <option value="Throughput">Throughput</option>
+                    <option value="AverageTime">AverageTime</option>
+                    <option value="SampleTime">SampleTime</option>
+                    <option value="SingleShotTime">SingleShotTime</option>
+                    <option value="All">All</option>
+                </select>
+            </div>
+            <div>
+                <div class="label">Fork</div>
+                <input id="jmpBasicFork" min="0" style="width:60px" type="number" value="1">
+            </div>
+            <div>
+                <div class="label">预热次数</div>
+                <input id="jmpBasicWarmup" min="0" style="width:60px" type="number" value="5">
+            </div>
+            <div>
+                <div class="label">预热时长(s)</div>
+                <input id="jmpBasicWarmupTime" min="1" style="width:60px" type="number" value="1">
+            </div>
+            <div>
+                <div class="label">测量次数</div>
+                <input id="jmpBasicMeas" min="1" style="width:60px" type="number" value="5">
+            </div>
+            <div>
+                <div class="label">测量时长(s)</div>
+                <input id="jmpBasicMeasTime" min="1" style="width:60px" type="number" value="1">
+            </div>
+            <div>
+                <div class="label">&nbsp;</div>
+                <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-dim)">
+                    <input checked id="jmpBasicState" style="accent-color:var(--accent)" type="checkbox"> @State
+                </label>
+            </div>
+        </div>
+        <div class="copy-wrap">
+            <div class="label">生成的 JMH 代码 (基础模式)</div>
+            <button class="copy-btn" onclick="jmpCopy()">复制</button>
+            <pre class="output-box" id="jmpBasicOutput" style="min-height:480px;max-height:720px;margin:0"></pre>
+        </div>
+    </div>
+
+    <!-- 进阶模式 -->
+    <div id="jmpAdvancedPanel">
+        <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+            <div>
+                <div class="label">包名</div>
+                <input id="jmpPackage" placeholder="com.example" style="width:200px" type="text" value="com.example">
+            </div>
+            <div>
+                <div class="label">类名</div>
+                <input id="jmpClass" placeholder="MyBenchmark" style="width:180px" type="text" value="MyBenchmark">
+            </div>
+            <div style="margin-left:auto;font-size:12px;color:var(--text-dim);max-width:520px">
+                <i class="bi bi-info-circle"></i>
+                支持多方法 / @Param / @Group / 完整 Warmup &amp; Measurement &amp; Fork &amp; Timeout 配置;
+                <span style="color:var(--accent)">@Group</span> 仅在 <code>Scope=Group</code> 时自动注入 Phaser 协调信号。
+            </div>
+        </div>
+
+        <div class="jmp-grid">
+            <!-- 左:方法列表 -->
+            <div class="jmp-col">
+                <h5>
+                    <span><i class="bi bi-list-ol"></i> ① 基准方法</span>
+                    <button class="jmp-act-btn" onclick="jmpAddMethod()">+ 添加方法</button>
+                </h5>
+                <div id="jmpMethods" style="max-height:720px;overflow-y:auto;padding-right:4px"></div>
+            </div>
+
+            <!-- 中:全局注解 -->
+            <div class="jmp-col">
+                <h5><i class="bi bi-sliders"></i> ② 全局注解</h5>
+                <div class="jmp-annotations">
+                    <div>
+                        <div class="label">@BenchmarkMode (多选)</div>
+                        <div class="jmp-mode-grid">
+                            <label class="jmp-cb"><input checked class="jmp-mode" type="checkbox" value="Throughput">
+                                Throughput</label>
+                            <label class="jmp-cb"><input class="jmp-mode" type="checkbox" value="AverageTime">
+                                AverageTime</label>
+                            <label class="jmp-cb"><input class="jmp-mode" type="checkbox" value="SampleTime"> SampleTime</label>
+                            <label class="jmp-cb"><input class="jmp-mode" type="checkbox" value="SingleShotTime">
+                                SingleShotTime</label>
+                            <label class="jmp-cb"><input class="jmp-mode" type="checkbox" value="All"> All
+                                (推荐)</label>
+                        </div>
+                    </div>
+                    <div class="jmp-grid-num">
+                        <div>
+                            <div class="label">@Threads</div>
+                            <input id="jmpThreads" min="1" style="width:80px" type="number" value="1">
+                        </div>
+                        <div>
+                            <div class="label">@OutputTimeUnit</div>
+                            <select id="jmpOutTime">
+                                <option>NANOSECONDS</option>
+                                <option>MICROSECONDS</option>
+                                <option selected>MILLISECONDS</option>
+                                <option>SECONDS</option>
+                                <option>MINUTES</option>
+                                <option>HOURS</option>
+                                <option>DAYS</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="label">@State (Scope)</div>
+                        <select id="jmpStateScope" style="width:160px">
+                            <option selected>Thread</option>
+                            <option>Benchmark</option>
+                            <option>Group</option>
+                        </select>
+                    </div>
+                    <div class="jmp-grid-num" style="align-items:flex-start">
+                        <div style="flex:0">
+                            <div class="label">@Fork value</div>
+                            <input id="jmpFork" min="0" style="width:80px" type="number" value="1">
+                        </div>
+                        <div style="flex:1">
+                            <div class="label">jvmArgs (按换行/逗号/分号分隔)</div>
+                            <textarea id="jmpJvmArgs" rows="2"
+                                      style="width:100%;font-family:var(--font);font-size:12px">-Xms512m,-Xmx512m</textarea>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="label">@Warmup</div>
+                        <div class="jmp-grid-num">
+                            <span class="jmp-mini-label">iter</span>
+                            <input id="jmpWi" min="0" style="width:70px" title="iterations" type="number" value="5">
+                            <span class="jmp-mini-label">time</span>
+                            <input id="jmpWt" min="1" style="width:60px" title="time" type="number" value="1">
+                            <select id="jmpWtu" title="timeUnit">
+                                <option>NANOSECONDS</option>
+                                <option>MICROSECONDS</option>
+                                <option>MILLISECONDS</option>
+                                <option selected>SECONDS</option>
+                                <option>MINUTES</option>
+                            </select>
+                            <span class="jmp-mini-label">batch</span>
+                            <input id="jmpWb" min="1" style="width:60px" title="batchSize" type="number" value="1">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="label">@Measurement</div>
+                        <div class="jmp-grid-num">
+                            <span class="jmp-mini-label">iter</span>
+                            <input id="jmpMi" min="1" style="width:70px" title="iterations" type="number" value="5">
+                            <span class="jmp-mini-label">time</span>
+                            <input id="jmpMt" min="1" style="width:60px" title="time" type="number" value="1">
+                            <select id="jmpMtu" title="timeUnit">
+                                <option>NANOSECONDS</option>
+                                <option>MICROSECONDS</option>
+                                <option>MILLISECONDS</option>
+                                <option selected>SECONDS</option>
+                                <option>MINUTES</option>
+                            </select>
+                            <span class="jmp-mini-label">batch</span>
+                            <input id="jmpMb" min="1" style="width:60px" title="batchSize" type="number" value="1">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="label">@Timeout (time=0 不输出)</div>
+                        <div class="jmp-grid-num">
+                            <span class="jmp-mini-label">time</span>
+                            <input id="jmpTo" min="0" style="width:70px" type="number" value="10">
+                            <select id="jmpTotu">
+                                <option>NANOSECONDS</option>
+                                <option>MICROSECONDS</option>
+                                <option>MILLISECONDS</option>
+                                <option>SECONDS</option>
+                                <option selected>MINUTES</option>
+                                <option>HOURS</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="label">@CompilerControl</div>
+                        <select id="jmpCC">
+                            <option value="">-- 不输出 --</option>
+                            <option>INTRINSIC</option>
+                            <option>NONINTRINSIC</option>
+                            <option>EXCLUSIVE</option>
+                            <option>DONTINLINE</option>
+                            <option>BYTE_FORCE_PRIMITIVE</option>
+                            <option>BYTE_FORCE_NON_PRIMITIVE</option>
+                        </select>
+                    </div>
+                    <div class="jmp-divider">输出选项</div>
+                    <div class="jmp-grid-num">
+                        <label class="jmp-cb"><input checked id="jmpAddMain" type="checkbox"> 加 main()</label>
+                        <label class="jmp-cb"><input checked id="jmpAddSetup" type="checkbox"> 加 @Setup</label>
+                        <label class="jmp-cb"><input checked id="jmpAddTearDown" type="checkbox"> 加 @TearDown</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右:输出 -->
+            <div class="jmp-col">
+                <h5>
+                    <span><i class="bi bi-code"></i> ③ 生成的 Java 类</span>
+                    <button class="jmp-act-btn" onclick="jmpCopy()"><i class="bi bi-clipboard"></i> 复制</button>
+                </h5>
+                <div class="copy-wrap">
+                    <pre class="output-box" id="jmpOutput" style="min-height:480px;max-height:720px;margin:0"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,40 @@
+<div class="tool-panel" id="panel-sqlexplain">
+    <div class="alert alert-warning">
+        解析 <code>EXPLAIN</code> 输出（MySQL tabular / MySQL JSON / PostgreSQL textual / PostgreSQL JSON）。
+        全表扫描（<code>Seq Scan</code> / <code>ALL</code>）标红，索引命中（<code>Index Scan</code> / <code>ref</code>）标绿。
+    </div>
+
+    <div class="grid-2col">
+        <div>
+            <h4>EXPLAIN 输出</h4>
+            <textarea class="json-input" id="sqlexInput" placeholder="粘贴 MySQL EXPLAIN 或 PostgreSQL EXPLAIN 输出..."
+                      spellcheck="false"></textarea>
+        </div>
+        <div>
+            <h4>解析结果</h4>
+            <div class="sqlex-toolbar">
+                <label class="sqlex-label">数据库类型:
+                    <select class="sqlex-select" id="sqlexDbType">
+                        <option value="auto">自动检测</option>
+                        <option value="mysql">MySQL tabular</option>
+                        <option value="mysql-json">MySQL JSON</option>
+                        <option value="pg">PostgreSQL textual</option>
+                        <option value="pg-json">PostgreSQL JSON</option>
+                    </select>
+                </label>
+                <label class="sqlex-label">输出格式:
+                    <label class="sqlex-radio"><input checked name="sqlexFormat" type="radio" value="tree"> 树形</label>
+                    <label class="sqlex-radio"><input name="sqlexFormat" type="radio" value="table"> 表格</label>
+                    <label class="sqlex-radio"><input name="sqlexFormat" type="radio" value="json"> JSON</label>
+                </label>
+                <button class="btn btn-primary" onclick="sqlexRun()"><i class="bi bi-play-fill"></i> 解析</button>
+                <button class="btn" onclick="sqlexSample()"><i class="bi bi-stars"></i> 示例</button>
+                <button class="btn" onclick="sqlexCopy()"><i class="bi bi-clipboard"></i> 复制结果</button>
+                <button class="btn" onclick="sqlexClear()"><i class="bi bi-eraser"></i> 清空</button>
+                <span class="sqlex-status-msg" id="sqlexStatus"></span>
+            </div>
+            <div class="sqlex-summary" id="sqlexSummary"></div>
+            <div class="sqlex-output" id="sqlexOutput"></div>
+        </div>
+    </div>
+</div>

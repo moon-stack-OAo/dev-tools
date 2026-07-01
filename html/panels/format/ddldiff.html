@@ -1,0 +1,29 @@
+<div class="tool-panel" id="panel-ddldiff">
+    <div class="alert alert-warning">
+        ⚠️ 简化版 DDL 对比,仅适用于基础字段对比(列名/类型/length/nullable/default/comment)。不处理:外键/索引/分区/存储引擎/序列/触发器。复杂场景请手工核对。
+    </div>
+
+    <div class="grid-2col">
+        <div>
+            <h4>源 DDL</h4>
+            <textarea class="json-input" id="ddiffSrc" placeholder="CREATE TABLE ...&#10;支持多条 CREATE TABLE;支持反引号/双引号/方括号字段名;"
+                      spellcheck="false"></textarea>
+        </div>
+        <div>
+            <h4>目标 DDL</h4>
+            <textarea class="json-input" id="ddiffDst" placeholder="CREATE TABLE ..."
+                      spellcheck="false"></textarea>
+        </div>
+    </div>
+
+    <div class="ddiff-toolbar">
+        <button class="btn btn-primary" onclick="ddiffRun()"><i class="bi bi-arrow-left-right"></i> 对比</button>
+        <button class="btn" onclick="ddiffCopy()"><i class="bi bi-clipboard"></i> 复制结果</button>
+        <button class="btn" onclick="ddiffSample()"><i class="bi bi-stars"></i> 加载示例</button>
+        <button class="btn" onclick="ddiffClear()"><i class="bi bi-eraser"></i> 清空</button>
+        <span class="ddiff-status-msg" id="ddiffStatus"></span>
+    </div>
+
+    <div class="ddiff-summary" id="ddiffSummary"></div>
+    <div class="ddiff-tables" id="ddiffTables"></div>
+</div>

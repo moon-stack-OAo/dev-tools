@@ -1,11 +1,124 @@
-import {defineConfig} from 'vite';
+import { defineConfig } from 'vite';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import http from 'node:http';
+import https from 'node:https';
+
+const md5 = (filePath) => {
+    try {
+        return crypto.createHash('md5').update(fs.readFileSync(filePath)).digest('hex').slice(0, 8);
+    } catch {
+        return '';
+    }
+};
+
+// CORS 代理：仅开发模式启用。
+// 浏览器 fetch 跨域会被 CORS 拦截，本代理让前端把请求发到本工具同源的 /__cors_proxy，
+// 再由 vite dev server 在 Node 层转发到目标 URL，避开浏览器 CORS 限制。
+// 代理端点：任意方法 /__cors_proxy?target=<encodeURIComponent(url)>
+// 请求头/Body 原样转发；响应流式回传 + 加 access-control-allow-origin: *。
+function corsProxyPlugin() {
+    return {
+        name: 'cors-proxy',
+        configureServer(server) {
+            server.middlewares.use('/__cors_proxy', (req, res) => {
+                const u = new URL(req.url, 'http://localhost');
+                const target = u.searchParams.get('target');
+                if (!target) {
+                    res.statusCode = 400;
+                    res.setHeader('content-type', 'text/plain; charset=utf-8');
+                    res.end('Missing target query parameter');
+                    return;
+                }
+                let parsed;
+                try {
+                    parsed = new URL(target);
+                } catch (e) {
+                    res.statusCode = 400;
+                    res.setHeader('content-type', 'text/plain; charset=utf-8');
+                    res.end('Invalid target URL: ' + target);
+                    return;
+                }
+                if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+                    res.statusCode = 400;
+                    res.setHeader('content-type', 'text/plain; charset=utf-8');
+                    res.end('Only http/https protocol supported');
+                    return;
+                }
+
+                const hopByHop = new Set([
+                    'host',
+                    'connection',
+                    'keep-alive',
+                    'proxy-authenticate',
+                    'proxy-authorization',
+                    'te',
+                    'trailers',
+                    'transfer-encoding',
+                    'upgrade',
+                    'origin',
+                    'referer',
+                    'content-length',
+                    'content-encoding',
+                ]);
+                const fwdHeaders = {};
+                for (const [k, v] of Object.entries(req.headers)) {
+                    if (!hopByHop.has(k.toLowerCase())) fwdHeaders[k] = v;
+                }
+                fwdHeaders.host = parsed.host;
+
+                const lib = parsed.protocol === 'https:' ? https : http;
+                const proxyReq = lib.request(
+                    {
+                        hostname: parsed.hostname,
+                        port: parsed.port || (parsed.protocol === 'https:' ? 443 : 80),
+                        path: parsed.pathname + parsed.search,
+                        method: req.method,
+                        headers: fwdHeaders,
+                    },
+                    (proxyRes) => {
+                        const respHeaders = {};
+                        for (const [k, v] of Object.entries(proxyRes.headers)) {
+                            const lk = k.toLowerCase();
+                            if (['connection', 'keep-alive', 'transfer-encoding'].includes(lk)) continue;
+                            respHeaders[k] = v;
+                        }
+                        respHeaders['access-control-allow-origin'] = '*';
+                        respHeaders['access-control-allow-credentials'] = 'true';
+                        respHeaders['access-control-expose-headers'] =
+                            'Content-Disposition, Content-Type, Content-Length, Content-Range';
+                        respHeaders['x-proxied-by'] = 'dev-tools-cors-proxy';
+                        res.writeHead(proxyRes.statusCode || 502, respHeaders);
+                        proxyRes.pipe(res);
+                    }
+                );
+
+                proxyReq.setTimeout(60_000, () => {
+                    proxyReq.destroy(new Error('Proxy request timeout'));
+                });
+
+                proxyReq.on('error', (err) => {
+                    if (res.headersSent) {
+                        res.destroy(err);
+                    } else {
+                        res.statusCode = 502;
+                        res.setHeader('content-type', 'text/plain; charset=utf-8');
+                        res.setHeader('access-control-allow-origin', '*');
+                        res.end('Proxy error: ' + err.message);
+                    }
+                });
+
+                req.on('error', (err) => proxyReq.destroy(err));
+                req.pipe(proxyReq);
+            });
+        },
+    };
+}
 
 function copyDir(src, dest) {
     if (fs.statSync(src).isDirectory()) {
-        fs.mkdirSync(dest, {recursive: true});
+        fs.mkdirSync(dest, { recursive: true });
         for (const entry of fs.readdirSync(src)) {
             copyDir(path.join(src, entry), path.join(dest, entry));
         }
@@ -16,7 +129,7 @@ function copyDir(src, dest) {
 
 function copyTree(src, dest) {
     if (!fs.existsSync(src)) return;
-    fs.mkdirSync(dest, {recursive: true});
+    fs.mkdirSync(dest, { recursive: true });
     for (const entry of fs.readdirSync(src)) {
         const s = path.join(src, entry);
         const d = path.join(dest, entry);
@@ -69,20 +182,13 @@ function injectAssetMapPlugin(mode) {
         closeBundle() {
             if (mode === 'development') return;
             const map = {};
-            const stamp = (rel) => {
-                try {
-                    return crypto.createHash('md5').update(fs.readFileSync(rel)).digest('hex').slice(0, 8);
-                } catch (e) {
-                    return '';
-                }
-            };
             const walk = (dir, pred) => {
                 if (!fs.existsSync(dir)) return;
-                for (const e of fs.readdirSync(dir, {withFileTypes: true})) {
+                for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
                     const full = path.join(dir, e.name);
                     if (e.isDirectory()) walk(full, pred);
                     else if (pred(e.name)) {
-                        map[path.relative('.', full).replace(/\\/g, '/')] = stamp(full);
+                        map[path.relative('.', full).replace(/\\/g, '/')] = md5(full);
                     }
                 }
             };
@@ -107,28 +213,25 @@ function injectAssetMapPlugin(mode) {
     };
 }
 
-export default defineConfig(({mode}) => ({
+export default defineConfig(({ mode }) => ({
     base: './',
     build: {
         outDir: 'dist',
         assetsInlineLimit: 0,
     },
     server: {
+        host: '0.0.0.0',
         port: 3000,
         open: true,
     },
     plugins: [
+        corsProxyPlugin(),
         {
             name: 'cache-bust',
             transformIndexHtml(html) {
                 return html.replace(/(src|href)="([^"]+\.(js|css))"/g, (m, attr, file) => {
-                    try {
-                        const buf = fs.readFileSync(file);
-                        const hash = crypto.createHash('md5').update(buf).digest('hex').slice(0, 8);
-                        return `${attr}="${file}?v=${hash}"`;
-                    } catch (e) {
-                        return m;
-                    }
+                    const hash = md5(file);
+                    return hash ? `${attr}="${file}?v=${hash}"` : m;
                 });
             },
         },

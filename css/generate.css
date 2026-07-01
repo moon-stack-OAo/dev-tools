@@ -1,14 +1,551 @@
 /* Timestamp */
-.ts-row {
+.ts-now-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card2) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.ts-now-card:hover {
+    border-color: var(--border-light);
+    box-shadow: var(--shadow);
+}
+
+.ts-now-icon {
+    font-size: 28px;
+    color: var(--accent);
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.ts-now-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.ts-now-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.ts-now-value {
+    font-family: var(--font);
+    font-size: 14px;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    word-break: break-all;
+}
+
+.ts-input-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.ts-input-card:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.12);
+}
+
+.ts-input-card-clickable {
+    cursor: pointer;
+    position: relative;
+}
+
+.ts-input-card-clickable:hover {
+    border-color: var(--border-light);
+    background: var(--bg-card2);
+}
+
+.ts-input-card-clickable:focus-within,
+.ts-input-card-clickable.ts-active {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.12);
+}
+
+.ts-input-pick-hint {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-dim);
+    opacity: 0.5;
+    transition: opacity 0.2s, color 0.2s;
+}
+
+.ts-input-card-clickable:hover .ts-input-pick-hint {
+    opacity: 1;
+    color: var(--accent);
+}
+
+.ts-input-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ts-input-label i {
+    color: var(--accent);
+    font-size: 14px;
+}
+
+.ts-input {
+    width: 100%;
+    background: var(--bg-terminal);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 9px 12px;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    transition: border-color 0.15s;
+}
+
+.ts-input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.ts-input::placeholder {
+    color: var(--text-dim);
+    opacity: 0.6;
+}
+
+.ts-date-picker {
+    color-scheme: dark;
+    padding: 8px 10px;
+}
+
+.ts-date-picker::-webkit-calendar-picker-indicator {
+    filter: invert(0.7);
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+}
+
+.ts-date-picker::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+.ts-input-hint {
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--text-dim);
+    opacity: 0.8;
+}
+
+.ts-single-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+    align-items: stretch;
+}
+
+.ts-middle-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 24px 4px;
+}
+
+.ts-middle-actions .ts-btn {
+    width: 100%;
+    min-width: 76px;
+    justify-content: center;
+}
+
+@media (max-width: 720px) {
+    .ts-single-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ts-middle-actions {
+        flex-direction: row;
+        padding: 0;
+    }
+}
+
+.ts-result-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+}
+
+.ts-result-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.ts-result-head i {
+    color: var(--accent);
+    font-size: 14px;
+}
+
+.ts-result-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ts-result-actions .ts-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 28px;
+    padding: 0 14px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text);
+    line-height: 1;
+    user-select: none;
+}
+
+.ts-result-actions .ts-btn i {
+    font-size: 13px;
+    line-height: 1;
+}
+
+.ts-result-actions .ts-btn-primary {
+    background: linear-gradient(135deg, var(--accent) 0%, color-mix(in srgb, var(--accent), #6c63ff 30%) 100%);
+    color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 2px 8px rgba(var(--accent-rgb), 0.25);
+}
+
+.ts-result-actions .ts-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(var(--accent-rgb), 0.4);
+    filter: brightness(1.08);
+}
+
+.ts-result-actions .ts-btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 4px rgba(var(--accent-rgb), 0.3);
+}
+
+.ts-result-actions .ts-btn-ghost {
+    background: var(--bg-terminal);
+    color: var(--text-dim);
+    border-color: var(--border);
+}
+
+.ts-result-actions .ts-btn-ghost:hover {
+    color: var(--text);
+    border-color: var(--border-light);
+    background: var(--bg-card2);
+}
+
+.ts-result-list {
+    font-family: var(--font);
+    font-size: 13px;
+}
+
+.ts-result-empty {
+    color: var(--text-dim);
+    text-align: center;
+    padding: 30px 8px;
+    font-size: 12px;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-terminal);
+}
+
+.ts-result-row {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 12px;
+    padding: 7px 4px;
+    align-items: center;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.ts-result-row:last-child {
+    border-bottom: none;
+}
+
+.ts-result-key {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.ts-result-key i {
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+.ts-result-val {
+    font-family: var(--font);
+    font-size: 13px;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    word-break: break-all;
+    user-select: all;
+}
+
+.ts-result-val.ts-err {
+    color: var(--danger, #e53e3e);
+    font-style: italic;
+}
+
+.ts-batch-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.ts-batch-toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    flex: 1;
+    min-width: 0;
+}
+
+.ts-batch-toolbar-left label {
+    font-size: 12px;
+    color: var(--text-dim);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ts-batch-toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ts-select {
+    background: var(--bg-terminal);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 5px 10px;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 12px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+
+.ts-select:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.ts-batch-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+@media (max-width: 900px) {
+    .ts-batch-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.ts-batch-input-wrap,
+.ts-batch-output-wrap {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.ts-batch-hint {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    margin-left: 4px;
+    opacity: 0.7;
+}
+
+.ts-batch-summary {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    margin-left: auto;
+    padding: 1px 8px;
+    background: var(--bg-card2);
+    border-radius: 10px;
+    font-variant-numeric: tabular-nums;
+}
+
+.ts-batch-input {
+    flex: 1;
+    min-height: 240px;
+    background: var(--bg-terminal);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 13px;
+    line-height: 1.6;
+    resize: vertical;
+    transition: border-color 0.15s;
+}
+
+.ts-batch-input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.ts-batch-input::placeholder {
+    color: var(--text-dim);
+    opacity: 0.6;
+}
+
+.ts-batch-output {
+    flex: 1;
+    min-height: 240px;
+    max-height: 480px;
+    overflow-y: auto;
+    background: var(--bg-terminal);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 6px 0;
+    font-family: var(--font);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.ts-batch-empty {
+    color: var(--text-dim);
+    text-align: center;
+    padding: 60px 8px;
+    font-size: 12px;
+}
+
+.ts-batch-empty i {
+    font-size: 28px;
+    margin-bottom: 10px;
+    display: block;
+    opacity: 0.4;
+}
+
+.ts-row-item {
     display: flex;
     gap: 10px;
     align-items: center;
-    flex-wrap: wrap;
+    padding: 6px 12px;
+    border-bottom: 1px solid var(--border-soft);
+    transition: background 0.15s;
 }
 
-.ts-row input {
+.ts-row-item:hover {
+    background: var(--bg-card2);
+}
+
+.ts-row-item:last-child {
+    border-bottom: none;
+}
+
+.ts-row-line {
+    color: var(--text-dim);
+    min-width: 38px;
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.ts-row-arrow {
+    color: var(--accent);
+    font-family: var(--font);
+    flex-shrink: 0;
+}
+
+.ts-row-out {
     flex: 1;
-    min-width: 120px;
+    word-break: break-all;
+    font-variant-numeric: tabular-nums;
+    user-select: all;
+}
+
+.ts-row-err {
+    background: rgba(229, 62, 62, 0.05);
+}
+
+.ts-row-err:hover {
+    background: rgba(229, 62, 62, 0.08);
+}
+
+.ts-row-err .ts-row-out {
+    color: var(--text-dim);
+    text-decoration: line-through;
+}
+
+.ts-row-err .ts-row-arrow {
+    color: var(--danger, #e53e3e);
+}
+
+.ts-row-err-msg {
+    color: var(--danger, #e53e3e);
+    font-size: 11px;
+    padding: 1px 6px;
+    background: rgba(229, 62, 62, 0.1);
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+.ts-batch-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-end;
 }
 
 /* UUID & Random */

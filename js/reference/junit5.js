@@ -420,12 +420,12 @@ function junit5Render(filter) {
     JUNIT5_REFS.forEach((group) => {
         const matched = filter
             ? group.items.filter(
-                (it) =>
-                    it.cmd.toLowerCase().includes(filter) ||
-                    it.desc.toLowerCase().includes(filter) ||
-                    (it.syntax && it.syntax.toLowerCase().includes(filter)) ||
-                    (it.examples && it.examples.some((ex) => ex.toLowerCase().includes(filter)))
-            )
+                  (it) =>
+                      it.cmd.toLowerCase().includes(filter) ||
+                      it.desc.toLowerCase().includes(filter) ||
+                      (it.syntax && it.syntax.toLowerCase().includes(filter)) ||
+                      (it.examples && it.examples.some((ex) => ex.toLowerCase().includes(filter)))
+              )
             : group.items;
         if (matched.length === 0) return;
         hasResult = true;

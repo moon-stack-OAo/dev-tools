@@ -1,0 +1,68 @@
+<div class="tool-panel" id="panel-javastream">
+    <div class="js-config">
+        <div class="flex gap-6 mb-8" style="align-items:flex-end;flex-wrap:wrap">
+            <div class="flex-1">
+                <div class="label">数据源类型</div>
+                <input id="jsSrcType" placeholder="List<User> 或 Map<String,Integer> 或 int[]" type="text">
+            </div>
+            <div>
+                <div class="label">变量名</div>
+                <input id="jsSrcVar" style="width:140px" type="text" value="users">
+            </div>
+        </div>
+        <div class="flex gap-6 mb-8" style="align-items:flex-end;flex-wrap:wrap">
+            <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-dim)">
+                <input checked id="jsDeclare" style="accent-color:var(--accent)" type="checkbox">
+                生成变量声明
+            </label>
+            <div>
+                <div class="label">目标变量名</div>
+                <input id="jsTgtVar" style="width:160px" type="text" value="result">
+            </div>
+            <div class="flex-1">
+                <div class="label">返回类型 (可不填)</div>
+                <input id="jsTgtType" placeholder="List<String>" type="text">
+            </div>
+        </div>
+    </div>
+
+    <div class="js-chain mb-8">
+        <h4 style="margin:6px 0">操作链</h4>
+        <div id="jsSteps"></div>
+        <div class="toolbar" style="margin-top:8px">
+            <button onclick="jsAddStep()">+ 添加步骤</button>
+            <button onclick="jsAddSample()">加载示例</button>
+            <button onclick="jsClearAll()">清空</button>
+        </div>
+    </div>
+
+    <div class="js-terminal mb-8">
+        <div class="flex gap-6" style="align-items:flex-end;flex-wrap:wrap">
+            <div>
+                <div class="label">终止操作</div>
+                <select id="jsTerminal" style="width:200px"></select>
+            </div>
+            <div id="jsTerminalExtra" style="display:flex;gap:6px;align-items:center;flex:1;min-width:240px"></div>
+        </div>
+    </div>
+
+    <div class="js-output">
+        <div class="flex gap-6 mb-8" style="align-items:center">
+            <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-dim)">
+                <input checked id="jsAddImports" style="accent-color:var(--accent)" type="checkbox">
+                自动插入 import
+            </label>
+            <button onclick="jsCopy()">复制代码</button>
+        </div>
+        <div class="flex gap-6" style="align-items:stretch">
+            <div class="copy-wrap" style="flex:2">
+                <div class="label">生成的代码</div>
+                <div class="output-box" id="jsOutput" style="min-height:120px;max-height:360px"></div>
+            </div>
+            <div class="copy-wrap" style="flex:1">
+                <div class="label">需要 import</div>
+                <div class="output-box" id="jsImports" style="min-height:120px;max-height:360px;white-space:pre"></div>
+            </div>
+        </div>
+    </div>
+</div>

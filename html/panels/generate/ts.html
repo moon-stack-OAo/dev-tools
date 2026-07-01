@@ -1,17 +1,118 @@
 <div class="tool-panel" id="panel-ts">
-    <div class="mb-8">
-        <div class="label">当前时间</div>
-        <div class="output-box" id="tsNow" style="min-height:auto;padding:8px 12px"></div>
+    <div class="ts-now-card">
+        <i class="bi bi-clock-history ts-now-icon"></i>
+        <div class="ts-now-content">
+            <div class="ts-now-label">当前时间</div>
+            <div class="ts-now-value" id="tsNow">--</div>
+        </div>
     </div>
-    <div class="ts-row mb-8">
-        <input id="tsInput" placeholder="时间戳 (秒或毫秒)" type="text">
-        <button onclick="tsFromTimestamp()">→ 转日期</button>
-        <input id="tsDateInput" placeholder="日期字符串 (如 2025-01-01 12:00:00)" type="text">
-        <button onclick="tsFromDate()">→ 转时间戳</button>
+    <div class="tab-bar">
+        <div class="tab active" data-ts-mode="single" onclick="tsSwitchMode('single')">
+            <i class="bi bi-arrow-left-right"></i>单条转换
+        </div>
+        <div class="tab" data-ts-mode="batch" onclick="tsSwitchMode('batch')">
+            <i class="bi bi-list-ol"></i>批量转换
+        </div>
     </div>
-    <div class="copy-wrap">
-        <div class="label">结果</div>
-        <button class="copy-btn" onclick="copyText('tsOutput')">复制</button>
-        <div class="output-box" id="tsOutput"></div>
+    <div class="tab-content active" id="tsModeSingle">
+        <div class="ts-single-grid">
+            <div class="ts-input-card">
+                <div class="ts-input-label">
+                    <i class="bi bi-stopwatch"></i>时间戳
+                </div>
+                <input autocomplete="off" class="ts-input" id="tsInput" placeholder="1700000000 或 1700000000000"
+                       type="text">
+                <div class="ts-input-hint">支持 Unix 秒 / 毫秒,自动识别</div>
+            </div>
+            <div class="ts-middle-actions">
+                <button class="ts-btn ts-btn-primary" onclick="tsRunSingle()" title="立即转换">
+                    <i class="bi bi-arrow-repeat"></i>转换
+                </button>
+                <button class="ts-btn ts-btn-ghost" onclick="tsClearSingle()" title="清空输入并恢复初始状态">
+                    <i class="bi bi-x-circle"></i>清空
+                </button>
+            </div>
+            <div class="ts-input-card ts-input-card-clickable" onclick="tsOpenDatePicker(event)">
+                <div class="ts-input-label">
+                    <i class="bi bi-calendar-date"></i>日期
+                    <i class="bi bi-cursor ts-input-pick-hint"></i>
+                </div>
+                <input autocomplete="off" class="ts-input ts-date-picker" id="tsDateInput" step="1"
+                       type="datetime-local">
+                <div class="ts-input-hint">点击整行任意位置,弹出日期时间选择器</div>
+            </div>
+        </div>
+        <div class="ts-result-card">
+            <div class="ts-result-head">
+                <i class="bi bi-card-text"></i>
+                <span>转换结果</span>
+            </div>
+            <div class="ts-result-list" id="tsOutput">
+                <div class="ts-result-empty">输入时间戳或日期后,这里显示 5 种格式结果</div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-content" id="tsModeBatch">
+        <div class="ts-batch-toolbar">
+            <div class="ts-batch-toolbar-left">
+                <label>方向</label>
+                <select class="ts-select" id="tsDirection">
+                    <option value="ts2date">时间戳 → 日期</option>
+                    <option value="date2ts">日期 → 时间戳</option>
+                </select>
+                <label>时区</label>
+                <select class="ts-select" id="tsTz">
+                    <option value="UTC">UTC</option>
+                    <option value="Asia/Shanghai">Asia/Shanghai</option>
+                    <option value="local">本地</option>
+                </select>
+                <label>输出</label>
+                <select class="ts-select" id="tsFormat">
+                    <option value="yyyy-MM-dd HH:mm:ss">yyyy-MM-dd HH:mm:ss</option>
+                    <option value="ISO">ISO 8601</option>
+                    <option value="s">Unix 秒</option>
+                    <option value="ms">Unix 毫秒</option>
+                </select>
+            </div>
+            <div class="ts-batch-toolbar-right">
+                <button class="outline sm" onclick="tsCopyTSV()" title="复制为制表符分隔,Excel 可直接粘贴">
+                    <i class="bi bi-filetype-tsv"></i>复制 TSV
+                </button>
+                <button class="outline sm" onclick="tsCopyJSON()" title="复制为 JSON 数组">
+                    <i class="bi bi-filetype-json"></i>复制 JSON
+                </button>
+            </div>
+        </div>
+        <div class="ts-batch-grid">
+            <div class="ts-batch-input-wrap">
+                <div class="ts-input-label">
+                    <i class="bi bi-pencil-square"></i>输入
+                    <span class="ts-batch-hint">每行一条时间戳或日期</span>
+                </div>
+                <textarea class="ts-batch-input"
+                          id="tsBatchInput"
+                          placeholder="1700000000&#10;1700000000000&#10;2024-01-01 12:00:00&#10;2024-06-15T08:30:00Z"></textarea>
+            </div>
+            <div class="ts-batch-output-wrap">
+                <div class="ts-input-label">
+                    <i class="bi bi-list-check"></i>结果
+                    <span class="ts-batch-summary" id="tsBatchSummary"></span>
+                </div>
+                <div class="ts-batch-output" id="tsBatchOutput">
+                    <div class="ts-batch-empty">
+                        <i class="bi bi-arrow-left-circle"></i>
+                        <div>请输入待转换的时间戳或日期</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ts-batch-footer">
+            <button class="outline sm" onclick="tsLoadSample()">
+                <i class="bi bi-file-earmark-text"></i>加载示例
+            </button>
+            <button class="outline sm" onclick="tsClearBatch()">
+                <i class="bi bi-x-circle"></i>清空
+            </button>
+        </div>
     </div>
 </div>

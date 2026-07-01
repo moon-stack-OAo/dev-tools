@@ -1,0 +1,50 @@
+<!-- Java 代码格式化 -->
+<div class="tool-panel" id="panel-javafmt">
+    <div class="alert alert-warning jf-alert">
+        ⚠️ 简化版美化器(自实现 tokenizer),覆盖 90% 日常场景;不保证与 google-java-format 等价。
+    </div>
+
+    <div class="toolbar jf-options">
+        <label style="display:flex;align-items:center;gap:6px">
+            缩进:
+            <select id="jfIndent">
+                <option value="\t">Tab</option>
+                <option value="  ">2 空格</option>
+                <option selected value="    ">4 空格</option>
+            </select>
+        </label>
+        <span style="color:var(--text-muted)">|</span>
+        <label style="display:flex;align-items:center;gap:6px">
+            大括号:
+            <select id="jfBrace">
+                <option selected value="kr">K&amp;R(同行)</option>
+                <option value="allman">Allman(下一行)</option>
+            </select>
+        </label>
+        <span style="color:var(--text-muted)">|</span>
+        <label><input checked id="jfSortImports" type="checkbox"> import 排序分组</label>
+        <label><input id="jfChainBreak" type="checkbox"> 方法链每行一个</label>
+        <label><input checked id="jfAnnotationBreak" type="checkbox"> 多注解换行</label>
+        <button class="outline" onclick="jfClear()" style="margin-left:auto">清空</button>
+        <button class="outline" onclick="jfLoadSample()">加载示例</button>
+    </div>
+
+    <div class="grid-2col">
+        <div style="display:flex;flex-direction:column;min-width:0">
+            <div class="label">Java 输入</div>
+            <textarea class="json-input" id="jfInput" placeholder="粘贴 Java 代码..."
+                      spellcheck="false"></textarea>
+        </div>
+        <div style="display:flex;flex-direction:column;min-width:0">
+            <div class="label">格式化结果</div>
+            <textarea class="json-input" id="jfOutput" readonly spellcheck="false"
+                      style="background:var(--bg-input)"></textarea>
+        </div>
+    </div>
+
+    <div class="copy-wrap" style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="jfFormat()">格式化</button>
+        <button class="btn" onclick="jfDoCompress()">压缩</button>
+        <button class="btn" onclick="jfCopy()">复制</button>
+    </div>
+</div>

@@ -1,0 +1,95 @@
+<div class="tool-panel" id="panel-jsonexcel">
+    <div class="toolbar jse-toolbar">
+        <label>
+            来源:
+            <select id="jseSource">
+                <option value="json">JSON 数组</option>
+                <option value="csv">CSV</option>
+                <option value="xlsx">Excel (.xlsx)</option>
+            </select>
+        </label>
+        <span class="jse-arrow"><i class="bi bi-arrow-right"></i></span>
+        <label>
+            目标:
+            <select id="jseTarget">
+                <option selected value="csv">CSV</option>
+                <option value="json">JSON 数组</option>
+                <option value="xlsx">Excel (.xlsx)</option>
+            </select>
+        </label>
+        <span style="color:var(--text-muted)">|</span>
+        <label>
+            嵌套展平:
+            <select id="jseArrayStyle">
+                <option selected value="index">数组索引 a[0].b</option>
+                <option value="dot">点路径 a.0.b</option>
+                <option value="inline">数组 JSON 内联</option>
+            </select>
+        </label>
+        <label id="jseSepWrap">
+            分隔符:
+            <select id="jseSeparator">
+                <option selected value=",">逗号 ,</option>
+                <option value=";">分号 ;</option>
+                <option value="\t">制表符 \t</option>
+                <option value="|">竖线 |</option>
+            </select>
+        </label>
+        <label><input checked id="jseFlatten" style="accent-color:var(--accent)" type="checkbox"> 展平嵌套</label>
+        <label><input id="jseUnflatten" style="accent-color:var(--accent)" type="checkbox"> 反展平(CSV→JSON)</label>
+        <label><input checked id="jseHeader" style="accent-color:var(--accent)" type="checkbox"> 包含表头</label>
+    </div>
+
+    <div class="jse-layout">
+        <div class="jse-left">
+            <div class="jse-section-head">
+                <span class="label">输入 / 输出文本</span>
+                <span id="jseSheetWrap" style="display:none">
+                    Sheet:
+                    <select id="jseSheet"
+                            style="padding:2px 6px;border-radius:4px;border:1px solid var(--border);background:var(--bg-input);color:var(--text);font-size:12px"></select>
+                </span>
+            </div>
+            <div class="jse-drop" id="jseDropZone">
+                <textarea class="json-input" id="jseInput" placeholder='[
+  {"id":1,"name":"张三","address":{"city":"上海"},"skills":["Java","SQL"]},
+  {"id":2,"name":"Li Si","address":{"city":"Beijing"},"skills":["Go","Rust"]}
+]' spellcheck="false"></textarea>
+            </div>
+            <div class="jse-status" id="jseStatus"></div>
+        </div>
+        <div class="jse-right">
+            <div class="jse-section-head">
+                <span class="label">表格预览(前 20 行)</span>
+            </div>
+            <div class="jse-preview" id="jsePreview">
+                <div style="padding:18px;color:var(--text-dim);font-size:12.5px;text-align:center">暂无数据</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="jse-footer">
+        <button class="btn btn-primary" onclick="jseConvert()"><i class="bi bi-arrow-left-right"></i> 转换</button>
+        <button class="btn" id="jseDownloadBtn" onclick="jseDownload()" style="display:none">
+            <i class="bi bi-download"></i> 下载
+        </button>
+        <button class="btn outline" onclick="jseCopy()"><i class="bi bi-clipboard"></i> 复制文本</button>
+        <button class="btn outline" onclick="document.getElementById('jseFile').click()">
+            <i class="bi bi-upload"></i> 上传文件
+        </button>
+        <input accept=".csv,.tsv,.txt,.json,.xlsx,.xls,.xlsm" id="jseFile" style="display:none" type="file">
+        <button class="btn outline" onclick="jseLoadSample()"><i class="bi bi-stars"></i> 加载示例</button>
+        <button class="btn outline" onclick="jseClear()"><i class="bi bi-eraser"></i> 清空</button>
+    </div>
+
+    <div class="jse-help">
+        <strong>使用说明</strong>
+        <ul>
+            <li>支持 JSON ↔ CSV、JSON ↔ Excel、CSV ↔ Excel 六种互转组合</li>
+            <li>嵌套对象可通过<strong>展平嵌套</strong>自动转为点路径(如 <code>address.city</code>)</li>
+            <li>CSV → JSON 时勾选<strong>反展平</strong>可将 <code>a.b</code> 还原为 <code>{a:{b:...}}</code></li>
+            <li>Excel 文件支持多 Sheet,左侧下拉切换;SheetJS 首次使用时按需懒加载</li>
+            <li>支持<strong>拖拽</strong>上传 CSV / Excel / JSON 文件</li>
+        </ul>
+    </div>
+</div>
