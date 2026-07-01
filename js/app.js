@@ -20,6 +20,7 @@
 
 // === Tools Data ===
 const categories = [
+    { id: 'recent', name: '最近使用', icon: 'bi-clock-history' },
     { id: 'format', name: '格式化', icon: 'bi-file-earmark-code' },
     { id: 'encode', name: '编解码', icon: 'bi-arrow-left-right' },
     { id: 'security', name: '安全', icon: 'bi-shield-lock' },
@@ -151,6 +152,13 @@ const tools = [
     { id: 'ts', icon: 'bi-clock', name: '时间戳转换', desc: 'Unix 毫秒/秒 ↔ 日期', cat: 'generate' },
     { id: 'color', icon: 'bi-palette', name: '颜色转换', desc: 'HEX / RGB / HSL 互转预览', cat: 'generate' },
     { id: 'baseconvert', icon: 'bi-calculator', name: '进制转换', desc: '2~36 进制互转', cat: 'generate' },
+    {
+        id: 'image-compress',
+        icon: 'bi-image',
+        name: '图片压缩',
+        desc: 'JPEG/PNG/WebP 互转 / 质量调节 / 批量处理',
+        cat: 'generate',
+    },
     { id: 'case', icon: 'bi-type', name: 'Case 转换', desc: 'camelCase / snake_case 等', cat: 'generate' },
     { id: 'datamock', icon: 'bi-people', name: '数据 Mock', desc: '生成姓名 / 手机号 / 邮箱等', cat: 'generate' },
     { id: 'datecalc', icon: 'bi-calendar', name: '日期计算器', desc: '日期加减 / 间隔 / 工作日', cat: 'generate' },
@@ -379,6 +387,43 @@ function clearUsageStats() {
     renderHomeHeatmap();
 }
 
+// === Recent Tools ===
+const RECENT_KEY = 'devtools.recent';
+const RECENT_MAX = 8;
+
+function pushRecent(id) {
+    try {
+        const raw = localStorage.getItem(RECENT_KEY);
+        const arr = raw ? JSON.parse(raw) : [];
+        const filtered = arr.filter((e) => e.id !== id);
+        filtered.unshift({ id: id, ts: Date.now() });
+        const truncated = filtered.slice(0, RECENT_MAX);
+        localStorage.setItem(RECENT_KEY, JSON.stringify(truncated));
+    } catch (e) {
+    }
+}
+
+function getRecent() {
+    try {
+        const raw = localStorage.getItem(RECENT_KEY);
+        const arr = raw ? JSON.parse(raw) : [];
+        return arr
+            .map((e) => Object.assign({}, e, { tool: tools.find((t) => t.id === e.id) }))
+            .filter((e) => e.tool)
+            .slice(0, RECENT_MAX);
+    } catch (e) {
+        return [];
+    }
+}
+
+function clearRecent() {
+    try {
+        localStorage.removeItem(RECENT_KEY);
+    } catch (e) {
+    }
+    refreshRecentBlock();
+}
+
 function renderHomeHeatmap() {
     const panel = document.getElementById('homeHeatmap');
     if (!panel) return;
@@ -504,6 +549,7 @@ const toolLibs = {
     certparser: ['asn1js.min.js', 'pkijs.min.js'],
     uaparser: ['ua-parser.min.js'],
     sql2mybatis: ['jszip.min.js'],
+    'image-compress': ['jszip.min.js'],
 };
 
 // 公共 HTML 转义工具:统一所有工具的转义逻辑(原 15 处重复定义已收敛至此)。
@@ -608,8 +654,14 @@ function buildHomeGrid() {
     const anchors = document.getElementById('homeCatAnchors');
     anchors.innerHTML = '';
     categories.forEach((cat) => {
-        const toolsInCat = tools.filter((t) => t.cat === cat.id);
-        if (!toolsInCat.length) return;
+        let toolsInCat;
+        if (cat.id === 'recent') {
+            toolsInCat = getRecent().map((e) => e.tool);
+            if (!toolsInCat.length) return;
+        } else {
+            toolsInCat = tools.filter((t) => t.cat === cat.id);
+            if (!toolsInCat.length) return;
+        }
         const divider = document.createElement('div');
         divider.className = 'home-cat-divider cat-' + cat.id;
         divider.id = 'cat-' + cat.id;
@@ -641,6 +693,59 @@ function buildHomeGrid() {
     // 返回顶部按钮
     const btt = document.getElementById('backToTop');
     btt.addEventListener('click', () => homePanel.scrollTo({ top: 0, behavior: 'smooth' }));
+}
+
+function refreshRecentBlock() {
+    const grid = document.getElementById('homeGrid');
+    const anchorsBox = document.getElementById('homeCatAnchors');
+    if (!grid || !anchorsBox) return;
+    const recentItems = getRecent();
+    const oldDivider = document.getElementById('cat-recent');
+    const oldAnchor = anchorsBox.querySelector('.cat-anchor[href="#cat-recent"]');
+
+    grid.querySelectorAll('.home-card[data-cat="recent"]').forEach((c) => c.remove());
+
+    if (!recentItems.length) {
+        if (oldDivider) oldDivider.remove();
+        if (oldAnchor) oldAnchor.remove();
+    } else {
+        let divider = oldDivider;
+        if (!divider) {
+            divider = document.createElement('div');
+            divider.className = 'home-cat-divider cat-recent';
+            divider.id = 'cat-recent';
+            divider.innerHTML =
+                '<span class="hcd-icon"><i class="bi bi-clock-history"></i></span><span>最近使用</span>';
+            grid.insertBefore(divider, grid.firstChild);
+        }
+        let anchor = oldAnchor;
+        if (!anchor) {
+            anchor = document.createElement('a');
+            anchor.className = 'cat-anchor';
+            anchor.href = '#cat-recent';
+            anchor.innerHTML = '<span class="cat-icon"><i class="bi bi-clock-history"></i></span>最近使用';
+            anchorsBox.insertBefore(anchor, anchorsBox.firstChild);
+        }
+        recentItems.forEach((e, ci) => {
+            const card = document.createElement('div');
+            card.className = 'home-card cat-recent';
+            card.dataset.cat = 'recent';
+            card.style.animationDelay = Math.min(ci, 11) * 0.03 + 's';
+            card.innerHTML =
+                '<div class="hc-icon"><i class="bi ' +
+                e.tool.icon +
+                '"></i></div><div class="hc-name">' +
+                e.tool.name +
+                '</div><div class="hc-desc">' +
+                e.tool.desc +
+                '</div>';
+            card.addEventListener('click', () => openTool(e.tool.id));
+            divider.after(card);
+        });
+    }
+
+    homeCards = Array.from(grid.querySelectorAll('.home-card'));
+    homeDividers = Array.from(grid.querySelectorAll('.home-cat-divider'));
 }
 
 function highlightAnchor() {
@@ -681,6 +786,8 @@ async function openTool(id) {
         return;
     }
     bumpUsage(id);
+    pushRecent(id);
+    refreshRecentBlock();
     document.querySelectorAll('.tool-panel.active').forEach((p) => p.classList.remove('active'));
     const panel = document.getElementById('panel-' + id);
     panel.classList.add('active');

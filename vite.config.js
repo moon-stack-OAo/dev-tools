@@ -23,7 +23,7 @@ function corsProxyPlugin() {
         name: 'cors-proxy',
         configureServer(server) {
             server.middlewares.use('/__cors_proxy', (req, res) => {
-                const u = new URL(req.url, 'http://localhost');
+                const u = new URL(req.url, 'http://127.0.0.1');
                 const target = u.searchParams.get('target');
                 if (!target) {
                     res.statusCode = 400;
@@ -222,7 +222,7 @@ export default defineConfig(({ mode }) => ({
     server: {
         host: '0.0.0.0',
         port: 3000,
-        open: true,
+        open: process.env.OPEN_BROWSER === 'true',
     },
     plugins: [
         corsProxyPlugin(),

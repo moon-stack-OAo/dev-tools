@@ -1,0 +1,52 @@
+<div class="tool-panel" id="panel-image-compress">
+    <div class="ic-config">
+        <div class="ic-config-row">
+            <label class="ic-field">
+                <span>输出格式</span>
+                <select id="icFormat">
+                    <option value="image/jpeg">JPEG</option>
+                    <option value="image/png">PNG</option>
+                    <option value="image/webp">WebP</option>
+                    <option value="origin">保持原格式</option>
+                </select>
+            </label>
+            <label class="ic-field ic-field-slider" id="icQualityField">
+                <span>质量 <em id="icQualityVal">80</em></span>
+                <input id="icQuality" max="100" min="1" type="range" value="80" />
+            </label>
+            <label class="ic-field">
+                <span>最大宽度（0 = 不缩放）</span>
+                <input id="icMaxWidth" min="0" placeholder="不限" type="number" value="0" />
+            </label>
+        </div>
+        <div class="ic-config-hint">
+            JPEG / WebP 支持质量调节；PNG 无损压缩，质量设置对 PNG 无效。透明 PNG 转 JPEG 将自动填充白底。
+        </div>
+    </div>
+
+    <div class="ic-drop" id="icDrop">
+        <div class="ic-drop-inner">
+            <i class="bi bi-cloud-arrow-up"></i>
+            <div>拖拽图片到此处，或 <span class="ic-pick">点击选择文件</span></div>
+            <div class="ic-drop-tip">支持 JPEG / PNG / WebP / GIF / BMP，可批量</div>
+        </div>
+        <input accept="image/*" hidden id="icFile" multiple type="file" />
+    </div>
+
+    <div class="toolbar" id="icToolbar" style="display: none">
+        <span class="ic-stats" id="icStats"></span>
+        <button class="outline" onclick="icCompressAll()" style="margin-left: auto">开始压缩</button>
+        <button class="outline" onclick="icDownloadZip()">打包下载 ZIP</button>
+        <button
+            class="outline"
+            onclick="icClear()"
+            style="border-color: var(--danger); color: var(--danger)"
+        >
+            清空
+        </button>
+    </div>
+
+    <div class="ic-list" id="icList">
+        <div class="ic-empty">请先添加图片</div>
+    </div>
+</div>
