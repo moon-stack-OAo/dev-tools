@@ -1,0 +1,69 @@
+<div class="tool-panel" id="panel-pdfmerge">
+    <div class="pm-tabs">
+        <button class="pm-tab active" data-tab="merge">
+            <i class="bi bi-union"></i> 合并 PDF
+        </button>
+        <button class="pm-tab" data-tab="split">
+            <i class="bi bi-layout-split"></i> 拆分 PDF
+        </button>
+    </div>
+
+    <!-- 合并视图 -->
+    <div class="pm-view pm-view-active" id="pmViewMerge">
+        <div class="pm-config-hint">
+            按列表顺序将多个 PDF 合并为一个文件，所有计算在浏览器本地完成。
+        </div>
+        <div class="pm-drop" id="pmMergeDrop">
+            <div class="pm-drop-inner">
+                <i class="bi bi-cloud-arrow-up"></i>
+                <div>拖拽 PDF 到此处，或 <span class="pm-pick">点击选择文件</span></div>
+                <div class="pm-drop-tip">支持多个 PDF，单次最多 50 个</div>
+            </div>
+            <input accept="application/pdf,.pdf" hidden id="pmMergeFile" multiple type="file" />
+        </div>
+        <div class="toolbar" id="pmMergeToolbar" style="display: none">
+            <span class="pm-stats" id="pmMergeStats"></span>
+            <button class="outline" onclick="pmMergeSortByName()" style="margin-left: auto">按名排序</button>
+            <button class="outline" onclick="pmMergeClear()" style="border-color: var(--danger); color: var(--danger)">
+                清空
+            </button>
+            <button class="primary" onclick="pmMergeExport()">
+                <i class="bi bi-download"></i> 合并并下载
+            </button>
+        </div>
+        <div class="pm-list" id="pmMergeList">
+            <div class="pm-empty">请先添加 PDF 文件</div>
+        </div>
+    </div>
+
+    <!-- 拆分视图 -->
+    <div class="pm-view" id="pmViewSplit">
+        <div class="pm-config-hint">
+            选择单个 PDF 并指定页码范围（如 <code>1-3,5,7-9</code>），输出新 PDF 仅包含这些页面。
+        </div>
+        <div class="pm-split-pick">
+            <label class="pm-field">
+                <span>PDF 文件</span>
+                <input accept="application/pdf,.pdf" id="pmSplitFile" type="file" />
+            </label>
+            <div class="pm-split-meta" id="pmSplitMeta">未选择文件</div>
+        </div>
+        <div class="pm-split-cfg">
+            <label class="pm-field">
+                <span>页码范围（1-based，多段用英文逗号分隔）</span>
+                <input id="pmSplitRanges" placeholder="例如：1-3,5,7-9" type="text" />
+            </label>
+            <label class="pm-field pm-field-inline">
+                <input id="pmSplitReverse" type="checkbox" />
+                <span>输出每段为独立 PDF（按逗号分段）</span>
+            </label>
+        </div>
+        <div class="toolbar">
+            <button class="outline" onclick="pmSplitFillAll()" style="margin-left: auto">填入全部页</button>
+            <button class="outline" onclick="pmSplitReset()">重置</button>
+            <button class="primary" onclick="pmSplitExport()">
+                <i class="bi bi-download"></i> 拆分并下载
+            </button>
+        </div>
+    </div>
+</div>

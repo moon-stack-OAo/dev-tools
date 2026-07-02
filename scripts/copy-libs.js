@@ -19,6 +19,8 @@ const libs = [
     { src: 'marked/marked.min.js', dest: 'marked.min.js' },
     { src: 'jszip/dist/jszip.min.js', dest: 'jszip.min.js' },
     { src: 'jsqr/dist/jsQR.js', dest: 'jsqr.min.js' },
+    { src: 'jspdf/dist/jspdf.umd.min.js', dest: 'jspdf.min.js' },
+    { src: 'pdf-lib/dist/pdf-lib.min.js', dest: 'pdf-lib.min.js' },
     { src: 'xlsx/dist/xlsx.full.min.js', dest: 'xlsx.min.js' },
 ];
 
@@ -43,6 +45,11 @@ const bundles = [
         entry: 'js-beautify/js/src/index.js',
         dest: 'js-beautify.min.js',
         globalName: 'Beautify',
+    },
+    {
+        entry: 'sucrase/dist/index.js',
+        dest: 'sucrase.min.js',
+        globalName: 'sucrase',
     },
     {
         entry: 'qrcode/lib/browser.js',
@@ -105,3 +112,9 @@ bundles.forEach(({entry, dest, globalName}) => {
 });
 
 console.log('\n依赖库已复制到 public/lib/');
+
+// pyrun 工具说明：Pyodide（CPython→WASM 运行时）未通过 npm 安装，
+// 其 ~13MB 核心文件（pyodide.js / pyodide.asm.js / pyodide.asm.wasm / pyodide-lock.json / python_stdlib.zip）
+// 需手动下载到 public/lib/pyodide/。首次使用前执行：
+//   powershell -ExecutionPolicy Bypass -File scripts/download-pyodide.ps1
+// 脚本幂等，可重复运行。详见 README.md「本地化依赖列表」章节。

@@ -95,6 +95,20 @@ const tools = [
         desc: 'JSON 数组与 Excel/CSV 批量互转 / 嵌套展平',
         cat: 'format',
     },
+    {
+        id: 'imgtopdf',
+        icon: 'bi-file-earmark-pdf',
+        name: '图片转 PDF',
+        desc: '多张图片合成 PDF / 页面尺寸与方向可配',
+        cat: 'format',
+    },
+    {
+        id: 'pdfmerge',
+        icon: 'bi-union',
+        name: 'PDF 合并 / 拆分',
+        desc: '多 PDF 合并 / 按页码范围拆分',
+        cat: 'format',
+    },
     { id: 'base64', icon: 'bi-lock', name: 'Base64', desc: 'Base64 编码解码 / 文件支持', cat: 'encode' },
     { id: 'url', icon: 'bi-link-45deg', name: 'URL 编码', desc: 'URL 编解码 / Component 模式', cat: 'encode' },
     { id: 'unicode', icon: 'bi-translate', name: 'Unicode', desc: '\\uXXXX 编码 / 解码', cat: 'encode' },
@@ -213,6 +227,20 @@ const tools = [
         icon: 'bi-diagram-2',
         name: 'PlantUML 类图',
         desc: 'Java/JSON 转 PlantUML 类图源码',
+        cat: 'codegen',
+    },
+    {
+        id: 'jsrun',
+        icon: 'bi-play-circle',
+        name: 'JS/TS 运行',
+        desc: '浏览器中执行 JS/TS 代码 / 捕获 console 输出',
+        cat: 'codegen',
+    },
+    {
+        id: 'pyrun',
+        icon: 'bi-filetype-py',
+        name: 'Python 运行',
+        desc: '基于 Pyodide 在浏览器中运行 Python 3 代码 / 捕获 stdout',
         cat: 'codegen',
     },
     { id: 'qrdecode', icon: 'bi-qr-code-scan', name: '二维码解析', desc: '图片 → URL / 文本 / WiFi', cat: 'text' },
@@ -549,6 +577,10 @@ const toolLibs = {
     uaparser: ['ua-parser.min.js'],
     sql2mybatis: ['jszip.min.js'],
     'image-compress': ['jszip.min.js'],
+    imgtopdf: ['jspdf.min.js'],
+    pdfmerge: ['pdf-lib.min.js'],
+    jsrun: ['sucrase.min.js'],
+    pyrun: ['pyodide/pyodide.js'],
 };
 
 // 公共 HTML 转义工具:统一所有工具的转义逻辑(原 15 处重复定义已收敛至此)。

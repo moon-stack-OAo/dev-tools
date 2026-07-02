@@ -1,0 +1,22 @@
+<div class="tool-panel" id="panel-pyrun">
+    <div class="toolbar">
+        <button onclick="pyrLoadSample()">加载示例</button>
+        <button onclick="pyrClear()">清空代码</button>
+        <button onclick="pyrClearOutput()">清空输出</button>
+        <button class="primary" disabled id="pyrRunBtn" onclick="pyrRun()">▶ 运行</button>
+        <span class="status-text" id="pyrStatus">正在加载 Python 运行时...</span>
+        <div class="pyr-progress" id="pyrProgress">
+            <div class="pyr-progress-bar" id="pyrProgressBar"></div>
+        </div>
+    </div>
+    <div class="jsr-editor-wrap">
+        <textarea disabled id="pyrCode" placeholder="# 在此输入 Python 代码..." spellcheck="false"></textarea>
+    </div>
+    <div class="jsr-output">
+        <div class="jsr-output-header">
+            <span>输出（stdout / stderr）</span>
+        </div>
+        <pre id="pyrStdout"></pre>
+        <pre class="jsr-stderr" id="pyrStderr"></pre>
+    </div>
+</div>

@@ -1,0 +1,61 @@
+<div class="tool-panel" id="panel-imgtopdf">
+    <div class="itp-config">
+        <div class="itp-config-row">
+            <label class="itp-field">
+                <span>页面尺寸</span>
+                <select id="itpPageSize">
+                    <option value="a4">A4 (210×297mm)</option>
+                    <option value="a3">A3 (297×420mm)</option>
+                    <option value="a5">A5 (148×210mm)</option>
+                    <option value="letter">Letter (216×279mm)</option>
+                    <option value="legal">Legal (216×356mm)</option>
+                </select>
+            </label>
+            <label class="itp-field">
+                <span>方向</span>
+                <select id="itpOrient">
+                    <option value="p">纵向</option>
+                    <option value="l">横向</option>
+                </select>
+            </label>
+            <label class="itp-field">
+                <span>页边距 (mm)</span>
+                <input id="itpMargin" max="50" min="0" type="number" value="10" />
+            </label>
+            <label class="itp-field">
+                <span>布局</span>
+                <select id="itpFit">
+                    <option value="contain">适应页面（留白）</option>
+                    <option value="cover">填充页面（裁剪）</option>
+                </select>
+            </label>
+        </div>
+        <div class="itp-config-hint">
+            图片按列表顺序逐页生成 PDF，每张图占一页。文件名包含中文时输出文件名使用下载时间戳。
+        </div>
+    </div>
+
+    <div class="itp-drop" id="itpDrop">
+        <div class="itp-drop-inner">
+            <i class="bi bi-cloud-arrow-up"></i>
+            <div>拖拽图片到此处，或 <span class="itp-pick">点击选择文件</span></div>
+            <div class="itp-drop-tip">支持 JPEG / PNG / WebP / GIF / BMP，单次最多 50 张</div>
+        </div>
+        <input accept="image/*" hidden id="itpFile" multiple type="file" />
+    </div>
+
+    <div class="toolbar" id="itpToolbar" style="display: none">
+        <span class="itp-stats" id="itpStats"></span>
+        <button class="outline" onclick="itpSortByName()" style="margin-left: auto">按名排序</button>
+        <button class="outline" onclick="itpClear()" style="border-color: var(--danger); color: var(--danger)">
+            清空
+        </button>
+        <button class="primary" onclick="itpExport()">
+            <i class="bi bi-download"></i> 导出 PDF
+        </button>
+    </div>
+
+    <div class="itp-list" id="itpList">
+        <div class="itp-empty">请先添加图片</div>
+    </div>
+</div>

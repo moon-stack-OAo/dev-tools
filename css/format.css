@@ -71,3 +71,457 @@
     min-height: 0;
     max-height: none;
 }
+
+/* ===== imgtopdf：图片转 PDF ===== */
+.itp-config {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.itp-config-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+.itp-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.itp-field select,
+.itp-field input {
+    min-width: 140px;
+    padding: 4px 8px;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: var(--font);
+}
+
+.itp-config-hint {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.itp-drop {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    padding: 28px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-bottom: 12px;
+}
+
+.itp-drop:hover,
+.itp-drop-active {
+    border-color: var(--primary);
+    background: var(--bg-card-hover, var(--bg-card));
+}
+
+.itp-drop-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    color: var(--text-secondary);
+}
+
+.itp-drop-inner i {
+    font-size: 32px;
+    color: var(--primary);
+}
+
+.itp-pick {
+    color: var(--primary);
+    text-decoration: underline;
+}
+
+.itp-drop-tip {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.itp-stats {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.itp-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.itp-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 40px 0;
+    font-size: 13px;
+}
+
+.itp-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.itp-card-thumb {
+    height: 130px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.itp-card-thumb img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.itp-card-meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.itp-card-name {
+    color: var(--text);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.itp-card-dim {
+    font-size: 11px;
+}
+
+.itp-card-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.itp-card-actions button {
+    flex: 1;
+    padding: 4px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    cursor: pointer;
+}
+
+.itp-card-actions button:hover:not(:disabled) {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.itp-card-actions button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.itp-card-actions .itp-danger:hover:not(:disabled) {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+/* ============== PDF 合并/拆分（pdfmerge）============== */
+.pm-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0;
+}
+
+.pm-tab {
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.15s;
+    margin-bottom: -1px;
+}
+
+.pm-tab:hover {
+    color: var(--text);
+}
+
+.pm-tab.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+.pm-view {
+    display: none;
+}
+
+.pm-view.pm-view-active {
+    display: block;
+}
+
+.pm-config-hint {
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.pm-config-hint code {
+    background: var(--bg);
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: var(--primary);
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+.pm-drop {
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    padding: 32px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--bg-card);
+    margin-bottom: 16px;
+}
+
+.pm-drop:hover,
+.pm-drop.pm-drop-active {
+    border-color: var(--primary);
+    background: rgba(var(--primary-rgb), 0.05);
+}
+
+.pm-drop-inner i {
+    font-size: 36px;
+    color: var(--primary);
+    margin-bottom: 8px;
+    display: block;
+}
+
+.pm-drop-inner > div {
+    font-size: 14px;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.pm-pick {
+    color: var(--primary);
+    font-weight: 500;
+}
+
+.pm-drop-tip {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 6px;
+}
+
+.pm-stats {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.pm-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pm-empty {
+    padding: 32px 16px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+}
+
+.pm-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    transition: border-color 0.15s;
+}
+
+.pm-card:hover {
+    border-color: var(--primary);
+}
+
+.pm-card-icon {
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(220, 53, 69, 0.1);
+    border-radius: 4px;
+    color: #dc3545;
+    font-size: 16px;
+}
+
+.pm-card-meta {
+    flex: 1;
+    min-width: 0;
+}
+
+.pm-card-name {
+    font-size: 13px;
+    color: var(--text);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pm-card-dim {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.pm-card-actions {
+    display: flex;
+    gap: 4px;
+    flex: 0 0 auto;
+}
+
+.pm-card-actions button {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pm-card-actions button:hover:not(:disabled) {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.pm-card-actions button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.pm-card-actions .pm-danger:hover:not(:disabled) {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+.pm-split-pick {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 12px;
+}
+
+.pm-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+}
+
+.pm-field > span {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.pm-field input[type='text'],
+.pm-field input[type='number'] {
+    padding: 6px 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-size: 13px;
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+.pm-field input[type='text']:focus,
+.pm-field input[type='number']:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.pm-field input[type='file'] {
+    padding: 4px;
+    font-size: 12px;
+    color: var(--text);
+}
+
+.pm-field-inline {
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    flex: 0 0 auto;
+}
+
+.pm-field-inline > span {
+    font-size: 13px;
+    color: var(--text);
+}
+
+.pm-split-meta {
+    font-size: 13px;
+    color: var(--text-muted);
+    flex: 0 0 auto;
+}
+
+.pm-split-cfg {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 12px;
+}

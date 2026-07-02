@@ -174,3 +174,191 @@
     font-size: 11px;
     color: var(--accent);
 }
+
+/* ===== JS/TS 运行沙箱（jsrun） ===== */
+#panel-jsrun.active {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+
+#panel-jsrun.active > .tool-header,
+#panel-jsrun.active > .toolbar {
+    flex-shrink: 0;
+}
+
+#panel-jsrun.active > .jsr-editor-wrap {
+    flex: 1 1 0;
+    min-height: 300px;
+}
+
+#panel-jsrun.active > .jsr-output {
+    flex: 0 0 auto;
+    max-height: 40%;
+}
+
+.jsr-editor-wrap {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+#jsrCode {
+    flex: 1;
+    width: 100%;
+    min-height: 300px;
+    padding: 12px 14px;
+    background: var(--bg-terminal);
+    color: var(--text);
+    border: none;
+    outline: none;
+    resize: none;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre;
+    tab-size: 2;
+}
+
+#jsrCode:focus {
+    background: var(--bg-card);
+}
+
+.jsr-output {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.jsr-output-header {
+    padding: 8px 14px;
+    background: var(--bg-card2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.jsr-output-header button {
+    padding: 3px 10px;
+    font-size: 11px;
+}
+
+#jsrStdout,
+#jsrStderr {
+    margin: 0;
+    padding: 10px 14px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--text);
+    background: var(--bg-terminal);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 320px;
+    overflow: auto;
+}
+
+#jsrStdout:empty {
+    display: none;
+}
+
+.jsr-stderr {
+    color: var(--danger);
+    border-top: 1px solid var(--border);
+    background: rgba(var(--danger-rgb), 0.06);
+}
+
+.jsr-stderr:empty {
+    display: none;
+}
+
+.status-text {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-left: 8px;
+}
+
+/* ===== Python 运行沙箱（pyrun） ===== */
+#panel-pyrun.active {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+
+#panel-pyrun.active > .tool-header,
+#panel-pyrun.active > .toolbar {
+    flex-shrink: 0;
+}
+
+#panel-pyrun.active > .jsr-editor-wrap {
+    flex: 1 1 0;
+    min-height: 300px;
+}
+
+#panel-pyrun.active > .jsr-output {
+    flex: 0 0 auto;
+    max-height: 40%;
+}
+
+#pyrCode {
+    flex: 1;
+    width: 100%;
+    min-height: 300px;
+    padding: 12px 14px;
+    background: var(--bg-terminal);
+    color: var(--text);
+    border: none;
+    outline: none;
+    resize: none;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre;
+    tab-size: 2;
+}
+
+#pyrCode:focus {
+    background: var(--bg-card);
+}
+
+#pyrCode:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#pyrRunBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.pyr-progress {
+    flex: 1;
+    height: 6px;
+    background: var(--bg-input);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-left: 12px;
+    max-width: 200px;
+}
+
+.pyr-progress-bar {
+    height: 100%;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.2s;
+}

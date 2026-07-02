@@ -1,0 +1,24 @@
+<div class="tool-panel" id="panel-jsrun">
+    <div class="toolbar">
+        <button onclick="jsrLoadSample('js')">JS 示例</button>
+        <button onclick="jsrLoadSample('ts')">TS 示例</button>
+        <button onclick="jsrClear()">清空</button>
+        <select id="jsrLang" onchange="jsrOnLangChange()">
+            <option value="js">JavaScript</option>
+            <option value="ts">TypeScript</option>
+        </select>
+        <button class="primary" onclick="jsrRun()">▶ 运行</button>
+        <span class="status-text" id="jsrStatus"></span>
+    </div>
+    <div class="jsr-editor-wrap">
+        <textarea id="jsrCode" placeholder="// 在此输入代码..." spellcheck="false"></textarea>
+    </div>
+    <div class="jsr-output">
+        <div class="jsr-output-header">
+            <span>输出</span>
+            <button onclick="jsrClearOutput()">清空输出</button>
+        </div>
+        <pre id="jsrStdout"></pre>
+        <pre class="jsr-stderr" id="jsrStderr"></pre>
+    </div>
+</div>
