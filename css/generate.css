@@ -88,6 +88,41 @@
     color: var(--accent);
 }
 
+/* 日期卡片内的"选择日期"按钮(label 右侧) */
+.ts-pick-btn {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 24px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg-card2);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    line-height: 1;
+    user-select: none;
+    padding: 0;
+}
+
+.ts-pick-btn i {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.ts-pick-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent), transparent 88%);
+    transform: translateY(-1px);
+}
+
+.ts-pick-btn:active {
+    transform: scale(0.94);
+}
+
 .ts-input-label {
     display: flex;
     align-items: center;
@@ -134,14 +169,15 @@
 }
 
 .ts-date-picker::-webkit-calendar-picker-indicator {
-    filter: invert(0.7);
+    filter: invert(0.85);
     cursor: pointer;
-    opacity: 0.7;
-    transition: opacity 0.15s;
+    opacity: 0.9;
+    transition: opacity 0.15s, transform 0.15s;
 }
 
 .ts-date-picker::-webkit-calendar-picker-indicator:hover {
     opacity: 1;
+    transform: scale(1.15);
 }
 
 .ts-input-hint {
@@ -149,6 +185,42 @@
     font-size: 11px;
     color: var(--text-dim);
     opacity: 0.8;
+}
+
+/* 输入识别徽章(单条模式时间戳输入框下方) */
+.ts-detected-badge {
+    display: none;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    padding: 3px 9px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 500;
+    width: fit-content;
+    line-height: 1.4;
+    color: #fff;
+}
+
+.ts-detected-badge:not(:empty) {
+    display: inline-flex;
+}
+
+.ts-detected-badge i {
+    font-size: 11px;
+    line-height: 1;
+}
+
+.ts-detected-sec {
+    background: var(--success, #48bb78);
+}
+
+.ts-detected-ms {
+    background: var(--accent);
+}
+
+.ts-detected-err {
+    background: var(--danger, #e53e3e);
 }
 
 .ts-single-grid {
@@ -172,6 +244,7 @@
     width: 100%;
     min-width: 76px;
     justify-content: center;
+    height: 38px;
 }
 
 @media (max-width: 720px) {
@@ -218,7 +291,7 @@
     gap: 8px;
 }
 
-.ts-result-actions .ts-btn {
+.ts-btn {
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -236,36 +309,36 @@
     user-select: none;
 }
 
-.ts-result-actions .ts-btn i {
+.ts-btn i {
     font-size: 13px;
     line-height: 1;
 }
 
-.ts-result-actions .ts-btn-primary {
+.ts-btn-primary {
     background: linear-gradient(135deg, var(--accent) 0%, color-mix(in srgb, var(--accent), #6c63ff 30%) 100%);
     color: #fff;
     border-color: var(--accent);
     box-shadow: 0 2px 8px rgba(var(--accent-rgb), 0.25);
 }
 
-.ts-result-actions .ts-btn-primary:hover {
+.ts-btn-primary:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 14px rgba(var(--accent-rgb), 0.4);
     filter: brightness(1.08);
 }
 
-.ts-result-actions .ts-btn-primary:active {
+.ts-btn-primary:active {
     transform: translateY(0);
     box-shadow: 0 1px 4px rgba(var(--accent-rgb), 0.3);
 }
 
-.ts-result-actions .ts-btn-ghost {
+.ts-btn-ghost {
     background: var(--bg-terminal);
     color: var(--text-dim);
     border-color: var(--border);
 }
 
-.ts-result-actions .ts-btn-ghost:hover {
+.ts-btn-ghost:hover {
     color: var(--text);
     border-color: var(--border-light);
     background: var(--bg-card2);
@@ -288,7 +361,7 @@
 
 .ts-result-row {
     display: grid;
-    grid-template-columns: 80px 1fr;
+    grid-template-columns: 80px 1fr auto;
     gap: 12px;
     padding: 7px 4px;
     align-items: center;
@@ -537,7 +610,7 @@
     font-size: 11px;
     padding: 1px 6px;
     background: rgba(229, 62, 62, 0.1);
-    border-radius: 3px;
+    border-radius: 10px;
     flex-shrink: 0;
 }
 
@@ -909,4 +982,61 @@
     flex-direction: column;
     gap: 6px;
     flex-shrink: 0;
+}
+
+/* 结果行 hover 复制按钮 */
+.ts-row-copy {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s, background 0.15s, color 0.15s, border-color 0.15s;
+    padding: 0;
+    line-height: 1;
+}
+
+.ts-row-copy i {
+    font-size: 13px;
+    line-height: 1;
+}
+
+.ts-row-copy:hover {
+    background: var(--bg-card2);
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.ts-row-copy:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    opacity: 1;
+}
+
+.ts-result-row:hover .ts-row-copy,
+.ts-row-item:hover .ts-row-copy {
+    opacity: 1;
+}
+
+/* 批量结果摘要徽章 */
+.ts-summary-success {
+    color: var(--success, #48bb78);
+    font-weight: 600;
+}
+
+.ts-summary-fail {
+    color: var(--danger, #e53e3e);
+    font-weight: 600;
+}
+
+.ts-summary-divider {
+    color: var(--text-dim);
+    margin: 0 4px;
 }

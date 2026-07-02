@@ -23,6 +23,7 @@
                 <input autocomplete="off" class="ts-input" id="tsInput" placeholder="1700000000 或 1700000000000"
                        type="text">
                 <div class="ts-input-hint">支持 Unix 秒 / 毫秒,自动识别</div>
+                <div class="ts-detected-badge" id="tsDetectedBadge"></div>
             </div>
             <div class="ts-middle-actions">
                 <button class="ts-btn ts-btn-primary" onclick="tsRunSingle()" title="立即转换">
@@ -35,11 +36,14 @@
             <div class="ts-input-card ts-input-card-clickable" onclick="tsOpenDatePicker(event)">
                 <div class="ts-input-label">
                     <i class="bi bi-calendar-date"></i>日期
-                    <i class="bi bi-cursor ts-input-pick-hint"></i>
+                    <button class="ts-pick-btn" onclick="tsOpenDatePicker(event)" title="弹出日期时间选择器"
+                            type="button">
+                        <i class="bi bi-calendar3-event"></i>
+                    </button>
                 </div>
                 <input autocomplete="off" class="ts-input ts-date-picker" id="tsDateInput" step="1"
                        type="datetime-local">
-                <div class="ts-input-hint">点击整行任意位置,弹出日期时间选择器</div>
+                <div class="ts-input-hint">点击日历图标、整行任意位置或自带图标均可弹出选择器</div>
             </div>
         </div>
         <div class="ts-result-card">

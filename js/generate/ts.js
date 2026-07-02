@@ -37,8 +37,12 @@ function detect(input, direction) {
 function parseBatch(text, options) {
     const opts = Object.assign(
         { timezone: 'UTC', outputFormat: 'yyyy-MM-dd HH:mm:ss', direction: 'ts2date' },
-        options || {},
+        options || {}
     );
+    const hint =
+        opts.direction === 'ts2date'
+            ? '期望 Unix 秒(10 位) / 毫秒(13 位) / 数字'
+            : '期望日期字符串(如 2024-01-01 12:00:00 或 ISO 8601)';
     const lines = String(text == null ? '' : text).split(/\r?\n/);
     const ok = [];
     const err = [];
@@ -47,7 +51,7 @@ function parseBatch(text, options) {
         if (!raw || !raw.trim()) continue;
         const det = detect(raw, opts.direction);
         if (det.kind === null) {
-            err.push({ line: i + 1, input: raw, msg: '无法识别的格式' });
+            err.push({ line: i + 1, input: raw, msg: hint });
             continue;
         }
         const out = tsFormat(det.ms, opts.outputFormat, opts.timezone);
@@ -198,16 +202,32 @@ function tsRunSingle() {
         { key: '毫秒', icon: 'bi-hash', val: String(ms) },
     ];
     out.innerHTML = rows
-        .map(
-            (r) =>
-                '<div class="ts-result-row"><span class="ts-result-key"><i class="bi ' +
-                r.icon +
-                '"></i>' +
-                r.key +
-                '</span><span class="ts-result-val">' +
-                escapeHtml(r.va,l) +
-                '</span></div>'
-        )
+        .map((r) => {
+            const value = String(r.val ?? '')
+                .replace(/\\/g, '\\\\')
+                .replace(/'/g, "\\'")
+                .replace(/\n/g, '\\n');
+
+            return `
+      <div class="ts-result-row">
+        <span class="ts-result-key">
+          <i class="bi ${r.icon}"></i>
+          ${r.key}
+        </span>
+        <span class="ts-result-val">
+          ${escapeHtml(r.val)}
+        </span>
+        <button
+          class="ts-row-copy"
+          type="button"
+          title="复制此值"
+          onclick="tsCopyValue('${value}')"
+        >
+          <i class="bi bi-clipboard"></i>
+        </button>
+      </div>
+    `;
+        })
         .join('');
     setStatus(tsRaw ? '时间戳转换完成' : '日期转换完成');
 }
@@ -218,36 +238,43 @@ function tsRunBatch() {
     const out = document.getElementById('tsBatchOutput');
     if (!out) return;
     if (!result.ok.length && !result.err.length) {
-        out.innerHTML = '<div class="ts-batch-empty"><i class="bi bi-arrow-left-circle"></i><div>请输入待转换的时间戳或日期</div></div>';
+        out.innerHTML =
+            '<div class="ts-batch-empty"><i class="bi bi-arrow-left-circle"></i><div>请输入待转换的时间戳或日期</div></div>';
     } else {
         const parts = [];
         result.ok.forEach((o) => {
             parts.push(
                 '<div class="ts-row-item">' +
-                '<span class="ts-row-line">#' +
-                o.line +
-                '</span>' +
-                '<span class="ts-row-arrow">→</span>' +
-                '<span class="ts-row-out">' +
-                escapeHtml(o.output) +
-                ,'</span>' +
-                '</div>'
+                    '<span class="ts-row-line">#' +
+                    o.line +
+                    '</span>' +
+                    '<span class="ts-row-arrow">→</span>' +
+                    '<span class="ts-row-out">' +
+                    escapeHtml(o.output) +
+                    '</span>' +
+                    '<button class="ts-row-copy" type="button" title="复制此值" onclick="tsCopyValue(\'' +
+                    String(o.output == null ? '' : o.output)
+                        .replace(/\\/g, '\\\\')
+                        .replace(/'/g, "\\'")
+                        .replace(/\n/g, '\\n') +
+                    '\')"><i class="bi bi-clipboard"></i></button>' +
+                    '</div>'
             );
         });
         result.err.forEach((e) => {
             parts.push(
                 '<div class="ts-row-item ts-row-err">' +
-                '<span class="ts-row-line">#' +
-                e.line +
-                '</span>' +
-                '<span class="ts-row-arrow">!</span>' +
-                '<span class="ts-row-err-msg">' +
-                escapeHtml(e.msg) +
-                '</span>' +
-                '<span class="ts-row-out">' +
-                escapeHtml(e.input) +
-                ,'</span>' +
-                '</div>'
+                    '<span class="ts-row-line">#' +
+                    e.line +
+                    '</span>' +
+                    '<span class="ts-row-arrow">!</span>' +
+                    '<span class="ts-row-err-msg">' +
+                    escapeHtml(e.msg) +
+                    '</span>' +
+                    '<span class="ts-row-out">' +
+                    escapeHtml(e.input) +
+                    '</span>' +
+                    '</div>'
             );
         });
         out.innerHTML = parts.join('');
@@ -257,8 +284,12 @@ function tsRunBatch() {
         const okNum = result.ok.length;
         const errNum = result.err.length;
         summary.innerHTML =
-            '<span style="color:var(--success,#48bb78)">' + okNum + ' 成功</span>' +
-            (errNum ? ' <span style="color:var(--text-dim)">/</span> <span style="color:var(--danger,#e53e3e)">' + errNum + ' 失败</span>' : '');
+            '<span class="ts-summary-success">' +
+            okNum +
+            ' 成功</span>' +
+            (errNum
+                ? ' <span class="ts-summary-divider">/</span> <span class="ts-summary-fail">' + errNum + ' 失败</span>'
+                : '');
     }
     setStatus('解析完成: ' + result.ok.length + ' 成功 / ' + result.err.length + ' 失败');
 }
@@ -286,7 +317,9 @@ function tsCopyJSON() {
 function tsClearBatch() {
     document.getElementById('tsBatchInput').value = '';
     const out = document.getElementById('tsBatchOutput');
-    if (out) out.innerHTML = '<div class="ts-batch-empty"><i class="bi bi-arrow-left-circle"></i><div>请输入待转换的时间戳或日期</div></div>';
+    if (out)
+        out.innerHTML =
+            '<div class="ts-batch-empty"><i class="bi bi-arrow-left-circle"></i><div>请输入待转换的时间戳或日期</div></div>';
     const summary = document.getElementById('tsBatchSummary');
     if (summary) summary.innerHTML = '';
     setStatus('已清空');
@@ -362,16 +395,60 @@ function tsInit() {
     if (tsDateInput && !tsDateInput.value) {
         tsDateInput.value = tsDateToLocalInput(new Date());
     }
-    if (tsInput) tsInput.addEventListener('input', debounce(tsRunSingle, 200));
+    if (tsInput) {
+        tsInput.addEventListener('input', debounce(tsRunSingle, 200));
+        tsInput.addEventListener('input', tsShowDetected);
+        tsShowDetected(tsInput.value);
+    }
     if (tsDateInput) tsDateInput.addEventListener('input', debounce(tsRunSingle, 200));
 
     // 批量模式
     const batchInput = document.getElementById('tsBatchInput');
     if (batchInput) batchInput.addEventListener('input', debounce(tsRunBatch, 200));
-    ['tsDirection', 'tsTz', 'tsFormat'].forEach(function(id) {
+    ['tsDirection', 'tsTz', 'tsFormat'].forEach(function (id) {
         const el = document.getElementById(id);
         if (el) el.addEventListener('change', tsRunBatch);
     });
+}
+
+// 实时显示单条模式时间戳的识别结果(秒/毫秒/无法识别)
+// 与 detect() 中 ts2date 分支的 sec/ms 判定保持一致
+function tsShowDetected(input) {
+    const badge = document.getElementById('tsDetectedBadge');
+    if (!badge) return;
+    const s = String(input == null ? '' : input).trim();
+    badge.className = 'ts-detected-badge';
+    if (!s) {
+        badge.innerHTML = '';
+    } else if (/^-?\d{10}$/.test(s)) {
+        badge.classList.add('ts-detected-sec');
+        badge.innerHTML = '<i class="bi bi-check-circle-fill"></i>识别为 Unix 秒(10 位)';
+    } else if (/^-?\d{13}$/.test(s)) {
+        badge.classList.add('ts-detected-ms');
+        badge.innerHTML = '<i class="bi bi-check-circle-fill"></i>识别为 Unix 毫秒(13 位)';
+    } else if (/^-?\d+(\.\d+)?$/.test(s)) {
+        const n = Number(s);
+        if (isFinite(n)) {
+            if (Math.abs(n) < 1e12) {
+                badge.classList.add('ts-detected-sec');
+                badge.innerHTML = '<i class="bi bi-check-circle-fill"></i>识别为 Unix 秒(< 10 位)';
+            } else {
+                badge.classList.add('ts-detected-ms');
+                badge.innerHTML = '<i class="bi bi-check-circle-fill"></i>识别为 Unix 毫秒(> 13 位)';
+            }
+        } else {
+            badge.classList.add('ts-detected-err');
+            badge.innerHTML = '<i class="bi bi-exclamation-triangle-fill"></i>无法识别';
+        }
+    } else {
+        badge.classList.add('ts-detected-err');
+        badge.innerHTML = '<i class="bi bi-exclamation-triangle-fill"></i>无法识别';
+    }
+}
+
+// 单行复制:被结果行复制按钮 onclick 调用
+function tsCopyValue(s) {
+    safeCopy(String(s == null ? '' : s), '已复制');
 }
 
 // === Node 导出(仅用于 Node 测试)===

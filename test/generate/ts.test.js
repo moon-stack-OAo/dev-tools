@@ -1,10 +1,4 @@
-const {
-    parseBatch,
-    toTSV,
-    toJSON,
-    tsFormat: tsbFormat,
-    tsFormatInZone: tsbFormatInZone,
-} = require('../../js/generate/ts.js');
+const { parseBatch, toTSV, toJSON, tsFormat, tsFormatInZone } = require('../../js/generate/ts.js');
 
 // 2023-11-14 22:13:20 UTC 对应 1700000000 秒 / 1700000000000 毫秒
 const TS_SEC = '1700000000';
@@ -206,42 +200,42 @@ describe('parseBatch - 错误信息含行号', () => {
         });
         expect(r.ok).toEqual([]);
         expect(r.err).toHaveLength(1);
-        expect(r.err[0].msg).toMatch(/无法识别/);
+        expect(r.err[0].msg).toMatch(/期望 Unix 秒\(10 位\) \/ 毫秒\(13 位\) \/ 数字/);
     });
 });
 
-describe('tsbFormat - 三种输出格式', () => {
+describe('tsFormat - 三种输出格式', () => {
     const ms = Date.UTC(2023, 10, 14, 22, 13, 20); // 2023-11-14 22:13:20 UTC
 
     test('yyyy-MM-dd HH:mm:ss(UTC)', () => {
-        expect(tsbFormat(ms, 'yyyy-MM-dd HH:mm:ss', 'UTC')).toBe('2023-11-14 22:13:20');
+        expect(tsFormat(ms, 'yyyy-MM-dd HH:mm:ss', 'UTC')).toBe('2023-11-14 22:13:20');
     });
 
     test('ISO 8601(总是 UTC + Z)', () => {
-        expect(tsbFormat(ms, 'ISO', 'UTC')).toBe('2023-11-14T22:13:20.000Z');
+        expect(tsFormat(ms, 'ISO', 'UTC')).toBe('2023-11-14T22:13:20.000Z');
     });
 
     test('Unix 毫秒', () => {
-        expect(tsbFormat(ms, 'ms', 'UTC')).toBe(String(ms));
+        expect(tsFormat(ms, 'ms', 'UTC')).toBe(String(ms));
     });
 
     test('Unix 秒(向下取整)', () => {
-        expect(tsbFormat(ms, 's', 'UTC')).toBe('1700000000');
+        expect(tsFormat(ms, 's', 'UTC')).toBe('1700000000');
     });
 
     test('未知 format 返回 null', () => {
-        expect(tsbFormat(ms, 'nonsense', 'UTC')).toBeNull();
+        expect(tsFormat(ms, 'nonsense', 'UTC')).toBeNull();
     });
 });
 
-describe('tsbFormatInZone - 时区格式化', () => {
+describe('tsFormatInZone - 时区格式化', () => {
     const ms = Date.UTC(2023, 10, 14, 22, 13, 20);
 
     test('UTC', () => {
-        expect(tsbFormatInZone(new Date(ms), 'UTC')).toBe('2023-11-14 22:13:20');
+        expect(tsFormatInZone(new Date(ms), 'UTC')).toBe('2023-11-14 22:13:20');
     });
 
     test('Asia/Shanghai(UTC+8)', () => {
-        expect(tsbFormatInZone(new Date(ms), 'Asia/Shanghai')).toBe('2023-11-15 06:13:20');
+        expect(tsFormatInZone(new Date(ms), 'Asia/Shanghai')).toBe('2023-11-15 06:13:20');
     });
 });
