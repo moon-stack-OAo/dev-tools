@@ -35,7 +35,7 @@ function randPassword() {
     const list = document.getElementById('randomList');
     const div = document.createElement('div');
     div.className = 'uuid-item';
-    div.innerHTML = `<span>${randGen(len, chars)}</span><button class="sm outline" onclick="copyText(this.parentElement.querySelector('span'))">复制</button>`;
+    div.innerHTML = `<span>${escapeHtml(randGen(len, chars))}</span><button class="sm outline" onclick="copyText(this.parentElement.querySelector('span'))">复制</button>`;
     list.insertBefore(div, list.firstChild);
     while (list.children.length > 20) list.removeChild(list.lastChild);
     setStatus('密码已生成');
@@ -51,7 +51,7 @@ function randToken() {
     const list = document.getElementById('randomList');
     const div = document.createElement('div');
     div.className = 'uuid-item';
-    div.innerHTML = `<span>${hex}</span><button class="sm outline" onclick="copyText(this.parentElement.querySelector('span'))">复制</button>`;
+    div.innerHTML = `<span>${escapeHtml(hex)}</span><button class="sm outline" onclick="copyText(this.parentElement.querySelector('span'))">复制</button>`;
     list.insertBefore(div, list.firstChild);
     while (list.children.length > 20) list.removeChild(list.lastChild);
     setStatus('Hex Token 已生成');
@@ -63,7 +63,7 @@ function randPin() {
     const list = document.getElementById('randomList');
     const div = document.createElement('div');
     div.className = 'uuid-item';
-    div.innerHTML = `<span>${pin}</span><button class="sm outline" onclick="copyText(this.parentElement.querySelector('span'))">复制</button>`;
+    div.innerHTML = `<span>${escapeHtml(pin)}</span><button class="sm outline" onclick="copyText(this.parentElement.querySelector('span'))">复制</button>`;
     list.insertBefore(div, list.firstChild);
     while (list.children.length > 20) list.removeChild(list.lastChild);
     setStatus('PIN 已生成');

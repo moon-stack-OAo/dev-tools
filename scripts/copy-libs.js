@@ -7,18 +7,19 @@ const ROOT_DIR = path.join(__dirname, '..');
 
 // 直接拷贝的库（源文件本身就是 UMD/IIFE 浏览器友好的）
 const libs = [
-    {src: 'js-yaml/dist/js-yaml.min.js', dest: 'js-yaml.min.js'},
-    {src: 'diff/dist/diff.min.js', dest: 'diff.min.js'},
-    {src: 'blueimp-md5/js/md5.min.js', dest: 'md5.min.js'},
-    {src: 'sql-formatter/dist/sql-formatter.min.js', dest: 'sql-formatter.min.js'},
-    {src: 'bcryptjs/dist/bcrypt.min.js', dest: 'bcrypt.min.js'},
-    {src: 'sm-crypto/dist/sm2.js', dest: 'sm2.min.js'},
-    {src: 'sm-crypto/dist/sm3.js', dest: 'sm3.min.js'},
-    {src: 'sm-crypto/dist/sm4.js', dest: 'sm4.min.js'},
-    {src: 'ua-parser-js/dist/ua-parser.min.js', dest: 'ua-parser.min.js'},
-    {src: 'marked/marked.min.js', dest: 'marked.min.js'},
-    {src: 'jszip/dist/jszip.min.js', dest: 'jszip.min.js'},
-    {src: 'jsqr/dist/jsQR.js', dest: 'jsqr.min.js'},
+    { src: 'js-yaml/dist/js-yaml.min.js', dest: 'js-yaml.min.js' },
+    { src: 'diff/dist/diff.min.js', dest: 'diff.min.js' },
+    { src: 'blueimp-md5/js/md5.min.js', dest: 'md5.min.js' },
+    { src: 'sql-formatter/dist/sql-formatter.min.js', dest: 'sql-formatter.min.js' },
+    { src: 'bcryptjs/dist/bcrypt.min.js', dest: 'bcrypt.min.js' },
+    { src: 'sm-crypto/dist/sm2.js', dest: 'sm2.min.js' },
+    { src: 'sm-crypto/dist/sm3.js', dest: 'sm3.min.js' },
+    { src: 'sm-crypto/dist/sm4.js', dest: 'sm4.min.js' },
+    { src: 'ua-parser-js/dist/ua-parser.min.js', dest: 'ua-parser.min.js' },
+    { src: 'marked/marked.min.js', dest: 'marked.min.js' },
+    { src: 'jszip/dist/jszip.min.js', dest: 'jszip.min.js' },
+    { src: 'jsqr/dist/jsQR.js', dest: 'jsqr.min.js' },
+    { src: 'xlsx/dist/xlsx.full.min.js', dest: 'xlsx.min.js' },
 ];
 
 // 需要 esbuild 打包为 IIFE 浏览器友好格式的库

@@ -77,8 +77,8 @@ function httpAddHeader(key, val) {
     if (!container) return;
     const row = document.createElement('div');
     row.className = 'api-kv-row';
-    const k = (key || '').replace(/"/g, '&quot;');
-    const v = (val || '').replace(/"/g, '&quot;');
+    const k = escapeHtml(key || '');
+    const v = escapeHtml(val || '');
     row.innerHTML = `<input type="text" placeholder="Header 名称" value="${k}"><input type="text" placeholder="Header 值" value="${v}"><button class="outline sm" onclick="this.parentElement.remove();httpUpdateTabCounts()" title="删除">&#10005;</button>`;
     container.appendChild(row);
     httpUpdateTabCounts();
@@ -89,8 +89,8 @@ function httpAddQuery(key, val) {
     if (!container) return;
     const row = document.createElement('div');
     row.className = 'api-kv-row';
-    const k = (key || '').replace(/"/g, '&quot;');
-    const v = (val || '').replace(/"/g, '&quot;');
+    const k = escapeHtml(key || '');
+    const v = escapeHtml(val || '');
     row.innerHTML = `<input type="text" placeholder="参数名" value="${k}"><input type="text" placeholder="参数值" value="${v}"><button class="outline sm" onclick="this.parentElement.remove();httpUpdateTabCounts()" title="删除">&#10005;</button>`;
     container.appendChild(row);
     httpUpdateTabCounts();

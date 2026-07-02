@@ -25,7 +25,7 @@ async function hashCompute(type) {
             const div = document.createElement('div');
             div.className = 'uuid-item';
             div.setAttribute('data-type', type);
-            div.innerHTML = `<span style="color:var(--text-dim);width:70px;flex-shrink:0">${label}</span><span class="hash-val" style="font-size:12px">${result}</span><button class="sm outline" onclick="copyText(this.parentElement.querySelector('.hash-val'))">复制</button>`;
+            div.innerHTML = `<span style="color:var(--text-dim);width:70px;flex-shrink:0">${escapeHtml(label)}</span><span class="hash-val" style="font-size:12px">${escapeHtml(result)}</span><button class="sm outline" onclick="copyText(this.parentElement.querySelector('.hash-val'))">复制</button>`;
             container.appendChild(div);
         }
         setStatus(`${label} 计算完成`);

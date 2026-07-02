@@ -27,8 +27,8 @@ function tplAddVar(key, val) {
     const container = document.getElementById('tplVarsList');
     const row = document.createElement('div');
     row.className = 'api-kv-row';
-    const k = (key || '').replace(/"/g, '&quot;');
-    const v = (val != null ? val : '').replace(/"/g, '&quot;');
+    const k = escapeHtml(key || '');
+    const v = escapeHtml(val != null ? val : '');
     row.innerHTML = `<input type="text" placeholder="变量名" value="${k}"><input type="text" placeholder="变量值" value="${v}"><button class="outline sm" onclick="this.parentElement.remove()" title="删除">&#10005;</button>`;
     container.appendChild(row);
 }

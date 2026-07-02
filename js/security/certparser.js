@@ -129,11 +129,6 @@ function _cpHexToBytes(hex) {
     return bytes;
 }
 
-function _cpEscape(s) {
-    if (s == null) return '';
-    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
 // ============================================================
 // === 2. PEM / DER 解析
 // ============================================================
@@ -584,7 +579,7 @@ function _cpRenderOneCert(c) {
             _cpResults.length +
             ' ✗ 解析失败</div>' +
             '<div class="certparser-field"><span class="certparser-label">错误</span><span class="certparser-value">' +
-            _cpEscape(c.error) +
+            escapeHtml(c.error) +
             '</span></div>' +
             '</div>'
         );
@@ -598,14 +593,14 @@ function _cpRenderOneCert(c) {
     if (c.san.dns.length || c.san.ip.length || c.san.uri.length || c.san.email.length) {
         const rows = [];
         if (c.san.dns.length)
-            rows.push('<div class="certparser-san-row"><b>DNS:</b> ' + c.san.dns.map(_cpEscape).join(', ') + '</div>');
+            rows.push('<div class="certparser-san-row"><b>DNS:</b> ' + c.san.dns.map(escapeHtml).join(', ') + '</div>');
         if (c.san.ip.length)
-            rows.push('<div class="certparser-san-row"><b>IP:</b> ' + c.san.ip.map(_cpEscape).join(', ') + '</div>');
+            rows.push('<div class="certparser-san-row"><b>IP:</b> ' + c.san.ip.map(escapeHtml).join(', ') + '</div>');
         if (c.san.uri.length)
-            rows.push('<div class="certparser-san-row"><b>URI:</b> ' + c.san.uri.map(_cpEscape).join(', ') + '</div>');
+            rows.push('<div class="certparser-san-row"><b>URI:</b> ' + c.san.uri.map(escapeHtml).join(', ') + '</div>');
         if (c.san.email.length)
             rows.push(
-                '<div class="certparser-san-row"><b>Email:</b> ' + c.san.email.map(_cpEscape).join(', ') + '</div>'
+                '<div class="certparser-san-row"><b>Email:</b> ' + c.san.email.map(escapeHtml).join(', ') + '</div>'
             );
         sanHtml =
             '<div class="certparser-field"><span class="certparser-label">SAN</span><div class="certparser-value">' +
@@ -618,7 +613,7 @@ function _cpRenderOneCert(c) {
         kuHtml =
             '<div class="certparser-field"><span class="certparser-label">Key Usage</span>' +
             '<span class="certparser-value">' +
-            c.keyUsage.map(_cpEscape).join(', ') +
+            c.keyUsage.map(escapeHtml).join(', ') +
             '</span></div>';
     }
     let ekuHtml = '';
@@ -626,7 +621,7 @@ function _cpRenderOneCert(c) {
         ekuHtml =
             '<div class="certparser-field"><span class="certparser-label">Ext Key Usage</span>' +
             '<span class="certparser-value">' +
-            c.extKeyUsage.map(_cpEscape).join(', ') +
+            c.extKeyUsage.map(escapeHtml).join(', ') +
             '</span></div>';
     }
     let crlHtml = '';
@@ -634,9 +629,9 @@ function _cpRenderOneCert(c) {
         crlHtml =
             '<div class="certparser-field"><span class="certparser-label">CRL</span>' +
             '<span class="certparser-value"><a class="certparser-link" href="' +
-            _cpEscape(c.crl[0]) +
+            escapeHtml(c.crl[0]) +
             '" target="_blank" rel="noopener noreferrer">' +
-            _cpEscape(c.crl[0]) +
+            escapeHtml(c.crl[0]) +
             '</a>' +
             (c.crl.length > 1 ? ' <span class="certparser-dim">(+' + (c.crl.length - 1) + ')</span>' : '') +
             '</span></div>';
@@ -647,18 +642,18 @@ function _cpRenderOneCert(c) {
         if (c.aia.ocsp.length)
             parts.push(
                 '<div><b>OCSP:</b> <a class="certparser-link" href="' +
-                _cpEscape(c.aia.ocsp[0]) +
-                '" target="_blank" rel="noopener noreferrer">' +
-                _cpEscape(c.aia.ocsp[0]) +
-                '</a></div>'
+                    escapeHtml(c.aia.ocsp[0]) +
+                    '" target="_blank" rel="noopener noreferrer">' +
+                    escapeHtml(c.aia.ocsp[0]) +
+                    '</a></div>'
             );
         if (c.aia.caIssuers.length)
             parts.push(
                 '<div><b>CA Issuers:</b> <a class="certparser-link" href="' +
-                _cpEscape(c.aia.caIssuers[0]) +
-                '" target="_blank" rel="noopener noreferrer">' +
-                _cpEscape(c.aia.caIssuers[0]) +
-                '</a></div>'
+                    escapeHtml(c.aia.caIssuers[0]) +
+                    '" target="_blank" rel="noopener noreferrer">' +
+                    escapeHtml(c.aia.caIssuers[0]) +
+                    '</a></div>'
             );
         aiaHtml =
             '<div class="certparser-field"><span class="certparser-label">AIA</span><span class="certparser-value">' +
@@ -707,36 +702,36 @@ function _cpRenderOneCert(c) {
         '</div>' +
         '<div class="certparser-field"><span class="certparser-label">主题 Subject</span>' +
         '<span class="certparser-value certparser-strong">' +
-        _cpEscape(c.subjectStr || '(empty)') +
+        escapeHtml(c.subjectStr || '(empty)') +
         '</span></div>' +
         '<div class="certparser-field"><span class="certparser-label">颁发者 Issuer</span>' +
         '<span class="certparser-value">' +
-        _cpEscape(c.issuerStr || '(empty)') +
+        escapeHtml(c.issuerStr || '(empty)') +
         '</span></div>' +
         '<div class="certparser-field"><span class="certparser-label">序列号</span>' +
         '<span class="certparser-value certparser-mono">' +
-        _cpEscape(c.serial) +
+        escapeHtml(c.serial) +
         '</span></div>' +
         '<div class="certparser-field"><span class="certparser-label">有效期</span>' +
         '<span class="certparser-value">' +
-        _cpEscape(c.notBeforeStr) +
+        escapeHtml(c.notBeforeStr) +
         ' <span class="certparser-dim">~</span> ' +
-        _cpEscape(c.notAfterStr) +
+        escapeHtml(c.notAfterStr) +
         '<div class="' +
         expiryClass +
         '">' +
-        _cpEscape(expiry.label) +
+        escapeHtml(expiry.label) +
         '</div>' +
         '</span></div>' +
         '<div class="certparser-field"><span class="certparser-label">签名算法</span>' +
         '<span class="certparser-value">' +
-        _cpEscape(c.signatureAlg) +
+        escapeHtml(c.signatureAlg) +
         ' <span class="certparser-dim">(' +
-        _cpEscape(c.signatureAlgOid) +
+        escapeHtml(c.signatureAlgOid) +
         ')</span></span></div>' +
         '<div class="certparser-field"><span class="certparser-label">公钥</span>' +
         '<span class="certparser-value">' +
-        _cpEscape(pkLabel) +
+        escapeHtml(pkLabel) +
         '</span></div>' +
         '<div class="certparser-field"><span class="certparser-label">指纹 SHA-256</span>' +
         '<span class="certparser-value certparser-mono" id="certparser-fp-' +
