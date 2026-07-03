@@ -308,13 +308,13 @@ npm run build     # 输出到 dist/
 - **自定义插件**：
     - `cors-proxy`：开发模式下提供 CORS 代理端点（`/__cors_proxy?target=<url>`），将前端跨域请求转发到目标 URL，避开浏览器
       CORS 限制（仅 vite dev server 生效）
-  - `cache-bust`：为 index.html 中的 JS / CSS 引用按文件内容 md5 追加 `?v=<hash>`（前 8 位），内容变更自动失效
-  - `copy-js-assets`：构建时将 `js/` 和 `html/` 目录同步到 `dist/`
-  - `inject-asset-map`：扫描 `js/`、`html/` 所有资源生成 `window.__ASSET_MAP__`（逐文件 md5）内联进 `dist/index.html`
-    ；动态懒加载的工具脚本 / 面板据此附加 `?v=<hash>`，实现强缓存与更新自动失效（生产与 `build:dev` 均注入）
-  - `remove-github-link`：从 `dev` 构建产物中移除 GitHub 入口链接
-  - `inject-devtools-flag`：生产构建注入 `window.__DEVTOOLS__ = { withGithub: true }`，由 app.js 据此动态创建 GitHub
-    链接
+    - `cache-bust`：为 index.html 中的 JS / CSS 引用按文件内容 md5 追加 `?v=<hash>`（前 8 位），内容变更自动失效
+    - `copy-js-assets`：构建时将 `js/` 和 `html/` 目录同步到 `dist/`
+    - `inject-asset-map`：扫描 `js/`、`html/` 所有资源生成 `window.__ASSET_MAP__`（逐文件 md5）内联进 `dist/index.html`
+      ；动态懒加载的工具脚本 / 面板据此附加 `?v=<hash>`，实现强缓存与更新自动失效（生产与 `build:dev` 均注入）
+    - `remove-github-link`：从 `dev` 构建产物中移除 GitHub 入口链接
+    - `inject-devtools-flag`：生产构建注入 `window.__DEVTOOLS__ = { withGithub: true }`，由 app.js 据此动态创建 GitHub
+      链接
 
 ### 代码规范
 
@@ -347,7 +347,7 @@ npm run test:watch # 监听模式
     - gzip 压缩
     - 静态资源 30 天浏览器缓存
     - SPA fallback（未匹配路由回退到 `index.html`）
-  - 安全响应头（X-Frame-Options / X-Content-Type-Options / Referrer-Policy）
+    - 安全响应头（X-Frame-Options / X-Content-Type-Options / Referrer-Policy）
 
 ### 浏览器兼容
 

@@ -5,23 +5,23 @@
             <option value="v7">UUID v7（时间排序）</option>
         </select>
         <input
-                id="uuidCount"
-                max="100"
-                min="1"
-                placeholder="数量"
-                style="width: 80px"
-                title="生成数量"
-                type="number"
-                value="1"
+            id="uuidCount"
+            max="100"
+            min="1"
+            placeholder="数量"
+            style="width: 80px"
+            title="生成数量"
+            type="number"
+            value="1"
         />
-        <label class="uuid-opt"><input checked id="uuidHyphen" type="checkbox"/>连字符</label>
-        <label class="uuid-opt"><input id="uuidUpper" type="checkbox"/>大写</label>
+        <label class="uuid-opt"><input checked id="uuidHyphen" type="checkbox" />连字符</label>
+        <label class="uuid-opt"><input id="uuidUpper" type="checkbox" />大写</label>
         <button onclick="genUUID()">生成</button>
         <button class="outline" id="uuidCopyAllBtn" onclick="uuidCopyAll()" style="display: none">全部复制</button>
         <button
-                class="outline"
-                onclick="uuidClear()"
-                style="margin-left: auto; border-color: var(--danger); color: var(--danger)"
+            class="outline"
+            onclick="uuidClear()"
+            style="margin-left: auto; border-color: var(--danger); color: var(--danger)"
         >
             清空
         </button>

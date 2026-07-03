@@ -12,7 +12,8 @@
     <div class="mb-8" style="display:flex;gap:12px;flex-wrap:wrap">
         <div style="flex:1;min-width:200px">
             <div class="label">自定义请求头</div>
-            <textarea class="json-input" id="sseHeaders" placeholder='{"Authorization": "Bearer xxx"}' style="min-height:60px"></textarea>
+            <textarea class="json-input" id="sseHeaders" placeholder='{"Authorization": "Bearer xxx"}'
+                      style="min-height:60px"></textarea>
         </div>
         <div style="flex:1;min-width:200px">
             <div class="label">事件过滤（用逗号分隔）</div>
@@ -22,11 +23,13 @@
     <div class="copy-wrap">
         <div class="label">事件日志</div>
         <button class="copy-btn" onclick="sseCopyLog()">复制</button>
-        <div id="sseLog" style="padding:12px;background:var(--bg-input);border-radius:4px;font-family:var(--font);font-size:12px;max-height:400px;overflow-y:auto">
+        <div id="sseLog"
+             style="padding:12px;background:var(--bg-input);border-radius:4px;font-family:var(--font);font-size:12px;max-height:400px;overflow-y:auto">
             <div style="color:var(--text-dim)">等待连接...</div>
         </div>
     </div>
-    <div style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
+    <div
+        style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
         <strong>说明：</strong>
         <ul style="margin:4px 0 0 16px">
             <li>Server-Sent Events (SSE) 单向实时通信调试</li>

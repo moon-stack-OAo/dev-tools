@@ -23,14 +23,16 @@
         <div class="copy-wrap">
             <div class="label">当前 DataURL 输出</div>
             <button class="copy-btn" onclick="copyText('img2b64Output')">复制</button>
-            <textarea class="output-box json-input" id="img2b64Output" readonly style="min-height:120px;max-height:280px;font-family:var(--font)"></textarea>
+            <textarea class="output-box json-input" id="img2b64Output" readonly
+                      style="min-height:120px;max-height:280px;font-family:var(--font)"></textarea>
         </div>
     </div>
 
     <div class="tab-content" id="imgbase64Tab-decode">
         <div class="mb-8">
             <div class="label">输入 Base64 (支持 dataURL 或纯 Base64)</div>
-            <textarea class="json-input" id="b642imgInput" placeholder="data:image/png;base64,iVBORw0KGgo...&#10;或纯 Base64 字符串"></textarea>
+            <textarea class="json-input" id="b642imgInput"
+                      placeholder="data:image/png;base64,iVBORw0KGgo...&#10;或纯 Base64 字符串"></textarea>
         </div>
         <div class="toolbar">
             <button onclick="b642imgRender()">渲染</button>

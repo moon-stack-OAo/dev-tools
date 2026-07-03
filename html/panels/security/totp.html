@@ -34,39 +34,52 @@
     <div class="copy-wrap" style="margin-top:8px">
         <div class="label">当前动态码</div>
         <button class="copy-btn" onclick="totpCopy()">复制</button>
-        <div class="output-box" id="totpCode" style="font-size:48px;text-align:center;letter-spacing:12px;font-family:var(--font);min-height:80px;line-height:80px">- - - - - -</div>
+        <div class="output-box" id="totpCode"
+             style="font-size:48px;text-align:center;letter-spacing:12px;font-family:var(--font);min-height:80px;line-height:80px">
+            - - - - - -
+        </div>
         <div style="display:flex;align-items:center;gap:12px;margin-top:8px">
             <div style="flex:1;height:8px;background:var(--bg-input);border-radius:4px;overflow:hidden">
-                <div id="totpProgress" style="width:0%;height:100%;background:var(--accent);transition:width 1s linear"></div>
+                <div id="totpProgress"
+                     style="width:0%;height:100%;background:var(--accent);transition:width 1s linear"></div>
             </div>
-            <div id="totpCountdown" style="min-width:50px;text-align:right;color:var(--text-dim);font-size:13px">未启动</div>
+            <div id="totpCountdown" style="min-width:50px;text-align:right;color:var(--text-dim);font-size:13px">
+                未启动
+            </div>
         </div>
     </div>
 
     <!-- C 区段：URI 解析 -->
     <div class="mb-8" style="margin-top:16px">
         <div class="label">otpauth:// URI 解析（兼容 Google Authenticator / Authy 二维码内容）</div>
-        <textarea id="totpUri" placeholder="otpauth://totp/GitHub:alice@github.com?secret=JBSWY3DPEHPK3PXP&amp;issuer=GitHub" rows="3"></textarea>
+        <textarea id="totpUri"
+                  placeholder="otpauth://totp/GitHub:alice@github.com?secret=JBSWY3DPEHPK3PXP&amp;issuer=GitHub"
+                  rows="3"></textarea>
     </div>
     <div class="toolbar">
         <button onclick="totpParseUri()">解析并填充</button>
-        <button class="outline" onclick="totpClear()" style="margin-left:auto;border-color:var(--danger);color:var(--danger)">清空全部</button>
+        <button class="outline" onclick="totpClear()"
+                style="margin-left:auto;border-color:var(--danger);color:var(--danger)">清空全部
+        </button>
     </div>
     <div class="copy-wrap" style="margin-top:8px">
         <div class="label">解析结果</div>
-        <div class="output-box" id="totpUriResult" style="min-height:24px;white-space:pre-wrap;font-family:var(--font);font-size:13px"></div>
+        <div class="output-box" id="totpUriResult"
+             style="min-height:24px;white-space:pre-wrap;font-family:var(--font);font-size:13px"></div>
     </div>
 
     <!-- D 区段：OTP 验证 -->
     <div class="mb-8" style="margin-top:16px;max-width:300px">
         <div class="label">验证 OTP（±1 步时间漂移容错）</div>
-        <input id="totpInput" maxlength="8" placeholder="输入 6/8 位 OTP 码" style="letter-spacing:4px;font-family:var(--font)" type="text">
+        <input id="totpInput" maxlength="8" placeholder="输入 6/8 位 OTP 码"
+               style="letter-spacing:4px;font-family:var(--font)" type="text">
     </div>
     <div class="toolbar">
         <button onclick="totpVerify()">验证</button>
     </div>
     <div class="copy-wrap">
         <div class="label">验证结果</div>
-        <div class="output-box" id="totpVerifyResult" style="min-height:24px;font-family:var(--font);font-size:13px"></div>
+        <div class="output-box" id="totpVerifyResult"
+             style="min-height:24px;font-family:var(--font);font-size:13px"></div>
     </div>
 </div>

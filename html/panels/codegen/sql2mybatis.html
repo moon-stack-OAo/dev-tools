@@ -49,10 +49,12 @@
             <div class="label" style="margin-bottom:3px">主键 JDBC 类型</div>
             <input id="sql2mbPkJdbc" placeholder="BIGINT" style="min-width:110px" type="text">
         </div>
-        <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-dim);align-self:flex-end;padding-bottom:6px">
+        <label
+            style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-dim);align-self:flex-end;padding-bottom:6px">
             <input checked id="sql2mbUseGen" style="accent-color:var(--accent)" type="checkbox"> useGeneratedKeys
         </label>
-        <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-dim);align-self:flex-end;padding-bottom:6px">
+        <label
+            style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-dim);align-self:flex-end;padding-bottom:6px">
             <input checked id="sql2mbUseParam" style="accent-color:var(--accent)" type="checkbox"> @Param 注解
         </label>
     </div>
@@ -60,7 +62,8 @@
     <div class="toolbar">
         <button onclick="sql2mbGenerate()">生成</button>
         <button class="outline" onclick="sql2mbCopyAll()">复制全部</button>
-        <button class="outline" id="sql2mb-download" onclick="sql2mbDownloadZip()" title="将当前生成的 Mapper XML 与 Interface 打包为 ZIP 下载">
+        <button class="outline" id="sql2mb-download" onclick="sql2mbDownloadZip()"
+                title="将当前生成的 Mapper XML 与 Interface 打包为 ZIP 下载">
             <i class="bi bi-file-earmark-zip"></i> 下载 ZIP
         </button>
         <span class="status-text" id="sql2mbStatus" style="font-size:12px;color:var(--text-muted)"></span>

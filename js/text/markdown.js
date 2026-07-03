@@ -32,99 +32,109 @@ console.log(greet('World'));
 
 let mdDebounceTimer = null;
 let mdInited = false;
-let mdInputEl, mdPreviewEl, mdGfmEl, mdStatCharsEl, mdStatWordsEl, mdStatLinesEl;
+let mdInputEl,
+  mdPreviewEl,
+  mdGfmEl,
+  mdStatCharsEl,
+  mdStatWordsEl,
+  mdStatLinesEl;
 
 // 面板首次打开时缓存 DOM 引用并绑定 scoped 监听器（替代原先挂在 document 上的全局 input 代理）
 function mdInit() {
-    if (mdInited) return;
-    mdInputEl = document.getElementById('mdInput');
-    mdPreviewEl = document.getElementById('mdPreview');
-    mdGfmEl = document.getElementById('mdGfm');
-    mdStatCharsEl = document.getElementById('mdStatChars');
-    mdStatWordsEl = document.getElementById('mdStatWords');
-    mdStatLinesEl = document.getElementById('mdStatLines');
-    if (mdInputEl) mdInputEl.addEventListener('input', mdOnInput);
-    if (mdGfmEl) mdGfmEl.addEventListener('change', mdRender);
-    mdInited = true;
+  if (mdInited) return;
+  mdInputEl = document.getElementById("mdInput");
+  mdPreviewEl = document.getElementById("mdPreview");
+  mdGfmEl = document.getElementById("mdGfm");
+  mdStatCharsEl = document.getElementById("mdStatChars");
+  mdStatWordsEl = document.getElementById("mdStatWords");
+  mdStatLinesEl = document.getElementById("mdStatLines");
+  if (mdInputEl) mdInputEl.addEventListener("input", mdOnInput);
+  if (mdGfmEl) mdGfmEl.addEventListener("change", mdRender);
+  mdInited = true;
 }
 
 // 清理 HTML 中的 XSS 向量（script 标签、on* 事件属性、javascript: 协议）
 function _mdSanitize(html) {
-    var tmp = document.createElement('div');
-    tmp.innerHTML = html;
-    tmp.querySelectorAll('script,iframe,object,embed,form').forEach(function (el) {
-        el.remove();
+  var tmp = document.createElement("div");
+  tmp.innerHTML = html;
+  tmp
+    .querySelectorAll("script,iframe,object,embed,form")
+    .forEach(function (el) {
+      el.remove();
     });
-    tmp.querySelectorAll('*').forEach(function (el) {
-        for (var i = el.attributes.length - 1; i >= 0; i--) {
-            var attr = el.attributes[i];
-            var n = attr.name.toLowerCase();
-            var v = attr.value.trim();
-            if (n.startsWith('on') || ((n === 'href' || n === 'src') && /^\s*javascript:/i.test(v))) {
-                el.removeAttribute(attr.name);
-            }
-        }
-    });
-    return tmp.innerHTML;
+  tmp.querySelectorAll("*").forEach(function (el) {
+    for (var i = el.attributes.length - 1; i >= 0; i--) {
+      var attr = el.attributes[i];
+      var n = attr.name.toLowerCase();
+      var v = attr.value.trim();
+      if (
+        n.startsWith("on") ||
+        ((n === "href" || n === "src") && /^\s*javascript:/i.test(v))
+      ) {
+        el.removeAttribute(attr.name);
+      }
+    }
+  });
+  return tmp.innerHTML;
 }
 
 function mdRender() {
-    const input = mdInputEl.value;
-    if (typeof marked === 'undefined') {
-        mdPreviewEl.textContent = 'marked 库未加载';
-        mdPreviewEl.style.color = 'var(--danger)';
-        mdUpdateStats(input);
-        return;
-    }
-    try {
-        const html = marked.parse(input, {gfm: mdGfmEl.checked, breaks: false});
-        mdPreviewEl.innerHTML = _mdSanitize(html);
-        mdPreviewEl.style.color = '';
-        setStatus('Markdown 渲染完成');
-    } catch (e) {
-        mdPreviewEl.textContent = '渲染失败: ' + e.message;
-        mdPreviewEl.style.color = 'var(--danger)';
-    }
+  const input = mdInputEl.value;
+  if (typeof marked === "undefined") {
+    mdPreviewEl.textContent = "marked 库未加载";
+    mdPreviewEl.style.color = "var(--danger)";
     mdUpdateStats(input);
+    return;
+  }
+  try {
+    const html = marked.parse(input, { gfm: mdGfmEl.checked, breaks: false });
+    mdPreviewEl.innerHTML = _mdSanitize(html);
+    mdPreviewEl.style.color = "";
+    setStatus("Markdown 渲染完成");
+  } catch (e) {
+    mdPreviewEl.textContent = "渲染失败: " + e.message;
+    mdPreviewEl.style.color = "var(--danger)";
+  }
+  mdUpdateStats(input);
 }
 
 function mdUpdateStats(v) {
-    if (v === undefined) v = mdInputEl.value;
-    mdStatCharsEl.textContent = v.length;
-    mdStatWordsEl.textContent = (v.match(/[\w\u4e00-\u9fa5]+/g) || []).length;
-    mdStatLinesEl.textContent = v ? v.split('\n').length : 0;
+  if (v === undefined) v = mdInputEl.value;
+  mdStatCharsEl.textContent = v.length;
+  mdStatWordsEl.textContent = (v.match(/[\w\u4e00-\u9fa5]+/g) || []).length;
+  mdStatLinesEl.textContent = v ? v.split("\n").length : 0;
 }
 
 function mdOnInput() {
-    clearTimeout(mdDebounceTimer);
-    mdDebounceTimer = setTimeout(mdRender, 200);
+  clearTimeout(mdDebounceTimer);
+  mdDebounceTimer = setTimeout(mdRender, 200);
 }
 
 function mdCopyHtml() {
-    const html = mdPreviewEl.innerHTML;
-    if (!html) {
-        toast('暂无渲染内容');
-        return;
-    }
-    safeCopy(html, 'HTML 已复制');
+  const html = mdPreviewEl.innerHTML;
+  if (!html) {
+    toast("暂无渲染内容");
+    return;
+  }
+  safeCopy(html, "HTML 已复制");
 }
 
 function mdCopyMd() {
-    const md = mdInputEl.value;
-    if (!md) {
-        toast('暂无 Markdown 内容');
-        return;
-    }
-    safeCopy(md, 'Markdown 已复制');
+  const md = mdInputEl.value;
+  if (!md) {
+    toast("暂无 Markdown 内容");
+    return;
+  }
+  safeCopy(md, "Markdown 已复制");
 }
 
 function mdExportHtml() {
-    const body = mdPreviewEl.innerHTML;
-    if (!body) {
-        toast('请先输入 Markdown 并预览');
-        return;
-    }
-    const style = `body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:860px;margin:40px auto;padding:0 20px;line-height:1.7;color:#1a1a1a}
+  const body = mdPreviewEl.innerHTML;
+  if (!body) {
+    toast("请先输入 Markdown 并预览");
+    return;
+  }
+  const style = `body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:860px;margin:40px auto;padding:0 20px;line-height:1.7;color:#1a1a1a}
 h1,h2,h3,h4{line-height:1.3;margin:1.4em 0 .6em}
 h1{font-size:1.8em;border-bottom:1px solid #e5e7eb;padding-bottom:.3em}
 h2{font-size:1.4em;border-bottom:1px solid #e5e7eb;padding-bottom:.2em}
@@ -139,32 +149,32 @@ th{background:#f3f4f6;font-weight:600}
 a{color:#2563eb;text-decoration:none}
 a:hover{text-decoration:underline}
 hr{border:0;border-top:1px solid #e5e7eb;margin:1.5em 0}`;
-    const full = `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Markdown 导出</title><style>${style}</style></head><body>${body}</body></html>`;
-    const blob = new Blob([full], {type: 'text/html;charset=utf-8'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'output.html';
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => {
-        URL.revokeObjectURL(url);
-        a.remove();
-    }, 100);
-    toast('已导出 output.html');
+  const full = `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Markdown 导出</title><style>${style}</style></head><body>${body}</body></html>`;
+  const blob = new Blob([full], { type: "text/html;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "output.html";
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    URL.revokeObjectURL(url);
+    a.remove();
+  }, 100);
+  toast("已导出 output.html");
 }
 
 function mdClear() {
-    mdInputEl.value = '';
-    mdPreviewEl.innerHTML = '';
-    mdUpdateStats('');
-    setStatus('已清空');
+  mdInputEl.value = "";
+  mdPreviewEl.innerHTML = "";
+  mdUpdateStats("");
+  setStatus("已清空");
 }
 
 function mdLoadSample() {
-    mdInputEl.value = MD_SAMPLE;
-    mdRender();
-    setStatus('已加载示例');
+  mdInputEl.value = MD_SAMPLE;
+  mdRender();
+  setStatus("已加载示例");
 }
 
-registerInit('markdown', mdInit);
+registerInit("markdown", mdInit);
