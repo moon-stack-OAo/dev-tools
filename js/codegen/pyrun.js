@@ -225,7 +225,7 @@ function executePython(code, pyodide, hooks) {
             }
             stdoutBuf += s;
             onStdout(s);
-        };,
+        }
     });
     pyodide.setStderr({
         batched: (s) => {
