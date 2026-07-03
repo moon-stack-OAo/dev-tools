@@ -88,21 +88,82 @@ function pyrEscapeHtml(s) {
 // === 异步入口：加载与执行（依赖浏览器全局 Pyodide / fetch） ===
 
 /**
+ * 获取 Pyodide 资源的 indexURL（基于当前页面地址动态构造）。
+ * 支持子路径部署（如 /dev-tools/），自动确保 base URL 有尾部斜杠。
+ */
+function getPyodideIndexURL() {
+    var base = window.location.href;
+    if (!base.endsWith('/')) {
+        base += '/';
+    }
+    return new URL('lib/pyodide/', base).href;
+}
+
+/**
  * 通过 fetch 探测关键文件大小，估算加载进度（0~1）。
  * 用于驱动 #pyrProgressBar 的视觉反馈；不阻塞 Pyodide 自身的初始化。
  */
 function probePyodideProgress(onProgress) {
-    const files = ['pyodide.js', 'pyodide.asm.wasm', 'python_stdlib.zip'];
-    const indexURL = '/lib/pyodide/';
-    const probe = (url) =>
-        fetch(url, { method: 'HEAD' })
-            .then((r) => (r.ok ? Number(r.headers.get('content-length')) || 0 : 0))
-            .catch(() => 0);
-    let total = 0;
-    return Promise.all(files.map((f) => probe(indexURL + f))).then((sizes) => {
-        total = sizes.reduce((a, b) => a + b, 0);
+    var files = ['pyodide.js', 'pyodide.asm.wasm', 'python_stdlib.zip'];
+    var indexURL = getPyodideIndexURL();
+    var probe = function (url) {
+        return fetchWithTimeout(url, { method: 'HEAD' }, 10000)
+            .then(function (r) {
+                return r.ok ? Number(r.headers.get('content-length')) || 0 : 0;
+            })
+            .catch(function () {
+                return 0;
+            });
+    };
+    var total = 0;
+    return Promise.all(
+        files.map(function (f) {
+            return probe(indexURL + f);
+        })
+    ).then(function (sizes) {
+        total = sizes.reduce(function (a, b) {
+            return a + b;
+        }, 0);
         if (onProgress) onProgress(total > 0 ? 0.05 : 0);
         return total;
+    });
+}
+
+/**
+ * 预加载 Pyodide 核心文件（绕过动态 import 问题）。
+ * Pyodide v0.26+ 使用 import() 加载 pyodide.asm.js，部分服务器 MIME 类型配置不正确会导致加载失败。
+ * 此函数通过 fetch 获取文件内容并注入 <script> 标签，确保文件已就绪后再调用 loadPyodide()。
+ */
+function preloadPyodideCore(indexURL) {
+    var coreFiles = ['pyodide.asm.js'];
+    return Promise.all(
+        coreFiles.map(function (file) {
+            return fetchWithTimeout(indexURL + file, {}, 60000)
+                .then(function (r) {
+                    if (!r.ok) throw new Error('预加载失败: ' + file + ' HTTP ' + r.status);
+                    return r.text();
+                })
+                .then(function (code) {
+                    var script = document.createElement('script');
+                    script.textContent = code;
+                    document.head.appendChild(script);
+                });
+        })
+    );
+}
+
+/**
+ * 带超时的 fetch 封装，避免请求卡住导致加载界面永远停在"正在加载"。
+ */
+function fetchWithTimeout(url, options, timeoutMs) {
+    var controller = new AbortController();
+    var timer = setTimeout(function () {
+        controller.abort();
+    }, timeoutMs || 30000);
+    options = options || {};
+    options.signal = controller.signal;
+    return fetch(url, options).finally(function () {
+        clearTimeout(timer);
     });
 }
 
@@ -112,14 +173,31 @@ function probePyodideProgress(onProgress) {
  * 若该全局不存在则抛出明确错误，便于排查 file:// 或未运行 npm install 的场景。
  */
 function loadPyodideInstance(onProgress) {
-    const loader = typeof window !== 'undefined' ? window.loadPyodide : null;
+    var loader = typeof window !== 'undefined' ? window.loadPyodide : null;
     if (typeof loader !== 'function') {
         return Promise.reject(new Error('未找到 Pyodide（请确认 public/lib/pyodide/ 目录文件完整）'));
     }
-    return probePyodideProgress(onProgress).then(() => {
-        if (onProgress) onProgress(0.15);
-        return loader({ indexURL: '/lib/pyodide/' });
-    });
+    var indexURL = getPyodideIndexURL();
+    // 先检查 pyodide.js 是否可访问
+    return fetchWithTimeout(indexURL + 'pyodide.js', { method: 'HEAD' }, 10000)
+        .then(function (r) {
+            if (!r.ok) {
+                throw new Error('pyodide.js 未找到（HTTP ' + r.status + '），请检查 nginx 配置');
+            }
+            return probePyodideProgress(onProgress);
+        })
+        .then(function () {
+            if (onProgress) onProgress(0.15);
+            return preloadPyodideCore(indexURL);
+        })
+        .then(function () {
+            if (onProgress) onProgress(0.3);
+            return loader({ indexURL: indexURL });
+        })
+        .then(function (pyodide) {
+            if (onProgress) onProgress(1);
+            return pyodide;
+        });
 }
 
 /**
@@ -141,12 +219,20 @@ function executePython(code, pyodide, hooks) {
     let stderrBuf = '';
     pyodide.setStdout({
         batched: (s) => {
+            // Pyodide 的 batched 回调可能不包含换行符，手动添加
+            if (!s.endsWith('\n')) {
+                s += '\n';
+            }
             stdoutBuf += s;
             onStdout(s);
-        },
+        };,
     });
     pyodide.setStderr({
         batched: (s) => {
+            // Pyodide 的 batched 回调可能不包含换行符，手动添加
+            if (!s.endsWith('\n')) {
+                s += '\n';
+            }
             stderrBuf += s;
             onStderr(s);
         },
@@ -163,7 +249,11 @@ function pyrAppendOutput(target, text) {
     const id = target === 'stderr' ? 'pyrStderr' : 'pyrStdout';
     const el = document.getElementById(id);
     if (!el) return;
-    el.textContent += text;
+    // 将换行符转换为 <br>，确保在浏览器中正确显示
+    const html = pyrEscapeHtml(text).replace(/\n/g, '<br>');
+    el.innerHTML += html;
+    // 确保每次输出后自动滚动到底部
+    el.scrollTop = el.scrollHeight;
 }
 
 if (typeof window !== 'undefined') window.pyrAppendOutput = pyrAppendOutput;
@@ -245,25 +335,35 @@ if (typeof window !== 'undefined') window.pyrRun = pyrRun;
 // === 入口挂载：openTool 打开面板后调用 toolInits['pyrun']() 触发加载 ===
 
 if (typeof registerInit === 'function') {
-    registerInit('pyrun', function () {
+    registerInit('pyrun', function() {
         if (typeof window !== 'undefined' && window.__pyodideInstance && detectReadyState(window.__pyodideInstance)) {
             pyrOnReady();
             return;
         }
-        const setBar = (p) => {
-            const bar = document.getElementById('pyrProgressBar');
+        var setBar = function(p) {
+            var bar = document.getElementById('pyrProgressBar');
             if (bar) bar.style.width = Math.max(0, Math.min(1, p)) * 100 + '%';
         };
+        var timeout = setTimeout(function() {
+            var status = document.getElementById('pyrStatus');
+            if (status && status.textContent === '正在加载 Python 运行时...') {
+                status.textContent = '✗ 加载超时（30 秒），请检查网络或刷新重试';
+                var wrap = document.getElementById('pyrProgress');
+                if (wrap) wrap.style.display = 'none';
+            }
+        }, 30000);
         loadPyodideInstance(setBar)
-            .then((pyodide) => {
+            .then(function(pyodide) {
+                clearTimeout(timeout);
                 if (typeof window !== 'undefined') window.__pyodideInstance = pyodide;
                 setBar(1);
                 pyrOnReady();
             })
-            .catch((err) => {
-                const status = document.getElementById('pyrStatus');
+            .catch(function(err) {
+                clearTimeout(timeout);
+                var status = document.getElementById('pyrStatus');
                 if (status) status.textContent = '✗ 加载失败：' + (err && err.message ? err.message : String(err));
-                const wrap = document.getElementById('pyrProgress');
+                var wrap = document.getElementById('pyrProgress');
                 if (wrap) wrap.style.display = 'none';
             });
     });
@@ -279,5 +379,7 @@ if (typeof module !== 'undefined' && module.exports) {
         pyrEscapeHtml,
         PY_SAMPLE,
         MAX_CODE_LENGTH,
+        fetchWithTimeout,
+        getPyodideIndexURL,
     };
 }

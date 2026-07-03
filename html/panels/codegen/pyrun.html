@@ -9,14 +9,16 @@
             <div class="pyr-progress-bar" id="pyrProgressBar"></div>
         </div>
     </div>
-    <div class="jsr-editor-wrap">
-        <textarea disabled id="pyrCode" placeholder="# 在此输入 Python 代码..." spellcheck="false"></textarea>
-    </div>
-    <div class="jsr-output">
-        <div class="jsr-output-header">
-            <span>输出（stdout / stderr）</span>
+    <div class="pyr-main">
+        <div class="jsr-editor-wrap">
+            <textarea disabled id="pyrCode" placeholder="# 在此输入 Python 代码..." spellcheck="false"></textarea>
         </div>
-        <pre id="pyrStdout"></pre>
-        <pre class="jsr-stderr" id="pyrStderr"></pre>
+        <div class="jsr-output">
+            <div class="jsr-output-header">
+                <span>输出（stdout / stderr）</span>
+            </div>
+            <pre id="pyrStdout"></pre>
+            <pre class="jsr-stderr" id="pyrStderr"></pre>
+        </div>
     </div>
 </div>

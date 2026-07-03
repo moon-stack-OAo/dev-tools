@@ -194,12 +194,20 @@ function injectAssetMapPlugin(mode) {
             };
             walk('js', (n) => n.endsWith('.js') && n !== 'app.js');
             walk('html', (n) => n.endsWith('.html'));
-            // 扫描 public/lib 下的第三方库,用于 loadLib 按需懒加载的缓存失效
+            // 扫描 public/lib 下的第三方库（递归），用于 loadLib 按需懒加载的缓存失效
             const libDir = 'public/lib';
             if (fs.existsSync(libDir)) {
-                for (const e of fs.readdirSync(libDir)) {
-                    if (e.endsWith('.js')) map['lib/' + e] = md5(path.join(libDir, e));
-                }
+                const walkLib = (dir, prefix) => {
+                    for (const e of fs.readdirSync(dir)) {
+                        const full = path.join(dir, e);
+                        if (fs.statSync(full).isDirectory()) {
+                            walkLib(full, prefix + e + '/');
+                        } else if (e.endsWith('.js')) {
+                            map['lib/' + prefix + e] = md5(full);
+                        }
+                    }
+                };
+                walkLib(libDir, '');
             }
             const inline = `<script>window.__ASSET_MAP__=${JSON.stringify(map)};</script>`;
             const idx = path.join('dist', 'index.html');

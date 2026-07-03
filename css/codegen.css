@@ -305,14 +305,28 @@
     flex-shrink: 0;
 }
 
-#panel-pyrun.active > .jsr-editor-wrap {
-    flex: 1 1 0;
-    min-height: 300px;
+#panel-pyrun.active .pyr-main {
+    display: flex;
+    gap: 12px;
+    flex: 1;
+    min-height: 0;
 }
 
-#panel-pyrun.active > .jsr-output {
-    flex: 0 0 auto;
-    max-height: 40%;
+#panel-pyrun.active .pyr-main > .jsr-editor-wrap {
+    flex: 1 1 0;
+    min-height: 200px;
+}
+
+#panel-pyrun.active .pyr-main > .jsr-output {
+    flex: 1 1 0;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+}
+
+#panel-pyrun.active .pyr-main > .jsr-output > pre {
+    flex: 1;
+    overflow: auto;
 }
 
 #pyrCode {
@@ -361,4 +375,33 @@
     background: var(--accent);
     width: 0%;
     transition: width 0.2s;
+}
+
+#pyrStdout,
+#pyrStderr {
+    margin: 0;
+    padding: 10px 14px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--text);
+    background: var(--bg-terminal);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 320px;
+    overflow: auto;
+}
+
+#pyrStdout:empty {
+    display: none;
+}
+
+#pyrStderr {
+    color: var(--danger);
+    border-top: 1px solid var(--border);
+    background: rgba(var(--danger-rgb), 0.06);
+}
+
+#pyrStderr:empty {
+    display: none;
 }

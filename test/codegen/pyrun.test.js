@@ -7,6 +7,7 @@ const {
     pyrEscapeHtml,
     PY_SAMPLE,
     MAX_CODE_LENGTH,
+    getPyodideIndexURL,
 } = require('../../js/codegen/pyrun.js');
 
 describe('parsePythonOutput', () => {
@@ -218,5 +219,60 @@ describe('PY_SAMPLE 示例代码', () => {
     test('包含 import / print', () => {
         expect(PY_SAMPLE).toContain('import');
         expect(PY_SAMPLE).toContain('print');
+    });
+});
+
+describe('getPyodideIndexURL', () => {
+    // Node 测试环境无 window，跳过这些测试
+    const hasWindow = typeof window !== 'undefined';
+    const origHref = hasWindow ? Object.getOwnPropertyDescriptor(window, 'location') : null;
+
+    afterEach(() => {
+        if (origHref && hasWindow) Object.defineProperty(window, 'location', origHref);
+    });
+
+    test('根路径 / 返回 /lib/pyodide/', () => {
+        if (!hasWindow) return;
+        Object.defineProperty(window, 'location', {
+            value: { href: 'http://localhost/' },
+            writable: true,
+        });
+        expect(getPyodideIndexURL()).toBe('http://localhost/lib/pyodide/');
+    });
+
+    test('子路径 /dev-tools/ 返回 /dev-tools/lib/pyodide/', () => {
+        if (!hasWindow) return;
+        Object.defineProperty(window, 'location', {
+            value: { href: 'http://192.168.1.1/dev-tools/' },
+            writable: true,
+        });
+        expect(getPyodideIndexURL()).toBe('http://192.168.1.1/dev-tools/lib/pyodide/');
+    });
+
+    test('子路径无尾部斜杠 /dev-tools 自动补全', () => {
+        if (!hasWindow) return;
+        Object.defineProperty(window, 'location', {
+            value: { href: 'http://192.168.1.1/dev-tools' },
+            writable: true,
+        });
+        expect(getPyodideIndexURL()).toBe('http://192.168.1.1/dev-tools/lib/pyodide/');
+    });
+
+    test('带端口的地址', () => {
+        if (!hasWindow) return;
+        Object.defineProperty(window, 'location', {
+            value: { href: 'http://192.168.1.1:100/' },
+            writable: true,
+        });
+        expect(getPyodideIndexURL()).toBe('http://192.168.1.1:100/lib/pyodide/');
+    });
+
+    test('深层子路径', () => {
+        if (!hasWindow) return;
+        Object.defineProperty(window, 'location', {
+            value: { href: 'http://example.com/a/b/c/' },
+            writable: true,
+        });
+        expect(getPyodideIndexURL()).toBe('http://example.com/a/b/c/lib/pyodide/');
     });
 });
