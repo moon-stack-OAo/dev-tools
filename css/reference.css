@@ -678,6 +678,33 @@ button.active {
     transform: none;
 }
 
+.ref-examples {
+    margin: 4px 0;
+}
+
+.ref-example {
+    font-family: var(--font);
+    font-size: 11px;
+    color: var(--accent2);
+    background: rgba(0, 0, 0, 0.15);
+    padding: 3px 8px;
+    border-radius: 3px;
+    margin: 2px 0;
+    overflow-x: auto;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.ref-example:hover {
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.ref-returns {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
 .ref-copy-wrap {
     position: relative;
 }
