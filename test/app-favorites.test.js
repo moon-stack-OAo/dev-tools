@@ -21,7 +21,7 @@ const {
   isFavorite,
   toggleFavorite,
   clearFavorites,
-} = require("../../js/app.js");
+} = require("../js/favorites.js");
 
 describe("Favorites 工具收藏 (localStorage)", () => {
   beforeEach(() => {

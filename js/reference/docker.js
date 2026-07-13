@@ -62,21 +62,34 @@ const DOCKER_CMDS = [
 ];
 
 function dockerRender() {
-  const container = document.getElementById("dockerContent");
+  const container = document.getElementById('dockerContent');
   if (!container) return;
-  container.innerHTML = "";
+  // 事件委托：data-copy 取值经 escapeHtml 写入属性，getAttribute 还原原文
+  if (!container.dataset.copyDelegate) {
+    container.dataset.copyDelegate = '1';
+    container.addEventListener('click', function (e) {
+      const btn = e.target.closest('[data-copy]');
+      if (!btn || !container.contains(btn)) return;
+      const text = btn.getAttribute('data-copy');
+      if (text != null) safeCopy(text);
+    });
+  }
+  container.innerHTML = '';
   DOCKER_CMDS.forEach((group) => {
-    const section = document.createElement("div");
-    section.className = "ref-group";
-    section.innerHTML = `<div class="ref-group-title">${group.cat}</div>`;
+    const section = document.createElement('div');
+    section.className = 'ref-group';
+    section.innerHTML = `<div class="ref-group-title">${escapeHtml(group.cat)}</div>`;
     group.items.forEach((item) => {
-      const card = document.createElement("div");
-      card.className = "ref-card";
-      card.innerHTML = `<div class="ref-cmd-head"><code class="ref-cmd-name">${item.cmd.replace(/</g, "&lt;")}</code><span class="ref-cmd-desc">${item.desc.replace(/</g, "&lt;")}</span><button class="sm outline" onclick="safeCopy('${item.cmd.replace(/'/g, "\\'")}')">复制</button></div>`;
+      const card = document.createElement('div');
+      card.className = 'ref-card';
+      card.innerHTML =
+        `<div class="ref-cmd-head"><code class="ref-cmd-name">${escapeHtml(item.cmd)}</code>` +
+        `<span class="ref-cmd-desc">${escapeHtml(item.desc)}</span>` +
+        `<button class="sm outline" type="button" data-copy="${escapeHtml(item.cmd)}">复制</button></div>`;
       section.appendChild(card);
     });
     container.appendChild(section);
   });
 }
 
-registerInit("docker", dockerRender);
+registerInit('docker', dockerRender);

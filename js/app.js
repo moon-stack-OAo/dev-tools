@@ -387,6 +387,13 @@ const tools = [
     cat: "generate",
   },
   {
+    id: "resratio",
+    icon: "bi-aspect-ratio",
+    name: "分辨率比例",
+    desc: "宽高比 / 档位匹配 / 按比例反算",
+    cat: "generate",
+  },
+  {
     id: "jsontopojo",
     icon: "bi-arrow-repeat",
     name: "JSON → Java",
@@ -1033,6 +1040,7 @@ const toolLibs = {
   "image-compress": ["jszip.min.js"],
   imgtopdf: ["jspdf.min.js"],
   pdfmerge: ["pdf-lib.min.js"],
+  jsonexcel: ["xlsx.min.js"],
   jsrun: ["sucrase.min.js"],
   pyrun: ["pyodide/pyodide.js"],
 };
@@ -1125,6 +1133,8 @@ let homeDividers = [];
 // openTool 打开工具后调用 toolInits[id]() 完成初始化(替代旧 renderMap + 启动 init 列表)。
 const toolInits = {};
 const initedTools = new Set();
+// openTool 并发代数：快速连点时只应用最新一次打开的 UI，旧请求完成后忽略
+let _openToolGen = 0;
 
 function registerInit(id, fn) {
   toolInits[id] = fn;
@@ -1159,12 +1169,20 @@ function loadToolPanel(id) {
   if (!tool) return Promise.reject(new Error("未知工具: " + id));
   const url = `html/panels/${tool.cat}/${tool.id}.html${assetV("html/panels/" + tool.cat + "/" + tool.id + ".html")}`;
   _panelPromise[id] = fetch(url)
-    .then((r) => (r.ok ? r.text() : ""))
-    .catch(() => "")
+    .then((r) => {
+      if (!r.ok) throw new Error("面板加载失败: " + r.status);
+      return r.text();
+    })
     .then((html) => {
+      if (!html || !html.trim()) throw new Error("面板 HTML 为空: " + id);
       const container = document.getElementById("panels-container");
+      if (!container) throw new Error("panels-container 不存在");
       container.insertAdjacentHTML("beforeend", html);
       loadedPanels.add(id);
+    })
+    .catch((e) => {
+      delete _panelPromise[id];
+      throw e;
     });
   return _panelPromise[id];
 }
@@ -1297,6 +1315,7 @@ function highlightAnchor() {
 async function openTool(id) {
   const tool = tools.find((t) => t.id === id);
   if (!tool) return;
+  const gen = ++_openToolGen;
   clearHomeSearch();
   showLoading();
   setStatus("加载中...");
@@ -1306,12 +1325,16 @@ async function openTool(id) {
     if (libs) await Promise.all(libs.map((l) => loadLib(l)));
     await Promise.all([loadToolPanel(id), loadToolScript(id)]);
   } catch (e) {
+    // 已被更新的 openTool 取代时不改 UI / loading，避免误关最新请求的 loading
+    if (gen !== _openToolGen) return;
     toast("工具加载失败");
     console.error(e);
     setStatus("就绪");
     hideLoading();
     return;
   }
+  // 异步加载期间用户又点了其他工具：丢弃本次 UI 切换（资源加载结果仍可复用）
+  if (gen !== _openToolGen) return;
   bumpUsage(id);
   pushRecent(id);
   refreshRecentBlock();
@@ -1359,13 +1382,21 @@ async function openTool(id) {
     tool.name +
     "</span>";
   setStatus("就绪");
-  // 工具初始化仅执行一次,避免重复绑定事件/重建 UI
-  if (toolInits[id] && !initedTools.has(id)) {
-    toolInits[id]();
-    initedTools.add(id);
+  // 工具初始化仅执行一次,避免重复绑定事件/重建 UI；异常隔离确保 loading 关闭
+  try {
+    if (toolInits[id] && !initedTools.has(id)) {
+      toolInits[id]();
+      initedTools.add(id);
+    }
+  } catch (e) {
+    console.error(e);
+    toast("工具初始化失败");
+  } finally {
+    // 仅当前代关闭 loading；被取代的请求不 hide，避免提前结束最新打开的加载态
+    if (gen === _openToolGen) hideLoading();
   }
+  if (gen !== _openToolGen) return;
   highlightSidebarTool(id);
-  hideLoading();
   // 工具面板滚动 → 返回顶部按钮显隐(仅绑定一次,避免监听器累积)
   // click handler 在 init 末尾统一绑定为 scrollActiveToTop,无需此处分发。
   const tp = panel;

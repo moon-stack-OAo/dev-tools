@@ -12,12 +12,19 @@ function b64urlEncodeString(str) {
   return b64urlEncode(new TextEncoder().encode(str));
 }
 
+/** Base64 补 padding，使长度 % 4 === 0，避免部分浏览器 atob 失败 */
+function b64Pad(s) {
+  const pad = s.length % 4;
+  if (pad === 0) return s;
+  return s + "=".repeat(4 - pad);
+}
+
 function pemToArrayBuffer(pem) {
   const lines = pem
     .trim()
     .split(/\r?\n/)
     .filter((l) => l && !l.startsWith("-----"));
-  const b64 = lines.join("");
+  const b64 = b64Pad(lines.join(""));
   const bin = atob(b64);
   const bytes = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
@@ -163,7 +170,7 @@ async function jwtGenGenerate() {
       } else {
         const cleaned = secret.replace(/\s+/g, "");
         try {
-          keyData = Uint8Array.from(atob(cleaned), (c) =>
+          keyData = Uint8Array.from(atob(b64Pad(cleaned)), (c) =>
             c.charCodeAt(0),
           ).buffer;
         } catch (e) {

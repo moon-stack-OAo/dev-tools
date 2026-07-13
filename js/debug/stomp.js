@@ -157,18 +157,41 @@ function stompLogMsg(type, content) {
 }
 
 function stompRenderSubs() {
-  const list = document.getElementById("stompSubList");
+  const list = document.getElementById('stompSubList');
   if (!list) return;
+  // 事件委托：避免把 id 拼进 onclick
+  if (!list.dataset.stompDelegate) {
+    list.dataset.stompDelegate = '1';
+    list.addEventListener('click', function (e) {
+      const btn = e.target.closest('[data-stomp-unsub]');
+      if (!btn || !list.contains(btn)) return;
+      const id = btn.getAttribute('data-stomp-unsub');
+      if (id) stompUnsubscribe(id);
+    });
+  }
   if (stompSubs.size === 0) {
     list.innerHTML =
       '<div style="color:var(--text-dim);font-size:12px;padding:6px 0">暂无订阅</div>';
     return;
   }
-  list.innerHTML = "";
+  list.innerHTML = '';
   stompSubs.forEach((dest, id) => {
-    const div = document.createElement("div");
-    div.className = "stomp-sub-item";
-    div.innerHTML = `<span class="stomp-sub-id">${escapeHtml(id)}</span><span class="stomp-sub-dest">${escapeHtml(dest)}</span><button class="outline sm" onclick="stompUnsubscribe('${id}')">取消</button>`;
+    const div = document.createElement('div');
+    div.className = 'stomp-sub-item';
+    const idSpan = document.createElement('span');
+    idSpan.className = 'stomp-sub-id';
+    idSpan.textContent = id;
+    const destSpan = document.createElement('span');
+    destSpan.className = 'stomp-sub-dest';
+    destSpan.textContent = dest;
+    const btn = document.createElement('button');
+    btn.className = 'outline sm';
+    btn.type = 'button';
+    btn.textContent = '取消';
+    btn.setAttribute('data-stomp-unsub', id);
+    div.appendChild(idSpan);
+    div.appendChild(destSpan);
+    div.appendChild(btn);
     list.appendChild(div);
   });
 }

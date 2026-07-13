@@ -109,6 +109,52 @@ function bufToHex(buf) {
     .join("");
 }
 
+/** 将 Uint8Array 转为 Base64，分块避免大数组栈溢出 */
+function hmacBytesToBase64(bytes) {
+  const arr = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+  let bin = "";
+  const chunk = 0x8000;
+  for (let i = 0; i < arr.length; i += chunk) {
+    bin += String.fromCharCode.apply(null, arr.subarray(i, i + chunk));
+  }
+  return btoa(bin);
+}
+
+/**
+ * HMAC 计算（纯逻辑，不依赖 DOM）
+ * @param {string} key
+ * @param {string} msg
+ * @param {'MD5'|'SHA1'|'SHA256'|'SHA384'|'SHA512'} algo
+ * @param {'hex'|'base64'} [outFmt='hex']
+ * @returns {Promise<string>}
+ */
+async function hmacSign(key, msg, algo, outFmt) {
+  const enc = new TextEncoder();
+  const data = enc.encode(msg);
+  const fmt = outFmt || "hex";
+  if (algo === "MD5") {
+    const mac = hmacMd5Bytes(enc.encode(key), data);
+    return fmt === "hex" ? bufToHex(mac) : hmacBytesToBase64(mac);
+  }
+  const algoMap = {
+    SHA1: "SHA-1",
+    SHA256: "SHA-256",
+    SHA384: "SHA-384",
+    SHA512: "SHA-512",
+  };
+  const hashName = algoMap[algo];
+  if (!hashName) throw new Error("不支持的算法: " + algo);
+  const cryptoKey = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(key),
+    { name: "HMAC", hash: hashName },
+    false,
+    ["sign"],
+  );
+  const sig = await crypto.subtle.sign("HMAC", cryptoKey, data);
+  return fmt === "hex" ? bufToHex(sig) : hmacBytesToBase64(new Uint8Array(sig));
+}
+
 async function hmacCompute() {
   const msg = document.getElementById("hmacInput").value;
   const key = document.getElementById("hmacKey").value;
@@ -126,39 +172,9 @@ async function hmacCompute() {
     return;
   }
   try {
-    const enc = new TextEncoder();
-    const data = enc.encode(msg);
-    let result;
-    let label = algo;
-    if (algo === "MD5") {
-      // Web Crypto API 不支持 HMAC-MD5，使用纯 JS 实现
-      const kBytes = enc.encode(key);
-      const mac = hmacMd5Bytes(kBytes, data);
-      result =
-        outFmt === "hex" ? bufToHex(mac) : btoa(String.fromCharCode(...mac));
-      label = "HMAC-MD5";
-    } else {
-      const algoMap = {
-        SHA1: "SHA-1",
-        SHA256: "SHA-256",
-        SHA384: "SHA-384",
-        SHA512: "SHA-512",
-      };
-      const hashName = algoMap[algo];
-      const cryptoKey = await crypto.subtle.importKey(
-        "raw",
-        enc.encode(key),
-        { name: "HMAC", hash: hashName },
-        false,
-        ["sign"],
-      );
-      const sig = await crypto.subtle.sign("HMAC", cryptoKey, data);
-      result =
-        outFmt === "hex"
-          ? bufToHex(sig)
-          : btoa(String.fromCharCode(...new Uint8Array(sig)));
-      label = "HMAC-" + algo.replace("SHA", "SHA-");
-    }
+    const result = await hmacSign(key, msg, algo, outFmt);
+    const label =
+      algo === "MD5" ? "HMAC-MD5" : "HMAC-" + algo.replace("SHA", "SHA-");
     out.textContent = result;
     out.className = "output-box";
     setStatus(label + " 计算完成");
@@ -173,4 +189,13 @@ function hmacClear() {
   document.getElementById("hmacKey").value = "";
   document.getElementById("hmacOutput").textContent = "";
   setStatus("已清空");
+}
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    hmacMd5Bytes,
+    bufToHex,
+    hmacBytesToBase64,
+    hmacSign,
+  };
 }

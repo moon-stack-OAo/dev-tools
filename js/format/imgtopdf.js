@@ -220,7 +220,7 @@
 
   function itpExport() {
     if (state.images.length === 0) {
-      if (typeof alert === "function") alert("请先添加图片");
+      toast("请先添加图片");
       return;
     }
     const options = {
@@ -251,8 +251,7 @@
         URL.revokeObjectURL(url);
       } catch (err) {
         console.error("[imgtopdf]", err);
-        if (typeof alert === "function")
-          alert("导出失败：" + (err.message || err));
+        toast("导出失败：" + (err.message || err));
       } finally {
         btn.disabled = false;
         btn.innerHTML = oldHtml;

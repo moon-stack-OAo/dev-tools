@@ -7,9 +7,11 @@
     <title>Java 开发工具箱</title>
     <meta
         content="面向 Java 开发者的纯前端在线工具集 ——
-        105 个工具、8 大分类，覆盖格式化、编解码、安全、生成、代码生成、文本、调试、参考速查。数据 100% 本地处理，无需联网。"
+        110 个工具、8 大分类，覆盖格式化、编解码、安全、生成、代码生成、文本、调试、参考速查。数据 100% 本地处理，无需联网。"
         name="description">
     <meta content="#0f172a" name="theme-color">
+    <!-- CSP：务实策略，兼容 jsrun(new Function)、内联 ASSET_MAP、pyodide(worker/blob/wasm)、懒加载与调试工具外连 -->
+    <meta content="default-src 'self'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https: http: ws: wss: blob:; worker-src 'self' blob:; child-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'" http-equiv="Content-Security-Policy">
     <link href="public/favicon.svg" rel="icon" type="image/svg+xml">
     <!-- 第三方库已改为按需懒加载,见 js/app.js 中的 toolLibs / loadLib -->
     <link href="css/base.css" rel="stylesheet">
@@ -44,7 +46,7 @@
             <div class="header-home-title" id="headerHomeTitle">
                 <span class="hh-title"><i class="bi bi-tools"
                                           style="margin-right:6px;font-size:18px"></i>DevTools</span>
-                <span class="hh-sub">105 个工具 · 8 大分类 · 纯前端本地处理</span>
+                <span class="hh-sub">110 个工具 · 8 大分类 · 纯前端本地处理</span>
             </div>
             <div class="breadcrumb" id="breadcrumb"></div>
             <div class="home-search-wrap">

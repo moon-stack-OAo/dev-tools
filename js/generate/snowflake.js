@@ -355,12 +355,29 @@ function sfParseInput() {
 }
 
 // === 11. 暴露到 window（按项目约定无 ES Module） ===
-window.snowflakeId = snowflakeId;
-window.nextSnowflake = nextSnowflake;
-window.parseSnowflake = parseSnowflake;
-window.baiduUid = baiduUid;
-window.sfGenerate = sfGenerate;
-window.sfClear = sfClear;
-window.sfCopyAll = sfCopyAll;
-window.sfExportCSV = sfExportCSV;
-window.sfParseInput = sfParseInput;
+if (typeof window !== 'undefined') {
+    window.snowflakeId = snowflakeId;
+    window.nextSnowflake = nextSnowflake;
+    window.parseSnowflake = parseSnowflake;
+    window.baiduUid = baiduUid;
+    window.sfGenerate = sfGenerate;
+    window.sfClear = sfClear;
+    window.sfCopyAll = sfCopyAll;
+    window.sfExportCSV = sfExportCSV;
+    window.sfParseInput = sfParseInput;
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        SNOWFLAKE_EPOCH,
+        LEAF_EPOCH,
+        BAIDU_EPOCH,
+        snowflakeId,
+        nextSnowflake,
+        nextLeafId,
+        baiduUid,
+        parseSnowflake,
+        parseBaiduUid,
+        sfBase36ToBigInt,
+    };
+}

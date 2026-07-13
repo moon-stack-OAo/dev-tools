@@ -9,6 +9,11 @@ const {
   getPageCount,
 } = require("../../js/format/pdfmerge.js");
 
+// Vitest 全局 vi（勿 require('vitest')，CJS 下不可用）
+function mockFn(impl) {
+  return typeof vi !== "undefined" ? vi.fn(impl) : impl;
+}
+
 // ============== Mock pdf-lib ==============
 function createMockPdfLib(pageCount = 2) {
   const calls = {
@@ -29,14 +34,14 @@ function createMockPdfLib(pageCount = 2) {
       getPageIndices() {
         return Array.from({ length: this._pages }, (_, i) => i);
       },
-      copyPages: jest.fn(async (_src, indices) => {
+      copyPages: mockFn(async (_src, indices) => {
         calls.copyCalls.push(indices.slice());
         return indices.map((i) => ({ _idx: i }));
       }),
       addPage(_p) {
         calls.addPageCount += 1;
       },
-      save: jest.fn(async () => {
+      save: mockFn(async () => {
         calls.saveCount += 1;
         return new Uint8Array([0x25, 0x50, 0x44, 0x46, pageCount]); // %PDF + pageCount
       }),
@@ -46,11 +51,11 @@ function createMockPdfLib(pageCount = 2) {
   return {
     calls,
     PDFDocument: {
-      create: jest.fn(() => {
+      create: mockFn(() => {
         calls.createCount += 1;
         return makeDoc();
       }),
-      load: jest.fn(async (bytes) => {
+      load: mockFn(async (bytes) => {
         calls.loadCount += 1;
         calls.loadedSizes.push(bytes.length);
         return makeDoc();

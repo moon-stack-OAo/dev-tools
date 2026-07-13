@@ -5,6 +5,48 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，
 版本管理遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [Unreleased]
+
+本轮 P0–P2 工程与安全优化（未发布）；工具 **110**，单元测试约 **760 passed**。
+
+### 安全
+
+- **AES**：按 CBC/GCM 正确派生密钥；Base64 分块编解码，避免大密文栈溢出
+- **HTTP 调试历史**：敏感 header / body 写入历史前脱敏（`js/debug/httpdebug.js`）
+- **Markdown 消毒加强**：收紧 `_mdSanitize`，拦截危险标签与协议（`js/text/markdown.js`）
+- **危险 onclick 移除**：STOMP / docker / gitref / linux 改为 `data-*` + 事件委托
+- **CSP + Permissions-Policy**：`index.html` meta 与 `nginx.conf` 响应头双轨；静态资源 `immutable`，HTML `no-cache`
+- **Base64 边界**：jwt / jwtgen 补齐 padding；rsa / hmac 分块 Base64
+- **jsrun 风险提示**：面板增加可执行代码风险说明
+
+### 修复
+
+- **红测修复**：baseconvert / ip / snowflake / stacktrace 导出纯函数供单测；pdfmerge `jest` → `vi`；收藏逻辑抽至 `js/favorites.js`
+- **loadToolPanel**：加载失败可重试，避免永久卡死
+- **registerInit**：`try/catch/finally` 包裹初始化，异常不阻断工具打开
+- **openTool 并发保护**：generation token 丢弃过期异步结果
+- **alert → toast**：统一用户反馈，避免阻塞式弹窗
+
+### 工程
+
+- **版本 1.1.0**；注册 **resratio**，工具总数 **110**
+- **CI**：GitHub Actions 使用 Node 20；`npm test` + `npm run lint` 阻断 deploy
+- **依赖**：`esbuild` 声明为正式依赖；`jsonexcel` 纳入 `toolLibs` 懒加载映射
+- **`.dockerignore`** 收紧构建上下文
+
+### 测试
+
+- 新增 / 补强 aes、hash、hmac、jwt、httpdebug、markdown 等单测
+- 全量约 **760 passed**（33 files）
+
+### 文档
+
+- README / CHANGELOG 版本号、工具数、测试数与代码对齐
+
+### 新增
+
+- **分辨率比例（resratio）**：宽高比最简约分、消费级分辨率档位匹配、按比例反算
+
 ## [1.1.0] - 2026-06-27
 
 ### 性能
@@ -22,7 +64,7 @@
 ### 测试
 
 - **单元测试覆盖率提升**：从 17 个测试增至 91 个（+74），新增 json2csv（16）、logfmt（10）、pbkdf2（18）、totp（30），包含 RFC 4226 /
-  RFC 6238 标准向量验证
+  RFC 6238 标准向量验证（后续已扩展至 700+，见 Unreleased）
 
 ### 安全
 
@@ -35,7 +77,7 @@
 
 - **favicon 重新设计**：从保险箱/锁造型改为 `</>` 代码括号，保留蓝紫渐变背景
 - **首页卡片增强**：hover 分类色边框 + 顶部光带 + 入场动画（JS 动态 delay）
-- **工具面板标题注入**：打开工具时动态注入图标 / 名称 / 描述（分类色着色），无需修改 97 个面板 HTML
+- **工具面板标题注入**：打开工具时动态注入图标 / 名称 / 描述（分类色着色），无需为每个面板 HTML 手写标题
 - **header 标题渐变**："DevTools" 文字从纯白改为 `text → accent` 渐变填充
 
 ### 其他

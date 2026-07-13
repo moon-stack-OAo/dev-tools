@@ -1,5 +1,16 @@
 let rsaKeyPair = null;
 
+/** 将 Uint8Array 转为 Base64，分块避免大数组栈溢出 */
+function rsaBytesToBase64(bytes) {
+  const arr = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+  let bin = "";
+  const chunk = 0x8000;
+  for (let i = 0; i < arr.length; i += chunk) {
+    bin += String.fromCharCode.apply(null, arr.subarray(i, i + chunk));
+  }
+  return btoa(bin);
+}
+
 async function rsaGenKeys() {
   const out = document.getElementById("rsaOutput");
   const bits = parseInt(document.getElementById("rsaBits").value);
@@ -16,8 +27,8 @@ async function rsaGenKeys() {
     );
     const pub = await crypto.subtle.exportKey("spki", rsaKeyPair.publicKey);
     const priv = await crypto.subtle.exportKey("pkcs8", rsaKeyPair.privateKey);
-    const pubB64 = btoa(String.fromCharCode(...new Uint8Array(pub)));
-    const privB64 = btoa(String.fromCharCode(...new Uint8Array(priv)));
+    const pubB64 = rsaBytesToBase64(new Uint8Array(pub));
+    const privB64 = rsaBytesToBase64(new Uint8Array(priv));
     document.getElementById("rsaPubKey").value = pubB64;
     document.getElementById("rsaPrivKey").value = privB64;
     out.textContent = "密钥对生成成功 (" + bits + " bit)";
@@ -56,7 +67,7 @@ async function rsaEncrypt() {
       key,
       new TextEncoder().encode(input),
     );
-    out.textContent = btoa(String.fromCharCode(...new Uint8Array(encrypted)));
+    out.textContent = rsaBytesToBase64(new Uint8Array(encrypted));
   } catch (e) {
     out.textContent = "加密失败: " + e.message;
   }

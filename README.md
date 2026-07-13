@@ -1,6 +1,6 @@
 # Java 开发工具箱
 
-> 一个面向 Java 开发者的**纯前端**在线工具集 —— **109 个工具、8 大分类**
+> 一个面向 Java 开发者的**纯前端**在线工具集 —— **110 个工具、8 大分类**
 > ，覆盖格式化、编解码、安全、生成与转换、代码生成、文本、调试、参考速查。无需后端、无需联网、无需上传数据，所有计算均在浏览器本地完成。支持
 > Vite 开发、Docker 一键部署、Nginx 静态托管，开箱即用。
 
@@ -16,7 +16,7 @@
 - 🚀 **零依赖开箱即用**：纯静态 HTML / CSS / JavaScript，无任何前端框架；业务代码无构建期编译，第三方库通过 Vite + esbuild
   打包为 IIFE
 - 🔒 **数据 100% 本地处理**：所有计算在浏览器内完成，不会上传任何内容到服务器，支持离线使用
-- 🧰 **109 个工具 / 8 大分类**：覆盖 Java 开发日常所需，工具持续扩充
+- 🧰 **110 个工具 / 8 大分类**：覆盖 Java 开发日常所需，工具持续扩充
 - 🎨 **深色主题 + 响应式**：桌面 / 平板 / 手机均可使用
 - 🐳 **多种部署方式**：Vite 开发、Docker 容器、Nginx 静态托管
 - 📦 **依赖本地化**：20 个 npm 包本地化为 22 个 `.min.js` 文件 + 5 个 Pyodide 核心文件，全部内置到 `public/lib/`，**按需懒加载
@@ -73,7 +73,7 @@ npm run build     # 输出到 dist/
 
 ```
 ├── index.html                      # 入口（首页；工具脚本/面板/依赖库均按需懒加载）
-├── html/panels/                    # 工具面板（106 个文件，每个工具一个 HTML）
+├── html/panels/                    # 工具面板（110 个文件，每个工具一个 HTML）
 │   ├── format/                     #  格式化：json / xml / yaml / sql / javafmt / jsonexcel / ddldiff / sqlexplain / nginxfmt / ...
 │   ├── encode/                     #  编解码：base64 / url / unicode / protobuf / ...
 │   ├── security/                   #  安全：jwt / hash / aes / rsa / gmsm / certparser / ...
@@ -122,7 +122,7 @@ npm run build     # 输出到 dist/
 
 ## 🧰 工具列表
 
-> 工具总数 **108 个**，分为 **8 大分类**。下表功能描述与 `js/app.js` 中 `tools[]` 注册表的 `desc` 字段保持一致。
+> 工具总数 **110 个**，分为 **8 大分类**。下表功能描述与 `js/app.js` 中 `tools[]` 注册表的 `desc` 字段保持一致。
 
 ### 一、格式化（18）
 
@@ -179,7 +179,7 @@ npm run build     # 输出到 dist/
 | PBKDF2 哈希  | PBKDF2-HMAC-SHA256/512 密码哈希（标准 PHC 格式）         |
 | X.509 证书   | X.509 证书 PEM / DER 解析                          |
 
-### 四、生成与转换（10）
+### 四、生成与转换（11）
 
 | 工具      | 功能                                 |
 |---------|------------------------------------|
@@ -193,6 +193,7 @@ npm run build     # 输出到 dist/
 | 数据 Mock | 生成姓名 / 手机号 / 邮箱等                   |
 | 日期计算器   | 日期加减 / 间隔 / 工作日                    |
 | 时区转换    | 跨时区时间换算                            |
+| 分辨率比例   | 宽高比 / 档位匹配 / 按比例反算                 |
 
 ### 五、代码生成（12）
 
@@ -323,14 +324,14 @@ npm run build     # 输出到 dist/
 
 ### 测试
 
-- 单元测试基于 **Vitest**，覆盖从工具中抽离的纯逻辑（无 DOM 耦合），共 **558 个测试**
+- 单元测试基于 **Vitest**，覆盖从工具中抽离的纯逻辑（无 DOM 耦合），共 **716 个测试**
 - 工具文件通过 `module.exports` 守卫导出纯函数，测试用 `require()` 直接加载真实生产代码（零重复）
 - `test/setup.js` 提供 `registerInit` 等浏览器全局的 Node 环境垫片
 - 已覆盖：`hex`、`unicode`、`random`、`json2csv`、`pbkdf2`、`totp`（含 RFC 4226/6238 标准向量）、`logfmt`、
   `javafmt`、`javastream`、`jsonexcel`、`ddldiff`、`jmhpro`、`sqlexplain`、`nginxfmt`、`beanval`、`plantuml`
 
 ```bash
-npm test           # 运行一次（558 个测试）
+npm test           # 运行一次（716 个测试）
 npm run test:watch # 监听模式
 ```
 

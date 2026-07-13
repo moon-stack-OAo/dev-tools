@@ -1,3 +1,30 @@
+/** ArrayBuffer / Uint8Array → 小写 hex */
+function hashBytesToHex(buf) {
+  return Array.from(new Uint8Array(buf))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+/**
+ * 计算摘要（纯逻辑，不依赖 DOM）
+ * @param {'md5'|'sha1'|'sha256'|'sha512'} type
+ * @param {string} raw
+ * @returns {Promise<string>} 小写 hex
+ */
+async function hashDigest(type, raw) {
+  if (type === "md5") {
+    if (typeof md5 !== "function") throw new Error("md5 库未加载");
+    return md5(raw);
+  }
+  const algo = { sha1: "SHA-1", sha256: "SHA-256", sha512: "SHA-512" }[type];
+  if (!algo) throw new Error("不支持的算法: " + type);
+  const hashBuffer = await crypto.subtle.digest(
+    algo,
+    new TextEncoder().encode(raw),
+  );
+  return hashBytesToHex(hashBuffer);
+}
+
 async function hashCompute(type) {
   const raw = document.getElementById("hashInput").value;
   if (!raw) {
@@ -5,8 +32,6 @@ async function hashCompute(type) {
     return;
   }
   const container = document.getElementById("hashResults");
-  const enc = new TextEncoder();
-  const data = enc.encode(raw);
   let result;
   const label = {
     md5: "MD5",
@@ -15,16 +40,7 @@ async function hashCompute(type) {
     sha512: "SHA-512",
   }[type];
   try {
-    if (type === "md5") {
-      result = md5(raw);
-    } else {
-      const algo = { sha1: "SHA-1", sha256: "SHA-256", sha512: "SHA-512" }[
-        type
-      ];
-      const hashBuffer = await crypto.subtle.digest(algo, data);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      result = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-    }
+    result = await hashDigest(type, raw);
     let existing = container.querySelector(`[data-type="${type}"]`);
     if (existing) {
       existing.querySelector(".hash-val").textContent = result;
@@ -44,4 +60,8 @@ async function hashCompute(type) {
 function hashClear() {
   document.getElementById("hashResults").innerHTML = "";
   setStatus("已清空");
+}
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { hashBytesToHex, hashDigest };
 }

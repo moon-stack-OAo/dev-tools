@@ -16,7 +16,8 @@
    */
   function parsePageRanges(input) {
     if (input === null || input === undefined) return [];
-    const text = String(input).trim();
+    if (typeof input !== "string") return [];
+    const text = input.trim();
     if (!text) return [];
     const segments = text
       .split(",")
@@ -301,7 +302,7 @@
 
   function pmMergeExport() {
     if (mergeState.files.length === 0) {
-      if (typeof alert === "function") alert("请先添加 PDF 文件");
+      toast("请先添加 PDF 文件");
       return;
     }
     const btn = document.querySelector("#pmMergeToolbar .primary");
@@ -316,8 +317,7 @@
         triggerDownload(blob, `merged-${timestamp()}.pdf`);
       } catch (err) {
         console.error("[pdfmerge:merge]", err);
-        if (typeof alert === "function")
-          alert("合并失败：" + (err.message || err));
+        toast("合并失败：" + (err.message || err));
       } finally {
         btn.disabled = false;
         btn.innerHTML = oldHtml;
@@ -331,7 +331,7 @@
     if (!file) return;
     const lower = (file.name || "").toLowerCase();
     if (!file.type?.includes("pdf") && !lower.endsWith(".pdf")) {
-      if (typeof alert === "function") alert("请选择 PDF 文件");
+      toast("请选择 PDF 文件");
       return;
     }
     const meta = document.getElementById("pmSplitMeta");
@@ -346,8 +346,7 @@
       if (ranges && !ranges.value) ranges.value = `1-${count}`;
     } catch (err) {
       console.error("[pdfmerge:split-pick]", err);
-      if (typeof alert === "function")
-        alert("读取 PDF 失败：" + (err.message || err));
+      toast("读取 PDF 失败：" + (err.message || err));
       if (meta) meta.textContent = "未选择文件";
       splitState.file = null;
       splitState.pageCount = 0;
@@ -356,7 +355,7 @@
 
   function pmSplitFillAll() {
     if (splitState.pageCount < 1) {
-      if (typeof alert === "function") alert("请先选择 PDF 文件");
+      toast("请先选择 PDF 文件");
       return;
     }
     const ranges = document.getElementById("pmSplitRanges");
@@ -376,7 +375,7 @@
 
   function pmSplitExport() {
     if (!splitState.file) {
-      if (typeof alert === "function") alert("请先选择 PDF 文件");
+      toast("请先选择 PDF 文件");
       return;
     }
     const rangesInput = document.getElementById("pmSplitRanges").value;
@@ -384,11 +383,11 @@
     try {
       ranges = parsePageRanges(rangesInput);
     } catch (err) {
-      if (typeof alert === "function") alert(err.message || err);
+      toast(err.message || String(err));
       return;
     }
     if (ranges.length === 0) {
-      if (typeof alert === "function") alert("请填写页码范围");
+      toast("请填写页码范围");
       return;
     }
     const reverse = document.getElementById("pmSplitReverse").checked;
@@ -415,8 +414,7 @@
         }
       } catch (err) {
         console.error("[pdfmerge:split]", err);
-        if (typeof alert === "function")
-          alert("拆分失败：" + (err.message || err));
+        toast("拆分失败：" + (err.message || err));
       } finally {
         btn.disabled = false;
         btn.innerHTML = oldHtml;

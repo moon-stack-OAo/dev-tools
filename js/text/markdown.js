@@ -53,25 +53,57 @@ function mdInit() {
   mdInited = true;
 }
 
-// 清理 HTML 中的 XSS 向量（script 标签、on* 事件属性、javascript: 协议）
+// 判断 URI 是否安全：仅允许 http(s)/mailto、锚点、以 / 开头或无 scheme 的相对路径
+function mdIsSafeUri(v) {
+  if (v == null) return false;
+  var s = String(v).replace(/[\u0000-\u001F\u007F]/g, '').trim();
+  if (!s) return false;
+  // 统一禁 javascript / vbscript / data 等危险协议
+  if (/^(?:javascript|vbscript|data)\s*:/i.test(s)) return false;
+  if (/^(?:https?|mailto):/i.test(s)) return true;
+  if (s.charAt(0) === '#' || s.charAt(0) === '/') return true;
+  // 其它带 scheme 的 URI 一律拒绝（如 file:、blob:、tel:）
+  if (/^[a-zA-Z][a-zA-Z0-9+.\-]*\s*:/.test(s)) return false;
+  // 无 scheme：相对路径
+  return true;
+}
+
+// 清理 HTML 中的 XSS 向量（危险标签、on*、srcdoc、style、危险 URI）
 function _mdSanitize(html) {
-  var tmp = document.createElement("div");
+  var tmp = document.createElement('div');
   tmp.innerHTML = html;
   tmp
-    .querySelectorAll("script,iframe,object,embed,form")
+    .querySelectorAll('script,iframe,object,embed,form,style,base,meta,link')
     .forEach(function (el) {
       el.remove();
     });
-  tmp.querySelectorAll("*").forEach(function (el) {
+  var uriAttrs = {
+    href: 1,
+    src: 1,
+    xlinkhref: 1,
+    formaction: 1,
+    action: 1,
+    background: 1,
+    poster: 1,
+    data: 1,
+  };
+  tmp.querySelectorAll('*').forEach(function (el) {
     for (var i = el.attributes.length - 1; i >= 0; i--) {
       var attr = el.attributes[i];
       var n = attr.name.toLowerCase();
-      var v = attr.value.trim();
-      if (
-        n.startsWith("on") ||
-        ((n === "href" || n === "src") && /^\s*javascript:/i.test(v))
-      ) {
+      var nKey = n.replace(/:/g, '');
+      if (n.indexOf('on') === 0) {
         el.removeAttribute(attr.name);
+        continue;
+      }
+      if (n === 'srcdoc' || n === 'style') {
+        el.removeAttribute(attr.name);
+        continue;
+      }
+      if (uriAttrs[nKey] || n === 'xlink:href') {
+        if (!mdIsSafeUri(attr.value)) {
+          el.removeAttribute(attr.name);
+        }
       }
     }
   });
@@ -177,4 +209,8 @@ function mdLoadSample() {
   setStatus("已加载示例");
 }
 
-registerInit("markdown", mdInit);
+registerInit('markdown', mdInit);
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { mdIsSafeUri, mdSanitize: _mdSanitize };
+}

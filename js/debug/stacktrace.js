@@ -86,7 +86,7 @@ function parseStackTrace(text) {
       currentEx.frames.push({
         omitted: parseInt(moreMatch[1]),
       });
-      continue;
+
     }
   }
 
@@ -189,6 +189,33 @@ function stacktraceParse() {
   }
 }
 
+// 纯文本格式化堆栈
+function stacktraceFormatText(input) {
+  if (input == null) return "";
+  const lines = String(input)
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l);
+  let formatted = "";
+  let indent = 0;
+
+  lines.forEach((line) => {
+    if (line.startsWith("Caused by:")) {
+      indent = 0;
+      formatted += "\n" + line + "\n";
+    } else if (line.match(/^\.\.\.\s*\d+\s*more$/)) {
+      formatted += "  ".repeat(indent) + line + "\n";
+    } else if (line.startsWith("at ")) {
+      indent = 1;
+      formatted += "  " + line + "\n";
+    } else {
+      formatted += line + "\n";
+    }
+  });
+
+  return formatted.trim();
+}
+
 // 界面按钮：格式化
 function stacktraceFormat() {
   const input = document.getElementById("stacktraceInput").value;
@@ -201,28 +228,7 @@ function stacktraceFormat() {
   }
 
   try {
-    const lines = input
-      .split("\n")
-      .map((l) => l.trim())
-      .filter((l) => l);
-    let formatted = "";
-    let indent = 0;
-
-    lines.forEach((line) => {
-      if (line.startsWith("Caused by:")) {
-        indent = 0;
-        formatted += "\n" + line + "\n";
-      } else if (line.match(/^\.\.\.\s*\d+\s*more$/)) {
-        formatted += "  ".repeat(indent) + line + "\n";
-      } else if (line.startsWith("at ")) {
-        indent = 1;
-        formatted += "  " + line + "\n";
-      } else {
-        formatted += line + "\n";
-      }
-    });
-
-    output.textContent = formatted.trim();
+    output.textContent = stacktraceFormatText(input);
     setStatus("格式化完成");
   } catch (e) {
     output.innerHTML =
@@ -242,3 +248,11 @@ function stacktraceClear() {
 registerInit("stacktrace", function () {
   // 初始化
 });
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    parseStackTrace,
+    formatStackTraceHtml,
+    stacktraceFormatText,
+  };
+}

@@ -785,13 +785,23 @@ let _linuxSearchTimer = null;
 
 function linuxRender(filter) {
   if (filter === undefined) {
-    const el = document.getElementById("linuxSearch");
-    filter = el ? el.value : "";
+    const el = document.getElementById('linuxSearch');
+    filter = el ? el.value : '';
   }
-  filter = (filter || "").toLowerCase();
-  const container = document.getElementById("linuxContent");
+  filter = (filter || '').toLowerCase();
+  const container = document.getElementById('linuxContent');
   if (!container) return;
-  container.innerHTML = "";
+  // 事件委托：复制按钮与示例均用 data-copy，避免 onclick 拼接
+  if (!container.dataset.copyDelegate) {
+    container.dataset.copyDelegate = '1';
+    container.addEventListener('click', function (e) {
+      const el = e.target.closest('[data-copy]');
+      if (!el || !container.contains(el)) return;
+      const text = el.getAttribute('data-copy');
+      if (text != null) safeCopy(text);
+    });
+  }
+  container.innerHTML = '';
   let hasResult = false;
   LINUX_CMDS.forEach((group) => {
     const matched = filter
@@ -806,12 +816,12 @@ function linuxRender(filter) {
       : group.items;
     if (matched.length === 0) return;
     hasResult = true;
-    const section = document.createElement("div");
-    section.className = "ref-group";
-    section.innerHTML = `<div class="ref-group-title">${group.cat}</div>`;
+    const section = document.createElement('div');
+    section.className = 'ref-group';
+    section.innerHTML = `<div class="ref-group-title">${escapeHtml(group.cat)}</div>`;
     matched.forEach((item) => {
-      const card = document.createElement("div");
-      card.className = "ref-card";
+      const card = document.createElement('div');
+      card.className = 'ref-card';
       card.innerHTML = linuxBuildCard(item);
       section.appendChild(card);
     });
@@ -824,22 +834,27 @@ function linuxRender(filter) {
 }
 
 function linuxBuildCard(item) {
-  let html = `<div class="ref-cmd-head"><code class="ref-cmd-name">${item.cmd.replace(/</g, "&lt;")}</code><span class="ref-cmd-desc">${item.desc.replace(/</g, "&lt;")}</span><button class="sm outline" onclick="safeCopy('${item.cmd.replace(/'/g, "\\'")}')">复制</button></div>`;
+  let html =
+    `<div class="ref-cmd-head"><code class="ref-cmd-name">${escapeHtml(item.cmd)}</code>` +
+    `<span class="ref-cmd-desc">${escapeHtml(item.desc)}</span>` +
+    `<button class="sm outline" type="button" data-copy="${escapeHtml(item.cmd)}">复制</button></div>`;
 
   if (item.syntax) {
-    html += `<div class="ref-syntax">${item.syntax.replace(/</g, "&lt;")}</div>`;
+    html += `<div class="ref-syntax">${escapeHtml(item.syntax)}</div>`;
   }
 
   if (item.examples && item.examples.length) {
     html += '<div class="ref-examples">';
     item.examples.forEach((ex) => {
-      html += `<div class="ref-example" onclick="safeCopy('${ex.replace(/'/g, "\\'")}')">${ex.replace(/</g, "&lt;")}</div>`;
+      html +=
+        `<div class="ref-example" data-copy="${escapeHtml(ex)}" role="button" tabindex="0">` +
+        `${escapeHtml(ex)}</div>`;
     });
-    html += "</div>";
+    html += '</div>';
   }
 
   if (item.returns) {
-    html += `<div class="ref-returns">返回: ${item.returns.replace(/</g, "&lt;")}</div>`;
+    html += `<div class="ref-returns">返回: ${escapeHtml(item.returns)}</div>`;
   }
 
   return html;

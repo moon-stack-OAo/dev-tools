@@ -1218,16 +1218,127 @@ registerInit("httpdebug", httpInit);
 
 const _httpHistoryKey = "httpdebug_history";
 const _httpHistoryMax = 50;
+// 历史 body 最大保留长度，超出截断
+const _httpHistoryBodyMax = 2048;
+// 敏感请求头（大小写不敏感），值存为 ***
+const _httpSensitiveHeaderNames = [
+  "authorization",
+  "proxy-authorization",
+  "cookie",
+  "set-cookie",
+  "x-api-key",
+  "api-key",
+  "x-auth-token",
+  "x-access-token",
+  "x-csrf-token",
+  "x-xsrf-token",
+];
+// JSON / form 中疑似敏感字段名
+const _httpSensitiveBodyKeys =
+  /^(password|passwd|pwd|token|access_token|refresh_token|id_token|secret|client_secret|api_key|apikey|auth|authorization|private_key|session|session_id|sessionid)$/i;
+
+function httpIsSensitiveHeaderName(name) {
+  if (name == null || name === "") return false;
+  const n = String(name).trim().toLowerCase();
+  return _httpSensitiveHeaderNames.indexOf(n) >= 0;
+}
+
+// 脱敏 headers：[[k,v], ...] → 敏感头值替换为 ***
+function httpSanitizeHeaders(headers) {
+  if (!headers || !Array.isArray(headers)) return [];
+  return headers.map(function (pair) {
+    if (!pair || !Array.isArray(pair)) return pair;
+    const k = pair[0];
+    const v = pair[1];
+    if (httpIsSensitiveHeaderName(k)) return [k, "***"];
+    return [k, v];
+  });
+}
+
+// 递归脱敏 JSON 对象中的敏感字段
+function httpSanitizeJsonValue(val) {
+  if (val == null) return val;
+  if (Array.isArray(val)) {
+    return val.map(httpSanitizeJsonValue);
+  }
+  if (typeof val === "object") {
+    const out = {};
+    Object.keys(val).forEach(function (key) {
+      if (_httpSensitiveBodyKeys.test(key)) {
+        out[key] = "***";
+      } else {
+        out[key] = httpSanitizeJsonValue(val[key]);
+      }
+    });
+    return out;
+  }
+  return val;
+}
+
+// 脱敏 body：JSON 敏感字段 → ***；form 敏感键 → ***；过长截断
+function httpSanitizeBody(body, bodyType) {
+  if (body == null || body === "") return body || "";
+  let text = String(body);
+  const type = (bodyType || "").toLowerCase();
+
+  if (type === "json" || (type !== "form" && /^\s*[\{\[]/.test(text))) {
+    try {
+      const parsed = JSON.parse(text);
+      text = JSON.stringify(httpSanitizeJsonValue(parsed));
+    } catch (e) {
+      /* 非合法 JSON 则仅做长度截断 */
+    }
+  } else if (
+    type === "form" ||
+    (type !== "json" && text.indexOf("=") >= 0 && text.indexOf("\n") < 0)
+  ) {
+    text = text
+      .split("&")
+      .map(function (part) {
+        const eq = part.indexOf("=");
+        if (eq < 0) return part;
+        const k = part.slice(0, eq);
+        let keyDecoded = k;
+        try {
+          keyDecoded = decodeURIComponent(k.replace(/\+/g, " "));
+        } catch (e) {
+          /* keep raw */
+        }
+        if (_httpSensitiveBodyKeys.test(keyDecoded)) {
+          return k + "=***";
+        }
+        return part;
+      })
+      .join("&");
+  }
+
+  if (text.length > _httpHistoryBodyMax) {
+    text = text.slice(0, _httpHistoryBodyMax) + "\n/* ... truncated ... */";
+  }
+  return text;
+}
+
+// 生成可安全写入 localStorage 的历史条目（headers/body 已脱敏）
+function httpSanitizeHistoryItem(cfg) {
+  return {
+    method: cfg.method,
+    url: cfg.url,
+    headers: httpSanitizeHeaders(cfg.headers),
+    body: httpSanitizeBody(cfg.body, cfg.bodyType),
+    bodyType: cfg.bodyType,
+  };
+}
 
 function httpSaveHistory(cfg) {
   try {
+    const safe = httpSanitizeHistoryItem(cfg);
     const item = {
       id: Date.now(),
-      method: cfg.method,
-      url: cfg.url,
-      headers: cfg.headers,
-      body: cfg.body,
-      bodyType: cfg.bodyType,
+      method: safe.method,
+      url: safe.url,
+      headers: safe.headers,
+      body: safe.body,
+      bodyType: safe.bodyType,
       time: new Date().toLocaleString(),
     };
     let list = JSON.parse(localStorage.getItem(_httpHistoryKey) || "[]");
@@ -1263,9 +1374,11 @@ function httpRenderHistory() {
   };
   container.innerHTML = list
     .map((item) => {
-      const cls = methodColors[item.method] || "get";
-      const shortUrl =
-        item.url.length > 50 ? item.url.slice(0, 47) + "..." : item.url;
+      if (!item || item.id == null) return "";
+      const method = item.method || "GET";
+      const url = item.url || "";
+      const cls = methodColors[method] || "get";
+      const shortUrl = url.length > 50 ? url.slice(0, 47) + "..." : url;
       return (
         '<div class="http-history-item" onclick="httpRestoreHistory(' +
         item.id +
@@ -1273,10 +1386,10 @@ function httpRenderHistory() {
         '<span class="http-history-method ' +
         cls +
         '">' +
-        item.method +
+        escapeHtml(method) +
         "</span>" +
         '<span class="http-history-url" title="' +
-        escapeHtml(item.url) +
+        escapeHtml(url) +
         '">' +
         escapeHtml(shortUrl) +
         "</span>" +
@@ -1294,20 +1407,26 @@ function httpRenderHistory() {
 
 function httpRestoreHistory(id) {
   const list = httpLoadHistory();
-  const item = list.find((h) => h.id === id);
+  const item = list.find((h) => h && h.id === id);
   if (!item) return;
-  document.getElementById("httpMethod").value = item.method;
+  document.getElementById("httpMethod").value = item.method || "GET";
   httpMethodChange(document.getElementById("httpMethod"));
-  document.getElementById("httpUrl").value = item.url;
+  document.getElementById("httpUrl").value = item.url || "";
   document.getElementById("httpHeadersList").innerHTML = "";
-  if (item.headers && item.headers.length) {
-    item.headers.forEach(([k, v]) => httpAddHeader(k, v));
+  // 兼容旧数据：headers 可能缺失、非数组或含明文敏感值（直接回填，不再二次写入）
+  const headers = Array.isArray(item.headers) ? item.headers : [];
+  if (headers.length) {
+    headers.forEach(function (pair) {
+      if (!pair || !Array.isArray(pair)) return;
+      httpAddHeader(pair[0] || "", pair[1] != null ? String(pair[1]) : "");
+    });
   } else {
     httpAddHeader();
   }
   document.getElementById("httpBodyType").value = item.bodyType || "none";
   httpBodyTypeChange();
-  document.getElementById("httpBody").value = item.body || "";
+  document.getElementById("httpBody").value =
+    item.body != null ? String(item.body) : "";
   httpUpdateTabCounts();
   httpSwitchTab(document.querySelector(".http-tabs .api-tab"), "params");
   toast("已恢复历史请求");
@@ -1326,4 +1445,14 @@ function httpClearHistory() {
   localStorage.removeItem(_httpHistoryKey);
   httpRenderHistory();
   toast("历史已清空");
+}
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    httpIsSensitiveHeaderName,
+    httpSanitizeHeaders,
+    httpSanitizeBody,
+    httpSanitizeHistoryItem,
+    httpSanitizeJsonValue,
+  };
 }
