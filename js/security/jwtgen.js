@@ -32,7 +32,19 @@ function pemToArrayBuffer(pem) {
 }
 
 function isPem(text) {
-  return text && /-----BEGIN [A-Z ]+-----/.test(text);
+  return !!(text && /-----BEGIN [A-Z ]+-----/.test(text));
+}
+
+/** 由 header/payload 对象拼装 JWT 签名输入（header.payload） */
+function buildJwtSigningInput(header, payload) {
+  const headerB64 = b64urlEncodeString(JSON.stringify(header));
+  const payloadB64 = b64urlEncodeString(JSON.stringify(payload));
+  return headerB64 + "." + payloadB64;
+}
+
+/** 拼装完整 JWT：signingInput + '.' + signature */
+function assembleJwt(signingInput, signature) {
+  return signingInput + "." + signature;
 }
 
 let jwtGenDefaultsLoaded = false;
@@ -143,9 +155,7 @@ async function jwtGenGenerate() {
 
   try {
     const enc = new TextEncoder();
-    const headerB64 = b64urlEncodeString(JSON.stringify(header));
-    const payloadB64 = b64urlEncodeString(JSON.stringify(payload));
-    const signingInput = headerB64 + "." + payloadB64;
+    const signingInput = buildJwtSigningInput(header, payload);
     const data = enc.encode(signingInput);
     let signature;
 
@@ -194,7 +204,7 @@ async function jwtGenGenerate() {
       return;
     }
 
-    const token = signingInput + "." + signature;
+    const token = assembleJwt(signingInput, signature);
     out.textContent = token;
     out.className = "output-box";
     updateJwtExpStatus();
@@ -215,3 +225,15 @@ function jwtGenClear() {
 }
 
 registerInit("jwtgen", jwtGenInit);
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    b64urlEncode: b64urlEncode,
+    b64urlEncodeString: b64urlEncodeString,
+    b64Pad: b64Pad,
+    pemToArrayBuffer: pemToArrayBuffer,
+    isPem: isPem,
+    buildJwtSigningInput: buildJwtSigningInput,
+    assembleJwt: assembleJwt,
+  };
+}

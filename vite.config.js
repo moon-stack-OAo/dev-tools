@@ -20,34 +20,160 @@ const md5 = (filePath) => {
 // CORS 代理：仅开发模式启用。
 // 浏览器 fetch 跨域会被 CORS 拦截，本代理让前端把请求发到本工具同源的 /__cors_proxy，
 // 再由 vite dev server 在 Node 层转发到目标 URL，避开浏览器 CORS 限制。
-// 代理端点：任意方法 /__cors_proxy?target=<encodeURIComponent(url)>
-// 请求头/Body 原样转发；响应流式回传 + 加 access-control-allow-origin: *。
+// 代理端点：/__cors_proxy?target=<encodeURIComponent(url)>
+//
+// 安全策略（host=0.0.0.0 时降低局域网滥用 / 开放代理风险）：
+// 1. 仅本机连接可访问：校验 remoteAddress 为 loopback，且 Host 为本机 dev 主机
+// 2. CORS：仅反射 http(s)://localhost|127.0.0.1 的 Origin；禁止 Allow-Origin:* 与 credentials 并存
+// 3. target：仅 http/https；拒绝云元数据 / link-local 等高危 SSRF 地址；允许本机与外网 API 调试
+// 4. 方法白名单：GET/POST/PUT/PATCH/DELETE/HEAD/OPTIONS；超时 60s
 function corsProxyPlugin() {
+  const ALLOWED_METHODS = new Set([
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "HEAD",
+    "OPTIONS",
+  ]);
+
+  /** 是否为本机 loopback 地址（含 IPv4-mapped IPv6） */
+  function isLoopbackAddress(addr) {
+    if (!addr) return false;
+    const a = String(addr)
+      .replace(/^::ffff:/i, "")
+      .toLowerCase();
+    return a === "127.0.0.1" || a === "::1" || a.startsWith("127.");
+  }
+
+  /** Host 是否指向本机 dev server（localhost / 127.0.0.1 / ::1） */
+  function isLocalDevHost(hostHeader) {
+    if (!hostHeader) return false;
+    try {
+      const { hostname } = new URL("http://" + hostHeader);
+      const h = hostname.replace(/^\[|\]$/g, "").toLowerCase();
+      return h === "localhost" || h === "127.0.0.1" || h === "::1";
+    } catch {
+      return false;
+    }
+  }
+
+  /** Origin 是否为本机 dev 页面（用于 CORS 反射） */
+  function isLocalDevOrigin(origin) {
+    if (!origin) return false;
+    try {
+      const o = new URL(origin);
+      const h = o.hostname.toLowerCase();
+      return (
+        (o.protocol === "http:" || o.protocol === "https:") &&
+        (h === "localhost" || h === "127.0.0.1" || h === "::1")
+      );
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * 高危 SSRF 目标：云实例元数据、IPv4/IPv6 link-local 等。
+   * 不拦截常见私网（10/8、192.168/16 等），以保留调试局域网后端能力。
+   */
+  function isBlockedTargetHost(hostname) {
+    const h = String(hostname || "")
+      .replace(/^\[|\]$/g, "")
+      .toLowerCase();
+    if (
+      h === "metadata" ||
+      h === "metadata.google.internal" ||
+      h === "instance-data" ||
+      h.endsWith(".metadata.google.internal")
+    ) {
+      return true;
+    }
+    // IPv4：169.254.0.0/16（含 169.254.169.254）、0.0.0.0
+    const m = h.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+    if (m) {
+      const p = m.slice(1, 5).map(Number);
+      if (p.some((n) => n > 255)) return true;
+      if (p[0] === 169 && p[1] === 254) return true;
+      if (p[0] === 0 && p[1] === 0 && p[2] === 0 && p[3] === 0) return true;
+      return false;
+    }
+    // IPv6 link-local fe80::/10；AWS IMDS IPv6
+    if (/^fe[89ab]/i.test(h)) return true;
+    if (h === "fd00:ec2::254" || h.startsWith("fd00:ec2::254")) return true;
+    return false;
+  }
+
+  /** 写入安全的 CORS 响应头：反射本机 Origin，否则不附带 credentials */
+  function applyCorsHeaders(req, headers) {
+    const origin = req.headers.origin;
+    if (origin && isLocalDevOrigin(origin)) {
+      headers["access-control-allow-origin"] = origin;
+      headers["access-control-allow-credentials"] = "true";
+      headers["vary"] = "Origin";
+    }
+    // 同源请求通常无 Origin；不设置 *，避免与 credentials 规范冲突
+  }
+
+  function sendPlain(req, res, status, message) {
+    const headers = { "content-type": "text/plain; charset=utf-8" };
+    applyCorsHeaders(req, headers);
+    res.writeHead(status, headers);
+    res.end(message);
+  }
+
   return {
     name: "cors-proxy",
     configureServer(server) {
       server.middlewares.use("/__cors_proxy", (req, res) => {
+        // 1) 仅本机可走代理（连接来源 + Host）
+        const remote =
+          (req.socket && req.socket.remoteAddress) ||
+          (req.connection && req.connection.remoteAddress) ||
+          "";
+        if (!isLoopbackAddress(remote) || !isLocalDevHost(req.headers.host)) {
+          sendPlain(
+            req,
+            res,
+            403,
+            "CORS proxy is only available from localhost",
+          );
+          return;
+        }
+
+        // 2) 方法白名单
+        const method = (req.method || "GET").toUpperCase();
+        if (!ALLOWED_METHODS.has(method)) {
+          sendPlain(req, res, 405, "Method not allowed: " + method);
+          return;
+        }
+
         const u = new URL(req.url, "http://127.0.0.1");
         const target = u.searchParams.get("target");
         if (!target) {
-          res.statusCode = 400;
-          res.setHeader("content-type", "text/plain; charset=utf-8");
-          res.end("Missing target query parameter");
+          sendPlain(req, res, 400, "Missing target query parameter");
           return;
         }
         let parsed;
         try {
           parsed = new URL(target);
         } catch (e) {
-          res.statusCode = 400;
-          res.setHeader("content-type", "text/plain; charset=utf-8");
-          res.end("Invalid target URL: " + target);
+          sendPlain(req, res, 400, "Invalid target URL: " + target);
           return;
         }
         if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
-          res.statusCode = 400;
-          res.setHeader("content-type", "text/plain; charset=utf-8");
-          res.end("Only http/https protocol supported");
+          sendPlain(req, res, 400, "Only http/https protocol supported");
+          return;
+        }
+        // 3) 拒绝高危 SSRF 目标
+        if (isBlockedTargetHost(parsed.hostname)) {
+          sendPlain(
+            req,
+            res,
+            403,
+            "Target host is blocked (metadata/link-local): " + parsed.hostname,
+          );
           return;
         }
 
@@ -91,8 +217,7 @@ function corsProxyPlugin() {
                 continue;
               respHeaders[k] = v;
             }
-            respHeaders["access-control-allow-origin"] = "*";
-            respHeaders["access-control-allow-credentials"] = "true";
+            applyCorsHeaders(req, respHeaders);
             respHeaders["access-control-expose-headers"] =
               "Content-Disposition, Content-Type, Content-Length, Content-Range";
             respHeaders["x-proxied-by"] = "dev-tools-cors-proxy";
@@ -109,10 +234,7 @@ function corsProxyPlugin() {
           if (res.headersSent) {
             res.destroy(err);
           } else {
-            res.statusCode = 502;
-            res.setHeader("content-type", "text/plain; charset=utf-8");
-            res.setHeader("access-control-allow-origin", "*");
-            res.end("Proxy error: " + err.message);
+            sendPlain(req, res, 502, "Proxy error: " + err.message);
           }
         });
 

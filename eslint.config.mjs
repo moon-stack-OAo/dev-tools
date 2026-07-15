@@ -21,6 +21,7 @@ const libGlobals = {
   QRCode: "readonly",
   jsQR: "readonly",
   JSZip: "readonly",
+  XLSX: "readonly",
   ASN1: "readonly",
   PKI: "readonly",
   jspdf: "readonly",
@@ -60,7 +61,16 @@ export default [
     rules: {
       // 浏览器全局脚本，自定义全局函数较多，关闭未定义检查避免误报
       "no-undef": "off",
-      "no-unused-vars": "warn",
+      // vars:local 跳过全局作用域（HTML onclick 调用的函数不会被误报）
+      // args 忽略事件参数 e/err/idx 及下划线前缀参数
+      "no-unused-vars": [
+        "warn",
+        {
+          vars: "local",
+          argsIgnorePattern: "^(e|err|idx|_)",
+          caughtErrorsIgnorePattern: "^(e|err)$",
+        },
+      ],
       // 工具函数常按需声明，允许在块内声明函数
       "no-inner-declarations": "off",
       "no-console": "off",
@@ -83,7 +93,13 @@ export default [
       },
     },
     rules: {
-      "no-unused-vars": "warn",
+      "no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^(e|err|_)",
+          caughtErrorsIgnorePattern: "^(e|err)$",
+        },
+      ],
       "no-console": "off",
     },
   },

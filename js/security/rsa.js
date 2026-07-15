@@ -11,6 +11,14 @@ function rsaBytesToBase64(bytes) {
   return btoa(bin);
 }
 
+/** Base64 解码为 Uint8Array */
+function rsaBase64ToBytes(b64) {
+  const bin = atob(String(b64 || "").trim());
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+
 async function rsaGenKeys() {
   const out = document.getElementById("rsaOutput");
   const bits = parseInt(document.getElementById("rsaBits").value);
@@ -48,7 +56,7 @@ async function rsaEncrypt() {
   try {
     let key;
     if (pubKey) {
-      const raw = Uint8Array.from(atob(pubKey), (c) => c.charCodeAt(0));
+      const raw = rsaBase64ToBytes(pubKey);
       key = await crypto.subtle.importKey(
         "spki",
         raw,
@@ -84,7 +92,7 @@ async function rsaDecrypt() {
   try {
     let key;
     if (privKey) {
-      const raw = Uint8Array.from(atob(privKey), (c) => c.charCodeAt(0));
+      const raw = rsaBase64ToBytes(privKey);
       key = await crypto.subtle.importKey(
         "pkcs8",
         raw,
@@ -98,7 +106,7 @@ async function rsaDecrypt() {
       out.textContent = "请先生成密钥对或粘贴私钥";
       return;
     }
-    const raw = Uint8Array.from(atob(input.trim()), (c) => c.charCodeAt(0));
+    const raw = rsaBase64ToBytes(input);
     const decrypted = await crypto.subtle.decrypt(
       { name: "RSA-OAEP" },
       key,
@@ -108,4 +116,11 @@ async function rsaDecrypt() {
   } catch (e) {
     out.textContent = "解密失败: " + e.message;
   }
+}
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    rsaBytesToBase64: rsaBytesToBase64,
+    rsaBase64ToBytes: rsaBase64ToBytes,
+  };
 }

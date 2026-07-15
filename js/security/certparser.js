@@ -176,7 +176,8 @@ function parseCertInput(text) {
 }
 
 function _cpBase64ToBytes(b64) {
-  const bin = atob(b64);
+  const padLen = (4 - (b64.length % 4)) % 4;
+  const bin = atob(b64 + "=".repeat(padLen));
   const bytes = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
   return bytes;

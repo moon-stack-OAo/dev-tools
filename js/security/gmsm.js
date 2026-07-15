@@ -278,3 +278,10 @@ function gmsmSm2Verify() {
     out.className = "output-box error";
   }
 }
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    hexToBase64: hexToBase64,
+    base64ToHex: base64ToHex,
+  };
+}

@@ -18,6 +18,49 @@
   header.appendChild(gh);
 })();
 
+// === DOM Cache ===
+const domCache = {
+  mainHeader: null,
+  homeBtn: null,
+  breadcrumb: null,
+  statusText: null,
+  loadingBar: null,
+  toast: null,
+  backToTop: null,
+  homeSearch: null,
+  homeGrid: null,
+  homeHeatmap: null,
+  homeCatAnchors: null,
+  panelHome: null,
+  sidebar: null,
+  sidebarNav: null,
+  sidebarToggle: null,
+  headerHomeTitle: null,
+  headerGithub: null,
+  panelsContainer: null,
+};
+
+function initDomCache() {
+  domCache.mainHeader = document.querySelector('.main-header');
+  domCache.homeBtn = document.getElementById('homeBtn');
+  domCache.breadcrumb = document.getElementById('breadcrumb');
+  domCache.statusText = document.getElementById('statusText');
+  domCache.loadingBar = document.getElementById('loadingBar');
+  domCache.toast = document.getElementById('toast');
+  domCache.backToTop = document.getElementById('backToTop');
+  domCache.homeSearch = document.getElementById('homeSearch');
+  domCache.homeGrid = document.getElementById('homeGrid');
+  domCache.homeHeatmap = document.getElementById('homeHeatmap');
+  domCache.homeCatAnchors = document.getElementById('homeCatAnchors');
+  domCache.panelHome = document.getElementById('panel-home');
+  domCache.sidebar = document.getElementById('sidebar');
+  domCache.sidebarNav = document.getElementById('sidebarNav');
+  domCache.sidebarToggle = document.getElementById('sidebarToggle');
+  domCache.headerHomeTitle = document.getElementById('headerHomeTitle');
+  domCache.headerGithub = document.getElementById('headerGithub');
+  domCache.panelsContainer = document.getElementById('panels-container');
+}
+
 // === Tools Data ===
 const categories = [
   { id: "recent", name: "最近使用", icon: "bi-clock-history", virtual: true },
@@ -808,9 +851,10 @@ const tools = [
   },
 ];
 
+// === Tools Map for O(1) lookup ===
+const toolsById = new Map(tools.map(t => [t.id, t]));
+
 // === Navigation ===
-const homeBtn = document.getElementById("homeBtn");
-const breadcrumb = document.getElementById("breadcrumb");
 
 // === Theme ===
 const THEME_KEY = "devtools.theme";
@@ -888,7 +932,7 @@ function getRecent() {
     const arr = raw ? JSON.parse(raw) : [];
     return arr
       .map((e) =>
-        Object.assign({}, e, { tool: tools.find((t) => t.id === e.id) }),
+        Object.assign({}, e, { tool: toolsById.get(e.id) }),
       )
       .filter((e) => e.tool)
       .slice(0, RECENT_MAX);
@@ -906,14 +950,14 @@ function clearRecent() {
 }
 
 function renderHomeHeatmap() {
-  const panel = document.getElementById("homeHeatmap");
+  const panel = domCache.homeHeatmap;
   if (!panel) return;
   const stats = getUsageStats();
   const entries = Object.entries(stats)
     .map(([id, count]) => ({
       id: id,
       count: count,
-      tool: tools.find((t) => t.id === id),
+      tool: toolsById.get(id),
     }))
     .filter((e) => e.tool)
     .sort((a, b) => b.count - a.count)
@@ -975,15 +1019,15 @@ function renderHomeHeatmap() {
 }
 
 function showHomeHeatmap() {
-  const input = document.getElementById("homeSearch");
+  const input = domCache.homeSearch;
   if (!input || input.value.trim()) return;
   renderHomeHeatmap();
-  const panel = document.getElementById("homeHeatmap");
+  const panel = domCache.homeHeatmap;
   if (panel) panel.style.display = "";
 }
 
 function hideHomeHeatmap() {
-  const panel = document.getElementById("homeHeatmap");
+  const panel = domCache.homeHeatmap;
   if (panel) panel.style.display = "none";
 }
 
@@ -1091,7 +1135,7 @@ function findScrollable(root) {
 function scrollActiveToTop() {
   const active =
     document.querySelector(".tool-panel.active") ||
-    document.getElementById("panel-home");
+    domCache.panelHome;
   if (!active) return;
   const target = findScrollable(active);
   (target || active).scrollTo({ top: 0, behavior: "smooth" });
@@ -1143,7 +1187,7 @@ function registerInit(id, fn) {
 function loadToolScript(id) {
   if (loadedScripts.has(id)) return Promise.resolve();
   if (_scriptPromise[id]) return _scriptPromise[id];
-  const tool = tools.find((t) => t.id === id);
+  const tool = toolsById.get(id);
   if (!tool) return Promise.reject(new Error("未知工具: " + id));
   const src = `js/${tool.cat}/${tool.id}.js${assetV("js/" + tool.cat + "/" + tool.id + ".js")}`;
   _scriptPromise[id] = new Promise((resolve, reject) => {
@@ -1165,7 +1209,7 @@ function loadToolScript(id) {
 function loadToolPanel(id) {
   if (loadedPanels.has(id)) return Promise.resolve();
   if (_panelPromise[id]) return _panelPromise[id];
-  const tool = tools.find((t) => t.id === id);
+  const tool = toolsById.get(id);
   if (!tool) return Promise.reject(new Error("未知工具: " + id));
   const url = `html/panels/${tool.cat}/${tool.id}.html${assetV("html/panels/" + tool.cat + "/" + tool.id + ".html")}`;
   _panelPromise[id] = fetch(url)
@@ -1175,7 +1219,7 @@ function loadToolPanel(id) {
     })
     .then((html) => {
       if (!html || !html.trim()) throw new Error("面板 HTML 为空: " + id);
-      const container = document.getElementById("panels-container");
+      const container = domCache.panelsContainer;
       if (!container) throw new Error("panels-container 不存在");
       container.insertAdjacentHTML("beforeend", html);
       loadedPanels.add(id);
@@ -1188,9 +1232,9 @@ function loadToolPanel(id) {
 }
 
 function buildHomeGrid() {
-  const grid = document.getElementById("homeGrid");
+  const grid = domCache.homeGrid;
   grid.innerHTML = "";
-  const anchors = document.getElementById("homeCatAnchors");
+  const anchors = domCache.homeCatAnchors;
   anchors.innerHTML = "";
   categories.forEach((cat) => {
     let toolsInCat;
@@ -1213,6 +1257,8 @@ function buildHomeGrid() {
       card.dataset.cat = cardCat;
       card.style.animationDelay = Math.min(ci, 11) * 0.03 + "s";
       card.innerHTML = `<div class="hc-icon"><i class="bi ${t.icon}"></i></div><div class="hc-name">${escapeHtml(t.name)}</div><div class="hc-desc">${escapeHtml(t.desc)}</div>`;
+      card.dataset.name = t.name.toLowerCase();
+      card.dataset.desc = t.desc.toLowerCase();
       card.addEventListener("click", () => openTool(t.id));
       grid.appendChild(card);
     });
@@ -1231,13 +1277,13 @@ function buildHomeGrid() {
   homeDividers = Array.from(grid.querySelectorAll(".home-cat-divider"));
 
   // 滚动高亮当前分类
-  const homePanel = document.getElementById("panel-home");
+  const homePanel = domCache.panelHome;
   homePanel.addEventListener("scroll", debounce(highlightAnchor, 50));
 }
 
 function refreshRecentBlock() {
-  const grid = document.getElementById("homeGrid");
-  const anchorsBox = document.getElementById("homeCatAnchors");
+  const grid = domCache.homeGrid;
+  const anchorsBox = domCache.homeCatAnchors;
   if (!grid || !anchorsBox) return;
   const recentItems = getRecent();
   const oldDivider = document.getElementById("cat-recent");
@@ -1283,6 +1329,8 @@ function refreshRecentBlock() {
         '</div><div class="hc-desc">' +
         escapeHtml(e.tool.desc) +
         "</div>";
+      card.dataset.name = e.tool.name.toLowerCase();
+      card.dataset.desc = e.tool.desc.toLowerCase();
       card.addEventListener("click", () => openTool(e.tool.id));
       prev.after(card);
       prev = card;
@@ -1294,7 +1342,7 @@ function refreshRecentBlock() {
 }
 
 function highlightAnchor() {
-  const homePanel = document.getElementById("panel-home");
+  const homePanel = domCache.panelHome;
   const dividers = document.querySelectorAll(".home-cat-divider");
   const anchors = document.querySelectorAll(".cat-anchor");
   const scrollTop = homePanel.scrollTop;
@@ -1308,12 +1356,12 @@ function highlightAnchor() {
   }
   anchors.forEach((a, i) => a.classList.toggle("active", i === activeIdx));
   // 返回顶部按钮显隐
-  const btt = document.getElementById("backToTop");
+  const btt = domCache.backToTop;
   btt.classList.toggle("visible", scrollTop > 300);
 }
 
 async function openTool(id) {
-  const tool = tools.find((t) => t.id === id);
+  const tool = toolsById.get(id);
   if (!tool) return;
   const gen = ++_openToolGen;
   clearHomeSearch();
@@ -1366,14 +1414,14 @@ async function openTool(id) {
       "</span>";
     panel.insertBefore(hdr, panel.firstChild);
   }
-  const homeTitle = document.getElementById("headerHomeTitle");
+  const homeTitle = domCache.headerHomeTitle;
   if (homeTitle) homeTitle.style.display = "none";
-  const gh = document.getElementById("headerGithub");
+  const gh = domCache.headerGithub;
   if (gh) gh.style.display = "none";
-  homeBtn.style.display = "flex";
+  domCache.homeBtn.style.display = "flex";
   const cat = categories.find((c) => c.id === tool.cat);
-  document.querySelector(".main-header").classList.add("tool-mode");
-  breadcrumb.innerHTML =
+  domCache.mainHeader.classList.add("tool-mode");
+  domCache.breadcrumb.innerHTML =
     '<span class="bc-item" onclick="goHome()">首页</span><span class="bc-sep">›</span><span class="bc-item" onclick="goHome(\'' +
     (cat ? cat.id : "") +
     "')\">" +
@@ -1400,7 +1448,7 @@ async function openTool(id) {
   // 工具面板滚动 → 返回顶部按钮显隐(仅绑定一次,避免监听器累积)
   // click handler 在 init 末尾统一绑定为 scrollActiveToTop,无需此处分发。
   const tp = panel;
-  const btt = document.getElementById("backToTop");
+  const btt = domCache.backToTop;
   if (!tp.dataset.scrollBound) {
     tp.dataset.scrollBound = "1";
     let scrollEl = null;
@@ -1435,14 +1483,14 @@ function showHome() {
   document
     .querySelectorAll(".tool-panel.active")
     .forEach((p) => p.classList.remove("active"));
-  document.getElementById("panel-home").classList.add("active");
-  const homeTitle = document.getElementById("headerHomeTitle");
+  domCache.panelHome.classList.add("active");
+  const homeTitle = domCache.headerHomeTitle;
   if (homeTitle) homeTitle.style.display = "";
-  const gh = document.getElementById("headerGithub");
+  const gh = domCache.headerGithub;
   if (gh) gh.style.display = "";
-  homeBtn.style.display = "none";
-  document.querySelector(".main-header").classList.remove("tool-mode");
-  breadcrumb.innerHTML = "";
+  domCache.homeBtn.style.display = "none";
+  domCache.mainHeader.classList.remove("tool-mode");
+  domCache.breadcrumb.innerHTML = "";
   clearSidebarHighlight();
   setStatus("就绪");
 }
@@ -1450,7 +1498,7 @@ function showHome() {
 function goHome(catId) {
   showHome();
   clearHomeSearch();
-  document.getElementById("backToTop").classList.remove("visible");
+  domCache.backToTop.classList.remove("visible");
   setTimeout(() => {
     highlightAnchor();
     if (catId) {
@@ -1461,10 +1509,10 @@ function goHome(catId) {
 }
 
 function filterHomeTools() {
-  const q = document.getElementById("homeSearch").value.toLowerCase().trim();
+  const q = domCache.homeSearch.value.toLowerCase().trim();
 
   // 如果当前不在首页，自动切回首页再搜索
-  const homePanel = document.getElementById("panel-home");
+  const homePanel = domCache.panelHome;
   if (!homePanel.classList.contains("active")) {
     showHome();
     setTimeout(highlightAnchor, 50);
@@ -1473,8 +1521,8 @@ function filterHomeTools() {
   const matchedCats = new Set();
   let hasVisible = false;
   homeCards.forEach((card) => {
-    const name = card.querySelector(".hc-name").textContent.toLowerCase();
-    const desc = card.querySelector(".hc-desc").textContent.toLowerCase();
+    const name = card.dataset.name;
+    const desc = card.dataset.desc;
     const match = !q || name.includes(q) || desc.includes(q);
     card.style.display = match ? "" : "none";
     if (match) {
@@ -1492,13 +1540,13 @@ function filterHomeTools() {
     const msg = document.createElement("div");
     msg.className = "home-search-empty";
     msg.innerHTML = '<i class="bi bi-search"></i> 没有匹配的工具';
-    document.getElementById("homeGrid").appendChild(msg);
+    domCache.homeGrid.appendChild(msg);
   }
   if (q) hideHomeHeatmap();
 }
 
 function clearHomeSearch() {
-  const input = document.getElementById("homeSearch");
+  const input = domCache.homeSearch;
   if (input) input.value = "";
   hideHomeHeatmap();
 }
@@ -1527,7 +1575,7 @@ function saveSidebarState() {
 
 function buildSidebar() {
   readSidebarState();
-  const nav = document.getElementById("sidebarNav");
+  const nav = domCache.sidebarNav;
   if (!nav) return;
   nav.innerHTML = "";
   categories.forEach((cat) => {
@@ -1563,9 +1611,9 @@ function buildSidebar() {
     const catHeader = e.target.closest(".sb-cat-header");
     if (catHeader) {
       const catEl = catHeader.parentElement;
-      const sidebar = document.getElementById("sidebar");
-      if (sidebar.classList.contains("collapsed")) {
-        sidebar.classList.remove("collapsed");
+        const sidebar = domCache.sidebar;
+        if (sidebar.classList.contains("collapsed")) {
+          sidebar.classList.remove("collapsed");
         sidebarCollapsed = false;
         saveSidebarState();
         document
@@ -1583,23 +1631,22 @@ function buildSidebar() {
     }
   });
 
-  document.getElementById("sidebarToggle").addEventListener("click", () => {
+  domCache.sidebarToggle.addEventListener("click", () => {
     sidebarCollapsed = !sidebarCollapsed;
-    document
-      .getElementById("sidebar")
+    domCache.sidebar
       .classList.toggle("collapsed", sidebarCollapsed);
     saveSidebarState();
   });
 
   if (sidebarCollapsed) {
-    document.getElementById("sidebar").classList.add("collapsed");
+    domCache.sidebar.classList.add("collapsed");
   }
 }
 
 // 重绘侧边栏"最近使用"分类:每次打开工具后调用,使其与首页最近块保持同步。
 // 未产生过最近使用时整段不渲染,与普通分类"无工具则隐藏"的约定一致。
 function refreshSidebarRecent() {
-  const nav = document.getElementById("sidebarNav");
+  const nav = domCache.sidebarNav;
   if (!nav) return;
   nav.querySelector('.sb-cat[data-cat="recent"]')?.remove();
   const items = getRecent();
@@ -1668,18 +1715,19 @@ function clearSidebarHighlight() {
   const container = document.getElementById("panels-container");
   if (container) container.style.display = "";
 }
+initDomCache();
 buildHomeGrid();
 buildSidebar();
 // 返回顶部按钮(全局一次性绑定,自动适配当前激活面板)
-document.getElementById("backToTop").onclick = scrollActiveToTop;
+domCache.backToTop.onclick = scrollActiveToTop;
 
 // === Utils ===
 function setStatus(msg) {
-  document.getElementById("statusText").textContent = msg;
+  domCache.statusText.textContent = msg;
 }
 
 function showLoading() {
-  const bar = document.getElementById("loadingBar");
+  const bar = domCache.loadingBar;
   if (!bar) return;
   clearTimeout(bar._hideTimer);
   bar.classList.remove("done", "active");
@@ -1688,7 +1736,7 @@ function showLoading() {
 }
 
 function hideLoading() {
-  const bar = document.getElementById("loadingBar");
+  const bar = domCache.loadingBar;
   if (!bar) return;
   if (!bar.classList.contains("active")) return;
   bar.classList.remove("active");
@@ -1700,7 +1748,7 @@ function hideLoading() {
 }
 
 function toast(msg) {
-  const t = document.getElementById("toast");
+  const t = domCache.toast;
   t.textContent = msg;
   t.classList.add("show");
   clearTimeout(t._hide);
