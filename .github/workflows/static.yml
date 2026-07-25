@@ -2,8 +2,9 @@
 name: Deploy static content to Pages
 
 on:
+  # 仅 tag dev-tools 推送时部署 Pages（不再随 main 每次 push 触发）
   push:
-    branches: [ "main" ]
+    tags: [ "dev-tools" ]
   workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
