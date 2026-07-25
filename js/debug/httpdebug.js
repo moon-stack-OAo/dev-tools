@@ -1,6 +1,9 @@
 /* HTTP 调试工具 - 合并了原 API 调试与 Curl 生成 */
 let _httpFormat = "multi";
-let _httpInflight = null;
+// AbortController：取消进行中的请求（fetch Promise 无 abort）
+let _httpAbortCtrl = null;
+// null=未探测；true/false=本地 /__cors_proxy 是否可用（vite dev / Docker 生产代理）
+let _httpProxyAvailable = null;
 
 function httpMethodChange(el) {
   const v = el.value;
@@ -292,10 +295,7 @@ function httpBuildFetchOpts(cfg) {
     opts.headers["Accept-Encoding"] =
       opts.headers["Accept-Encoding"] || "gzip, deflate";
   }
-  const timeout = parseInt(document.getElementById("httpOptTimeout").value, 10);
-  if (timeout > 0) {
-    opts.signal = AbortSignal.timeout(timeout * 1000);
-  }
+  // 超时 / 取消由 httpSend 统一用 AbortController 处理
   return opts;
 }
 
@@ -482,11 +482,70 @@ function httpApplyProxy(url, useProxy) {
   return "/__cors_proxy?target=" + encodeURIComponent(url);
 }
 
-function httpSend() {
-  if (_httpInflight) {
-    _httpInflight.abort();
-    _httpInflight = null;
+/** 探测 /__cors_proxy 是否可用（Vite dev 或 Docker 生产 Node 代理） */
+function httpProbeCorsProxy() {
+  if (_httpProxyAvailable !== null) return Promise.resolve(_httpProxyAvailable);
+  // 故意缺 target → 有代理时返回 400「Missing target」+ x-proxied-by；无代理时 404/SPA/502
+  return fetch("/__cors_proxy", { method: "GET", cache: "no-store" })
+    .then(function (resp) {
+      const by = (resp.headers.get("x-proxied-by") || "").toLowerCase();
+      if (by.indexOf("dev-tools-cors-proxy") >= 0) {
+        _httpProxyAvailable = true;
+        return true;
+      }
+      // 代理中间件对缺参返回 400 纯文本（Vite / Node 代理）
+      if (resp.status === 400) {
+        return resp.text().then(function (t) {
+          _httpProxyAvailable =
+            typeof t === "string" && /Missing target/i.test(t);
+          return _httpProxyAvailable;
+        });
+      }
+      // nginx 反代后端未起：502/504
+      _httpProxyAvailable = false;
+      return false;
+    })
+    .catch(function () {
+      _httpProxyAvailable = false;
+      return false;
+    });
+}
+
+function httpSyncProxyUi() {
+  const cb = document.getElementById("httpOptProxy");
+  const row = document.getElementById("httpOptProxyRow");
+  if (!cb) return;
+  if (_httpProxyAvailable === true) {
+    cb.disabled = false;
+    if (row) {
+      row.style.opacity = "1";
+      row.title =
+        "同源 /__cors_proxy 代理可用：请求经本机转发，绕过浏览器 CORS";
+    }
+  } else if (_httpProxyAvailable === false) {
+    cb.checked = false;
+    cb.disabled = true;
+    if (row) {
+      row.style.opacity = "0.55";
+      row.title =
+        "当前无同源代理（纯静态托管常见）。请用 Docker 镜像，或本机 npm run cors-proxy + nginx 反代";
+    }
   }
+}
+
+function httpAbortInflight() {
+  if (_httpAbortCtrl) {
+    try {
+      _httpAbortCtrl.abort();
+    } catch (e) {
+      /* ignore */
+    }
+    _httpAbortCtrl = null;
+  }
+}
+
+function httpSend() {
+  httpAbortInflight();
   const cfg = httpBuildRequestConfig();
   if (!cfg.url) {
     toast("请输入 URL");
@@ -531,16 +590,80 @@ function httpSend() {
     .forEach((p) => p.classList.remove("active"));
   document.getElementById("http-response-panel").classList.add("active");
 
-  const useProxy =
-    !!document.getElementById("httpOptProxy") &&
-    document.getElementById("httpOptProxy").checked;
-  const requestUrl = httpApplyProxy(cfg.url, useProxy);
+  const proxyEl = document.getElementById("httpOptProxy");
+  let wantProxy = !!(proxyEl && proxyEl.checked);
+
+  const controller = new AbortController();
+  _httpAbortCtrl = controller;
+  // 合并超时 signal（若有）与手动取消
+  const timeoutMs = parseInt(
+    (document.getElementById("httpOptTimeout") || {}).value,
+    10,
+  );
+  if (timeoutMs > 0 && typeof AbortSignal !== "undefined") {
+    if (typeof AbortSignal.timeout === "function") {
+      const tSignal = AbortSignal.timeout(timeoutMs * 1000);
+      if (typeof AbortSignal.any === "function") {
+        opts.signal = AbortSignal.any([controller.signal, tSignal]);
+      } else {
+        tSignal.addEventListener("abort", function () {
+          try {
+            controller.abort(tSignal.reason);
+          } catch (e) {
+            controller.abort();
+          }
+        });
+        opts.signal = controller.signal;
+      }
+    } else {
+      const tid = setTimeout(function () {
+        controller.abort();
+      }, timeoutMs * 1000);
+      controller.signal.addEventListener("abort", function () {
+        clearTimeout(tid);
+      });
+      opts.signal = controller.signal;
+    }
+  } else {
+    opts.signal = controller.signal;
+  }
 
   const start = performance.now();
-  setStatus("HTTP 请求中..." + (useProxy ? " (本地代理)" : ""));
-  _httpInflight = fetch(requestUrl, opts);
-  _httpInflight
+
+  // 若勾选代理且尚未探测，先探测；生产无代理则强制直连
+  const ensureProxy = wantProxy
+    ? httpProbeCorsProxy().then(function (ok) {
+        if (!ok) {
+          wantProxy = false;
+          if (proxyEl) proxyEl.checked = false;
+          httpSyncProxyUi();
+          toast("本地代理不可用，已改为直连");
+        }
+      })
+    : Promise.resolve();
+
+  ensureProxy
+    .then(function () {
+      const requestUrl = httpApplyProxy(cfg.url, wantProxy);
+      cfg._usedProxy = wantProxy;
+      setStatus("HTTP 请求中..." + (wantProxy ? " (本地代理)" : ""));
+      return fetch(requestUrl, opts);
+    })
     .then(async (resp) => {
+      // Vite 代理会写 x-proxied-by；生产无代理时 SPA 回 index.html 且无此头
+      if (wantProxy) {
+        const by = (resp.headers.get("x-proxied-by") || "").toLowerCase();
+        if (by.indexOf("dev-tools-cors-proxy") < 0) {
+          _httpProxyAvailable = false;
+          httpSyncProxyUi();
+          const err = new Error(
+            "本地 CORS 代理不可用（生产环境无 /__cors_proxy）。请关闭 Options 中的「通过本地代理」后重试。",
+          );
+          err.name = "ProxyUnavailableError";
+          throw err;
+        }
+      }
+
       const elapsed = ((performance.now() - start) / 1000).toFixed(2);
       const code = resp.status;
       const cls =
@@ -637,17 +760,27 @@ function httpSend() {
         err.name === "TimeoutError" || /timeout/i.test(err.message || "");
       const isAbort =
         err.name === "AbortError" || /aborted/i.test(err.message || "");
-      statusEl.textContent = isTimeout ? "超时" : isAbort ? "已取消" : "错误";
+      statusEl.textContent = isTimeout
+        ? "超时"
+        : isAbort
+          ? "已取消"
+          : err.name === "ProxyUnavailableError"
+            ? "代理不可用"
+            : "错误";
       statusEl.className = "resp-status status-5xx";
       metaEl.textContent = "";
       bodyEl.innerHTML = httpBuildErrorDiagnosis(err, cfg);
       bodyEl.className = "resp-body http-error-body";
       actionsEl.style.display = "none";
       _httpLastBlob = null;
-      setStatus("HTTP 请求失败");
+      setStatus(
+        err.name === "ProxyUnavailableError"
+          ? "本地代理不可用"
+          : "HTTP 请求失败",
+      );
     })
     .finally(() => {
-      _httpInflight = null;
+      if (_httpAbortCtrl === controller) _httpAbortCtrl = null;
       httpSaveHistory(cfg);
     });
 }
@@ -720,7 +853,15 @@ function httpBuildErrorDiagnosis(err, cfg) {
   let causes = [];
   let solutions = [];
 
-  if (err.name === "TimeoutError" || /timeout/i.test(msg)) {
+  if (err.name === "ProxyUnavailableError" || /cors_proxy|本地 CORS 代理/i.test(msg)) {
+    title = "本地 CORS 代理不可用";
+    icon = "bi-shield-slash";
+    causes.push("当前部署未提供 /__cors_proxy（纯静态托管 / GitHub Pages 无后端代理）");
+    causes.push("Docker 镜像应已内置代理；若仍失败请检查容器内 3927 端口与 nginx 反代");
+    solutions.push("推荐：使用项目 Dockerfile 部署（nginx + Node 同源代理）");
+    solutions.push("或本机运行 npm run cors-proxy，并在 nginx 将 /__cors_proxy 反代到 127.0.0.1:3927");
+    solutions.push("临时：关闭 Options「通过本地代理」并确保目标 API 已开启 CORS");
+  } else if (err.name === "TimeoutError" || /timeout/i.test(msg)) {
     title = "请求超时";
     icon = "bi-hourglass-bottom";
     causes.push("目标服务器在 " + (cfg.timeout || 30) + " 秒内未响应");
@@ -1155,10 +1296,7 @@ function httpFillSample() {
 }
 
 function httpReset() {
-  if (_httpInflight) {
-    _httpInflight.abort();
-    _httpInflight = null;
-  }
+  httpAbortInflight();
   document.getElementById("httpMethod").value = "GET";
   httpMethodChange(document.getElementById("httpMethod"));
   document.getElementById("httpUrl").value = "";
@@ -1185,6 +1323,12 @@ function httpReset() {
   document.getElementById("httpOptSilent").checked = false;
   document.getElementById("httpOptTimeout").value = "";
   document.getElementById("httpOptUA").value = "";
+  // 代理：仅 dev 可用时默认勾选，生产保持关闭
+  const proxyCb = document.getElementById("httpOptProxy");
+  if (proxyCb) {
+    proxyCb.checked = _httpProxyAvailable === true;
+  }
+  httpSyncProxyUi();
   httpAddHeader("Content-Type", "application/json");
   httpAddQuery();
   setStatus("已重置");
@@ -1203,6 +1347,19 @@ function httpInit() {
   httpAuthChange();
   httpUpdateTabCounts();
   httpRenderHistory();
+
+  // 探测本地代理：dev 可用则默认开启；生产禁用并关闭
+  httpProbeCorsProxy().then(function (ok) {
+    const proxyCb = document.getElementById("httpOptProxy");
+    if (proxyCb) {
+      if (ok) {
+        proxyCb.checked = true;
+      } else {
+        proxyCb.checked = false;
+      }
+    }
+    httpSyncProxyUi();
+  });
 
   const urlInput = document.getElementById("httpUrl");
   if (urlInput) {

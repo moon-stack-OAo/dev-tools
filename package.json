@@ -15,6 +15,7 @@
     "build:dev": "node scripts/copy-libs.js && vite build --mode dev",
     "preview": "vite preview",
     "copy-libs": "node scripts/copy-libs.js",
+    "cors-proxy": "node scripts/cors-proxy-server.js",
     "postinstall": "node scripts/copy-libs.js"
   },
   "dependencies": {

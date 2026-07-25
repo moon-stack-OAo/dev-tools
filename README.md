@@ -307,8 +307,9 @@ npm run build     # 输出到 dist/
 
 - **Vite 6**：仅作为开发服务器 + 静态资源打包
 - **自定义插件**：
-    - `cors-proxy`：开发模式下提供 CORS 代理端点（`/__cors_proxy?target=<url>`），将前端跨域请求转发到目标 URL，避开浏览器
-      CORS 限制（仅 vite dev server 生效）
+    - `cors-proxy`：提供 CORS 代理端点（`/__cors_proxy?target=<url>`），将前端跨域请求转发到目标 URL，避开浏览器 CORS 限制。
+      **开发**：Vite 插件注入；**生产 Docker**：`scripts/cors-proxy-server.js` + nginx 反代（同源）。纯静态托管（如 GitHub
+      Pages）无后端，无法绕过 CORS
     - `cache-bust`：为 index.html 中的 JS / CSS 引用按文件内容 md5 追加 `?v=<hash>`（前 8 位），内容变更自动失效
     - `copy-js-assets`：构建时将 `js/` 和 `html/` 目录同步到 `dist/`
     - `inject-asset-map`：扫描 `js/`、`html/` 所有资源生成 `window.__ASSET_MAP__`（逐文件 md5）内联进 `dist/index.html`
@@ -339,16 +340,23 @@ npm run test:watch # 监听模式
 
 #### Docker（推荐生产环境）
 
-- **多阶段构建**：`node:20-alpine` 构建 → `nginx:alpine` 运行
-- 镜像体积小、构建可缓存，适合 CI/CD
+- **多阶段构建**：`node:20-alpine` 构建 → 运行镜像内 **nginx 静态托管 + Node CORS 代理**
+- HTTP 调试「通过本地代理」在生产可用：nginx 将 `/__cors_proxy` 反代到本机 `127.0.0.1:3927`
+- 镜像可缓存，适合 CI/CD
 
 #### Nginx（自有服务器）
 
 - `nginx.conf` 已配置：
     - gzip 压缩
-    - 静态资源 30 天浏览器缓存
+    - 静态资源长缓存
     - SPA fallback（未匹配路由回退到 `index.html`）
+    - `/__cors_proxy` 反代到 `127.0.0.1:3927`（需另起代理进程）
     - 安全响应头（X-Frame-Options / X-Content-Type-Options / Referrer-Policy）
+- 非 Docker 部署若要用 HTTP 调试绕过 CORS，请额外运行：
+
+```bash
+npm run cors-proxy   # 默认 127.0.0.1:3927
+```
 
 ### 浏览器兼容
 

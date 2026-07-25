@@ -150,8 +150,9 @@
                         <span class="http-option-label">静默模式</span>
                         <code class="http-option-flag">-s</code>
                     </label>
-                    <label class="http-option-row http-option-row-highlight">
-                        <input checked id="httpOptProxy" type="checkbox">
+                    <label class="http-option-row http-option-row-highlight" id="httpOptProxyRow"
+                           title="同源代理绕过浏览器 CORS：Vite dev / Docker 生产可用；纯静态托管不可用">
+                        <input id="httpOptProxy" type="checkbox">
                         <span class="http-option-label">通过本地代理（解决 CORS）</span>
                         <code class="http-option-flag">__cors_proxy</code>
                     </label>
