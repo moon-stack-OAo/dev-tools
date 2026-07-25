@@ -1,55 +1,85 @@
-# Workflow for building and deploying Vite static site to GitHub Pages
+# GitHub Pages：构建 Vite 静态站并部署
+# 触发：推送 tag `dev-tools`，或 Actions 页手动 Run workflow
 name: Deploy static content to Pages
 
 on:
-  # 仅 tag dev-tools 推送时部署 Pages（不再随 main 每次 push 触发）
   push:
-    tags: [ "dev-tools" ]
+    tags:
+      - dev-tools
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment
+# 同一时间只跑一个部署；不取消进行中的任务，避免半截发布
 concurrency:
-  group: "pages"
+  group: pages
   cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Show ref
+        run: |
+          echo "ref=${GITHUB_REF}"
+          echo "sha=${GITHUB_SHA}"
+          echo "actor=${GITHUB_ACTOR}"
+          echo "event=${GITHUB_EVENT_NAME}"
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          cache: npm
+
       - name: Install dependencies
         run: npm ci
+
       - name: Test
         run: npm test
+
       - name: Lint
         run: npm run lint
+
       - name: Build
         run: npm run build
+
+      - name: Verify dist
+        run: |
+          test -f dist/index.html
+          test -d dist/js
+          test -d dist/html
+          echo "dist size:"
+          du -sh dist
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist'
+          path: dist
 
   deploy:
     needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
