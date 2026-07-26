@@ -1,9 +1,13 @@
-<!-- Hash Extensible -->
+<!-- Hash Extensible：CRC32 / CRC32C / Adler32 / SM3 -->
 <div class="tool-panel" id="panel-hashext">
+    <div class="mb-8" style="color:var(--text-dim);font-size:12px;line-height:1.5">
+        对输入文本按 UTF-8 字节计算：CRC32、CRC32C、Adler32、SM3。
+        （浏览器不支持 SHA-3 / RIPEMD-160，本工具不提供这两类算法）
+    </div>
     <div class="mb-8">
         <div class="label">输入</div>
         <textarea class="json-input" id="hashextInput"
-                  placeholder="要计算多种Hash 的文本"></textarea>
+                  placeholder="要计算 CRC / Adler32 / SM3 的文本"></textarea>
     </div>
     <div class="toolbar">
         <button onclick="hashextCompute()">计算全部</button>

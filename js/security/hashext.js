@@ -1,6 +1,6 @@
 // Hash 扩展工具
-// 新增算法：CRC32、CRC32C、Adler32、RIPEMD-160、SHA-3 系列
-// SM3 见 gmsm 工具
+// 实际可用：CRC32、CRC32C、Adler32、SM3
+// 说明：浏览器 Web Crypto 不支持 SHA-3 / RIPEMD-160，故不提供这两类算法
 
 // === CRC32 (标准 IEEE 802.3) ===
 const CRC32_TABLE = (() => {
@@ -49,19 +49,6 @@ function adler32Bytes(bytes) {
   return ((b << 16) | a) >>> 0;
 }
 
-// RIPEMD-160 暂未实现。Web Crypto API 不支持该算法，
-// 纯 JS 实现复杂度较高（双轨 + 80 步 + 5 个非线性函数），
-// 如有需要可引入第三方库（如 js-ripemd160）。
-function ripemd160Bytes(_bytes) {
-  throw new Error("RIPEMD-160 暂未实现，请用 SHA-256 / SHA3-256 / SM3 替代");
-}
-
-function bufToHex8(buf) {
-  return Array.from(new Uint8Array(buf))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-}
-
 async function hashextCompute() {
   const input = document.getElementById("hashextInput").value;
   const out = document.getElementById("hashextResults");
@@ -74,7 +61,6 @@ async function hashextCompute() {
   const data = enc.encode(input);
   const items = [];
 
-  // CRC32 / CRC32C / Adler32（同步）
   items.push({
     label: "CRC32 (IEEE 802.3)",
     value: crc32Bytes(data).toString(16).padStart(8, "0"),
@@ -88,30 +74,7 @@ async function hashextCompute() {
     value: adler32Bytes(data).toString(16).padStart(8, "0"),
   });
 
-  // SHA-3 系列（Web Crypto API）
-  const sha3Algos = ["SHA3-224", "SHA3-256", "SHA3-384", "SHA3-512"];
-  for (const algo of sha3Algos) {
-    try {
-      const buf = await crypto.subtle.digest(algo, data);
-      items.push({ label: algo, value: bufToHex8(buf) });
-    } catch (e) {
-      items.push({
-        label: algo,
-        value: "不支持（浏览器版本过低）",
-        error: true,
-      });
-    }
-  }
-
-  // RIPEMD-160
-  try {
-    const v = ripemd160Bytes(data);
-    items.push({ label: "RIPEMD-160", value: v });
-  } catch (e) {
-    items.push({ label: "RIPEMD-160", value: e.message, error: true });
-  }
-
-  // SM3
+  // SM3（依赖 sm3.min.js，与国密工具共用）
   if (typeof window.sm3 === "function") {
     try {
       items.push({ label: "SM3 (国密)", value: window.sm3(input) });
@@ -125,7 +88,7 @@ async function hashextCompute() {
   } else {
     items.push({
       label: "SM3 (国密)",
-      value: "库未加载（请同时启用国密工具）",
+      value: "库未加载（请刷新页面后重试）",
       error: true,
     });
   }
@@ -143,4 +106,8 @@ function hashextClear() {
   document.getElementById("hashextInput").value = "";
   document.getElementById("hashextResults").innerHTML = "";
   setStatus("已清空");
+}
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { crc32Bytes, crc32cBytes, adler32Bytes };
 }

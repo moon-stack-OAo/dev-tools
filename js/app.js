@@ -63,6 +63,7 @@ function initDomCache() {
 
 // === Tools Data ===
 const categories = [
+  { id: "favorites", name: "收藏", icon: "bi-star-fill", virtual: true },
   { id: "recent", name: "最近使用", icon: "bi-clock-history", virtual: true },
   {
     id: "format",
@@ -236,8 +237,8 @@ const tools = [
   {
     id: "charset",
     icon: "bi-fonts",
-    name: "编码转换",
-    desc: "字符编码互转 / 检测",
+    name: "编码解码",
+    desc: "字节按编码解码 / UTF-8 编码 / 乱码对照",
     cat: "encode",
   },
   {
@@ -300,7 +301,7 @@ const tools = [
     id: "hashext",
     icon: "bi-hash",
     name: "Hash 扩展",
-    desc: "CRC32 / Adler32 / SHA-3 / SM3",
+    desc: "CRC32 / CRC32C / Adler32 / SM3",
     cat: "security",
   },
   {
@@ -949,6 +950,124 @@ function clearRecent() {
   refreshSidebarRecent();
 }
 
+// === Favorites（逻辑在 favorites.js，此处负责 UI 接入）===
+function getFavoriteTools() {
+  if (typeof getFavorites !== "function") return [];
+  return getFavorites()
+    .map((id) => toolsById.get(id))
+    .filter(Boolean);
+}
+
+function favStarHtml(id) {
+  const fav = typeof isFavorite === "function" && isFavorite(id);
+  return (
+    '<button type="button" class="fav-star' +
+    (fav ? " active" : "") +
+    '" data-tool="' +
+    escapeHtml(id) +
+    '" title="' +
+    (fav ? "取消收藏" : "收藏") +
+    '" aria-label="' +
+    (fav ? "取消收藏" : "收藏") +
+    '"><i class="bi ' +
+    (fav ? "bi-star-fill" : "bi-star") +
+    '"></i></button>'
+  );
+}
+
+function sbToolHtml(t) {
+  const fav = typeof isFavorite === "function" && isFavorite(t.id);
+  return (
+    '<div class="sb-tool" data-tool="' +
+    escapeHtml(t.id) +
+    '" title="' +
+    escapeHtml(t.name) +
+    '"><i class="bi ' +
+    t.icon +
+    '"></i><span class="sb-tool-name">' +
+    escapeHtml(t.name) +
+    '</span><i class="bi ' +
+    (fav ? "bi-star-fill" : "bi-star") +
+    " fav-star" +
+    (fav ? " active" : "") +
+    '" data-tool="' +
+    escapeHtml(t.id) +
+    '" title="' +
+    (fav ? "取消收藏" : "收藏") +
+    '"></i></div>'
+  );
+}
+
+function syncFavoriteStars(id, isFav) {
+  document.querySelectorAll('.fav-star[data-tool="' + id + '"]').forEach((el) => {
+    el.classList.toggle("active", isFav);
+    el.title = isFav ? "取消收藏" : "收藏";
+    if (el.getAttribute("aria-label") != null) {
+      el.setAttribute("aria-label", isFav ? "取消收藏" : "收藏");
+    }
+    const icon = el.tagName === "I" ? el : el.querySelector("i");
+    if (!icon) return;
+    icon.classList.toggle("bi-star-fill", isFav);
+    icon.classList.toggle("bi-star", !isFav);
+  });
+}
+
+function handleToggleFavorite(id) {
+  if (typeof toggleFavorite !== "function" || !id) return;
+  const now = toggleFavorite(id);
+  syncFavoriteStars(id, now);
+  refreshFavoritesBlock();
+  refreshSidebarFavorites();
+  toast(now ? "已收藏" : "已取消收藏");
+}
+
+function clearFavoritesUI() {
+  if (typeof clearFavorites === "function") clearFavorites();
+  document.querySelectorAll(".fav-star").forEach((el) => {
+    el.classList.remove("active");
+    el.title = "收藏";
+    if (el.getAttribute("aria-label") != null) {
+      el.setAttribute("aria-label", "收藏");
+    }
+    const icon = el.tagName === "I" ? el : el.querySelector("i");
+    if (!icon) return;
+    icon.classList.remove("bi-star-fill");
+    icon.classList.add("bi-star");
+  });
+  refreshFavoritesBlock();
+  refreshSidebarFavorites();
+  toast("已清空收藏");
+}
+
+function createHomeCard(t, cardCat, ci) {
+  const card = document.createElement("div");
+  card.className = "home-card cat-" + cardCat;
+  card.dataset.cat = cardCat;
+  card.dataset.tool = t.id;
+  card.style.animationDelay = Math.min(ci, 11) * 0.03 + "s";
+  card.innerHTML =
+    favStarHtml(t.id) +
+    '<div class="hc-icon"><i class="bi ' +
+    t.icon +
+    '"></i></div><div class="hc-name">' +
+    escapeHtml(t.name) +
+    '</div><div class="hc-desc">' +
+    escapeHtml(t.desc) +
+    "</div>";
+  card.dataset.name = t.name.toLowerCase();
+  card.dataset.desc = t.desc.toLowerCase();
+  card.addEventListener("click", () => openTool(t.id));
+  const star = card.querySelector(".fav-star");
+  if (star) {
+    star.addEventListener("click", (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      handleToggleFavorite(t.id);
+    });
+  }
+  return card;
+}
+
 function renderHomeHeatmap() {
   const panel = domCache.homeHeatmap;
   if (!panel) return;
@@ -1238,7 +1357,10 @@ function buildHomeGrid() {
   anchors.innerHTML = "";
   categories.forEach((cat) => {
     let toolsInCat;
-    if (cat.id === "recent") {
+    if (cat.id === "favorites") {
+      toolsInCat = getFavoriteTools();
+      if (!toolsInCat.length) return;
+    } else if (cat.id === "recent") {
       toolsInCat = getRecent().map((e) => e.tool);
       if (!toolsInCat.length) return;
     } else {
@@ -1251,16 +1373,9 @@ function buildHomeGrid() {
     divider.innerHTML = `<span class="hcd-icon"><i class="bi ${cat.icon}"></i></span><span>${escapeHtml(cat.name)}</span>`;
     grid.appendChild(divider);
     toolsInCat.forEach((t, ci) => {
-      const cardCat = cat.id === "recent" ? "recent" : t.cat;
-      const card = document.createElement("div");
-      card.className = "home-card cat-" + cardCat;
-      card.dataset.cat = cardCat;
-      card.style.animationDelay = Math.min(ci, 11) * 0.03 + "s";
-      card.innerHTML = `<div class="hc-icon"><i class="bi ${t.icon}"></i></div><div class="hc-name">${escapeHtml(t.name)}</div><div class="hc-desc">${escapeHtml(t.desc)}</div>`;
-      card.dataset.name = t.name.toLowerCase();
-      card.dataset.desc = t.desc.toLowerCase();
-      card.addEventListener("click", () => openTool(t.id));
-      grid.appendChild(card);
+      const cardCat =
+        cat.id === "recent" || cat.id === "favorites" ? cat.id : t.cat;
+      grid.appendChild(createHomeCard(t, cardCat, ci));
     });
     const anchor = document.createElement("a");
     anchor.className = "cat-anchor";
@@ -1281,57 +1396,79 @@ function buildHomeGrid() {
   homePanel.addEventListener("scroll", debounce(highlightAnchor, 50));
 }
 
-function refreshRecentBlock() {
+// 重绘首页虚拟分类块（收藏 / 最近使用），保持收藏在最近使用之前
+function refreshVirtualHomeBlock(catId, items, icon, name) {
   const grid = domCache.homeGrid;
   const anchorsBox = domCache.homeCatAnchors;
   if (!grid || !anchorsBox) return;
-  const recentItems = getRecent();
-  const oldDivider = document.getElementById("cat-recent");
-  const oldAnchor = anchorsBox.querySelector('.cat-anchor[href="#cat-recent"]');
+  const oldDivider = document.getElementById("cat-" + catId);
+  const oldAnchor = anchorsBox.querySelector(
+    '.cat-anchor[href="#cat-' + catId + '"]',
+  );
 
   grid
-    .querySelectorAll('.home-card[data-cat="recent"]')
+    .querySelectorAll('.home-card[data-cat="' + catId + '"]')
     .forEach((c) => c.remove());
 
-  if (!recentItems.length) {
+  if (!items.length) {
     if (oldDivider) oldDivider.remove();
     if (oldAnchor) oldAnchor.remove();
   } else {
     let divider = oldDivider;
     if (!divider) {
       divider = document.createElement("div");
-      divider.className = "home-cat-divider cat-recent";
-      divider.id = "cat-recent";
+      divider.className = "home-cat-divider cat-" + catId;
+      divider.id = "cat-" + catId;
       divider.innerHTML =
-        '<span class="hcd-icon"><i class="bi bi-clock-history"></i></span><span>最近使用</span>';
-      grid.insertBefore(divider, grid.firstChild);
+        '<span class="hcd-icon"><i class="bi ' +
+        icon +
+        '"></i></span><span>' +
+        escapeHtml(name) +
+        "</span>";
+      // 插入顺序：收藏在最近使用之前；最近使用在其余分类之前
+      const favDivider = document.getElementById("cat-favorites");
+      if (catId === "favorites") {
+        grid.insertBefore(divider, grid.firstChild);
+      } else if (favDivider) {
+        let last = favDivider;
+        let n = favDivider.nextElementSibling;
+        while (
+          n &&
+          n.classList.contains("home-card") &&
+          n.dataset.cat === "favorites"
+        ) {
+          last = n;
+          n = n.nextElementSibling;
+        }
+        last.after(divider);
+      } else {
+        grid.insertBefore(divider, grid.firstChild);
+      }
     }
     let anchor = oldAnchor;
     if (!anchor) {
       anchor = document.createElement("a");
       anchor.className = "cat-anchor";
-      anchor.href = "#cat-recent";
+      anchor.href = "#cat-" + catId;
       anchor.innerHTML =
-        '<span class="cat-icon"><i class="bi bi-clock-history"></i></span>最近使用';
-      anchorsBox.insertBefore(anchor, anchorsBox.firstChild);
+        '<span class="cat-icon"><i class="bi ' +
+        icon +
+        '"></i></span>' +
+        escapeHtml(name);
+      const favAnchor = anchorsBox.querySelector(
+        '.cat-anchor[href="#cat-favorites"]',
+      );
+      if (catId === "favorites") {
+        anchorsBox.insertBefore(anchor, anchorsBox.firstChild);
+      } else if (favAnchor) {
+        favAnchor.after(anchor);
+      } else {
+        anchorsBox.insertBefore(anchor, anchorsBox.firstChild);
+      }
     }
     let prev = divider;
-    recentItems.forEach((e, ci) => {
-      const card = document.createElement("div");
-      card.className = "home-card cat-recent";
-      card.dataset.cat = "recent";
-      card.style.animationDelay = Math.min(ci, 11) * 0.03 + "s";
-      card.innerHTML =
-        '<div class="hc-icon"><i class="bi ' +
-        e.tool.icon +
-        '"></i></div><div class="hc-name">' +
-        escapeHtml(e.tool.name) +
-        '</div><div class="hc-desc">' +
-        escapeHtml(e.tool.desc) +
-        "</div>";
-      card.dataset.name = e.tool.name.toLowerCase();
-      card.dataset.desc = e.tool.desc.toLowerCase();
-      card.addEventListener("click", () => openTool(e.tool.id));
+    items.forEach((t, ci) => {
+      const card = createHomeCard(t, catId, ci);
       prev.after(card);
       prev = card;
     });
@@ -1339,6 +1476,26 @@ function refreshRecentBlock() {
 
   homeCards = Array.from(grid.querySelectorAll(".home-card"));
   homeDividers = Array.from(grid.querySelectorAll(".home-cat-divider"));
+}
+
+function refreshFavoritesBlock() {
+  const cat = categories.find((c) => c.id === "favorites");
+  refreshVirtualHomeBlock(
+    "favorites",
+    getFavoriteTools(),
+    cat ? cat.icon : "bi-star-fill",
+    cat ? cat.name : "收藏",
+  );
+}
+
+function refreshRecentBlock() {
+  const cat = categories.find((c) => c.id === "recent");
+  refreshVirtualHomeBlock(
+    "recent",
+    getRecent().map((e) => e.tool),
+    cat ? cat.icon : "bi-clock-history",
+    cat ? cat.name : "最近使用",
+  );
 }
 
 function highlightAnchor() {
@@ -1580,7 +1737,9 @@ function buildSidebar() {
   nav.innerHTML = "";
   categories.forEach((cat) => {
     let toolsInCat;
-    if (cat.id === "recent") {
+    if (cat.id === "favorites") {
+      toolsInCat = getFavoriteTools();
+    } else if (cat.id === "recent") {
       toolsInCat = getRecent().map((e) => e.tool);
     } else {
       toolsInCat = tools.filter((t) => t.cat === cat.id);
@@ -1589,10 +1748,14 @@ function buildSidebar() {
     const wrap = document.createElement("div");
     wrap.className = "sb-cat cat-" + cat.id;
     wrap.dataset.cat = cat.id;
-    const clearBtn =
-      cat.id === "recent"
-        ? '<i class="bi bi-x-circle sb-cat-clear" title="清空最近使用" onclick="event.stopPropagation();clearRecent()"></i>'
-        : "";
+    let clearBtn = "";
+    if (cat.id === "recent") {
+      clearBtn =
+        '<i class="bi bi-x-circle sb-cat-clear" title="清空最近使用" onclick="event.stopPropagation();clearRecent()"></i>';
+    } else if (cat.id === "favorites") {
+      clearBtn =
+        '<i class="bi bi-x-circle sb-cat-clear" title="清空收藏" onclick="event.stopPropagation();clearFavoritesUI()"></i>';
+    }
     wrap.innerHTML = `
             <div class="sb-cat-header" data-cat="${escapeHtml(cat.id)}" title="${escapeHtml(cat.name)}">
                 <i class="bi ${cat.icon} sb-cat-icon"></i>
@@ -1601,13 +1764,20 @@ function buildSidebar() {
                 <i class="bi bi-chevron-right sb-cat-arrow"></i>
             </div>
             <div class="sb-tools">
-                ${toolsInCat.map((t) => `<div class="sb-tool" data-tool="${escapeHtml(t.id)}" title="${escapeHtml(t.name)}"><i class="bi ${t.icon}"></i><span class="sb-tool-name">${escapeHtml(t.name)}</span></div>`).join("")}
+                ${toolsInCat.map((t) => sbToolHtml(t)).join("")}
             </div>
         `;
     nav.appendChild(wrap);
   });
 
   nav.addEventListener("click", (e) => {
+    const favEl = e.target.closest(".fav-star");
+    if (favEl) {
+      e.stopPropagation();
+      e.preventDefault();
+      handleToggleFavorite(favEl.dataset.tool);
+      return;
+    }
     const catHeader = e.target.closest(".sb-cat-header");
     if (catHeader) {
       const catEl = catHeader.parentElement;
@@ -1643,46 +1813,69 @@ function buildSidebar() {
   }
 }
 
-// 重绘侧边栏"最近使用"分类:每次打开工具后调用,使其与首页最近块保持同步。
-// 未产生过最近使用时整段不渲染,与普通分类"无工具则隐藏"的约定一致。
-function refreshSidebarRecent() {
+// 重绘侧边栏虚拟分类（收藏 / 最近使用），顺序：收藏 → 最近使用 → 其余
+function refreshSidebarVirtualCat(catId, toolsInCat, clearTitle, clearFnName) {
   const nav = domCache.sidebarNav;
   if (!nav) return;
-  nav.querySelector('.sb-cat[data-cat="recent"]')?.remove();
-  const items = getRecent();
-  if (!items.length) return;
-  const cat = categories.find((c) => c.id === "recent");
+  const wasExpanded = !!nav.querySelector(
+    '.sb-cat[data-cat="' + catId + '"].expanded',
+  );
+  nav.querySelector('.sb-cat[data-cat="' + catId + '"]')?.remove();
+  if (!toolsInCat.length) return;
+  const cat = categories.find((c) => c.id === catId);
   if (!cat) return;
   const wrap = document.createElement("div");
-  wrap.className = "sb-cat cat-recent";
-  wrap.dataset.cat = "recent";
+  wrap.className = "sb-cat cat-" + catId + (wasExpanded ? " expanded" : "");
+  wrap.dataset.cat = catId;
   wrap.innerHTML =
-    '<div class="sb-cat-header" data-cat="recent" title="' +
+    '<div class="sb-cat-header" data-cat="' +
+    escapeHtml(catId) +
+    '" title="' +
     escapeHtml(cat.name) +
     '"><i class="bi ' +
     cat.icon +
     ' sb-cat-icon"></i><span class="sb-cat-name">' +
     escapeHtml(cat.name) +
     "</span>" +
-    '<i class="bi bi-x-circle sb-cat-clear" title="清空最近使用" onclick="event.stopPropagation();clearRecent()"></i>' +
+    '<i class="bi bi-x-circle sb-cat-clear" title="' +
+    escapeHtml(clearTitle) +
+    '" onclick="event.stopPropagation();' +
+    clearFnName +
+    '()"></i>' +
     '<i class="bi bi-chevron-right sb-cat-arrow"></i></div>' +
     '<div class="sb-tools">' +
-    items
-      .map(
-        (e) =>
-          '<div class="sb-tool" data-tool="' +
-          escapeHtml(e.tool.id) +
-          '" title="' +
-          escapeHtml(e.tool.name) +
-          '"><i class="bi ' +
-          e.tool.icon +
-          '"></i><span class="sb-tool-name">' +
-          escapeHtml(e.tool.name) +
-          "</span></div>",
-      )
-      .join("") +
+    toolsInCat.map((t) => sbToolHtml(t)).join("") +
     "</div>";
-  nav.insertBefore(wrap, nav.firstChild);
+  if (catId === "favorites") {
+    nav.insertBefore(wrap, nav.firstChild);
+  } else {
+    const favCat = nav.querySelector('.sb-cat[data-cat="favorites"]');
+    if (favCat) {
+      favCat.after(wrap);
+    } else {
+      nav.insertBefore(wrap, nav.firstChild);
+    }
+  }
+}
+
+function refreshSidebarFavorites() {
+  refreshSidebarVirtualCat(
+    "favorites",
+    getFavoriteTools(),
+    "清空收藏",
+    "clearFavoritesUI",
+  );
+}
+
+// 重绘侧边栏"最近使用"分类:每次打开工具后调用,使其与首页最近块保持同步。
+// 未产生过最近使用时整段不渲染,与普通分类"无工具则隐藏"的约定一致。
+function refreshSidebarRecent() {
+  refreshSidebarVirtualCat(
+    "recent",
+    getRecent().map((e) => e.tool),
+    "清空最近使用",
+    "clearRecent",
+  );
 }
 
 function highlightSidebarTool(id) {

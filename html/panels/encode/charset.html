@@ -1,20 +1,47 @@
 <div class="tool-panel" id="panel-charset">
+    <div class="mb-8" style="color:var(--text-dim);font-size:12px;line-height:1.5">
+        能力说明：① Hex/Base64 字节按指定编码<strong>解码为文本</strong>（GBK 等依赖浏览器 TextDecoder）；
+        ② 文本<strong>仅可编码为 UTF-8</strong>字节（Hex/Base64）；③ 多编码对照用于乱码还原。
+        <strong>不是</strong>任意字符集互转。
+    </div>
     <div class="toolbar">
-        <button onclick="charsetDetect()">检测编码</button>
-        <button class="outline" onclick="charsetConvert()">转换</button>
+        <label style="color:var(--text-dim);font-size:12px">输入格式</label>
+        <select id="charsetInputFmt">
+            <option value="text">文本</option>
+            <option value="hex" selected>Hex 字节</option>
+            <option value="base64">Base64 字节</option>
+        </select>
+        <label style="color:var(--text-dim);font-size:12px;margin-left:8px">解码编码</label>
         <select id="charsetEnc">
             <option value="utf-8">UTF-8</option>
-            <option value="gbk">GBK</option>
+            <option value="gbk" selected>GBK</option>
+            <option value="gb18030">GB18030</option>
             <option value="gb2312">GB2312</option>
-            <option value="iso-8859-1">ISO-8859-1</option>
-            <option value="shift-jis">Shift-JIS</option>
-            <option value="euc-kr">EUC-KR</option>
             <option value="big5">Big5</option>
+            <option value="shift_jis">Shift_JIS</option>
+            <option value="euc-jp">EUC-JP</option>
+            <option value="euc-kr">EUC-KR</option>
+            <option value="iso-8859-1">ISO-8859-1</option>
+            <option value="windows-1252">Windows-1252</option>
+        </select>
+        <label style="color:var(--text-dim);font-size:12px;margin-left:8px">UTF-8 输出</label>
+        <select id="charsetOutFmt">
+            <option value="hex">Hex</option>
+            <option value="base64">Base64</option>
         </select>
     </div>
+    <div class="toolbar">
+        <button onclick="charsetDecode()">字节 → 文本</button>
+        <button class="outline" onclick="charsetEncodeUtf8()">文本 → UTF-8 字节</button>
+        <button class="outline" onclick="charsetCompare()">多编码对照</button>
+        <button class="outline" onclick="charsetClear()"
+                style="margin-left:auto;border-color:var(--danger);color:var(--danger)">清空
+        </button>
+    </div>
     <div class="mb-8">
-        <div class="label">输入文本</div>
-        <textarea class="json-input" id="charsetInput" placeholder="输入要转换编码的文本"></textarea>
+        <div class="label">输入（文本 / Hex / Base64）</div>
+        <textarea class="json-input" id="charsetInput"
+                  placeholder="示例 Hex：c4e3bac3（GBK「你好」）&#10;或粘贴 Base64 字节；输入格式选「文本」时按 UTF-8 处理"></textarea>
     </div>
     <div class="copy-wrap">
         <div class="label">输出</div>

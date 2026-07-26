@@ -843,6 +843,91 @@
     --cat-glow: rgba(129, 140, 248, 0.22);
 }
 
+.cat-favorites {
+    --cat-color: #fbbf24;
+    --cat-glow: rgba(251, 191, 36, 0.22);
+}
+
+.cat-recent {
+    --cat-color: #94a3b8;
+    --cat-glow: rgba(148, 163, 184, 0.18);
+}
+
+/* 首页 / 侧边栏收藏星标 */
+.home-card .fav-star {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: var(--transition);
+    z-index: 2;
+}
+
+.home-card:hover .fav-star,
+.home-card .fav-star.active,
+.home-card .fav-star:focus-visible {
+    opacity: 1;
+}
+
+.home-card .fav-star:hover {
+    color: #fbbf24;
+    background: var(--glass-hover);
+}
+
+.home-card .fav-star.active {
+    color: #fbbf24;
+}
+
+.sb-tool .fav-star {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-muted);
+    opacity: 0;
+    padding: 2px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    transition: var(--transition);
+}
+
+.sb-tool:hover .fav-star,
+.sb-tool .fav-star.active,
+.sb-tool .fav-star:focus-visible {
+    opacity: 1;
+}
+
+.sb-tool .fav-star:hover {
+    color: #fbbf24;
+    background: var(--glass-hover);
+}
+
+.sb-tool .fav-star.active {
+    color: #fbbf24;
+}
+
+.sb-tool.current .fav-star {
+    color: var(--text-muted);
+}
+
+.sb-tool.current .fav-star.active {
+    color: #fbbf24;
+}
+
+.sidebar.collapsed .sb-tool .fav-star {
+    display: none;
+}
+
 .home-card[data-cat] .hc-icon {
     color: var(--cat-color);
 }
@@ -1090,6 +1175,7 @@
 }
 
 .sb-cat.cat-recent:hover .sb-cat-clear,
+.sb-cat.cat-favorites:hover .sb-cat-clear,
 .sb-cat-clear:focus-visible {
     opacity: 1;
 }
