@@ -1,6 +1,6 @@
 # Java 开发工具箱
 
-> 一个面向 Java 开发者的**纯前端**在线工具集 —— **110 个工具、8 大分类**
+> 一个面向 Java 开发者的**纯前端**在线工具集 —— **122 个工具、8 大分类**
 > ，覆盖格式化、编解码、安全、生成与转换、代码生成、文本、调试、参考速查。无需后端、无需联网、无需上传数据，所有计算均在浏览器本地完成。支持
 > Vite 开发、Docker 一键部署、Nginx 静态托管，开箱即用。
 
@@ -16,9 +16,10 @@
 - 🚀 **零依赖开箱即用**：纯静态 HTML / CSS / JavaScript，无任何前端框架；业务代码无构建期编译，第三方库通过 Vite + esbuild
   打包为 IIFE
 - 🔒 **数据 100% 本地处理**：所有计算在浏览器内完成，不会上传任何内容到服务器，支持离线使用
-- 🧰 **110 个工具 / 8 大分类**：覆盖 Java 开发日常所需，工具持续扩充
+- 🧰 **122 个工具 / 8 大分类**：覆盖 Java 开发日常所需，工具持续扩充
+- ⭐ **收藏与最近使用**：侧边栏 / 首页星标收藏（`localStorage`），虚拟分类「收藏」「最近使用」
 - 🎨 **深色主题 + 响应式**：桌面 / 平板 / 手机均可使用
-- 🐳 **多种部署方式**：Vite 开发、Docker 容器、Nginx 静态托管
+- 🐳 **多种部署方式**：Vite 开发、Docker 容器、Nginx 静态托管、GitHub Pages（`main` 推送触发）
 - 📦 **依赖本地化**：20 个 npm 包本地化为 22 个 `.min.js` 文件 + 5 个 Pyodide 核心文件，全部内置到 `public/lib/`，**按需懒加载
   **
   （打开对应工具时才加载），断网仍可使用（图标字体
@@ -73,18 +74,18 @@ npm run build     # 输出到 dist/
 
 ```
 ├── index.html                      # 入口（首页；工具脚本/面板/依赖库均按需懒加载）
-├── html/panels/                    # 工具面板（110 个文件，每个工具一个 HTML）
-│   ├── format/                     #  格式化：json / xml / yaml / sql / javafmt / jsonexcel / ddldiff / sqlexplain / nginxfmt / ...
-│   ├── encode/                     #  编解码：base64 / url / unicode / protobuf / ...
-│   ├── security/                   #  安全：jwt / hash / aes / rsa / gmsm / certparser / ...
-│   ├── generate/                   #  生成与转换：uuid / snowflake / ts / image-compress / ...
-│   ├── codegen/                    #  代码生成：jsontopojo / sql2mybatis / jmhpro / plantuml / ...
-│   ├── text/                       #  文本：regex / diff / markdown / qrcode / qrdecode / ...
-│   ├── debug/                      #  调试：cron / ws / stomp / httpdebug / grpc / sse / ...
-│   └── reference/                  #  参考：arthas / springboot / junit5 / designpatterns / ...
+├── html/panels/                    # 工具面板（122 个文件，每个工具一个 HTML）
+│   ├── format/                     #  格式化：json / yaml / toml / graphqlfmt / openapiview / ...
+│   ├── encode/                     #  编解码：base64 / base32 / charset / protobuf / ...
+│   ├── security/                   #  安全：jwt / jasypt / pwdstrength / hashext / gmsm / ...
+│   ├── generate/                   #  生成：uuid / ulid / snowflake / bytesize / ...
+│   ├── codegen/                    #  代码生成：jsontopojo / json2code / sql2mybatis / ...
+│   ├── text/                       #  文本：regex / htmlmd / barcode / qrcode / ...
+│   ├── debug/                      #  调试：httpdebug / ws / cron / sse / ...
+│   └── reference/                  #  参考：arthas / flowableref / springboot / ...
 ├── css/                            # 样式（通用层 + 布局层 + 类别专属）
 │   ├── base.css                    #  CSS 变量 / reset / 按钮 / 表单 / toast / 滚动条
-│   ├── layout.css                  #  主框架 / header / 面包屑 / 首页卡片 / 锚点
+│   ├── layout.css                  #  主框架 / header / 面包屑 / 首页卡片 / 收藏星标
 │   ├── format.css                  #  格式化类别样式
 │   ├── encode.css                  #  编解码类别样式
 │   ├── security.css                #  安全类别样式
@@ -94,27 +95,29 @@ npm run build     # 输出到 dist/
 │   ├── debug.css                   #  调试类别样式
 │   └── reference.css               #  参考类别样式
 ├── js/
-│   ├── app.js                      # 核心：导航 / 工具注册表 / registerInit / 懒加载 / 通用工具函数
-│   ├── format/                     #  格式化：json / xml / yaml / sql / javafmt / jsonexcel / ddldiff / sqlexplain / nginxfmt / ...
-│   ├── encode/                     #  编解码：base64 / url / unicode / protobuf / ...
-│   ├── security/                   #  安全：jwt / hash / aes / rsa / gmsm / certparser / ...
-│   ├── generate/                   #  生成与转换：uuid / snowflake / ts / image-compress / ...
-│   ├── codegen/                    #  代码生成：jsontopojo / sql2mybatis / jmhpro / plantuml / ...
-│   ├── text/                       #  文本：regex / diff / markdown / qrcode / qrdecode / ...
-│   ├── debug/                      #  调试：cron / ws / stomp / httpdebug / grpc / sse / ...
-│   └── reference/                  #  参考：arthas / springboot / junit5 / designpatterns / ...
-├── public/lib/                     # 本地化的第三方库（22 个 .min.js，对应 20 个 npm 包，详见下方依赖列表）
+│   ├── app.js                      # 核心：导航 / 工具注册表 / 收藏 UI / 懒加载 / 通用函数
+│   ├── favorites.js                # 收藏持久化（localStorage）
+│   ├── format/                     #  格式化工具脚本
+│   ├── encode/                     #  编解码工具脚本
+│   ├── security/                   #  安全工具脚本
+│   ├── generate/                   #  生成与转换工具脚本
+│   ├── codegen/                    #  代码生成工具脚本
+│   ├── text/                       #  文本工具脚本
+│   ├── debug/                      #  调试工具脚本
+│   └── reference/                  #  参考工具脚本
+├── public/lib/                     # 本地化的第三方库（22 个 .min.js，对应 20 个 npm 包）
 ├── scripts/
-│   └── copy-libs.js                # 从 node_modules 复制依赖到 public/lib（构建前执行）
-├── docs/                           # 开发文档（各 ticket 需求 / 设计 / 验收记录）
-├── test/                           # 单元测试（Vitest，抽离工具纯逻辑）
-├── .github/workflows/static.yml    # GitHub Pages 自动部署
-├── package.json                    # 依赖管理与 npm 脚本
-├── vite.config.js                  # Vite 6 配置（cors-proxy / cache-bust / copy-js-assets / inject-asset-map / remove-github-link / inject-devtools-flag 自定义插件）
-├── vitest.config.js                # Vitest 单元测试配置
-├── eslint.config.mjs               # ESLint flat config
-├── Dockerfile                      # 多阶段构建：node:20-alpine → nginx:alpine
-├── nginx.conf                      # Nginx 配置（gzip + 30 天静态资源缓存 + SPA fallback）
+│   ├── copy-libs.js                # 从 node_modules 复制依赖到 public/lib
+│   └── cors-proxy-server.js        # 生产环境 CORS 代理（Docker / Nginx）
+├── docs/                           # 开发文档
+├── test/                           # 单元测试（Vitest）
+├── .github/workflows/static.yml    # GitHub Pages 自动部署（main / tag dev-tools / 手动）
+├── package.json
+├── vite.config.js
+├── vitest.config.js
+├── eslint.config.mjs
+├── Dockerfile
+├── nginx.conf
 └── .dockerignore
 ```
 
@@ -122,46 +125,50 @@ npm run build     # 输出到 dist/
 
 ## 🧰 工具列表
 
-> 工具总数 **110 个**，分为 **8 大分类**。下表功能描述与 `js/app.js` 中 `tools[]` 注册表的 `desc` 字段保持一致。
+> 工具总数 **122 个**，分为 **8 大业务分类**（另有虚拟分类「收藏」「最近使用」）。下表功能描述与 `js/app.js` 中 `tools[]` 的 `desc` 保持一致。
 
-### 一、格式化（18）
+### 一、格式化（21）
 
 | 工具               | 功能                                   |
 |------------------|--------------------------------------|
 | JSON 格式化         | 格式化 / 压缩 / 验证 JSON                   |
 | XML 格式化          | 格式化 / 压缩 / 验证 XML                    |
 | YAML 格式化         | YAML 格式化 / JSON 互转                   |
+| TOML 格式化         | TOML 格式化 / JSON 互转 / 校验              |
 | Properties 格式化   | Properties ↔ YAML 互转                 |
 | SQL 格式化          | SQL 美化 / 多方言支持                       |
 | JSON/XML/YAML 互转 | JSON / XML / YAML 格式互相转换             |
 | JSONPath 查询      | JSONPath 表达式查询 / 提取                  |
 | JSON Schema      | JSON Schema 生成 / 校验                  |
-| SQL 方言转换         | MySQL / Oracle / PG / SQLServer 互转   |
-| 数据库类型映射          | MySQL / Oracle / PG / SQLServer 类型对照 |
+| SQL 方言转换         | MySQL/Oracle/PG/SQLServer 互转         |
+| 数据库类型映射          | MySQL/Oracle/PG/SQLServer 类型对照       |
 | JSON ↔ CSV       | JSON 数组与 CSV 互转                      |
-| SQL 执行计划         | MySQL / PostgreSQL EXPLAIN 格式化 / 可视化 |
+| SQL 执行计划         | MySQL/PostgreSQL EXPLAIN 格式化 / 可视化   |
 | Nginx 格式化        | Nginx 配置格式化 / 压缩 / Lint              |
 | Java 代码格式化       | Java 美化 / 缩进 / 大括号风格 / import 排序     |
 | DDL Schema 对比    | 两个 DDL 字段粒度 diff / 跨方言               |
 | JSON ↔ Excel/CSV | JSON 数组与 Excel/CSV 批量互转 / 嵌套展平       |
 | 图片转 PDF          | 多张图片合成 PDF / 页面尺寸与方向可配               |
-| PDF 合并 / 拆分      | 多 PDF 合并 / 按页码范围拆分（逗号多段可选独立输出）       |
+| PDF 合并 / 拆分      | 多 PDF 合并 / 按页码范围拆分                   |
+| GraphQL 格式化      | GraphQL 查询/mutation 美化 / 压缩 / 括号检查  |
+| OpenAPI 预览       | OpenAPI 3 / Swagger 2 摘要预览 / paths 浏览 |
 
-### 二、编解码（9）
+### 二、编解码（10）
 
-| 工具          | 功能                             |
-|-------------|--------------------------------|
-| Base64      | Base64 编码解码 / 文件支持             |
-| URL 编码      | URL 编解码 / Component 模式         |
-| Unicode     | `\uXXXX` 编码 / 解码               |
-| Java 转义     | Java 字符串转义 / 反转义               |
-| 编码转换        | 字符编码互转 / 检测                    |
-| HTML 转义     | HTML 实体编码 / 解码                 |
-| 图片 Base64   | 图片与 Base64 互转 / DataURL        |
-| Hex 编码      | 字符串 ↔ Hex 互转（UTF-8）            |
-| Protobuf 解码 | Protobuf ↔ JSON / Base64 / Hex |
+| 工具            | 功能                             |
+|---------------|--------------------------------|
+| Base64        | Base64 编码解码 / 文件支持             |
+| URL 编码        | URL 编解码 / Component 模式         |
+| Unicode       | `\uXXXX` 编码 / 解码               |
+| Java 转义       | Java 字符串转义 / 反转义               |
+| 编码解码          | 字节按编码解码 / UTF-8 编码 / 乱码对照      |
+| HTML 转义       | HTML 实体编码 / 解码                 |
+| 图片 Base64     | 图片与 Base64 互转 / DataURL        |
+| Hex 编码        | 字符串 ↔ Hex 互转（UTF-8）            |
+| Base32 / Base58 | Base32 (RFC 4648) / Base58 (Bitcoin) 编解码 |
+| Protobuf 解码   | Protobuf ↔ JSON / Base64 / Hex |
 
-### 三、安全（13）
+### 三、安全（15）
 
 | 工具         | 功能                                             |
 |------------|------------------------------------------------|
@@ -169,80 +176,87 @@ npm run build     # 输出到 dist/
 | JWT 生成     | HS256/384/512 + RS256/384/512 签名               |
 | Hash 计算    | MD5 / SHA-1 / SHA-256 / SHA-512                |
 | HMAC 计算    | HMAC-MD5 / SHA-1 / SHA-256 / SHA-384 / SHA-512 |
-| Hash 扩展    | CRC32 / Adler32 / SHA-3 / SM3                  |
+| Hash 扩展    | CRC32 / CRC32C / Adler32 / SM3                 |
 | 随机生成器      | 密码 / Token / PIN 生成                            |
+| 密码强度检测     | 本地检测密码强度 / 改进建议                                 |
 | AES 加解密    | AES 对称加密 / 解密                                  |
+| Jasypt 加解密 | PBEWithMD5AndDES 配置加解密 / ENC(...)              |
 | RSA 工具     | 密钥生成 / 加解密 / 签名                                |
 | bcrypt 加密  | bcrypt 哈希 / 验证                                 |
 | TOTP 动态令牌  | TOTP/HOTP 本地生成 + URI 解析                        |
 | 国密 SM2/3/4 | 国密 SM2 公钥 / SM3 摘要 / SM4 对称                    |
 | PBKDF2 哈希  | PBKDF2-HMAC-SHA256/512 密码哈希（标准 PHC 格式）         |
-| X.509 证书   | X.509 证书 PEM / DER 解析                          |
+| X.509 证书   | X.509 证书 PEM/DER 解析                            |
 
-### 四、生成与转换（11）
+### 四、生成与转换（13）
 
-| 工具      | 功能                                 |
-|---------|------------------------------------|
-| UUID 生成 | UUID v4 / v7 / 批量生成                |
-| 雪花 ID   | Snowflake / Leaf / UID 三合一生成解析     |
-| 时间戳转换   | Unix 毫秒/秒 ↔ 日期                     |
-| 颜色转换    | HEX / RGB / HSL 互转预览               |
-| 进制转换    | 2~36 进制互转                          |
-| 图片压缩    | JPEG / PNG / WebP 互转 / 质量调节 / 批量处理 |
-| Case 转换 | camelCase / snake_case 等           |
-| 数据 Mock | 生成姓名 / 手机号 / 邮箱等                   |
-| 日期计算器   | 日期加减 / 间隔 / 工作日                    |
-| 时区转换    | 跨时区时间换算                            |
-| 分辨率比例   | 宽高比 / 档位匹配 / 按比例反算                 |
+| 工具          | 功能                                 |
+|-------------|------------------------------------|
+| UUID 生成     | UUID v4 / v7 / 批量生成                |
+| ULID / NanoID | ULID / NanoID 生成与 ULID 解析         |
+| 雪花 ID       | Snowflake / Leaf / UID 三合一生成解析     |
+| 时间戳转换       | Unix 毫秒/秒 ↔ 日期                     |
+| 颜色转换        | HEX / RGB / HSL 互转预览               |
+| 进制转换        | 2~36 进制互转                          |
+| 图片压缩        | JPEG/PNG/WebP 互转 / 质量调节 / 批量处理     |
+| Case 转换     | camelCase / snake_case 等           |
+| 数据 Mock     | 生成姓名 / 手机号 / 邮箱等                   |
+| 日期计算器       | 日期加减 / 间隔 / 工作日                    |
+| 时区转换        | 跨时区时间换算                            |
+| 分辨率比例       | 宽高比 / 档位匹配 / 按比例反算                 |
+| 字节单位换算      | B/KB/MB/GB ↔ KiB/MiB/GiB，1000/1024 进制 |
 
-### 五、代码生成（12）
+### 五、代码生成（13）
 
 | 工具              | 功能                                            |
 |-----------------|-----------------------------------------------|
 | JSON → Java     | JSON 生成 Java POJO 类                           |
+| JSON → 多语言     | JSON 生成 TypeScript / Kotlin / Go              |
 | SQL → Java      | DDL 生成 MyBatis Plus 实体                        |
 | SQL → MyBatis   | DDL 生成 Mapper XML + Interface                 |
 | 邮件模板            | 邮件 HTML 模板生成 / 预览 / 内联 CSS                    |
 | JMH 模板          | JMH 基准测试代码生成                                  |
-| JMH 进阶          | JMH 完整注解 / Group / Compiler Control / Timeout |
 | 测试模板            | JUnit 5 + Mockito 测试生成                        |
 | Java Stream 生成  | 可视化组装 Stream API 链 / 自动 import                |
+| JMH 进阶          | JMH 完整注解 / Group / Compiler Control / Timeout |
 | Bean Validation | javax.validation 注解自动推导 / DTO 生成              |
 | PlantUML 类图     | Java/JSON 转 PlantUML 类图源码                     |
 | JS/TS 运行        | 浏览器中执行 JS/TS 代码 / 捕获 console 输出               |
 | Python 运行       | 基于 Pyodide 在浏览器中运行 Python 3 代码 / 捕获 stdout    |
 
-### 六、文本（9）
+### 六、文本（11）
 
-| 工具          | 功能                      |
-|-------------|-------------------------|
-| 正则表达式       | 正则匹配测试 / 分组查看           |
-| 文本对比        | 文本差异对比高亮                |
-| 文本统计        | 字符 / 单词 / 行数 / 字节       |
-| CSV 格式化     | CSV 表格化查看 / 校对          |
-| Markdown 预览 | Markdown 实时预览 / 导出 HTML |
-| Web 格式化     | HTML / CSS / JS 格式化压缩   |
-| 二维码生成       | 文本 / URL 生成二维码下载        |
-| 二维码解析       | 图片 → URL / 文本 / WiFi    |
-| 模板替换        | 多种语法字符串变量替换             |
+| 工具            | 功能                      |
+|---------------|-------------------------|
+| 二维码解析         | 图片 → URL / 文本 / WiFi    |
+| 文本对比          | 文本差异对比高亮                |
+| 正则表达式         | 正则匹配测试 / 分组查看           |
+| 文本统计          | 字符 / 单词 / 行数 / 字节       |
+| CSV 格式化       | CSV 表格化查看 / 校对          |
+| Markdown 预览   | Markdown 实时预览 / 导出 HTML |
+| HTML ↔ Markdown | HTML 与 Markdown 互转     |
+| Web 格式化       | HTML / CSS / JS 格式化压缩   |
+| 二维码生成         | 文本 / URL 生成二维码下载        |
+| 条形码生成         | Code128 / Code39 条形码生成下载 |
+| 模板替换          | 多种语法字符串变量替换             |
 
 ### 七、调试（11）
 
-| 工具        | 功能                              |
-|-----------|---------------------------------|
-| Cron 表达式  | Cron 解析 / 下次执行时间                |
-| WebSocket | WebSocket 连接调试                  |
-| STOMP     | STOMP over WebSocket 调试         |
-| HTTP 调试   | 发送请求 / 查看响应 / cURL 生成解析         |
-| IP 工具     | IP 归属 / 子网计算                    |
-| gRPC 调试   | Metadata 构造 / Protobuf 解码 / 状态码 |
-| URL 解析    | URL 拆解 / 编码解码                   |
-| UA 解析     | User-Agent 解析                   |
-| 日志高亮      | 日志格式化 + 级别着色 + 堆栈折叠             |
-| 异常分析      | Java 堆栈跟踪解析 / 格式化               |
-| SSE 调试    | Server-Sent Events 实时调试         |
+| 工具        | 功能                                        |
+|-----------|-------------------------------------------|
+| Cron 表达式  | Cron 解析 / 下次执行时间                          |
+| WebSocket | WebSocket 连接调试                            |
+| STOMP     | STOMP over WebSocket 调试                   |
+| HTTP 调试   | 发送请求 / cURL 解析 / Fetch·Axios·Java 代码生成   |
+| IP 工具     | IP 归属 / 子网计算                              |
+| gRPC 调试   | Metadata 构造 / Protobuf 解码 / 状态码           |
+| URL 解析    | URL 拆解 / 编码解码                             |
+| UA 解析     | User-Agent 解析                             |
+| 日志高亮      | 日志格式化 + 级别着色 + 堆栈折叠                       |
+| 异常分析      | Java 堆栈跟踪解析 / 格式化                         |
+| SSE 调试    | Server-Sent Events 实时调试                   |
 
-### 八、参考（27）
+### 八、参考（28）
 
 | 工具              | 功能                             |
 |-----------------|--------------------------------|
@@ -263,7 +277,7 @@ npm run build     # 输出到 dist/
 | 事务传播            | Spring 事务传播行为速查                |
 | Maven 命令        | Maven 常用命令速查                   |
 | Gradle 命令       | Gradle 常用命令速查                  |
-| JDK 新特性         | JDK 8 / 11 / 17 / 21 新特性速查     |
+| JDK 新特性         | JDK 8/11/17/21 新特性速查           |
 | HTTP Header     | HTTP 通用 / 请求 / 响应头速查           |
 | 消息中间件           | Kafka / RabbitMQ / RocketMQ 速查 |
 | MIME 类型         | 文件扩展名 / MIME 类型对照              |
@@ -273,6 +287,7 @@ npm run build     # 输出到 dist/
 | GC 调优           | JVM 垃圾回收算法与参数速查                |
 | Spring Security | Spring Security 注解与配置速查        |
 | JUnit 5         | JUnit 5 注解与断言速查                |
+| Flowable / BPMN | Flowable API / 任务 / 监听器 / 表前缀速查 |
 
 ---
 
@@ -283,24 +298,24 @@ npm run build     # 输出到 dist/
 - **静态站点**：纯 HTML + CSS + JavaScript，无后端、无 SPA 框架
 - **数据本地化**：所有计算在浏览器中执行，断网可正常使用（依赖已本地化）
 - **主题与布局**：深色主题优先，CSS 变量驱动，支持响应式断点
+- **收藏**：`js/favorites.js` 持久化到 `localStorage`（key：`devtools.favorites`），`app.js` 负责首页 / 侧边栏星标 UI
 
 ### 模块加载机制
 
-- **懒加载（按需加载）**：首屏仅加载 `index.html` + `app.js`（~50KB），首页网格立即可用；打开某工具时才动态加载该工具依赖的
-  第三方库（`loadLib`，注入 `<script>`，`loadedLibs` 去重）、工具 JS（`loadToolScript`，`loadedScripts` 去重）与 HTML 面板
-  （`loadToolPanel`，`fetch` 后注入 `#panels-container`，`loadedPanels` 去重）
+- **懒加载（按需加载）**：首屏仅加载 `index.html` + `favorites.js` + `app.js`，首页网格立即可用；打开某工具时才动态加载该工具依赖的
+  第三方库（`loadLib`）、工具 JS（`loadToolScript`）与 HTML 面板（`loadToolPanel`）
 - **文件组织**：JS 按类别目录拆分 `js/{cat}/{toolId}.js`，HTML 面板 `html/panels/{cat}/{toolId}.html`（目录必须与注册表中的
   `cat` 一致）
 - **工具注册表**：`app.js` 中 `tools[]` 集中维护所有工具元信息（id、名称、分类、入口），是懒加载路径构造与首页网格的单一事实来源
 - **初始化入口**：需初始化的工具在自身 JS 末尾调用 `registerInit(id, fn)` 登记；`openTool` 打开工具后调用
-  `toolInits[id]()` 完成渲染 / 绑定 / 启动定时器（替代旧的启动 init 列表与 renderMap）
+  `toolInits[id]()` 完成渲染 / 绑定 / 启动定时器
 
 ### 样式分层
 
 | 层        | 文件               | 职责                    |
 |----------|------------------|-----------------------|
 | 基础层      | `css/base.css`   | CSS 变量 / reset / 通用控件 |
-| 布局层      | `css/layout.css` | 主框架 / 导航 / 面包屑 / 首页   |
+| 布局层      | `css/layout.css` | 主框架 / 导航 / 面包屑 / 首页 / 收藏 |
 | 类别层（8 个） | `css/{cat}.css`  | 各分类专属 UI 样式           |
 
 ### 构建工具
@@ -325,18 +340,23 @@ npm run build     # 输出到 dist/
 
 ### 测试
 
-- 单元测试基于 **Vitest**，覆盖从工具中抽离的纯逻辑（无 DOM 耦合），共 **716 个测试**
+- 单元测试基于 **Vitest**，覆盖从工具中抽离的纯逻辑（无 DOM 耦合）
 - 工具文件通过 `module.exports` 守卫导出纯函数，测试用 `require()` 直接加载真实生产代码（零重复）
 - `test/setup.js` 提供 `registerInit` 等浏览器全局的 Node 环境垫片
-- 已覆盖：`hex`、`unicode`、`random`、`json2csv`、`pbkdf2`、`totp`（含 RFC 4226/6238 标准向量）、`logfmt`、
-  `javafmt`、`javastream`、`jsonexcel`、`ddldiff`、`jmhpro`、`sqlexplain`、`nginxfmt`、`beanval`、`plantuml`
+- 已覆盖编解码、安全、格式化、代码生成、生成类、HTTP 调试、收藏等核心逻辑
 
 ```bash
-npm test           # 运行一次（716 个测试）
+npm test           # 运行一次
 npm run test:watch # 监听模式
 ```
 
 ### 部署方式
+
+#### GitHub Pages
+
+- 工作流：`.github/workflows/static.yml`
+- 触发：推送 `main`、推送 tag `dev-tools`、或 Actions 手动 Run workflow
+- 注意：仓库 Settings → Environments → `github-pages` 的 Deployment branches and tags 需允许对应 ref（至少包含 `main`）
 
 #### Docker（推荐生产环境）
 
@@ -379,11 +399,11 @@ Chrome / Firefox / Edge / Safari 现代浏览器（支持 ES2020+ 语法）。
 | 5  | diff            | `diff.min.js`                                                                                                | 文本差异对比                                      |
 | 6  | fast-xml-parser | `fxp.min.js`                                                                                                 | XML 解析与生成                                   |
 | 7  | js-beautify     | `js-beautify.min.js`                                                                                         | HTML / CSS / JS 美化                          |
-| 8  | js-yaml         | `js-yaml.min.js`                                                                                             | YAML 解析与生成                                  |
+| 8  | js-yaml         | `js-yaml.min.js`                                                                                             | YAML / OpenAPI YAML 解析与生成                   |
 | 9  | jsonpath-plus   | `jsonpath.min.js`                                                                                            | JSONPath 查询                                 |
 | 10 | jsqr            | `jsqr.min.js`                                                                                                | 二维码识别                                       |
 | 11 | jszip           | `jszip.min.js`                                                                                               | ZIP 文件处理（辅助二维码识别 / SQL→MyBatis）             |
-| 12 | marked          | `marked.min.js`                                                                                              | Markdown 渲染                                 |
+| 12 | marked          | `marked.min.js`                                                                                              | Markdown 渲染 / HTML↔Markdown                 |
 | 13 | pkijs           | `pkijs.min.js`                                                                                               | X.509 证书高级 API                              |
 | 14 | qrcode          | `qrcode.min.js`                                                                                              | 二维码生成                                       |
 | 15 | sm-crypto       | `sm2.min.js`<br>`sm3.min.js`<br>`sm4.min.js`                                                                 | 国密 SM2 公钥密码 / SM3 摘要 / SM4 对称加密             |
@@ -419,4 +439,5 @@ Chrome / Firefox / Edge / Safari 现代浏览器（支持 ES2020+ 语法）。
 2. 在 `app.js` 的 `tools[]` 注册表中登记元信息（id、名称、分类、图标、描述）
 3. 若工具需要初始化（渲染数据、绑定事件、启动定时器等），在工具 JS 末尾调用 `registerInit(toolId, initFn)` 登记，`openTool`
    会自动调用
-4. 保持深色主题一致性与响应式适配
+4. 同步更新本 README 工具列表与数量
+5. 保持深色主题一致性与响应式适配；核心纯逻辑建议补充 Vitest 单测
