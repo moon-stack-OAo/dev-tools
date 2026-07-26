@@ -1,9 +1,13 @@
 # GitHub Pages：构建 Vite 静态站并部署
-# 触发：推送 tag `dev-tools`，或 Actions 页手动 Run workflow
+# 触发：推送 main、tag `dev-tools`，或 Actions 页手动 Run workflow
+# 注意：仓库 Settings → Environments → github-pages → Deployment branches and tags
+# 必须允许对应 ref（当前策略含 main；若用 tag 发布，需额外添加 tag `dev-tools`）
 name: Deploy static content to Pages
 
 on:
   push:
+    branches:
+      - main
     tags:
       - dev-tools
   workflow_dispatch:
