@@ -1,0 +1,66 @@
+<div class="tool-panel" id="panel-barcode">
+    <div class="mb-8" style="font-size:12px;color:var(--text-muted);line-height:1.6">
+        支持码制：<strong>Code 128（自动 A/B/C）</strong>、<strong>Code 39</strong>。
+        Code 128 适合数字/字母/常用符号；Code 39 字符集为 <code>A-Z 0-9 - . $ / + % 空格</code>。
+        纯 Canvas 绘制，不依赖外部库。
+    </div>
+    <div class="mb-8">
+        <div class="label">内容</div>
+        <textarea class="json-input" id="barcodeInput" placeholder="输入要编码的文本，例如：DEV-2024-001 或 1234567890" rows="3"></textarea>
+    </div>
+    <div class="toolbar" onclick="document.getElementById('barcodeOptions').classList.toggle('hidden')"
+         style="cursor:pointer">
+        <i class="bi bi-sliders" style="color:var(--accent)"></i>
+        <span class="label" style="margin:0">选项 (点击展开)</span>
+        <span style="flex:1"></span>
+        <i class="bi bi-chevron-down" style="color:var(--text-muted)"></i>
+    </div>
+    <div class="qrcode-options hidden" id="barcodeOptions">
+        <div class="flex gap-6" style="align-items:center;flex-wrap:wrap">
+            <div>
+                <div class="label">码制</div>
+                <select id="barcodeFormat" style="width:160px">
+                    <option selected value="code128">Code 128（自动）</option>
+                    <option value="code39">Code 39</option>
+                </select>
+            </div>
+            <div>
+                <div class="label">条高 (px)</div>
+                <input id="barcodeHeight" max="240" min="40" step="4" style="width:80px" type="number" value="80">
+            </div>
+            <div>
+                <div class="label">模块宽 (px)</div>
+                <input id="barcodeModule" max="6" min="1" step="1" style="width:70px" type="number" value="2">
+            </div>
+            <div>
+                <div class="label">边距 (px)</div>
+                <input id="barcodeMargin" max="40" min="0" step="2" style="width:70px" type="number" value="10">
+            </div>
+            <div>
+                <div class="label">显示文本</div>
+                <select id="barcodeShowText" style="width:90px">
+                    <option selected value="1">是</option>
+                    <option value="0">否</option>
+                </select>
+            </div>
+            <div>
+                <div class="label">前景色</div>
+                <input id="barcodeFg" style="width:50px;height:32px;padding:2px" type="color" value="#000000">
+            </div>
+            <div>
+                <div class="label">背景色</div>
+                <input id="barcodeBg" style="width:50px;height:32px;padding:2px" type="color" value="#ffffff">
+            </div>
+        </div>
+    </div>
+    <div class="toolbar">
+        <button onclick="barcodeGenerate()">生成</button>
+        <button class="outline" onclick="barcodeDownload()">下载 PNG</button>
+        <button class="outline" onclick="barcodeCopyImage()">复制图片</button>
+        <button class="outline" onclick="barcodeClear()">清空</button>
+    </div>
+    <div class="qrcode-output">
+        <canvas id="barcodeCanvas"></canvas>
+        <div class="qrcode-meta" id="barcodeMeta"></div>
+    </div>
+</div>

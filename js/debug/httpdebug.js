@@ -1,5 +1,7 @@
 /* HTTP 调试工具 - 合并了原 API 调试与 Curl 生成 */
 let _httpFormat = "multi";
+// 代码生成语言：curl | fetch | axios | java
+let _httpCodeLang = "curl";
 // AbortController：取消进行中的请求（fetch Promise 无 abort）
 let _httpAbortCtrl = null;
 // null=未探测；true/false=本地 /__cors_proxy 是否可用（vite dev / Docker 生产代理）
@@ -153,6 +155,497 @@ function httpFormatOutput(cmd) {
   return cmd;
 }
 
+/** JS 单引号字符串字面量 */
+function httpJsString(s) {
+  return (
+    "'" +
+    String(s == null ? "" : s)
+      .replace(/\\/g, "\\\\")
+      .replace(/'/g, "\\'")
+      .replace(/\r/g, "\\r")
+      .replace(/\n/g, "\\n") +
+    "'"
+  );
+}
+
+/** Java 双引号字符串字面量 */
+function httpJavaString(s) {
+  return (
+    '"' +
+    String(s == null ? "" : s)
+      .replace(/\\/g, "\\\\")
+      .replace(/"/g, '\\"')
+      .replace(/\r/g, "\\r")
+      .replace(/\n/g, "\\n") +
+    '"'
+  );
+}
+
+/**
+ * 根据 bodyType 补全 Content-Type，返回 [headers, usesBody]
+ * cfg: { method, url, headers:[[k,v]], body, bodyType, isBodyDisabled?, hasContentType? }
+ */
+function httpResolveCodeHeaders(cfg) {
+  const method = (cfg.method || "GET").toUpperCase();
+  const isBodyDisabled =
+    cfg.isBodyDisabled != null
+      ? cfg.isBodyDisabled
+      : method === "GET" || method === "HEAD";
+  const bodyType = cfg.bodyType || "none";
+  const body = cfg.body || "";
+  const usesBody = !!(body && !isBodyDisabled && bodyType !== "none");
+  const headers = (cfg.headers || []).map(function (h) {
+    return [h[0], h[1]];
+  });
+  let hasContentType =
+    cfg.hasContentType != null
+      ? cfg.hasContentType
+      : headers.some(function (h) {
+          return String(h[0] || "").toLowerCase() === "content-type";
+        });
+  if (usesBody && !hasContentType) {
+    if (bodyType === "json") {
+      headers.push(["Content-Type", "application/json"]);
+      hasContentType = true;
+    } else if (bodyType === "form") {
+      headers.push(["Content-Type", "application/x-www-form-urlencoded"]);
+      hasContentType = true;
+    } else if (bodyType === "text") {
+      headers.push(["Content-Type", "text/plain"]);
+      hasContentType = true;
+    }
+  }
+  return { headers: headers, usesBody: usesBody, method: method, body: body };
+}
+
+/** 结构化请求 → cURL（多行） */
+function httpBuildCurlFromConfig(cfg, opts) {
+  opts = opts || {};
+  const r = httpResolveCodeHeaders(cfg);
+  if (!cfg.url) return "";
+  const parts = [];
+  if (r.method === "GET" || r.method === "HEAD") {
+    if (r.method === "HEAD") {
+      parts.push("curl -X HEAD " + httpShellQuote(cfg.url));
+    } else {
+      parts.push("curl " + httpShellQuote(cfg.url));
+    }
+  } else {
+    parts.push("curl -X " + r.method + " " + httpShellQuote(cfg.url));
+  }
+  r.headers.forEach(function (pair) {
+    parts.push("  -H " + httpShellQuote(pair[0] + ": " + pair[1]));
+  });
+  if (r.usesBody) {
+    parts.push("  --data-raw " + httpShellQuote(r.body));
+  }
+  if (opts.follow) parts.push("  -L");
+  if (opts.insecure) parts.push("  -k");
+  if (opts.compressed) parts.push("  --compressed");
+  if (opts.verbose) parts.push("  -v");
+  if (opts.includeHeader) parts.push("  -i");
+  if (opts.silent) parts.push("  -s");
+  if (opts.timeout != null && opts.timeout !== "" && Number(opts.timeout) > 0) {
+    parts.push("  --max-time " + opts.timeout);
+  }
+  if (opts.ua) parts.push("  -A " + httpShellQuote(opts.ua));
+  return parts.join(" \\\n");
+}
+
+/** 结构化请求 → Fetch 代码 */
+function httpBuildFetchCode(cfg) {
+  const r = httpResolveCodeHeaders(cfg);
+  if (!cfg.url) return "// 请输入 URL";
+  const lines = [];
+  lines.push("const response = await fetch(" + httpJsString(cfg.url) + ", {");
+  lines.push("  method: " + httpJsString(r.method) + ",");
+  if (r.headers.length) {
+    lines.push("  headers: {");
+    r.headers.forEach(function (pair, i) {
+      const comma = i < r.headers.length - 1 ? "," : "";
+      lines.push(
+        "    " + httpJsString(pair[0]) + ": " + httpJsString(pair[1]) + comma,
+      );
+    });
+    lines.push("  }" + (r.usesBody ? "," : ""));
+  }
+  if (r.usesBody) {
+    lines.push("  body: " + httpJsString(r.body));
+  }
+  lines.push("});");
+  lines.push("");
+  lines.push("const data = await response.json(); // 或 response.text()");
+  lines.push("console.log(response.status, data);");
+  return lines.join("\n");
+}
+
+/** 结构化请求 → Axios 代码 */
+function httpBuildAxiosCode(cfg) {
+  const r = httpResolveCodeHeaders(cfg);
+  if (!cfg.url) return "// 请输入 URL";
+  const lines = [];
+  lines.push("import axios from 'axios';");
+  lines.push("");
+  lines.push("const { data, status } = await axios({");
+  lines.push("  method: " + httpJsString(r.method.toLowerCase()) + ",");
+  lines.push("  url: " + httpJsString(cfg.url) + ",");
+  if (r.headers.length) {
+    lines.push("  headers: {");
+    r.headers.forEach(function (pair, i) {
+      const comma = i < r.headers.length - 1 ? "," : "";
+      lines.push(
+        "    " + httpJsString(pair[0]) + ": " + httpJsString(pair[1]) + comma,
+      );
+    });
+    lines.push("  }" + (r.usesBody ? "," : ""));
+  }
+  if (r.usesBody) {
+    const bt = (cfg.bodyType || "").toLowerCase();
+    if (bt === "json") {
+      try {
+        JSON.parse(r.body);
+        lines.push("  data: " + r.body);
+      } catch (e) {
+        lines.push("  data: " + httpJsString(r.body));
+      }
+    } else {
+      lines.push("  data: " + httpJsString(r.body));
+    }
+  }
+  lines.push("});");
+  lines.push("");
+  lines.push("console.log(status, data);");
+  return lines.join("\n");
+}
+
+/** 结构化请求 → Java 11+ HttpClient 代码 */
+function httpBuildJavaHttpClientCode(cfg) {
+  const r = httpResolveCodeHeaders(cfg);
+  if (!cfg.url) return "// 请输入 URL";
+  const lines = [];
+  lines.push("import java.net.URI;");
+  lines.push("import java.net.http.HttpClient;");
+  lines.push("import java.net.http.HttpRequest;");
+  lines.push("import java.net.http.HttpResponse;");
+  lines.push("import java.time.Duration;");
+  lines.push("");
+  lines.push(
+    "HttpClient client = HttpClient.newBuilder()",
+  );
+  lines.push("        .connectTimeout(Duration.ofSeconds(30))");
+  lines.push("        .build();");
+  lines.push("");
+  lines.push("HttpRequest.Builder builder = HttpRequest.newBuilder()");
+  lines.push("        .uri(URI.create(" + httpJavaString(cfg.url) + "))");
+  lines.push("        .timeout(Duration.ofSeconds(30));");
+  r.headers.forEach(function (pair) {
+    lines.push(
+      "builder.header(" +
+        httpJavaString(pair[0]) +
+        ", " +
+        httpJavaString(pair[1]) +
+        ");",
+    );
+  });
+  const bodyPublisher = r.usesBody
+    ? "HttpRequest.BodyPublishers.ofString(" + httpJavaString(r.body) + ")"
+    : "HttpRequest.BodyPublishers.noBody()";
+  if (r.method === "GET" && !r.usesBody) {
+    lines.push("builder.GET();");
+  } else if (r.method === "DELETE" && !r.usesBody) {
+    lines.push("builder.DELETE();");
+  } else {
+    lines.push(
+      "builder.method(" +
+        httpJavaString(r.method) +
+        ", " +
+        bodyPublisher +
+        ");",
+    );
+  }
+  lines.push("");
+  lines.push("HttpRequest request = builder.build();");
+  lines.push(
+    "HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());",
+  );
+  lines.push("System.out.println(response.statusCode());");
+  lines.push("System.out.println(response.body());");
+  return lines.join("\n");
+}
+
+/**
+ * 生成代码片段
+ * @param {object} cfg 请求配置
+ * @param {string} lang curl|fetch|axios|java
+ * @param {object} [opts] cURL 附加选项
+ */
+function httpBuildCode(cfg, lang, opts) {
+  const l = (lang || "curl").toLowerCase();
+  if (l === "fetch") return httpBuildFetchCode(cfg);
+  if (l === "axios") return httpBuildAxiosCode(cfg);
+  if (l === "java") return httpBuildJavaHttpClientCode(cfg);
+  return httpBuildCurlFromConfig(cfg, opts);
+}
+
+/** 词法分析 curl 命令参数 */
+function httpTokenize(s) {
+  const tokens = [];
+  let i = 0;
+  while (i < s.length) {
+    while (i < s.length && /\s/.test(s[i])) i++;
+    if (i >= s.length) break;
+    if (s[i] === "'") {
+      let buf = "";
+      i++;
+      while (i < s.length && s[i] !== "'") {
+        if (
+          s[i] === "\\" &&
+          i + 1 < s.length &&
+          (s[i + 1] === "'" || s[i + 1] === "\\")
+        ) {
+          buf += s[i + 1];
+          i += 2;
+        } else {
+          buf += s[i];
+          i++;
+        }
+      }
+      tokens.push(buf);
+      if (i < s.length) i++;
+    } else if (s[i] === '"') {
+      let buf = "";
+      i++;
+      while (i < s.length && s[i] !== '"') {
+        if (s[i] === "\\" && i + 1 < s.length) {
+          buf += s[i + 1];
+          i += 2;
+        } else {
+          buf += s[i];
+          i++;
+        }
+      }
+      tokens.push(buf);
+      if (i < s.length) i++;
+    } else {
+      let j = i;
+      while (j < s.length && !/\s/.test(s[j]) && s[j] !== "'" && s[j] !== '"')
+        j++;
+      tokens.push(s.slice(i, j));
+      i = j;
+    }
+  }
+  return tokens;
+}
+
+/**
+ * 纯函数：解析 cURL → 结构化请求
+ * @returns {{ ok:boolean, error?:string, method?:string, url?:string, headers?:Array, queries?:Array, body?:string, bodyType?:string, auth?:object, opts?:object }}
+ */
+function httpParseCurl(text) {
+  if (text == null || !String(text).trim()) {
+    return { ok: false, error: "请粘贴 curl 命令" };
+  }
+  let raw = String(text).trim();
+  if (!/^curl(\s|$)/i.test(raw)) {
+    return { ok: false, error: "请输入以 curl 开头的命令" };
+  }
+  let s = raw.replace(/^curl\s+/i, "");
+  s = s
+    .replace(/\\\r?\n/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  let method = "GET";
+  const xMatch = s.match(/(?:-X|--request)\s+('([^']*)'|"([^"]*)"|(\S+))/);
+  if (xMatch) {
+    method = (xMatch[2] || xMatch[3] || xMatch[4] || "GET").toUpperCase();
+    s = s.replace(/(?:-X|--request)\s+('([^']*)'|"([^"]*)"|(\S+))/, "");
+  }
+
+  const tokens = httpTokenize(s);
+  const headers = [];
+  const queries = [];
+  let bodyVal = "";
+  let hasBodyFlag = false;
+  let bodyType = "none";
+  let url = "";
+  let useGetFlag = false;
+  const auth = { type: "none" };
+  const opts = {
+    follow: false,
+    insecure: false,
+    compressed: false,
+    verbose: false,
+    includeHeader: false,
+    silent: false,
+    timeout: "",
+    ua: "",
+  };
+
+  let i = 0;
+  while (i < tokens.length) {
+    const t = tokens[i];
+    if (t === "-H" || t === "--header") {
+      const v = tokens[++i] || "";
+      const idx = v.indexOf(":");
+      if (idx > 0) {
+        const k = v.slice(0, idx).trim();
+        const val = v.slice(idx + 1).trim();
+        if (k.toLowerCase() === "authorization") {
+          if (/^Bearer\s+/i.test(val)) {
+            auth.type = "bearer";
+            auth.token = val.replace(/^Bearer\s+/i, "");
+          } else if (/^Basic\s+/i.test(val)) {
+            auth.type = "basic";
+            try {
+              const decoded = decodeURIComponent(
+                escape(atob(val.replace(/^Basic\s+/i, ""))),
+              );
+              const idx2 = decoded.indexOf(":");
+              auth.user = idx2 >= 0 ? decoded.slice(0, idx2) : decoded;
+              auth.password = idx2 >= 0 ? decoded.slice(idx2 + 1) : "";
+            } catch (e) {
+              headers.push([k, val]);
+            }
+          } else {
+            headers.push([k, val]);
+          }
+        } else {
+          headers.push([k, val]);
+        }
+      }
+      i++;
+    } else if (t === "-G" || t === "--get") {
+      useGetFlag = true;
+      i++;
+    } else if (
+      t === "-d" ||
+      t === "--data" ||
+      t === "--data-raw" ||
+      t === "--data-binary" ||
+      t === "--data-urlencode"
+    ) {
+      let v = tokens[++i] || "";
+      if (t === "--data-urlencode") {
+        try {
+          v = decodeURIComponent(v);
+        } catch (e) {
+          /* keep */
+        }
+      }
+      if (useGetFlag) {
+        v.split("&").forEach(function (seg) {
+          const eq = seg.indexOf("=");
+          if (eq > 0) queries.push([seg.slice(0, eq), seg.slice(eq + 1)]);
+          else if (seg) queries.push([seg, ""]);
+        });
+      } else {
+        bodyVal += (bodyVal ? "&" : "") + v;
+        hasBodyFlag = true;
+        bodyType = t === "--data-urlencode" ? "form" : "raw";
+      }
+      i++;
+    } else if (t === "-L" || t === "--location") {
+      opts.follow = true;
+      i++;
+    } else if (t === "-k" || t === "--insecure") {
+      opts.insecure = true;
+      i++;
+    } else if (t === "--compressed") {
+      opts.compressed = true;
+      i++;
+    } else if (t === "-v" || t === "--verbose") {
+      opts.verbose = true;
+      i++;
+    } else if (t === "-i" || t === "--include") {
+      opts.includeHeader = true;
+      i++;
+    } else if (t === "-s" || t === "--silent") {
+      opts.silent = true;
+      i++;
+    } else if (t === "--max-time" || t === "--connect-timeout") {
+      opts.timeout = tokens[++i] || "";
+      i++;
+    } else if (
+      t.startsWith("--max-time=") ||
+      t.startsWith("--connect-timeout=")
+    ) {
+      opts.timeout = t.split("=")[1] || "";
+      i++;
+    } else if (t === "-A" || t === "--user-agent") {
+      opts.ua = tokens[++i] || "";
+      i++;
+    } else if (t.startsWith("-A=")) {
+      opts.ua = t.slice(3);
+      i++;
+    } else if (t === "--url") {
+      url = tokens[++i] || url;
+      i++;
+    } else if (t.startsWith("--url=")) {
+      url = t.slice("--url=".length);
+      i++;
+    } else if (t.startsWith("-")) {
+      if (t.includes("=")) i++;
+      else if (tokens[i + 1] && !tokens[i + 1].startsWith("-")) i += 2;
+      else i++;
+    } else {
+      if (!url) url = t;
+      i++;
+    }
+  }
+
+  if (url) {
+    try {
+      const u = new URL(url);
+      u.searchParams.forEach(function (v, k) {
+        queries.push([k, v]);
+      });
+      url = u.origin + u.pathname;
+    } catch (e) {
+      /* keep raw url */
+    }
+  }
+
+  let finalBodyType = "none";
+  let finalBody = "";
+  if (hasBodyFlag) {
+    finalBody = bodyVal;
+    if (bodyType === "form" && bodyVal.includes("=")) {
+      finalBodyType = "form";
+    } else if (bodyType === "raw") {
+      const trimmed = bodyVal.trim();
+      let isJson = false;
+      if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+        try {
+          JSON.parse(trimmed);
+          isJson = true;
+        } catch (e) {
+          isJson = false;
+        }
+      }
+      finalBodyType = isJson ? "json" : "raw";
+    } else {
+      finalBodyType = bodyType === "form" ? "form" : "raw";
+    }
+  }
+
+  if (hasBodyFlag && method === "GET" && !useGetFlag) {
+    method = "POST";
+  }
+
+  return {
+    ok: true,
+    method: method,
+    url: url,
+    headers: headers,
+    queries: queries,
+    body: finalBody,
+    bodyType: finalBodyType,
+    auth: auth,
+    opts: opts,
+  };
+}
+
 function httpCollectAuthHeaders() {
   const type = document.getElementById("httpAuthType");
   if (!type) return [];
@@ -299,6 +792,20 @@ function httpBuildFetchOpts(cfg) {
   return opts;
 }
 
+function httpCollectCurlOpts() {
+  return {
+    follow: !!(document.getElementById("httpOptFollow") || {}).checked,
+    insecure: !!(document.getElementById("httpOptInsecure") || {}).checked,
+    compressed: !!(document.getElementById("httpOptCompressed") || {}).checked,
+    verbose: !!(document.getElementById("httpOptVerbose") || {}).checked,
+    includeHeader: !!(document.getElementById("httpOptIncludeHeader") || {})
+      .checked,
+    silent: !!(document.getElementById("httpOptSilent") || {}).checked,
+    timeout: (document.getElementById("httpOptTimeout") || {}).value || "",
+    ua: ((document.getElementById("httpOptUA") || {}).value || "").trim(),
+  };
+}
+
 function httpGenerate() {
   const out = document.getElementById("httpCurlOutput");
   const stats = document.getElementById("httpStats");
@@ -312,43 +819,7 @@ function httpGenerate() {
     return;
   }
 
-  const parts = [];
-  const usesBody = cfg.body && !cfg.isBodyDisabled && cfg.bodyType !== "none";
-  if (cfg.isBodyDisabled) parts.push(`curl ${httpShellQuote(cfg.url)}`);
-  else parts.push(`curl -X ${cfg.method} ${httpShellQuote(cfg.url)}`);
-
-  cfg.headers.forEach(([k, v]) =>
-    parts.push(`  -H ${httpShellQuote(k + ": " + v)}`),
-  );
-
-  if (usesBody) {
-    if (cfg.bodyType === "json" && !cfg.hasContentType)
-      parts.push(`  -H ${httpShellQuote("Content-Type: application/json")}`);
-    else if (cfg.bodyType === "form" && !cfg.hasContentType)
-      parts.push(
-        `  -H ${httpShellQuote("Content-Type: application/x-www-form-urlencoded")}`,
-      );
-    else if (cfg.bodyType === "text" && !cfg.hasContentType)
-      parts.push(`  -H ${httpShellQuote("Content-Type: text/plain")}`);
-    parts.push(`  --data-raw ${httpShellQuote(cfg.body)}`);
-  }
-
-  if (document.getElementById("httpOptFollow").checked) parts.push("  -L");
-  if (document.getElementById("httpOptInsecure").checked) parts.push("  -k");
-  if (document.getElementById("httpOptCompressed").checked)
-    parts.push("  --compressed");
-  if (document.getElementById("httpOptVerbose").checked) parts.push("  -v");
-  if (document.getElementById("httpOptIncludeHeader").checked)
-    parts.push("  -i");
-  if (document.getElementById("httpOptSilent").checked) parts.push("  -s");
-
-  const timeout = parseInt(document.getElementById("httpOptTimeout").value, 10);
-  if (timeout > 0) parts.push(`  --max-time ${timeout}`);
-
-  const ua = document.getElementById("httpOptUA").value.trim();
-  if (ua) parts.push(`  -A ${httpShellQuote(ua)}`);
-
-  const cmd = parts.join(" \\\n");
+  const cmd = httpBuildCurlFromConfig(cfg, httpCollectCurlOpts());
   out.textContent = httpFormatOutput(cmd);
   out.className = "output-box http-curl-output";
   out.dataset.cmd = cmd;
@@ -363,8 +834,39 @@ function httpGenerate() {
   stats.style.display = "flex";
 
   httpSwitchSideTabByName("curl");
+  httpGenerateCode(true);
 
   setStatus("已生成 cURL 命令");
+}
+
+function httpSetCodeLang(lang) {
+  _httpCodeLang = lang || "curl";
+  const root = document.getElementById("httpCodeLangToggle");
+  if (root) {
+    root.querySelectorAll(".http-fmt-btn").forEach(function (btn) {
+      btn.classList.toggle(
+        "active",
+        (btn.getAttribute("data-lang") || "") === _httpCodeLang,
+      );
+    });
+  }
+  httpGenerateCode(true);
+}
+
+function httpGenerateCode(silent) {
+  const out = document.getElementById("httpCodeOutput");
+  if (!out) return;
+  const cfg = httpBuildRequestConfig();
+  if (!cfg.url) {
+    out.textContent = "请输入 URL";
+    out.className = "output-box http-curl-output error";
+    if (!silent) toast("请输入 URL");
+    return;
+  }
+  const code = httpBuildCode(cfg, _httpCodeLang, httpCollectCurlOpts());
+  out.textContent = code;
+  out.className = "output-box http-curl-output";
+  if (!silent) setStatus("已生成 " + _httpCodeLang + " 代码");
 }
 
 let _httpLastBlob = null;
@@ -991,281 +1493,75 @@ function httpClearCurlInput() {
 
 function httpParse() {
   const text = document.getElementById("httpCurlInput").value.trim();
-  if (!text) {
-    toast("请粘贴 curl 命令");
+  const parsed = httpParseCurl(text);
+  if (!parsed.ok) {
+    toast(parsed.error || "解析失败");
     return;
   }
-  if (!/^curl(\s|$)/i.test(text)) {
-    toast("请输入以 curl 开头的命令");
-    return;
-  }
-  let s = text.replace(/^curl\s+/i, "");
-  s = s
-    .replace(/\\\r?\n/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
 
-  let method = "GET";
-  const xMatch = s.match(/(?:-X|--request)\s+('([^']*)'|"([^"]*)"|(\S+))/);
-  if (xMatch) {
-    method = (xMatch[2] || xMatch[3] || xMatch[4] || "GET").toUpperCase();
-    s = s.replace(/(?:-X|--request)\s+('([^']*)'|"([^"]*)"|(\S+))/, "");
-  }
   const methodSel = document.getElementById("httpMethod");
-  methodSel.value = method;
+  methodSel.value = parsed.method;
   httpMethodChange(methodSel);
 
-  const tokens = httpTokenize(s);
-  const headers = [];
-  const queries = [];
-  let bodyVal = "";
-  let hasBodyFlag = false;
-  let bodyType = "none";
-  let url = "";
-  let useGetFlag = false;
-  const opts = {
-    follow: false,
-    insecure: false,
-    compressed: false,
-    verbose: false,
-    includeHeader: false,
-    silent: false,
-    timeout: "",
-    ua: "",
-  };
-
-  let i = 0;
-  while (i < tokens.length) {
-    const t = tokens[i];
-    if (t === "-H" || t === "--header") {
-      const v = tokens[++i] || "";
-      const idx = v.indexOf(":");
-      if (idx > 0) {
-        const k = v.slice(0, idx).trim();
-        const val = v.slice(idx + 1).trim();
-        if (k.toLowerCase() === "authorization") {
-          if (/^Bearer\s+/i.test(val)) {
-            document.getElementById("httpAuthType").value = "bearer";
-            httpAuthChange();
-            const el = document.getElementById("httpAuthBearer");
-            if (el) el.value = val.replace(/^Bearer\s+/i, "");
-          } else if (/^Basic\s+/i.test(val)) {
-            document.getElementById("httpAuthType").value = "basic";
-            httpAuthChange();
-            try {
-              const decoded = decodeURIComponent(
-                escape(atob(val.replace(/^Basic\s+/i, ""))),
-              );
-              const idx2 = decoded.indexOf(":");
-              const u = document.getElementById("httpAuthUser");
-              const p = document.getElementById("httpAuthPwd");
-              if (u) u.value = idx2 >= 0 ? decoded.slice(0, idx2) : decoded;
-              if (p) p.value = idx2 >= 0 ? decoded.slice(idx2 + 1) : "";
-            } catch (e) {}
-          } else {
-            headers.push([k, val]);
-          }
-        } else {
-          headers.push([k, val]);
-        }
-      }
-      i++;
-    } else if (t === "-G" || t === "--get") {
-      useGetFlag = true;
-      i++;
-    } else if (
-      t === "-d" ||
-      t === "--data" ||
-      t === "--data-raw" ||
-      t === "--data-binary" ||
-      t === "--data-urlencode"
-    ) {
-      let v = tokens[++i] || "";
-      if (t === "--data-urlencode") {
-        try {
-          v = decodeURIComponent(v);
-        } catch (e) {}
-      }
-      if (useGetFlag) {
-        v.split("&").forEach(function (seg) {
-          const eq = seg.indexOf("=");
-          if (eq > 0) queries.push([seg.slice(0, eq), seg.slice(eq + 1)]);
-          else if (seg) queries.push([seg, ""]);
-        });
-      } else {
-        bodyVal += (bodyVal ? "&" : "") + v;
-        hasBodyFlag = true;
-        bodyType = t === "--data-urlencode" ? "form" : "raw";
-      }
-      i++;
-    } else if (t === "-L" || t === "--location") {
-      opts.follow = true;
-      i++;
-    } else if (t === "-k" || t === "--insecure") {
-      opts.insecure = true;
-      i++;
-    } else if (t === "--compressed") {
-      opts.compressed = true;
-      i++;
-    } else if (t === "-v" || t === "--verbose") {
-      opts.verbose = true;
-      i++;
-    } else if (t === "-i" || t === "--include") {
-      opts.includeHeader = true;
-      i++;
-    } else if (t === "-s" || t === "--silent") {
-      opts.silent = true;
-      i++;
-    } else if (t === "--max-time" || t === "--connect-timeout") {
-      opts.timeout = tokens[++i] || "";
-      i++;
-    } else if (
-      t.startsWith("--max-time=") ||
-      t.startsWith("--connect-timeout=")
-    ) {
-      opts.timeout = t.split("=")[1] || "";
-      i++;
-    } else if (t === "-A" || t === "--user-agent") {
-      opts.ua = tokens[++i] || "";
-      i++;
-    } else if (t.startsWith("-A=")) {
-      opts.ua = t.slice(3);
-      i++;
-    } else if (t === "--url") {
-      url = tokens[++i] || url;
-      i++;
-    } else if (t.startsWith("--url=")) {
-      url = t.slice("--url=".length);
-      i++;
-    } else if (t.startsWith("-")) {
-      if (t.includes("=")) i++;
-      else if (tokens[i + 1] && !tokens[i + 1].startsWith("-")) i += 2;
-      else i++;
-    } else {
-      if (!url) url = t;
-      i++;
-    }
-  }
-
-  if (url) {
-    try {
-      const u = new URL(url);
-      u.searchParams.forEach((v, k) => queries.push([k, v]));
-      url = u.origin + u.pathname;
-    } catch (e) {}
+  document.getElementById("httpAuthType").value = "none";
+  httpAuthChange();
+  if (parsed.auth && parsed.auth.type === "bearer") {
+    document.getElementById("httpAuthType").value = "bearer";
+    httpAuthChange();
+    const el = document.getElementById("httpAuthBearer");
+    if (el) el.value = parsed.auth.token || "";
+  } else if (parsed.auth && parsed.auth.type === "basic") {
+    document.getElementById("httpAuthType").value = "basic";
+    httpAuthChange();
+    const u = document.getElementById("httpAuthUser");
+    const p = document.getElementById("httpAuthPwd");
+    if (u) u.value = parsed.auth.user || "";
+    if (p) p.value = parsed.auth.password || "";
   }
 
   document.getElementById("httpHeadersList").innerHTML = "";
-  if (headers.length) headers.forEach(([k, v]) => httpAddHeader(k, v));
+  if (parsed.headers.length)
+    parsed.headers.forEach(function (pair) {
+      httpAddHeader(pair[0], pair[1]);
+    });
   else httpAddHeader();
 
   document.getElementById("httpQueryList").innerHTML = "";
-  if (queries.length) queries.forEach(([k, v]) => httpAddQuery(k, v));
+  if (parsed.queries.length)
+    parsed.queries.forEach(function (pair) {
+      httpAddQuery(pair[0], pair[1]);
+    });
   else httpAddQuery();
 
-  document.getElementById("httpUrl").value = url;
+  document.getElementById("httpUrl").value = parsed.url || "";
+  document.getElementById("httpBody").value = parsed.body || "";
+  document.getElementById("httpBodyType").value = parsed.bodyType || "none";
+  httpBodyTypeChange();
 
-  if (hasBodyFlag) {
-    document.getElementById("httpBody").value = bodyVal;
-    if (bodyType === "form" && bodyVal.includes("=")) {
-      document.getElementById("httpBodyType").value = "form";
-    } else if (bodyType === "raw") {
-      const trimmed = bodyVal.trim();
-      if (
-        (trimmed.startsWith("{") || trimmed.startsWith("[")) &&
-        (function () {
-          try {
-            JSON.parse(trimmed);
-            return true;
-          } catch (e) {
-            return false;
-          }
-        })()
-      ) {
-        document.getElementById("httpBodyType").value = "json";
-      } else {
-        document.getElementById("httpBodyType").value = "raw";
-      }
-    } else {
-      document.getElementById("httpBodyType").value =
-        bodyType === "form" ? "form" : "raw";
-    }
-  } else {
-    document.getElementById("httpBody").value = "";
-    document.getElementById("httpBodyType").value = "none";
-  }
-
-  document.getElementById("httpOptFollow").checked = opts.follow;
-  document.getElementById("httpOptInsecure").checked = opts.insecure;
-  document.getElementById("httpOptCompressed").checked = opts.compressed;
-  document.getElementById("httpOptVerbose").checked = opts.verbose;
-  document.getElementById("httpOptIncludeHeader").checked = opts.includeHeader;
-  document.getElementById("httpOptSilent").checked = opts.silent;
-  document.getElementById("httpOptTimeout").value = opts.timeout;
-  document.getElementById("httpOptUA").value = opts.ua;
+  const opts = parsed.opts || {};
+  document.getElementById("httpOptFollow").checked = !!opts.follow;
+  document.getElementById("httpOptInsecure").checked = !!opts.insecure;
+  document.getElementById("httpOptCompressed").checked = !!opts.compressed;
+  document.getElementById("httpOptVerbose").checked = !!opts.verbose;
+  document.getElementById("httpOptIncludeHeader").checked = !!opts.includeHeader;
+  document.getElementById("httpOptSilent").checked = !!opts.silent;
+  document.getElementById("httpOptTimeout").value = opts.timeout || "";
+  document.getElementById("httpOptUA").value = opts.ua || "";
 
   httpUpdateTabCounts();
   httpMethodChange(document.getElementById("httpMethod"));
+  httpGenerateCode(true);
 
   toast(
     "解析完成: " +
-      method +
+      parsed.method +
       " / " +
-      headers.length +
+      parsed.headers.length +
       " Header / " +
-      queries.length +
+      parsed.queries.length +
       " Query",
   );
   setStatus("cURL 解析完成");
-}
-
-function httpTokenize(s) {
-  const tokens = [];
-  let i = 0;
-  while (i < s.length) {
-    while (i < s.length && /\s/.test(s[i])) i++;
-    if (i >= s.length) break;
-    if (s[i] === "'") {
-      let buf = "";
-      i++;
-      while (i < s.length && s[i] !== "'") {
-        if (
-          s[i] === "\\" &&
-          i + 1 < s.length &&
-          (s[i + 1] === "'" || s[i + 1] === "\\")
-        ) {
-          buf += s[i + 1];
-          i += 2;
-        } else {
-          buf += s[i];
-          i++;
-        }
-      }
-      tokens.push(buf);
-      if (i < s.length) i++;
-    } else if (s[i] === '"') {
-      let buf = "";
-      i++;
-      while (i < s.length && s[i] !== '"') {
-        if (s[i] === "\\" && i + 1 < s.length) {
-          buf += s[i + 1];
-          i += 2;
-        } else {
-          buf += s[i];
-          i++;
-        }
-      }
-      tokens.push(buf);
-      if (i < s.length) i++;
-    } else {
-      let j = i;
-      while (j < s.length && !/\s/.test(s[j]) && s[j] !== "'" && s[j] !== '"')
-        j++;
-      tokens.push(s.slice(i, j));
-      i = j;
-    }
-  }
-  return tokens;
 }
 
 function httpFillSample() {
@@ -1310,6 +1606,21 @@ function httpReset() {
   document.getElementById("httpCurlOutput").className =
     "output-box http-curl-output";
   document.getElementById("httpCurlOutput").dataset.cmd = "";
+  const codeOut = document.getElementById("httpCodeOutput");
+  if (codeOut) {
+    codeOut.textContent = "点击「生成」或切换语言查看代码片段";
+    codeOut.className = "output-box http-curl-output";
+  }
+  _httpCodeLang = "curl";
+  const langToggle = document.getElementById("httpCodeLangToggle");
+  if (langToggle) {
+    langToggle.querySelectorAll(".http-fmt-btn").forEach(function (btn) {
+      btn.classList.toggle(
+        "active",
+        (btn.getAttribute("data-lang") || "") === "curl",
+      );
+    });
+  }
   document.getElementById("httpStats").style.display = "none";
   document.getElementById("httpResponse").style.display = "none";
   document.getElementById("httpResponseEmpty").style.display = "flex";
@@ -1611,5 +1922,16 @@ if (typeof module !== "undefined" && module.exports) {
     httpSanitizeBody,
     httpSanitizeHistoryItem,
     httpSanitizeJsonValue,
+    httpTokenize,
+    httpParseCurl,
+    httpShellQuote,
+    httpBuildCurlFromConfig,
+    httpBuildFetchCode,
+    httpBuildAxiosCode,
+    httpBuildJavaHttpClientCode,
+    httpBuildCode,
+    httpResolveCodeHeaders,
+    httpJsString,
+    httpJavaString,
   };
 }

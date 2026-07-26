@@ -1,0 +1,49 @@
+<!-- 密码强度检测 -->
+<div class="tool-panel" id="panel-pwdstrength">
+    <div class="pwdstrength-tip">
+        纯本地检测，密码不会上传或离开浏览器。可用于评估口令复杂度与常见弱口令风险。
+    </div>
+    <div class="mb-8">
+        <div class="label">密码</div>
+        <div class="pwdstrength-input-row">
+            <input id="pwdstrengthInput" placeholder="输入待检测密码" type="password" autocomplete="off" spellcheck="false">
+            <button class="outline sm" id="pwdstrengthToggle" onclick="pwdStrengthToggleVisibility()" type="button">显示</button>
+        </div>
+    </div>
+    <div class="toolbar">
+        <button onclick="pwdStrengthCheck()">检测强度</button>
+        <button class="outline" onclick="pwdStrengthClear()"
+                style="margin-left:auto;border-color:var(--danger);color:var(--danger)">清空
+        </button>
+    </div>
+
+    <div class="pwdstrength-result">
+        <div class="pwdstrength-score-row">
+            <div>
+                <div class="label">得分</div>
+                <div class="pwdstrength-score" id="pwdstrengthScore">—</div>
+            </div>
+            <div>
+                <div class="label">等级</div>
+                <div class="pwdstrength-label pwdstrength-level-empty" id="pwdstrengthLabel">未输入</div>
+            </div>
+        </div>
+        <div class="pwdstrength-bar">
+            <div class="pwdstrength-bar-fill pwdstrength-level-empty" id="pwdstrengthBar" style="width:0%"></div>
+        </div>
+    </div>
+
+    <div class="mb-8" style="margin-top:16px">
+        <div class="label">检查项</div>
+        <div class="pwdstrength-checks" id="pwdstrengthChecks">
+            <div class="pwdstrength-check-empty">输入密码后显示检查项</div>
+        </div>
+    </div>
+
+    <div class="mb-8">
+        <div class="label">改进建议</div>
+        <ul class="pwdstrength-tips" id="pwdstrengthTips">
+            <li>请输入待检测的密码</li>
+        </ul>
+    </div>
+</div>

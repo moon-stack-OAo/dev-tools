@@ -214,6 +214,20 @@ const tools = [
     cat: "format",
   },
   {
+    id: "graphqlfmt",
+    icon: "bi-diagram-3",
+    name: "GraphQL 格式化",
+    desc: "GraphQL 查询/mutation 美化 / 压缩 / 括号检查",
+    cat: "format",
+  },
+  {
+    id: "openapiview",
+    icon: "bi-file-earmark-code",
+    name: "OpenAPI 预览",
+    desc: "OpenAPI 3 / Swagger 2 摘要预览 / paths 浏览",
+    cat: "format",
+  },
+  {
     id: "base64",
     icon: "bi-lock",
     name: "Base64",
@@ -327,6 +341,13 @@ const tools = [
     cat: "security",
   },
   {
+    id: "pwdstrength",
+    icon: "bi-shield-fill-check",
+    name: "密码强度检测",
+    desc: "本地检测密码强度 / 改进建议",
+    cat: "security",
+  },
+  {
     id: "aes",
     icon: "bi-shield-check",
     name: "AES 加解密",
@@ -387,6 +408,13 @@ const tools = [
     icon: "bi-fingerprint",
     name: "UUID 生成",
     desc: "UUID v4 / v7 / 批量生成",
+    cat: "generate",
+  },
+  {
+    id: "ulid",
+    icon: "bi-hash",
+    name: "ULID / NanoID",
+    desc: "ULID / NanoID 生成与 ULID 解析",
     cat: "generate",
   },
   {
@@ -459,6 +487,14 @@ const tools = [
     desc: "宽高比 / 档位匹配 / 按比例反算",
     cat: "generate",
   },
+  {
+    id: "bytesize",
+    icon: "bi-hdd",
+    name: "字节单位换算",
+    desc: "B/KB/MB/GB ↔ KiB/MiB/GiB，1000/1024 进制",
+    cat: "generate",
+  },
+
   {
     id: "jsontopojo",
     icon: "bi-arrow-repeat",
@@ -593,6 +629,13 @@ const tools = [
     cat: "text",
   },
   {
+    id: "htmlmd",
+    icon: "bi-arrow-left-right",
+    name: "HTML ↔ Markdown",
+    desc: "HTML 与 Markdown 互转",
+    cat: "text",
+  },
+  {
     id: "webfmt",
     icon: "bi-filetype-html",
     name: "Web 格式化",
@@ -607,12 +650,20 @@ const tools = [
     cat: "text",
   },
   {
+    id: "barcode",
+    icon: "bi-upc",
+    name: "条形码生成",
+    desc: "Code128 / Code39 条形码生成下载",
+    cat: "text",
+  },
+  {
     id: "tplreplace",
     icon: "bi-braces-asterisk",
     name: "模板替换",
     desc: "多种语法字符串变量替换",
     cat: "text",
   },
+
   {
     id: "cron",
     icon: "bi-clock-history",
@@ -638,7 +689,7 @@ const tools = [
     id: "httpdebug",
     icon: "bi-cloud-arrow-down",
     name: "HTTP 调试",
-    desc: "发送请求 / 查看响应 / cURL 生成解析",
+    desc: "发送请求 / cURL 解析 / Fetch·Axios·Java 代码生成",
     cat: "debug",
   },
   {
@@ -879,7 +930,15 @@ const tools = [
     desc: "JUnit 5 注解与断言速查",
     cat: "reference",
   },
+  {
+    id: "flowableref",
+    icon: "bi-diagram-2",
+    name: "Flowable / BPMN",
+    desc: "Flowable API / 任务 / 监听器 / 表前缀速查",
+    cat: "reference",
+  },
 ];
+
 
 // === Tools Map for O(1) lookup ===
 const toolsById = new Map(tools.map(t => [t.id, t]));
@@ -1213,12 +1272,14 @@ const toolLibs = {
   yaml: ["js-yaml.min.js"],
   jsonconvert: ["js-yaml.min.js", "fxp.min.js"],
   propertiesfmt: ["js-yaml.min.js"],
+  openapiview: ["js-yaml.min.js"],
   sql: ["sql-formatter.min.js"],
   sqldialect: ["sql-formatter.min.js"],
   jsonpath: ["jsonpath.min.js"],
   jsonschema: ["ajv.min.js"],
   diff: ["diff.min.js"],
   markdown: ["marked.min.js"],
+  htmlmd: ["marked.min.js"],
   webfmt: ["js-beautify.min.js"],
   qrcode: ["qrcode.min.js"],
   qrdecode: ["jsqr.min.js"],

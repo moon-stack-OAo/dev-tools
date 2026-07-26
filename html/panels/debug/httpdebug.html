@@ -193,6 +193,9 @@
                 <div class="api-tab" onclick="httpSwitchSideTab(this,'curl')">
                     <i class="bi bi-terminal"></i> cURL 命令
                 </div>
+                <div class="api-tab" onclick="httpSwitchSideTab(this,'code');httpGenerateCode()">
+                    <i class="bi bi-code-slash"></i> 代码
+                </div>
             </div>
 
             <div class="api-tab-panel active http-side-panel" id="http-response-panel">
@@ -259,6 +262,35 @@
                         <button class="outline" onclick="httpClearCurlInput()">清空
                         </button>
                     </div>
+                </div>
+            </div>
+
+            <div class="api-tab-panel http-side-panel" id="http-code-panel">
+                <div class="http-curl-header" style="justify-content:space-between;align-items:center">
+                    <div class="http-format-toggle" id="httpCodeLangToggle">
+                        <button class="http-fmt-btn active" data-lang="curl"
+                                onclick="httpSetCodeLang('curl')" title="cURL">cURL
+                        </button>
+                        <button class="http-fmt-btn" data-lang="fetch"
+                                onclick="httpSetCodeLang('fetch')" title="Fetch API">Fetch
+                        </button>
+                        <button class="http-fmt-btn" data-lang="axios"
+                                onclick="httpSetCodeLang('axios')" title="Axios">Axios
+                        </button>
+                        <button class="http-fmt-btn" data-lang="java"
+                                onclick="httpSetCodeLang('java')" title="Java HttpClient">Java
+                        </button>
+                    </div>
+                    <button class="outline sm" onclick="httpGenerateCode()" title="根据表单重新生成">生成</button>
+                </div>
+                <div class="copy-wrap" style="flex:1;display:flex;flex-direction:column;min-height:0">
+                    <button class="copy-btn http-copy-fixed" onclick="copyText('httpCodeOutput')">复制</button>
+                    <pre class="output-box http-curl-output" id="httpCodeOutput"
+                         style="flex:1">点击「生成」或切换语言查看代码片段</pre>
+                </div>
+                <div class="http-panel-hint" style="margin-top:10px">
+                    <i class="bi bi-info-circle"></i>
+                    根据左侧请求表单生成 cURL / Fetch / Axios / Java HttpClient 代码，可直接复制使用
                 </div>
             </div>
         </div>

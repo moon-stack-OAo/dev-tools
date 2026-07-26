@@ -1,0 +1,29 @@
+<!-- OpenAPI / Swagger 摘要预览 -->
+<div class="tool-panel" id="panel-openapiview">
+    <div class="alert jf-alert">
+        ⚠️ 纯前端摘要预览，支持 OpenAPI 3 / Swagger 2（JSON 或 YAML）。
+        展示 title、version、servers、paths 列表；点击 path 可查看 parameters / responses 简要信息。不嵌入完整 Swagger UI。
+    </div>
+
+    <div class="toolbar jf-options nfm-toolbar">
+        <button class="btn btn-primary" onclick="oavParse()">解析预览</button>
+        <button class="outline" onclick="oavSample()">加载示例</button>
+        <button class="outline" onclick="oavClear()">清空</button>
+        <span class="nfm-status" id="oavStatus" style="margin-left:auto"></span>
+    </div>
+
+    <div class="grid-2col oav-grid">
+        <div class="oav-col">
+            <div class="label">OpenAPI / Swagger 输入（JSON 或 YAML）</div>
+            <textarea class="json-input" id="oavInput" placeholder="粘贴 OpenAPI 3 或 Swagger 2 文档..."
+                      spellcheck="false" style="min-height:420px"></textarea>
+        </div>
+        <div class="oav-col">
+            <div class="label">预览摘要</div>
+            <div class="oav-summary" id="oavSummary"></div>
+            <div class="oav-meta" id="oavMeta"></div>
+            <div class="oav-paths" id="oavPaths"></div>
+            <div class="oav-detail" id="oavDetail"></div>
+        </div>
+    </div>
+</div>

@@ -1,6 +1,155 @@
-/* 安全工具：jwt / jwtgen / hash / hmac / hashext / random / aes / rsa / bcrypt / gmsm / pbkdf2 / certparser
+/* 安全工具：jwt / jwtgen / hash / hmac / hashext / random / pwdstrength / aes / rsa / bcrypt / gmsm / pbkdf2 / certparser
  * tab-bar / tab-content 已由 base.css 提供。
  */
+
+/* ============== 密码强度检测 ============== */
+.pwdstrength-tip {
+    font-size: 12px;
+    color: var(--text-dim);
+    background: rgba(var(--accent2-rgb), 0.06);
+    border: 1px solid rgba(var(--accent2-rgb), 0.2);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+.pwdstrength-input-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.pwdstrength-input-row input {
+    flex: 1;
+    min-width: 0;
+}
+
+.pwdstrength-result {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+}
+
+.pwdstrength-score-row {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.pwdstrength-score {
+    font-size: 28px;
+    font-weight: 700;
+    font-family: var(--font);
+    color: var(--text-dim);
+    line-height: 1.2;
+}
+
+.pwdstrength-label {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.pwdstrength-bar {
+    height: 8px;
+    background: var(--bg-input);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.pwdstrength-bar-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 4px;
+    transition: width 0.25s ease, background 0.2s;
+    background: var(--text-muted);
+}
+
+.pwdstrength-level-empty {
+    color: var(--text-muted);
+}
+
+.pwdstrength-level-weak {
+    color: var(--danger);
+}
+
+.pwdstrength-bar-fill.pwdstrength-level-weak {
+    background: var(--danger);
+}
+
+.pwdstrength-level-medium {
+    color: var(--warning);
+}
+
+.pwdstrength-bar-fill.pwdstrength-level-medium {
+    background: var(--warning);
+}
+
+.pwdstrength-level-strong {
+    color: var(--accent);
+}
+
+.pwdstrength-bar-fill.pwdstrength-level-strong {
+    background: var(--accent);
+}
+
+.pwdstrength-level-very-strong {
+    color: var(--success);
+}
+
+.pwdstrength-bar-fill.pwdstrength-level-very-strong {
+    background: var(--success);
+}
+
+.pwdstrength-checks {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 6px 12px;
+}
+
+.pwdstrength-check {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    padding: 4px 0;
+}
+
+.pwdstrength-check.pass {
+    color: var(--success);
+}
+
+.pwdstrength-check.fail {
+    color: var(--text-muted);
+}
+
+.pwdstrength-check-icon {
+    font-weight: 700;
+    width: 14px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.pwdstrength-check-empty {
+    font-size: 12px;
+    color: var(--text-muted);
+    padding: 4px 0;
+}
+
+.pwdstrength-tips {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.7;
+}
+
+.pwdstrength-tips li {
+    margin: 2px 0;
+}
 
 /* ============== T8 X.509 证书解析 ============== */
 #panel-certparser textarea {

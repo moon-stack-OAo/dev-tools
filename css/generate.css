@@ -668,6 +668,16 @@
     color: var(--accent2);
 }
 
+.uuid-badge-ulid {
+    background: rgba(var(--accent-rgb), 0.15);
+    color: var(--accent);
+}
+
+.uuid-badge-nanoid {
+    background: rgba(var(--accent2-rgb), 0.15);
+    color: var(--accent2);
+}
+
 .uuid-val {
     flex: 1;
     min-width: 0;
@@ -732,6 +742,23 @@
 }
 
 #panel-uuid.active > .uuid-list {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+/* ULID / NanoID 面板：列表区域独立滚动，工具栏固定 */
+#panel-ulid.active {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#panel-ulid.active > .toolbar {
+    flex-shrink: 0;
+}
+
+#panel-ulid.active > .uuid-list {
     flex: 1;
     overflow-y: auto;
     min-height: 0;

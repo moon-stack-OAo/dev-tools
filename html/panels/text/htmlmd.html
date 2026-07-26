@@ -1,0 +1,30 @@
+<div class="tool-panel" id="panel-htmlmd">
+    <div class="toolbar">
+        <select id="htmlmdDir" style="width:160px">
+            <option value="md2html">Markdown → HTML</option>
+            <option value="html2md">HTML → Markdown</option>
+        </select>
+        <button onclick="htmlmdConvert()">转换</button>
+        <button class="outline" onclick="htmlmdCopy()">复制</button>
+        <button class="outline" onclick="htmlmdClear()">清空</button>
+        <button class="outline" onclick="htmlmdLoadSample()">加载示例</button>
+        <span style="flex:1"></span>
+        <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:4px">
+            <input id="htmlmdShowPreview" style="accent-color:var(--accent)" type="checkbox"> 预览
+        </label>
+    </div>
+    <div class="mb-8">
+        <div class="label" id="htmlmdInputLabel">Markdown 输入</div>
+        <textarea class="json-input" id="htmlmdInput"
+                  placeholder="# Hello&#10;&#10;**加粗** *斜体* `代码`&#10;&#10;- 列表项"></textarea>
+    </div>
+    <div class="copy-wrap mb-8">
+        <div class="label" id="htmlmdOutputLabel">HTML 输出</div>
+        <button class="copy-btn" onclick="htmlmdCopy()">复制</button>
+        <div class="output-box" id="htmlmdOutput"></div>
+    </div>
+    <div id="htmlmdPreviewWrap" style="display:none">
+        <div class="label">预览</div>
+        <div class="md-preview" id="htmlmdPreview"></div>
+    </div>
+</div>

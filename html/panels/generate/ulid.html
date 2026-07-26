@@ -1,0 +1,59 @@
+<div class="tool-panel" id="panel-ulid">
+    <div class="toolbar">
+        <select id="ulidType" onchange="ulidTypeChange()">
+            <option value="ulid">ULID</option>
+            <option value="nanoid">NanoID</option>
+        </select>
+        <input
+            id="ulidCount"
+            max="100"
+            min="1"
+            placeholder="数量"
+            style="width: 80px"
+            title="生成数量"
+            type="number"
+            value="1"
+        />
+        <span id="ulidNanoOpts" style="display: none; align-items: center; gap: 6px">
+            <input
+                id="ulidNanoLen"
+                max="64"
+                min="2"
+                placeholder="长度"
+                style="width: 72px"
+                title="NanoID 长度"
+                type="number"
+                value="21"
+            />
+            <select id="ulidNanoAlpha" title="字母表">
+                <option value="default">默认 (A-Za-z0-9)</option>
+                <option value="url-safe">URL-Safe (A-Za-z0-9_-)</option>
+            </select>
+        </span>
+        <button onclick="genUlid()">生成</button>
+        <button class="outline" id="ulidCopyAllBtn" onclick="ulidCopyAll()" style="display: none">全部复制</button>
+        <button
+            class="outline"
+            onclick="ulidClear()"
+            style="margin-left: auto; border-color: var(--danger); color: var(--danger)"
+        >
+            清空
+        </button>
+    </div>
+    <div class="uuid-list" id="ulidList">
+        <div class="uuid-empty">点击「生成」按钮创建 ULID / NanoID</div>
+    </div>
+    <div class="toolbar" style="margin-top: 14px">
+        <input
+            id="ulidParseInput"
+            placeholder="粘贴 ULID 解析时间戳（26 位 Crockford Base32）"
+            style="flex: 1; min-width: 240px"
+            type="text"
+        />
+        <button onclick="ulidParseInput()">解析</button>
+    </div>
+    <div class="copy-wrap" style="margin-top: 8px">
+        <div class="label">解析结果</div>
+        <div class="output-box" id="ulidParseOutput">请粘贴 ULID 后点击「解析」</div>
+    </div>
+</div>

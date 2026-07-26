@@ -1,0 +1,45 @@
+<!-- GraphQL 格式化 -->
+<div class="tool-panel" id="panel-graphqlfmt">
+    <div class="alert jf-alert">
+        ⚠️ 轻量 GraphQL 美化器。支持 query / mutation / subscription 缩进与压缩；基础括号、引号平衡检查。
+        不做完整 GraphQL 语法校验。
+    </div>
+
+    <div class="toolbar jf-options nfm-toolbar">
+        <label style="display:flex;align-items:center;gap:6px">
+            缩进：
+            <select id="gqlIndent">
+                <option selected value="2">2 空格</option>
+                <option value="4">4 空格</option>
+                <option value="\\t">Tab</option>
+            </select>
+        </label>
+        <button class="outline" onclick="_gqlClear()" style="margin-left:auto">清空</button>
+        <button class="outline" onclick="_gqlSample()">加载示例</button>
+    </div>
+
+    <div class="grid-2col nfm-grid">
+        <div style="display:flex;flex-direction:column;min-width:0">
+            <div class="label">GraphQL 输入</div>
+            <textarea class="json-input" id="gqlInput" placeholder="粘贴 GraphQL query / mutation..."
+                      spellcheck="false" style="min-height:360px"></textarea>
+        </div>
+        <div style="display:flex;flex-direction:column;min-width:0">
+            <div class="label">格式化 / 压缩结果</div>
+            <textarea class="json-input" id="gqlOutput" readonly spellcheck="false"
+                      style="background:var(--bg-input);min-height:360px"></textarea>
+        </div>
+    </div>
+
+    <div class="copy-wrap" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="_gqlFormat()">格式化</button>
+        <button class="btn" onclick="_gqlMinify()">压缩</button>
+        <button class="btn" onclick="_gqlCopy()">复制</button>
+        <span class="nfm-status" id="gqlStatus"></span>
+    </div>
+
+    <div class="nfm-lint-section">
+        <div class="label" style="margin-top:14px">括号 / 引号检查</div>
+        <div class="nfm-lint-list" id="gqlBalance"><span class="nfm-lint-empty">未检查</span></div>
+    </div>
+</div>
