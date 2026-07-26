@@ -1,0 +1,38 @@
+<div class="tool-panel" id="panel-json2code">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div>
+            <div class="label">目标语言</div>
+            <select id="j2cLang" style="width:150px">
+                <option value="typescript">TypeScript</option>
+                <option value="kotlin">Kotlin</option>
+                <option value="go">Go</option>
+            </select>
+        </div>
+        <div class="flex-1">
+            <div class="label">根类型名</div>
+            <input id="j2cRoot" placeholder="Root" type="text" value="Root">
+        </div>
+        <div id="j2cTsStyleWrap">
+            <div class="label">TS 风格</div>
+            <select id="j2cTsStyle" style="width:130px">
+                <option value="interface">interface</option>
+                <option value="type">type</option>
+            </select>
+        </div>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入 JSON</div>
+        <textarea class="json-input" id="j2cInput"
+                  placeholder='{"name":"张三","age":25,"active":true}'></textarea>
+    </div>
+    <div class="toolbar">
+        <button onclick="j2cGenerate()">生成代码</button>
+        <button class="outline" onclick="j2cLoadSample()" type="button">示例</button>
+        <button class="outline" onclick="j2cClear()" type="button">清空</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label" id="j2cOutLabel">生成的 TypeScript 代码</div>
+        <button class="copy-btn" onclick="j2cCopy()">复制</button>
+        <div class="output-box" id="j2cOutput" style="min-height:120px;max-height:480px"></div>
+    </div>
+</div>

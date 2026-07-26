@@ -1,0 +1,24 @@
+<div class="tool-panel" id="panel-toml">
+    <div class="alert jf-alert">
+        支持常用 TOML 子集：key=value、[table]、[[array of tables]]、基础/字面量字符串、数字、布尔、数组、内联表。
+        不支持：日期时间、多行字面量字符串、点分键深层合并的全部边界、表内重复键复杂冲突策略等。
+    </div>
+    <div class="toolbar">
+        <button onclick="tomlFormat()">格式化 TOML</button>
+        <button class="outline" onclick="tomlToJson()">TOML → JSON</button>
+        <button class="outline" onclick="jsonToToml()">JSON → TOML</button>
+        <button class="outline" onclick="tomlValidate()">校验</button>
+        <button class="outline" onclick="tomlSample()" style="margin-left:auto">示例</button>
+        <button class="outline" onclick="tomlClear()">清空</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入</div>
+        <textarea class="json-input" id="tomlInput"
+                  placeholder='title = "demo"&#10;&#10;[server]&#10;port = 8080'></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('tomlOutput')">复制</button>
+        <div class="output-box" id="tomlOutput"></div>
+    </div>
+</div>

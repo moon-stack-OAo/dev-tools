@@ -1,0 +1,39 @@
+<div class="tool-panel" id="panel-base32">
+    <div class="toolbar">
+        <label style="color:var(--text-dim);font-size:12px">算法</label>
+        <select id="b32Algo" onchange="base32OnAlgoChange()">
+            <option value="base32" selected>Base32 (RFC 4648)</option>
+            <option value="base58">Base58 (Bitcoin)</option>
+        </select>
+        <label style="color:var(--text-dim);font-size:12px;margin-left:8px">输入</label>
+        <select id="b32InputFmt">
+            <option value="text" selected>文本</option>
+            <option value="hex">Hex</option>
+        </select>
+        <label style="color:var(--text-dim);font-size:12px;margin-left:8px">解码输出</label>
+        <select id="b32OutputFmt">
+            <option value="text" selected>文本</option>
+            <option value="hex">Hex</option>
+        </select>
+        <label id="b32PaddingLabel" style="margin-left:8px"><input id="b32Padding" checked
+                                                                   style="accent-color:var(--accent)"
+                                                                   type="checkbox"> Base32 Padding</label>
+    </div>
+    <div class="toolbar">
+        <button onclick="base32DoEncode()">编码</button>
+        <button class="outline" onclick="base32DoDecode()">解码</button>
+        <button class="outline" onclick="base32Clear()"
+                style="margin-left:auto;border-color:var(--danger);color:var(--danger)">清空
+        </button>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入（文本 / Hex 或 Base32/Base58 串）</div>
+        <textarea class="json-input" id="b32Input"
+                  placeholder="编码：输入文本或 Hex 字节&#10;解码：粘贴 Base32 / Base58 字符串"></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('b32Output')">复制</button>
+        <div class="output-box" id="b32Output"></div>
+    </div>
+</div>

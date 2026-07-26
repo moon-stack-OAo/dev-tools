@@ -102,6 +102,13 @@ const tools = [
     cat: "format",
   },
   {
+    id: "toml",
+    icon: "bi-filetype-toml",
+    name: "TOML 格式化",
+    desc: "TOML 格式化 / JSON 互转 / 校验",
+    cat: "format",
+  },
+  {
     id: "propertiesfmt",
     icon: "bi-file-earmark-text",
     name: "Properties 格式化",
@@ -263,12 +270,20 @@ const tools = [
     cat: "encode",
   },
   {
+    id: "base32",
+    icon: "bi-file-binary",
+    name: "Base32 / Base58",
+    desc: "Base32 (RFC 4648) / Base58 (Bitcoin) 编解码",
+    cat: "encode",
+  },
+  {
     id: "protobuf",
     icon: "bi-file-earmark-binary",
     name: "Protobuf 解码",
     desc: "Protobuf ↔ JSON / Base64 / Hex",
     cat: "encode",
   },
+
   {
     id: "jwt",
     icon: "bi-key",
@@ -316,6 +331,13 @@ const tools = [
     icon: "bi-shield-check",
     name: "AES 加解密",
     desc: "AES 对称加密 / 解密",
+    cat: "security",
+  },
+  {
+    id: "jasypt",
+    icon: "bi-lock",
+    name: "Jasypt 加解密",
+    desc: "PBEWithMD5AndDES 配置加解密 / ENC(...)",
     cat: "security",
   },
   {
@@ -442,6 +464,13 @@ const tools = [
     icon: "bi-arrow-repeat",
     name: "JSON → Java",
     desc: "JSON 生成 Java POJO 类",
+    cat: "codegen",
+  },
+  {
+    id: "json2code",
+    icon: "bi-code-slash",
+    name: "JSON → 多语言",
+    desc: "JSON 生成 TypeScript / Kotlin / Go",
     cat: "codegen",
   },
   {

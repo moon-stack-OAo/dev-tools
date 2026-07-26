@@ -1,0 +1,40 @@
+<!-- Jasypt / 配置加解密 -->
+<div class="tool-panel" id="panel-jasypt">
+    <div class="mb-8" style="color:var(--text-dim);font-size:12px;line-height:1.6;padding:10px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg-secondary,transparent)">
+        <b>兼容说明</b>：实现 jasypt 默认算法 <code>PBEWithMD5AndDES</code>（迭代默认 1000）。
+        输出格式 <code>Base64(salt||ciphertext)</code>，可选 <code>ENC(...)</code> 包装，可与
+        <code>StandardPBEStringEncryptor</code> / 老版 Spring 配置加解密互操作。
+        <br>不支持 <code>PBEWITHHMACSHA512ANDAES_256</code> 等新算法；DES 仅用于遗留配置，勿用于新系统。
+    </div>
+    <div class="flex gap-6 mb-8" style="align-items:flex-end;flex-wrap:wrap">
+        <div class="flex-1" style="min-width:180px">
+            <div class="label">密码（jasypt.encryptor.password）</div>
+            <input id="jasyptPwd" placeholder="加密密码" type="text">
+        </div>
+        <div style="width:120px">
+            <div class="label">迭代次数</div>
+            <input id="jasyptIterations" min="1" type="number" value="1000">
+        </div>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;padding-bottom:6px">
+            <input checked id="jasyptWrapEnc" type="checkbox">
+            <span style="font-size:13px">输出 ENC(...)</span>
+        </label>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入（明文或密文 Base64 / ENC(...)）</div>
+        <textarea class="json-input" id="jasyptInput" placeholder="明文配置值，或 jasypt 密文"></textarea>
+    </div>
+    <div class="toolbar">
+        <button onclick="jasyptEncryptUi()">加密</button>
+        <button class="outline" onclick="jasyptDecryptUi()">解密</button>
+        <button class="outline" onclick="jasyptLoadExample()">示例</button>
+        <button class="outline" onclick="jasyptClear()"
+                style="margin-left:auto;border-color:var(--danger);color:var(--danger)">清空
+        </button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('jasyptOutput')">复制</button>
+        <div class="output-box" id="jasyptOutput" style="word-break:break-all"></div>
+    </div>
+</div>
