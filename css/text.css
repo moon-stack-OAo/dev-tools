@@ -102,6 +102,36 @@
     width: 120px;
 }
 
+/* 正则速查表容器 */
+.regex-cheat {
+    margin-top: 12px;
+    padding: 0 2px;
+    border-top: 1px solid var(--border);
+}
+
+.regex-cheat > summary {
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    padding: 8px 0;
+    user-select: none;
+    list-style: none;
+}
+
+.regex-cheat > summary::-webkit-details-marker {
+    display: none;
+}
+
+.regex-cheat > summary:hover {
+    color: var(--accent2);
+}
+
+.regex-cheat[open] > summary {
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+}
+
 /* 正则速查表 */
 .regex-ref-row {
     display: flex;

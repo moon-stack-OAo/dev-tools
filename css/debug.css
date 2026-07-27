@@ -608,6 +608,18 @@
     border-color: var(--border-light);
 }
 
+.cron-description {
+    padding: 8px 12px;
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    min-height: 20px;
+    line-height: 1.5;
+}
+
 /* ============== HTTP 调试工具 ============== */
 .http-topbar {
     display: flex;
@@ -839,6 +851,16 @@
 .http-option-row:hover {
     border-color: var(--border-light);
     background: var(--bg-hover);
+}
+
+.http-option-row-highlight {
+    border-color: rgba(var(--accent-rgb), 0.35);
+    background: rgba(var(--accent-rgb), 0.06);
+}
+
+.http-option-row-highlight:hover {
+    border-color: var(--accent);
+    background: var(--accent-glow);
 }
 
 .http-option-row input[type='checkbox'] {

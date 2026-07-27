@@ -354,6 +354,26 @@ button:disabled {
     box-shadow: none !important;
 }
 
+/* class="btn btn-primary"：与默认 button 主色一致 */
+button.btn-primary,
+.btn.btn-primary {
+    background: linear-gradient(
+            135deg,
+            var(--accent),
+            var(--btn-accent-end, color-mix(in srgb, var(--accent), #000 25%))
+    );
+    color: #0a0a1a;
+    border: none;
+    box-shadow: 0 2px 10px rgba(var(--accent-rgb), 0.2);
+    font-weight: 600;
+}
+
+button.btn-primary:hover,
+.btn.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(var(--accent-rgb), 0.35);
+}
+
 .btn-group {
     display: flex;
     gap: 6px;

@@ -570,15 +570,20 @@ function _jseWriteText(s) {
 
 function _jseSetStatus(msg, isErr) {
   const el = document.getElementById("jseStatus");
-  el.textContent = msg;
-  el.style.color = isErr ? "var(--danger)" : "var(--text-dim)";
+  if (!el) return;
+  el.textContent = msg || "";
+  el.classList.remove("jse-err", "jse-ok");
+  if (msg) {
+    el.classList.add(isErr ? "jse-err" : "jse-ok");
+  }
 }
 
 function _jseRenderPreview(rows, max) {
   const wrap = document.getElementById("jsePreview");
+  if (!wrap) return;
   if (!rows || !rows.length) {
     wrap.innerHTML =
-      '<div style="padding:18px;color:var(--text-dim);font-size:12.5px;text-align:center">无数据预览</div>';
+      '<div class="jse-empty"><i class="bi bi-table"></i><p>无数据预览</p><span>转换或粘贴内容后显示表格</span></div>';
     return;
   }
   const limit = Math.min(max || _jsePreviewLimit, rows.length);
@@ -587,8 +592,7 @@ function _jseRenderPreview(rows, max) {
     Object.keys(rows[i] || {}).forEach((k) => keySet.add(k));
   }
   const keys = Array.from(keySet);
-  let html =
-    '<div style="overflow:auto;max-height:380px;border:1px solid var(--border);border-radius:6px">';
+  let html = '<div class="jse-table-scroll">';
   html += '<table class="jse-table"><thead><tr>';
   html += '<th class="jse-rownum">#</th>';
   keys.forEach((k) => {
@@ -616,13 +620,45 @@ function _jseRenderPreview(rows, max) {
   html += "</tbody></table></div>";
   if (rows.length > limit) {
     html +=
-      '<div style="padding:6px 10px;font-size:11.5px;color:var(--text-dim);background:var(--bg-card);border:1px solid var(--border);border-top:none;border-radius:0 0 6px 6px">显示前 ' +
+      '<div class="jse-preview-more">显示前 ' +
       limit +
-      " 行,共 " +
+      " 行 · 共 " +
       rows.length +
       " 行</div>";
   }
   wrap.innerHTML = html;
+}
+
+function _jseSyncSeg(kind) {
+  const sel = document.getElementById(kind === "src" ? "jseSource" : "jseTarget");
+  if (!sel) return;
+  const attr = kind === "src" ? "data-jse-src" : "data-jse-tgt";
+  document.querySelectorAll("#panel-jsonexcel [" + attr + "]").forEach((btn) => {
+    btn.classList.toggle("active", btn.getAttribute("data-val") === sel.value);
+  });
+}
+
+function _jseBindSegClicks() {
+  document.querySelectorAll("#panel-jsonexcel [data-jse-src]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const sel = document.getElementById("jseSource");
+      if (!sel) return;
+      sel.value = btn.getAttribute("data-val");
+      _jseSyncSeg("src");
+      jseOnSourceChange();
+      sel.dispatchEvent(new Event("change"));
+    });
+  });
+  document.querySelectorAll("#panel-jsonexcel [data-jse-tgt]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const sel = document.getElementById("jseTarget");
+      if (!sel) return;
+      sel.value = btn.getAttribute("data-val");
+      _jseSyncSeg("tgt");
+      jseOnSourceChange();
+      sel.dispatchEvent(new Event("change"));
+    });
+  });
 }
 
 // 主入口:根据源/目标格式互转
@@ -826,8 +862,9 @@ function _jseSetDownloadBuffer(uint8, filename) {
   _jsePendingDownload = { data: uint8, name: filename };
   const btn = document.getElementById("jseDownloadBtn");
   if (btn) {
-    btn.style.display = "";
-    btn.textContent = "下载 " + filename;
+    btn.hidden = false;
+    btn.innerHTML = '<i class="bi bi-download"></i> 下载';
+    btn.title = filename || "output.xlsx";
   }
 }
 
@@ -867,12 +904,11 @@ function jseClear() {
   _jsePendingDownload = null;
   _jseXlsxWorkbook = null;
   const btn = document.getElementById("jseDownloadBtn");
-  if (btn) btn.style.display = "none";
+  if (btn) btn.hidden = true;
   const sel = document.getElementById("jseSheet");
-  if (sel) {
-    sel.innerHTML = "";
-    sel.style.display = "none";
-  }
+  const wrap = document.getElementById("jseSheetWrap");
+  if (sel) sel.innerHTML = "";
+  if (wrap) wrap.hidden = true;
   _jseRenderPreview([], _jsePreviewLimit);
   _jseSetStatus("已清空", false);
 }
@@ -965,10 +1001,11 @@ function jseOnFile(file) {
 
 function _jseFillSheetSelect(names) {
   const sel = document.getElementById("jseSheet");
+  const wrap = document.getElementById("jseSheetWrap");
   if (!sel) return;
   if (!names || names.length <= 1) {
     sel.innerHTML = "";
-    sel.style.display = "none";
+    if (wrap) wrap.hidden = true;
     return;
   }
   sel.innerHTML = names
@@ -977,7 +1014,7 @@ function _jseFillSheetSelect(names) {
         '<option value="' + escapeHtml(n) + '">' + escapeHtml(n) + "</option>",
     )
     .join("");
-  sel.style.display = "";
+  if (wrap) wrap.hidden = false;
 }
 
 function jseOnSheetChange() {
@@ -1000,15 +1037,20 @@ function jseOnSheetChange() {
 
 // 切换源格式时调整 UI(分隔符显隐、文件提示等)
 function jseOnSourceChange() {
-  const src = document.getElementById("jseSource").value;
+  const srcEl = document.getElementById("jseSource");
+  const tgtEl = document.getElementById("jseTarget");
+  if (!srcEl || !tgtEl) return;
+  const src = srcEl.value;
   const sepWrap = document.getElementById("jseSepWrap");
   const sheetWrap = document.getElementById("jseSheetWrap");
-  // CSV 目标/源时显示分隔符
-  const needsSep =
-    src === "csv" || document.getElementById("jseTarget").value === "csv";
+  const needsSep = src === "csv" || tgtEl.value === "csv";
   if (sepWrap) sepWrap.style.display = needsSep ? "" : "none";
-  // XLSX 源时显示 sheet 选择
-  if (sheetWrap) sheetWrap.style.display = src === "xlsx" ? "" : "none";
+  // 仅在已有多 sheet 时由 _jseFillSheetSelect 控制；xlsx 源且无 workbook 时隐藏
+  if (sheetWrap && src !== "xlsx") {
+    sheetWrap.hidden = true;
+  }
+  _jseSyncSeg("src");
+  _jseSyncSeg("tgt");
 }
 
 function jseInit() {
@@ -1021,6 +1063,7 @@ function jseInit() {
       fileInput.value = "";
     });
   }
+  _jseBindSegClicks();
   // 拖拽上传
   const dropZone = document.getElementById("jseDropZone");
   if (dropZone) {
@@ -1066,6 +1109,10 @@ function jseInit() {
     if (!el) return;
     el.addEventListener("change", jseOnSourceChange);
   });
+  const sheetSel = document.getElementById("jseSheet");
+  if (sheetSel) {
+    sheetSel.addEventListener("change", jseOnSheetChange);
+  }
   // 默认加载示例,便于演示
   if (ta && !ta.value) {
     jseLoadSample();
