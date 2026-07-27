@@ -1,0 +1,48 @@
+<div class="tool-panel" id="panel-json2sql">
+    <div class="toolbar" style="flex-wrap:wrap">
+        <button onclick="json2sqlConvert()">生成 INSERT</button>
+        <button class="outline" onclick="json2sqlLoadSample()">示例</button>
+        <button class="outline" onclick="json2sqlClear()">清空</button>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim)">
+            表名
+            <input id="json2sqlTable" style="width:120px" type="text" value="t">
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim)">
+            方言
+            <select id="json2sqlDialect" style="width:120px">
+                <option value="mysql">MySQL</option>
+                <option value="postgres">PostgreSQL</option>
+                <option value="oracle">Oracle</option>
+                <option value="sqlserver">SQL Server</option>
+            </select>
+        </label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-dim)">
+            <input checked id="json2sqlBatch" style="accent-color:var(--accent)" type="checkbox"> 批量 VALUES
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim)">
+            每批
+            <input id="json2sqlBatchSize" max="1000" min="1" style="width:64px" type="number" value="100">
+        </label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-dim)">
+            <input checked id="json2sqlQuote" style="accent-color:var(--accent)" type="checkbox"> 引用标识符
+        </label>
+    </div>
+    <div class="mb-8">
+        <div class="label">JSON 输入（对象或对象数组）</div>
+        <textarea class="json-input" id="json2sqlInput"
+                  placeholder='[{"id":1,"name":"张三","age":28}]'></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">SQL INSERT</div>
+        <button class="copy-btn" onclick="copyText('json2sqlOutput')">复制</button>
+        <div class="output-box" id="json2sqlOutput" style="min-height:160px"></div>
+    </div>
+    <div style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
+        <strong>说明：</strong>
+        <ul style="margin:4px 0 0 16px">
+            <li>支持单对象或对象数组；字段取并集，缺失列填 NULL</li>
+            <li>嵌套对象/数组会序列化为 JSON 字符串写入</li>
+            <li>方言影响标识符引用与布尔字面量（Oracle 用 1/0）</li>
+        </ul>
+    </div>
+</div>

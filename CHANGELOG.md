@@ -7,58 +7,53 @@
 
 ## [Unreleased]
 
-本轮体验与工程改进（未发布）；工具 **110+**，单元测试 **1093 passed**（53 files）。
+本轮体验与工程改进（未发布）；工具 **144**，单元测试 **1305 passed**（74 files）。
 
 ### 新增
 
-- **Flowable / BPMN 速查增强**：条目补充场景说明与 Java/BPMN/SQL 示例，渲染对齐 Arthas（`js/reference/flowableref.js`）
-- **JSON 输出语法高亮**：格式化/压缩结果 token 着色（key/string/number/boolean/null），无新依赖（`js/format/json.js`）
-- **分辨率比例（resratio）**：宽高比最简约分、消费级分辨率档位匹配、按比例反算
+- **批量新工具（+22）**，工具总数 **122 → 144**：
+    - 格式化：JSON→SQL INSERT、XPath、`.env` 环境变量
+    - 安全：Webhook 签名、OAuth2/PKCE、CVSS 3.1
+    - 生成：SemVer、chmod、金额大写/统一社会信用代码
+    - 代码生成：Maven 坐标、MapStruct、DDL→Mermaid ER、Flyway/Liquibase 骨架
+    - 文本：数据脱敏、行尾/BOM/不可见字符、Markdown 表格/文本树
+    - 调试：Cookie/缓存头、Quartz 定时、SpEL 试算、线程 Dump、日志 Pattern、链路追踪头
+- **Flowable / BPMN 速查增强**：场景说明与 Java/BPMN/SQL 示例（`js/reference/flowableref.js`）
+- **JSON 输出语法高亮**：token 着色，无新依赖（`js/format/json.js`）
+- **分辨率比例（resratio）**：宽高比约分、档位匹配、按比例反算
 
 ### 修复
 
-- **XML 格式化缩进**：修复开闭标签同行导致的缩进错乱（`js/format/xml.js`）
-- **SQL 格式化**：适配 sql-formatter v15（`keywordCase` / `tabWidth`），关键字大写生效（`js/format/sql.js`）
-- **YAML 格式化**：默认保留键顺序，避免 `sortKeys` 静默打乱配置（`js/format/yaml.js`）
-- **HTTP 调试生产 CORS**：Docker 内置 Node 同源代理 + nginx 反代 `/__cors_proxy`；前端探测代理可用性；AbortController 取消请求（`scripts/cors-proxy-server.js`、`Dockerfile`、`js/debug/httpdebug.js`）
-- **解析错误定位**：JSON/XML/YAML 失败时展示行列上下文与 `^` 指针，并在输入框选中错误位置（`js/app.js`）
-- **红测修复**：baseconvert / ip / snowflake / stacktrace 导出纯函数供单测；pdfmerge `jest` → `vi`；收藏逻辑抽至 `js/favorites.js`
-- **loadToolPanel**：加载失败可重试，避免永久卡死
-- **registerInit**：`try/catch/finally` 包裹初始化，异常不阻断工具打开
-- **openTool 并发保护**：generation token 丢弃过期异步结果
-- **alert → toast**：统一用户反馈，避免阻塞式弹窗
+- **导航 hash 路由**：打开工具写入 `#/tool/{id}`，浏览器后退回到首页（`js/app.js`）
+- **顶栏层级**：`.main-header` z-index 提高，避免工具 sticky 搜索栏遮挡首页搜索（`css/layout.css`）
+- **工具图标**：修复无效 Bootstrap Icons 并优化语义匹配
+- **XML / SQL / YAML 格式化**：缩进、sql-formatter v15、YAML 保序
+- **HTTP 调试生产 CORS**：Docker 同源代理 + nginx `/__cors_proxy`；AbortController
+- **解析错误定位**：JSON/XML/YAML 行列上下文与输入框高亮
+- **loadToolPanel / registerInit / openTool**：失败可重试、初始化异常隔离、并发 generation token
 
 ### 视觉 / UX
 
-- **JSON/XML/YAML 左右布局**：输入与输出并排对照，窄屏（≤900px）回退上下（`.fmt-split`）
-- **解析错误输入高亮**：错误行/token 选中 + 红色边框脉冲提示
+- **JSON/XML/YAML 左右布局**（`.fmt-split`，窄屏回退上下）
+- **解析错误输入高亮**：选中 + 红色边框脉冲
 
 ### 安全
 
-- **AES**：按 CBC/GCM 正确派生密钥；Base64 分块编解码，避免大密文栈溢出
-- **HTTP 调试历史**：敏感 header / body 写入历史前脱敏（`js/debug/httpdebug.js`）
-- **Markdown 消毒加强**：收紧 `_mdSanitize`，拦截危险标签与协议（`js/text/markdown.js`）
-- **危险 onclick 移除**：STOMP / docker / gitref / linux 改为 `data-*` + 事件委托
-- **CSP + Permissions-Policy**：`index.html` meta 与 `nginx.conf` 响应头双轨；静态资源 `immutable`，HTML `no-cache`
-- **Base64 边界**：jwt / jwtgen 补齐 padding；rsa / hmac 分块 Base64
-- **jsrun 风险提示**：面板增加可执行代码风险说明
+- **AES / HTTP 历史脱敏 / Markdown 消毒 / CSP**：既有加固保留
+- **Webhook 签名 / OAuth2 PKCE / 数据脱敏**：本地处理，不上传
 
 ### 工程
 
-- **版本 1.1.0**；注册 **resratio**，工具总数 **110**
-- **CI / Pages**：部署工作流优化（超时、产物校验、权限）；触发策略可按 tag / 分支配置
-- **依赖**：`esbuild` 声明为正式依赖；`jsonexcel` 纳入 `toolLibs` 懒加载映射
-- **`.dockerignore`** 收紧构建上下文
-- **LICENSE**：版权声明更新
+- 工具注册表 **144**；首页 / meta / README 数量同步
+- 无新增 npm 依赖（XPath 用浏览器原生 `document.evaluate`）
 
 ### 测试
 
-- 新增 / 补强 aes、hash、hmac、jwt、httpdebug、markdown、xml、json 高亮等单测
-- 全量 **1093 passed**（53 files）
+- 新增 22 个工具相关单测文件；全量 **1305 passed**（74 files）
 
 ### 文档
 
-- README / CHANGELOG 与代码能力对齐（CORS 代理部署说明、工具清单等）
+- README 工具列表与数量同步为 144；CHANGELOG 记录本轮增量
 
 ## [1.1.0] - 2026-06-27
 

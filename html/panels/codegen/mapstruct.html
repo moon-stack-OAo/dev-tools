@@ -1,0 +1,75 @@
+<div class="tool-panel" id="panel-mapstruct">
+    <div class="toolbar" style="flex-wrap:wrap">
+        <button onclick="mapstructGenerate()">生成 Mapper</button>
+        <button class="outline" onclick="mapstructLoadSample()">示例</button>
+        <button class="outline" onclick="mapstructClear()">清空</button>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim)">
+            输入模式
+            <select id="msMode" onchange="mapstructToggleMode()" style="width:120px">
+                <option value="pair">合并（--- 分隔）</option>
+                <option value="split">左右分栏</option>
+            </select>
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim)">
+            componentModel
+            <select id="msComponent" style="width:100px">
+                <option value="spring">spring</option>
+                <option value="default">default</option>
+                <option value="cdi">cdi</option>
+                <option value="jsr330">jsr330</option>
+            </select>
+        </label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-dim)">
+            <input checked id="msIgnoreUnmapped" style="accent-color:var(--accent)" type="checkbox"> IGNORE 未映射
+        </label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-dim)">
+            <input id="msReverse" style="accent-color:var(--accent)" type="checkbox"> 生成反向方法
+        </label>
+    </div>
+    <div class="flex gap-6 mb-8" style="flex-wrap:wrap">
+        <div style="flex:1;min-width:160px">
+            <div class="label">包名（可选）</div>
+            <input id="msPackage" placeholder="com.example.mapper" style="width:100%" type="text">
+        </div>
+        <div style="flex:1;min-width:160px">
+            <div class="label">Mapper 名（可选）</div>
+            <input id="msMapperName" placeholder="默认 SourceMapper" style="width:100%" type="text">
+        </div>
+        <div style="flex:1;min-width:160px">
+            <div class="label">强制忽略目标字段（逗号分隔）</div>
+            <input id="msIgnoreFields" placeholder="password,createdAt" style="width:100%" type="text">
+        </div>
+    </div>
+    <div class="mb-8" id="msPairBox">
+        <div class="label">源类 --- 目标类（中间用 --- 分隔）</div>
+        <textarea class="json-input" id="msPair" placeholder="class User {&#10;  Long id;&#10;  String userName;&#10;}&#10;---&#10;class UserDTO {&#10;  Long id;&#10;  String username;&#10;}"
+                  style="min-height:200px"></textarea>
+    </div>
+    <div class="mb-8" id="msSplitBox" style="display:none">
+        <div class="flex gap-6" style="flex-wrap:wrap">
+            <div style="flex:1;min-width:240px">
+                <div class="label">源类</div>
+                <textarea class="json-input" id="msSource" placeholder="class User {&#10;  Long id;&#10;  String userName;&#10;}"
+                          style="min-height:180px"></textarea>
+            </div>
+            <div style="flex:1;min-width:240px">
+                <div class="label">目标类</div>
+                <textarea class="json-input" id="msTarget" placeholder="class UserDTO {&#10;  Long id;&#10;  String username;&#10;}"
+                          style="min-height:180px"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">MapStruct Mapper</div>
+        <button class="copy-btn" onclick="copyText('msOutput')">复制</button>
+        <div class="output-box" id="msOutput" style="min-height:180px"></div>
+    </div>
+    <div style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
+        <strong>说明：</strong>
+        <ul style="margin:4px 0 0 16px">
+            <li>同名字段自动映射；userName ↔ username 等忽略大小写/下划线会生成 <code>@Mapping</code></li>
+            <li>目标有、源无的字段自动 <code>ignore = true</code></li>
+            <li>支持简化 POJO 或纯字段列表（<code>Long id; String name;</code>）</li>
+        </ul>
+    </div>
+</div>

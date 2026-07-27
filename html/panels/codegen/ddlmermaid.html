@@ -1,0 +1,26 @@
+<div class="tool-panel" id="panel-ddlmermaid">
+    <div class="toolbar" style="flex-wrap:wrap">
+        <button onclick="ddlmermaidGenerate()">生成 Mermaid ER</button>
+        <button class="outline" onclick="ddlmermaidLoadSample()">示例</button>
+        <button class="outline" onclick="ddlmermaidClear()">清空</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">CREATE TABLE DDL（MySQL 风格）</div>
+        <textarea class="json-input" id="dmInput" placeholder="CREATE TABLE users (&#10;  id BIGINT PRIMARY KEY,&#10;  name VARCHAR(64)&#10;);"
+                  style="min-height:220px"></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">Mermaid erDiagram</div>
+        <button class="copy-btn" onclick="copyText('dmOutput')">复制</button>
+        <div class="output-box" id="dmOutput" style="min-height:180px"></div>
+    </div>
+    <div style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
+        <strong>支持：</strong>
+        <ul style="margin:4px 0 0 16px">
+            <li>表名、字段、类型、PRIMARY KEY（行内 / 表级）</li>
+            <li>FOREIGN KEY (...) REFERENCES ... 与列级 REFERENCES</li>
+            <li>多表 DDL 用分号分隔</li>
+            <li>输出可粘贴到支持 Mermaid 的 Markdown / 文档中渲染</li>
+        </ul>
+    </div>
+</div>

@@ -1,6 +1,6 @@
 # Java 开发工具箱
 
-> 一个面向 Java 开发者的**纯前端**在线工具集 —— **122 个工具、8 大分类**
+> 一个面向 Java 开发者的**纯前端**在线工具集 —— **144 个工具、8 大分类**
 > ，覆盖格式化、编解码、安全、生成与转换、代码生成、文本、调试、参考速查。无需后端、无需联网、无需上传数据，所有计算均在浏览器本地完成。支持
 > Vite 开发、Docker 一键部署、Nginx 静态托管，开箱即用。
 
@@ -16,7 +16,7 @@
 - 🚀 **零依赖开箱即用**：纯静态 HTML / CSS / JavaScript，无任何前端框架；业务代码无构建期编译，第三方库通过 Vite + esbuild
   打包为 IIFE
 - 🔒 **数据 100% 本地处理**：所有计算在浏览器内完成，不会上传任何内容到服务器，支持离线使用
-- 🧰 **122 个工具 / 8 大分类**：覆盖 Java 开发日常所需，工具持续扩充
+- 🧰 **144 个工具 / 8 大分类**：覆盖 Java 开发日常所需，工具持续扩充
 - ⭐ **收藏与最近使用**：侧边栏 / 首页星标收藏（`localStorage`），虚拟分类「收藏」「最近使用」
 - 🎨 **深色主题 + 响应式**：桌面 / 平板 / 手机均可使用
 - 🐳 **多种部署方式**：Vite 开发、Docker 容器、Nginx 静态托管、GitHub Pages（`main` 推送触发）
@@ -74,7 +74,7 @@ npm run build     # 输出到 dist/
 
 ```
 ├── index.html                      # 入口（首页；工具脚本/面板/依赖库均按需懒加载）
-├── html/panels/                    # 工具面板（122 个文件，每个工具一个 HTML）
+├── html/panels/                    # 工具面板（144 个文件，每个工具一个 HTML）
 │   ├── format/                     #  格式化：json / yaml / toml / graphqlfmt / openapiview / ...
 │   ├── encode/                     #  编解码：base64 / base32 / charset / protobuf / ...
 │   ├── security/                   #  安全：jwt / jasypt / pwdstrength / hashext / gmsm / ...
@@ -125,34 +125,37 @@ npm run build     # 输出到 dist/
 
 ## 🧰 工具列表
 
-> 工具总数 **122 个**，分为 **8 大业务分类**（另有虚拟分类「收藏」「最近使用」）。下表功能描述与 `js/app.js` 中 `tools[]` 的
+> 工具总数 **144 个**，分为 **8 大业务分类**（另有虚拟分类「收藏」「最近使用」）。下表功能描述与 `js/app.js` 中 `tools[]` 的
 `desc` 保持一致。
 
-### 一、格式化（21）
+### 一、格式化（24）
 
-| 工具               | 功能                                    |
-|------------------|---------------------------------------|
-| JSON 格式化         | 格式化 / 压缩 / 验证 JSON                    |
-| XML 格式化          | 格式化 / 压缩 / 验证 XML                     |
-| YAML 格式化         | YAML 格式化 / JSON 互转                    |
-| TOML 格式化         | TOML 格式化 / JSON 互转 / 校验               |
-| Properties 格式化   | Properties ↔ YAML 互转                  |
-| SQL 格式化          | SQL 美化 / 多方言支持                        |
-| JSON/XML/YAML 互转 | JSON / XML / YAML 格式互相转换              |
-| JSONPath 查询      | JSONPath 表达式查询 / 提取                   |
-| JSON Schema      | JSON Schema 生成 / 校验                   |
-| SQL 方言转换         | MySQL/Oracle/PG/SQLServer 互转          |
-| 数据库类型映射          | MySQL/Oracle/PG/SQLServer 类型对照        |
-| JSON ↔ CSV       | JSON 数组与 CSV 互转                       |
-| SQL 执行计划         | MySQL/PostgreSQL EXPLAIN 格式化 / 可视化    |
-| Nginx 格式化        | Nginx 配置格式化 / 压缩 / Lint               |
-| Java 代码格式化       | Java 美化 / 缩进 / 大括号风格 / import 排序      |
-| DDL Schema 对比    | 两个 DDL 字段粒度 diff / 跨方言                |
-| JSON ↔ Excel/CSV | JSON 数组与 Excel/CSV 批量互转 / 嵌套展平        |
-| 图片转 PDF          | 多张图片合成 PDF / 页面尺寸与方向可配                |
-| PDF 合并 / 拆分      | 多 PDF 合并 / 按页码范围拆分                    |
-| GraphQL 格式化      | GraphQL 查询/mutation 美化 / 压缩 / 括号检查    |
-| OpenAPI 预览       | OpenAPI 3 / Swagger 2 摘要预览 / paths 浏览 |
+| 工具                | 功能                                    |
+|-------------------|---------------------------------------|
+| JSON 格式化          | 格式化 / 压缩 / 验证 JSON                    |
+| XML 格式化           | 格式化 / 压缩 / 验证 XML                     |
+| YAML 格式化          | YAML 格式化 / JSON 互转                    |
+| TOML 格式化          | TOML 格式化 / JSON 互转 / 校验               |
+| Properties 格式化    | Properties ↔ YAML 互转                  |
+| SQL 格式化           | SQL 美化 / 多方言支持                        |
+| JSON/XML/YAML 互转  | JSON / XML / YAML 格式互相转换              |
+| JSONPath 查询       | JSONPath 表达式查询 / 提取                   |
+| JSON Schema       | JSON Schema 生成 / 校验                   |
+| SQL 方言转换          | MySQL/Oracle/PG/SQLServer 互转          |
+| 数据库类型映射           | MySQL/Oracle/PG/SQLServer 类型对照        |
+| JSON ↔ CSV        | JSON 数组与 CSV 互转                       |
+| JSON → SQL INSERT | JSON 对象/数组生成多方言 INSERT                |
+| XPath 查询          | XPath 1.0 查询 / 提取 XML 节点              |
+| SQL 执行计划          | MySQL/PostgreSQL EXPLAIN 格式化 / 可视化    |
+| Nginx 格式化         | Nginx 配置格式化 / 压缩 / Lint               |
+| Java 代码格式化        | Java 美化 / 缩进 / 大括号风格 / import 排序      |
+| DDL Schema 对比     | 两个 DDL 字段粒度 diff / 跨方言                |
+| JSON ↔ Excel/CSV  | JSON 数组与 Excel/CSV 批量互转 / 嵌套展平        |
+| 图片转 PDF           | 多张图片合成 PDF / 页面尺寸与方向可配                |
+| PDF 合并 / 拆分       | 多 PDF 合并 / 按页码范围拆分                    |
+| GraphQL 格式化       | GraphQL 查询/mutation 美化 / 压缩 / 括号检查    |
+| OpenAPI 预览        | OpenAPI 3 / Swagger 2 摘要预览 / paths 浏览 |
+| .env / 环境变量       | .env 解析 / 格式化对齐 / JSON 互转 / 重复 key    |
 
 ### 二、编解码（10）
 
@@ -169,27 +172,30 @@ npm run build     # 输出到 dist/
 | Base32 / Base58 | Base32 (RFC 4648) / Base58 (Bitcoin) 编解码 |
 | Protobuf 解码     | Protobuf ↔ JSON / Base64 / Hex           |
 
-### 三、安全（15）
+### 三、安全（18）
 
-| 工具         | 功能                                             |
-|------------|------------------------------------------------|
-| JWT 解码     | 解析 JWT Header / Payload                        |
-| JWT 生成     | HS256/384/512 + RS256/384/512 签名               |
-| Hash 计算    | MD5 / SHA-1 / SHA-256 / SHA-512                |
-| HMAC 计算    | HMAC-MD5 / SHA-1 / SHA-256 / SHA-384 / SHA-512 |
-| Hash 扩展    | CRC32 / CRC32C / Adler32 / SM3                 |
-| 随机生成器      | 密码 / Token / PIN 生成                            |
-| 密码强度检测     | 本地检测密码强度 / 改进建议                                |
-| AES 加解密    | AES 对称加密 / 解密                                  |
-| Jasypt 加解密 | PBEWithMD5AndDES 配置加解密 / ENC(...)              |
-| RSA 工具     | 密钥生成 / 加解密 / 签名                                |
-| bcrypt 加密  | bcrypt 哈希 / 验证                                 |
-| TOTP 动态令牌  | TOTP/HOTP 本地生成 + URI 解析                        |
-| 国密 SM2/3/4 | 国密 SM2 公钥 / SM3 摘要 / SM4 对称                    |
-| PBKDF2 哈希  | PBKDF2-HMAC-SHA256/512 密码哈希（标准 PHC 格式）         |
-| X.509 证书   | X.509 证书 PEM/DER 解析                            |
+| 工具            | 功能                                             |
+|---------------|------------------------------------------------|
+| JWT 解码        | 解析 JWT Header / Payload                        |
+| JWT 生成        | HS256/384/512 + RS256/384/512 签名               |
+| Hash 计算       | MD5 / SHA-1 / SHA-256 / SHA-512                |
+| HMAC 计算       | HMAC-MD5 / SHA-1 / SHA-256 / SHA-384 / SHA-512 |
+| Hash 扩展       | CRC32 / CRC32C / Adler32 / SM3                 |
+| 随机生成器         | 密码 / Token / PIN 生成                            |
+| 密码强度检测        | 本地检测密码强度 / 改进建议                                |
+| AES 加解密       | AES 对称加密 / 解密                                  |
+| Jasypt 加解密    | PBEWithMD5AndDES 配置加解密 / ENC(...)              |
+| RSA 工具        | 密钥生成 / 加解密 / 签名                                |
+| bcrypt 加密     | bcrypt 哈希 / 验证                                 |
+| TOTP 动态令牌     | TOTP/HOTP 本地生成 + URI 解析                        |
+| 国密 SM2/3/4    | 国密 SM2 公钥 / SM3 摘要 / SM4 对称                    |
+| PBKDF2 哈希     | PBKDF2-HMAC-SHA256/512 密码哈希（标准 PHC 格式）         |
+| X.509 证书      | X.509 证书 PEM/DER 解析                            |
+| Webhook 签名    | HMAC-SHA256 生成/校验 / GitHub / Stripe            |
+| OAuth2 / PKCE | code_verifier / challenge / Authorize URL      |
+| CVSS 3.1 评分   | CVSS v3.1 Base Score / 向量字符串                   |
 
-### 四、生成与转换（13）
+### 四、生成与转换（16）
 
 | 工具            | 功能                                    |
 |---------------|---------------------------------------|
@@ -206,89 +212,105 @@ npm run build     # 输出到 dist/
 | 时区转换          | 跨时区时间换算                               |
 | 分辨率比例         | 宽高比 / 档位匹配 / 按比例反算                    |
 | 字节单位换算        | B/KB/MB/GB ↔ KiB/MiB/GiB，1000/1024 进制 |
+| SemVer 版本     | 解析 / 比较 / 排序 / 范围满足                   |
+| chmod 权限      | 八进制 ↔ rwx 符号 ↔ 权限说明                   |
+| 金额大写 / 信用代码   | 人民币大写 / 统一社会信用代码 / 银行卡 Luhn           |
 
-### 五、代码生成（13）
+### 五、代码生成（17）
 
-| 工具              | 功能                                            |
-|-----------------|-----------------------------------------------|
-| JSON → Java     | JSON 生成 Java POJO 类                           |
-| JSON → 多语言      | JSON 生成 TypeScript / Kotlin / Go              |
-| SQL → Java      | DDL 生成 MyBatis Plus 实体                        |
-| SQL → MyBatis   | DDL 生成 Mapper XML + Interface                 |
-| 邮件模板            | 邮件 HTML 模板生成 / 预览 / 内联 CSS                    |
-| JMH 模板          | JMH 基准测试代码生成                                  |
-| 测试模板            | JUnit 5 + Mockito 测试生成                        |
-| Java Stream 生成  | 可视化组装 Stream API 链 / 自动 import                |
-| JMH 进阶          | JMH 完整注解 / Group / Compiler Control / Timeout |
-| Bean Validation | javax.validation 注解自动推导 / DTO 生成              |
-| PlantUML 类图     | Java/JSON 转 PlantUML 类图源码                     |
-| JS/TS 运行        | 浏览器中执行 JS/TS 代码 / 捕获 console 输出               |
-| Python 运行       | 基于 Pyodide 在浏览器中运行 Python 3 代码 / 捕获 stdout    |
+| 工具                  | 功能                                             |
+|---------------------|------------------------------------------------|
+| JSON → Java         | JSON 生成 Java POJO 类                            |
+| JSON → 多语言          | JSON 生成 TypeScript / Kotlin / Go               |
+| SQL → Java          | DDL 生成 MyBatis Plus 实体                         |
+| SQL → MyBatis       | DDL 生成 Mapper XML + Interface                  |
+| Maven 坐标            | GAV → pom / Gradle / SBT 依赖片段                  |
+| 邮件模板                | 邮件 HTML 模板生成 / 预览 / 内联 CSS                     |
+| JMH 模板              | JMH 基准测试代码生成                                   |
+| 测试模板                | JUnit 5 + Mockito 测试生成                         |
+| Java Stream 生成      | 可视化组装 Stream API 链 / 自动 import                 |
+| JMH 进阶              | JMH 完整注解 / Group / Compiler Control / Timeout  |
+| Bean Validation     | javax.validation 注解自动推导 / DTO 生成               |
+| PlantUML 类图         | Java/JSON 转 PlantUML 类图源码                      |
+| MapStruct 骨架        | 两个 Java 类生成 MapStruct Mapper 接口                |
+| DDL → Mermaid ER    | CREATE TABLE 生成 Mermaid erDiagram              |
+| Flyway/Liquibase 骨架 | Flyway 文件名与 SQL / Liquibase YAML·XML changeset |
+| JS/TS 运行            | 浏览器中执行 JS/TS 代码 / 捕获 console 输出                |
+| Python 运行           | 基于 Pyodide 在浏览器中运行 Python 3 代码 / 捕获 stdout     |
 
-### 六、文本（11）
+### 六、文本（14）
 
-| 工具              | 功能                       |
-|-----------------|--------------------------|
-| 二维码解析           | 图片 → URL / 文本 / WiFi     |
-| 文本对比            | 文本差异对比高亮                 |
-| 正则表达式           | 正则匹配测试 / 分组查看            |
-| 文本统计            | 字符 / 单词 / 行数 / 字节        |
-| CSV 格式化         | CSV 表格化查看 / 校对           |
-| Markdown 预览     | Markdown 实时预览 / 导出 HTML  |
-| HTML ↔ Markdown | HTML 与 Markdown 互转       |
-| Web 格式化         | HTML / CSS / JS 格式化压缩    |
-| 二维码生成           | 文本 / URL 生成二维码下载         |
-| 条形码生成           | Code128 / Code39 条形码生成下载 |
-| 模板替换            | 多种语法字符串变量替换              |
+| 工具                | 功能                       |
+|-------------------|--------------------------|
+| 二维码解析             | 图片 → URL / 文本 / WiFi     |
+| 文本对比              | 文本差异对比高亮                 |
+| 正则表达式             | 正则匹配测试 / 分组查看            |
+| 文本统计              | 字符 / 单词 / 行数 / 字节        |
+| CSV 格式化           | CSV 表格化查看 / 校对           |
+| Markdown 预览       | Markdown 实时预览 / 导出 HTML  |
+| HTML ↔ Markdown   | HTML 与 Markdown 互转       |
+| Web 格式化           | HTML / CSS / JS 格式化压缩    |
+| 二维码生成             | 文本 / URL 生成二维码下载         |
+| 条形码生成             | Code128 / Code39 条形码生成下载 |
+| 模板替换              | 多种语法字符串变量替换              |
+| 数据脱敏              | 手机/身份证/银行卡/邮箱等本地脱敏       |
+| 行尾 / BOM / 不可见字符  | CRLF/LF/CR、BOM、零宽字符检测与转换 |
+| Markdown 表格 / 文本树 | CSV↔MD 表格 / 路径与缩进转树形字符画  |
 
-### 七、调试（11）
+### 七、调试（17）
 
-| 工具        | 功能                                     |
-|-----------|----------------------------------------|
-| Cron 表达式  | Cron 解析 / 下次执行时间                       |
-| WebSocket | WebSocket 连接调试                         |
-| STOMP     | STOMP over WebSocket 调试                |
-| HTTP 调试   | 发送请求 / cURL 解析 / Fetch·Axios·Java 代码生成 |
-| IP 工具     | IP 归属 / 子网计算                           |
-| gRPC 调试   | Metadata 构造 / Protobuf 解码 / 状态码        |
-| URL 解析    | URL 拆解 / 编码解码                          |
-| UA 解析     | User-Agent 解析                          |
-| 日志高亮      | 日志格式化 + 级别着色 + 堆栈折叠                    |
-| 异常分析      | Java 堆栈跟踪解析 / 格式化                      |
-| SSE 调试    | Server-Sent Events 实时调试                |
+| 工具             | 功能                                      |
+|----------------|-----------------------------------------|
+| Cron 表达式       | Cron 解析 / 下次执行时间                        |
+| Quartz / 定时表达式 | Quartz cron 解析 / 与 Unix 差异 / @Scheduled |
+| SpEL 速查 / 试算   | SpEL 语法速查 / 简易表达式求值                     |
+| WebSocket      | WebSocket 连接调试                          |
+| STOMP          | STOMP over WebSocket 调试                 |
+| HTTP 调试        | 发送请求 / cURL 解析 / Fetch·Axios·Java 代码生成  |
+| Cookie / 缓存头   | Cookie·Set-Cookie 解析构造 / Cache-Control  |
+| IP 工具          | IP 归属 / 子网计算                            |
+| gRPC 调试        | Metadata 构造 / Protobuf 解码 / 状态码         |
+| URL 解析         | URL 拆解 / 编码解码                           |
+| UA 解析          | User-Agent 解析                           |
+| 日志高亮           | 日志格式化 + 级别着色 + 堆栈折叠                     |
+| 日志 Pattern     | Logback/Log4j conversion word 解析与模板     |
+| 链路追踪头          | W3C traceparent / B3 生成与解析              |
+| 异常分析           | Java 堆栈跟踪解析 / 格式化                       |
+| 线程 Dump 分析     | jstack 线程状态统计 / 死锁检测                    |
+| SSE 调试         | Server-Sent Events 实时调试                 |
 
 ### 八、参考（28）
 
-| 工具              | 功能                              |
-|-----------------|---------------------------------|
-| Arthas 命令       | Arthas 诊断命令速查                   |
-| Linux 命令        | 常用 Linux 命令速查                   |
-| JVM 参数          | JVM 启动参数速查                      |
-| Redis 命令        | Redis 常用命令速查                    |
-| Spring Cloud    | Spring Cloud Alibaba 组件速查       |
-| Docker 命令       | Docker / K8s 命令速查               |
-| 正则速查表           | 常用正则表达式分类速查                     |
-| Git 命令          | Git 常用操作速查                      |
-| HTTP 状态码        | HTTP 状态码 / 方法速查                 |
-| ASCII 表         | ASCII / 控制字符速查                  |
-| MyBatis Plus    | MyBatis Plus 常用方法速查             |
-| MyBatis XML     | MyBatis 动态 SQL 标签速查             |
-| Lombok 注解       | Lombok 常用注解速查                   |
-| Spring Boot 注解  | Spring Boot 常用注解速查              |
-| 事务传播            | Spring 事务传播行为速查                 |
-| Maven 命令        | Maven 常用命令速查                    |
-| Gradle 命令       | Gradle 常用命令速查                   |
-| JDK 新特性         | JDK 8/11/17/21 新特性速查            |
-| HTTP Header     | HTTP 通用 / 请求 / 响应头速查            |
-| 消息中间件           | Kafka / RabbitMQ / RocketMQ 速查  |
-| MIME 类型         | 文件扩展名 / MIME 类型对照               |
-| 端口号速查           | 常用网络服务端口号对照                     |
-| IDEA 快捷键        | IntelliJ IDEA 快捷键速查             |
-| 设计模式            | 23 种设计模式示例代码                    |
-| GC 调优           | JVM 垃圾回收算法与参数速查                 |
-| Spring Security | Spring Security 注解与配置速查         |
-| JUnit 5         | JUnit 5 注解与断言速查                 |
-| Flowable / BPMN | Flowable API / 任务 / 监听器 / 表前缀速查 |
+| 工具              | 功能                                        |
+|-----------------|-------------------------------------------|
+| Arthas 命令       | Arthas 诊断命令速查                             |
+| Linux 命令        | 常用 Linux 命令速查                             |
+| JVM 参数          | JVM 启动参数速查                                |
+| Redis 命令        | Redis 常用命令速查                              |
+| Spring Cloud    | Spring Cloud Alibaba 组件速查                 |
+| Docker 命令       | Docker / K8s 命令速查                         |
+| 正则速查表           | 常用正则表达式分类速查                               |
+| Git 命令          | Git 常用操作速查                                |
+| HTTP 状态码        | HTTP 状态码 / 方法速查                           |
+| ASCII 表         | ASCII / 控制字符速查                            |
+| MyBatis Plus    | MyBatis Plus 常用方法速查                       |
+| MyBatis XML     | MyBatis 动态 SQL 标签速查                       |
+| Lombok 注解       | Lombok 常用注解速查                             |
+| Spring Boot 注解  | Spring Boot 常用注解速查                        |
+| 事务传播            | Spring 事务传播行为速查                           |
+| Maven 命令        | Maven 常用命令速查                              |
+| Gradle 命令       | Gradle 常用命令速查                             |
+| JDK 新特性         | JDK 8/11/17/21 新特性速查                      |
+| HTTP Header     | HTTP 通用 / 请求 / 响应头速查                      |
+| 消息中间件           | Kafka / RabbitMQ / RocketMQ 速查            |
+| MIME 类型         | 文件扩展名 / MIME 类型对照                         |
+| 端口号速查           | 常用网络服务端口号对照                               |
+| IDEA 快捷键        | IntelliJ IDEA 快捷键速查                       |
+| 设计模式            | 23 种设计模式示例代码                              |
+| GC 调优           | JVM 垃圾回收算法与参数速查                           |
+| Spring Security | Spring Security 注解与配置速查                   |
+| JUnit 5         | JUnit 5 注解与断言速查                           |
+| Flowable / BPMN | Flowable API / BPMN / 监听器 / 表前缀速查（含场景与示例） |
 
 ---
 

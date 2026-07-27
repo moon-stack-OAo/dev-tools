@@ -1,0 +1,21 @@
+<div class="tool-panel" id="panel-chmodcalc">
+    <div class="mb-8">
+        <div class="label">权限（八进制 / rwx / u+x g-w）</div>
+        <input id="chmodInput" placeholder="644 或 rwxr-xr-x 或 u=rwx,g=rx,o=r" style="font-family:var(--font)" type="text">
+    </div>
+    <div class="toolbar">
+        <button onclick="chmodDo()">转换</button>
+        <button class="outline" onclick="chmodQuick('644')">644</button>
+        <button class="outline" onclick="chmodQuick('755')">755</button>
+        <button class="outline" onclick="chmodQuick('777')">777</button>
+        <button class="outline" onclick="chmodQuick('600')">600</button>
+        <button class="outline" onclick="chmodQuick('4755')">4755</button>
+        <button class="outline" onclick="chmodQuick('u+x g-w')" style="margin-left:auto">u+x g-w</button>
+        <button class="outline" onclick="chmodClear()" style="border-color:var(--danger);color:var(--danger)">清空</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">结果</div>
+        <button class="copy-btn" onclick="copyText('chmodOutput')">复制</button>
+        <div class="output-box" id="chmodOutput" style="white-space:pre-wrap;font-family:var(--font)"></div>
+    </div>
+</div>

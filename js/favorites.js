@@ -24,20 +24,23 @@ function toggleFavorite(id) {
         list.push(id);
         try {
             localStorage.setItem(FAVORITES_KEY, JSON.stringify(list));
-        } catch (e) {}
+        } catch (e) {
+        }
         return true;
     }
     list.splice(idx, 1);
     try {
         localStorage.setItem(FAVORITES_KEY, JSON.stringify(list));
-    } catch (e) {}
+    } catch (e) {
+    }
     return false;
 }
 
 function clearFavorites() {
     try {
         localStorage.removeItem(FAVORITES_KEY);
-    } catch (e) {}
+    } catch (e) {
+    }
 }
 
 if (typeof module !== 'undefined' && module.exports) {

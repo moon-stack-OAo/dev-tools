@@ -1,0 +1,55 @@
+<div class="tool-panel" id="panel-mdtable">
+    <div class="toolbar" style="flex-wrap:wrap">
+        <button onclick="mdtCsvToMd()">→ Markdown 表格</button>
+        <button onclick="mdtMdToCsv()">→ CSV</button>
+        <button onclick="mdtToTree()">→ 文本树</button>
+        <button class="outline" onclick="mdtLoadSample()">表格示例</button>
+        <button class="outline" onclick="mdtLoadTreeSample()">树示例</button>
+        <button class="outline" onclick="mdtClear()">清空</button>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim)">
+            分隔符
+            <select id="mdtDelim" style="width:100px">
+                <option value="auto">自动</option>
+                <option value=",">逗号</option>
+                <option value="\t">Tab</option>
+                <option value="|">管道 |</option>
+            </select>
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim)">
+            对齐
+            <select id="mdtAlign" style="width:100px">
+                <option value="left">左 :--</option>
+                <option value="center">中 :--:</option>
+                <option value="right">右 --:</option>
+            </select>
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim)">
+            树模式
+            <select id="mdtTreeMode" style="width:100px">
+                <option value="auto">自动</option>
+                <option value="path">路径</option>
+                <option value="indent">缩进</option>
+            </select>
+        </label>
+    </div>
+
+    <div class="mb-8">
+        <div class="label">输入（CSV / TSV / Markdown 表格 / 路径列表 / 缩进文本）</div>
+        <textarea class="json-input" id="mdtInput" placeholder="name,age,city&#10;Alice,28,Shanghai" style="min-height:140px"></textarea>
+    </div>
+
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('mdtOutput')">复制</button>
+        <div class="output-box" id="mdtOutput" style="min-height:140px;white-space:pre;font-family:var(--font)"></div>
+    </div>
+
+    <div style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
+        <strong>说明：</strong>
+        <ul style="margin:4px 0 0 16px">
+            <li>CSV/TSV/「|」分隔 → Markdown 表格（对齐 :-- / --: / :--:）</li>
+            <li>Markdown 表格 → CSV（自动跳过分隔行）</li>
+            <li>路径列表或缩进文本 → <code>├─ └─ │</code> 树形字符画</li>
+        </ul>
+    </div>
+</div>

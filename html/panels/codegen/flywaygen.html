@@ -1,0 +1,92 @@
+<div class="tool-panel" id="panel-flywaygen">
+    <div class="toolbar" style="flex-wrap:wrap">
+        <button onclick="flyGenFlyway()">生成 Flyway</button>
+        <button onclick="flyGenLiquibase()">生成 Liquibase</button>
+        <button class="outline" onclick="flyGenColumnSql()">列变更 SQL</button>
+        <button class="outline" onclick="flyLoadSample()">示例</button>
+        <button class="outline" onclick="flyClear()">清空</button>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim)">
+            Liquibase
+            <select id="flyLbFormat" style="width:90px">
+                <option value="yaml">YAML</option>
+                <option value="xml">XML</option>
+            </select>
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim)">
+            方言
+            <select id="flyDialect" style="width:110px">
+                <option value="mysql">MySQL</option>
+                <option value="postgres">PostgreSQL</option>
+                <option value="oracle">Oracle</option>
+                <option value="sqlserver">SQL Server</option>
+            </select>
+        </label>
+    </div>
+
+    <div class="mb-8">
+        <div class="flex gap-6" style="flex-wrap:wrap">
+            <div style="width:140px">
+                <div class="label">版本号</div>
+                <input id="flyVersion" placeholder="1.0.1" type="text" value="1">
+            </div>
+            <div style="flex:1;min-width:180px">
+                <div class="label">描述</div>
+                <input id="flyDesc" placeholder="add user email" type="text">
+            </div>
+            <div style="width:120px">
+                <div class="label">作者</div>
+                <input id="flyAuthor" placeholder="dev" type="text" value="dev">
+            </div>
+            <div style="flex:1;min-width:160px">
+                <div class="label">Liquibase changeset id</div>
+                <input id="flyLbId" placeholder="可选，默认时间戳" type="text">
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-8">
+        <div class="flex gap-6" style="flex-wrap:wrap">
+            <div style="flex:1;min-width:120px">
+                <div class="label">表名</div>
+                <input id="flyTable" placeholder="sys_user" type="text">
+            </div>
+            <div style="flex:1;min-width:120px">
+                <div class="label">旧列（rename）</div>
+                <input id="flyOldCol" placeholder="old_col" type="text">
+            </div>
+            <div style="flex:1;min-width:120px">
+                <div class="label">新列（add/rename）</div>
+                <input id="flyNewCol" placeholder="new_col" type="text">
+            </div>
+            <div style="flex:1;min-width:120px">
+                <div class="label">列类型</div>
+                <input id="flyColType" placeholder="VARCHAR(64)" type="text" value="VARCHAR(64)">
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-8">
+        <div class="label">DDL / SQL（可选，写入模板正文）</div>
+        <textarea class="json-input" id="flyDdl" placeholder="ALTER TABLE ..." style="min-height:80px"></textarea>
+    </div>
+
+    <div class="mb-8">
+        <div class="label">文件名 / 输出标识</div>
+        <div class="output-box" id="flyFileName" style="min-height:32px;padding:8px"></div>
+    </div>
+
+    <div class="copy-wrap">
+        <div class="label">生成内容</div>
+        <button class="copy-btn" onclick="copyText('flyOutput')">复制</button>
+        <div class="output-box" id="flyOutput" style="min-height:160px"></div>
+    </div>
+
+    <div style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
+        <strong>说明：</strong>
+        <ul style="margin:4px 0 0 16px">
+            <li>Flyway: <code>V{version}__{desc}.sql</code> + SQL 头注释模板</li>
+            <li>Liquibase: YAML/XML changeset；填新旧列自动 rename/add</li>
+            <li>列变更 SQL 按方言生成，可再用于 Flyway 正文</li>
+        </ul>
+    </div>
+</div>

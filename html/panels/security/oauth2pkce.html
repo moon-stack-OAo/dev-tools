@@ -1,0 +1,60 @@
+<div class="tool-panel" id="panel-oauth2pkce">
+    <div class="flex gap-6 mb-8" style="flex-wrap:wrap;align-items:flex-end">
+        <div style="width:120px">
+            <div class="label">verifier 长度</div>
+            <input id="pkceVerifierLen" max="128" min="43" style="width:100px" type="number" value="64">
+        </div>
+        <button onclick="pkceGenerate()">生成 PKCE</button>
+        <button class="outline" onclick="pkceLoadSample()" style="margin-left:auto">示例</button>
+        <button class="outline" onclick="pkceClear()" style="border-color:var(--danger);color:var(--danger)">清空</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">code_verifier</div>
+        <input id="pkceVerifier" placeholder="生成后显示" readonly style="font-family:var(--font)" type="text">
+    </div>
+    <div class="mb-8">
+        <div class="label">code_challenge (S256)</div>
+        <input id="pkceChallenge" placeholder="生成后显示" readonly style="font-family:var(--font)" type="text">
+    </div>
+    <div class="label" style="margin-bottom:8px">Authorize URL 参数</div>
+    <div class="mb-8">
+        <div class="label">Authorize Endpoint</div>
+        <input id="pkceAuthUrl" placeholder="https://auth.example.com/oauth/authorize" type="text">
+    </div>
+    <div class="mb-8">
+        <div class="label">Token Endpoint（说明用）</div>
+        <input id="pkceTokenUrl" placeholder="https://auth.example.com/oauth/token" type="text">
+    </div>
+    <div class="flex gap-6 mb-8" style="flex-wrap:wrap">
+        <div class="flex-1" style="min-width:200px">
+            <div class="label">client_id</div>
+            <input id="pkceClientId" placeholder="client_id" type="text">
+        </div>
+        <div class="flex-1" style="min-width:200px">
+            <div class="label">redirect_uri</div>
+            <input id="pkceRedirect" placeholder="https://app.example.com/callback" type="text">
+        </div>
+    </div>
+    <div class="flex gap-6 mb-8" style="flex-wrap:wrap">
+        <div class="flex-1" style="min-width:200px">
+            <div class="label">scope</div>
+            <input id="pkceScope" placeholder="openid profile" type="text">
+        </div>
+        <div class="flex-1" style="min-width:200px">
+            <div class="label">state</div>
+            <input id="pkceState" placeholder="随机 state" type="text">
+        </div>
+    </div>
+    <div class="toolbar">
+        <button onclick="pkceBuildUrl()">构造 Authorize URL</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">Authorize URL</div>
+        <input id="pkceAuthResult" readonly style="font-family:var(--font);font-size:12px" type="text">
+    </div>
+    <div class="copy-wrap">
+        <div class="label">详情 / Token 请求说明</div>
+        <button class="copy-btn" onclick="copyText('pkceOutput')">复制</button>
+        <div class="output-box" id="pkceOutput" style="white-space:pre-wrap;word-break:break-all;font-size:13px"></div>
+    </div>
+</div>

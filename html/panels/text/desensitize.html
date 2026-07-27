@@ -1,0 +1,40 @@
+<div class="tool-panel" id="panel-desensitize">
+    <div class="toolbar" style="flex-wrap:wrap">
+        <button onclick="desensitizeRun()">脱敏</button>
+        <button class="outline" onclick="desensitizeLoadSample()">示例</button>
+        <button class="outline" onclick="desensitizeClear()">清空</button>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim)">
+            模式
+            <select id="dsMode" style="width:100px">
+                <option value="text">纯文本</option>
+                <option value="json">JSON</option>
+            </select>
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim);flex:1;min-width:180px">
+            JSON 字段
+            <input id="dsFields" placeholder="空=全部字符串字段；如 phone,email" style="flex:1;min-width:120px"
+                   type="text">
+        </label>
+    </div>
+    <div class="mb-8" style="display:flex;flex-wrap:wrap;gap:10px 16px;font-size:12px;color:var(--text-dim)">
+        <label><input checked data-ds-type="phone" style="accent-color:var(--accent)" type="checkbox"> 手机号</label>
+        <label><input checked data-ds-type="idcard" style="accent-color:var(--accent)" type="checkbox"> 身份证</label>
+        <label><input checked data-ds-type="bank" style="accent-color:var(--accent)" type="checkbox"> 银行卡</label>
+        <label><input checked data-ds-type="email" style="accent-color:var(--accent)" type="checkbox"> 邮箱</label>
+        <label><input checked data-ds-type="ipv4" style="accent-color:var(--accent)" type="checkbox"> IPv4</label>
+        <label><input data-ds-type="name" style="accent-color:var(--accent)" type="checkbox"> 中文姓名（启发式）</label>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入</div>
+        <textarea class="json-input" id="dsInput"
+                  placeholder="粘贴日志、JSON 或含敏感信息的文本"></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">脱敏结果</div>
+        <button class="copy-btn" onclick="copyText('dsOutput')">复制</button>
+        <div class="output-box" id="dsOutput" style="min-height:140px"></div>
+    </div>
+    <div style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
+        <strong>说明：</strong>全部本地处理，不上传。中文姓名为启发式匹配，可能误伤，建议仅在确需时开启。
+    </div>
+</div>

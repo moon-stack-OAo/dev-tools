@@ -1,0 +1,85 @@
+<div class="tool-panel" id="panel-cvss">
+    <div class="label mb-8">CVSS v3.1 Base Metrics</div>
+    <div class="flex gap-6 mb-8" style="flex-wrap:wrap">
+        <div>
+            <div class="label">AV 攻击向量</div>
+            <select id="cvssAV" onchange="cvssCalc()" style="width:140px">
+                <option selected value="N">N Network</option>
+                <option value="A">A Adjacent</option>
+                <option value="L">L Local</option>
+                <option value="P">P Physical</option>
+            </select>
+        </div>
+        <div>
+            <div class="label">AC 攻击复杂度</div>
+            <select id="cvssAC" onchange="cvssCalc()" style="width:120px">
+                <option selected value="L">L Low</option>
+                <option value="H">H High</option>
+            </select>
+        </div>
+        <div>
+            <div class="label">PR 所需权限</div>
+            <select id="cvssPR" onchange="cvssCalc()" style="width:120px">
+                <option selected value="N">N None</option>
+                <option value="L">L Low</option>
+                <option value="H">H High</option>
+            </select>
+        </div>
+        <div>
+            <div class="label">UI 用户交互</div>
+            <select id="cvssUI" onchange="cvssCalc()" style="width:120px">
+                <option selected value="N">N None</option>
+                <option value="R">R Required</option>
+            </select>
+        </div>
+        <div>
+            <div class="label">S 影响范围</div>
+            <select id="cvssS" onchange="cvssCalc()" style="width:140px">
+                <option selected value="U">U Unchanged</option>
+                <option value="C">C Changed</option>
+            </select>
+        </div>
+    </div>
+    <div class="flex gap-6 mb-8" style="flex-wrap:wrap">
+        <div>
+            <div class="label">C 机密性</div>
+            <select id="cvssC" onchange="cvssCalc()" style="width:120px">
+                <option value="N">N None</option>
+                <option value="L">L Low</option>
+                <option selected value="H">H High</option>
+            </select>
+        </div>
+        <div>
+            <div class="label">I 完整性</div>
+            <select id="cvssI" onchange="cvssCalc()" style="width:120px">
+                <option value="N">N None</option>
+                <option value="L">L Low</option>
+                <option selected value="H">H High</option>
+            </select>
+        </div>
+        <div>
+            <div class="label">A 可用性</div>
+            <select id="cvssA" onchange="cvssCalc()" style="width:120px">
+                <option value="N">N None</option>
+                <option value="L">L Low</option>
+                <option selected value="H">H High</option>
+            </select>
+        </div>
+    </div>
+    <div class="mb-8">
+        <div class="label">向量字符串</div>
+        <div class="flex gap-6" style="align-items:center">
+            <input id="cvssVector" placeholder="CVSS:3.1/AV:N/AC:L/..." style="flex:1;font-family:var(--font)" type="text">
+            <button class="outline" onclick="cvssFromVector()">从向量解析</button>
+        </div>
+    </div>
+    <div class="toolbar">
+        <button onclick="cvssCalc()">计算</button>
+        <button class="outline" onclick="cvssLoadCritical()">示例 9.8 Critical</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">评分结果</div>
+        <button class="copy-btn" onclick="copyText('cvssOutput')">复制</button>
+        <div class="output-box" id="cvssOutput"></div>
+    </div>
+</div>

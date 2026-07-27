@@ -1,0 +1,98 @@
+<div class="tool-panel" id="panel-spel">
+    <div class="toolbar" style="flex-wrap:wrap">
+        <button onclick="spelEval()">试算</button>
+        <button class="outline" onclick="spelLoadSample()">示例</button>
+        <button class="outline" onclick="spelClear()">清空</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">表达式（简易子集，非完整 SpEL）</div>
+        <input id="spelExpr" placeholder="user.age > 18 && user.name == 'a'" style="width:100%;font-family:var(--font)"
+               type="text">
+    </div>
+    <div class="mb-8">
+        <div class="label">Context（JSON 对象）</div>
+        <textarea class="json-input" id="spelContext" placeholder='{"user":{"age":20,"name":"a"}}'
+                  style="min-height:120px"></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">结果</div>
+        <button class="copy-btn" onclick="copyText('spelOutput')">复制</button>
+        <div class="output-box" id="spelOutput" style="min-height:80px"></div>
+    </div>
+
+    <div style="margin-top:16px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
+        <strong>试算支持：</strong>
+        <code>+ - * / %</code>、<code>&& || !</code>、<code>== != &gt; &lt; &gt;= &lt;=</code>、三元
+        <code>?:</code>、字符串、括号、属性 <code>a.b.c</code> / <code>a['b']</code> / <code>a?.b</code>
+        <br>
+        <strong>不支持：</strong>方法调用、<code>T()</code>、<code>@bean</code>、集合投影/选择（<code>.![ ]</code> /
+        <code>.?[ ]</code>）等完整 SpEL 特性
+    </div>
+
+    <div style="margin-top:16px">
+        <div class="label">SpEL 语法速查</div>
+        <div style="overflow-x:auto">
+            <table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:8px">
+                <thead>
+                <tr style="text-align:left;border-bottom:1px solid var(--border)">
+                    <th style="padding:6px 8px">类别</th>
+                    <th style="padding:6px 8px">示例</th>
+                    <th style="padding:6px 8px">说明</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr style="border-bottom:1px solid var(--border)">
+                    <td style="padding:6px 8px">字面量</td>
+                    <td style="padding:6px 8px"><code>'text'</code> <code>42</code> <code>true</code> <code>null</code></td>
+                    <td style="padding:6px 8px">字符串 / 数字 / 布尔 / 空</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border)">
+                    <td style="padding:6px 8px">运算符</td>
+                    <td style="padding:6px 8px"><code>+ - * / %</code> <code>and or not</code></td>
+                    <td style="padding:6px 8px">算术与逻辑（可用符号或单词）</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border)">
+                    <td style="padding:6px 8px">比较</td>
+                    <td style="padding:6px 8px"><code>== != &lt; &gt; &lt;= &gt;=</code> / <code>eq ne lt gt</code></td>
+                    <td style="padding:6px 8px">关系运算</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border)">
+                    <td style="padding:6px 8px">三元</td>
+                    <td style="padding:6px 8px"><code>age &gt; 18 ? 'adult' : 'minor'</code></td>
+                    <td style="padding:6px 8px">条件表达式</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border)">
+                    <td style="padding:6px 8px">属性</td>
+                    <td style="padding:6px 8px"><code>user.name</code> <code>user['name']</code> <code>user?.name</code></td>
+                    <td style="padding:6px 8px">点号 / 下标 / 安全导航</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border)">
+                    <td style="padding:6px 8px">类型 T()</td>
+                    <td style="padding:6px 8px"><code>T(java.lang.Math).PI</code></td>
+                    <td style="padding:6px 8px">完整 SpEL；本工具不支持求值</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border)">
+                    <td style="padding:6px 8px">Bean @</td>
+                    <td style="padding:6px 8px"><code>@myService.doWork()</code></td>
+                    <td style="padding:6px 8px">Spring Bean 引用；本工具不支持</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border)">
+                    <td style="padding:6px 8px">集合投影</td>
+                    <td style="padding:6px 8px"><code>list.![name]</code></td>
+                    <td style="padding:6px 8px">投影；本工具不支持</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border)">
+                    <td style="padding:6px 8px">集合选择</td>
+                    <td style="padding:6px 8px"><code>list.?[age &gt; 18]</code></td>
+                    <td style="padding:6px 8px">过滤；本工具不支持</td>
+                </tr>
+                <tr>
+                    <td style="padding:6px 8px">正则匹配</td>
+                    <td style="padding:6px 8px"><code>name matches '[a-z]+'</code></td>
+                    <td style="padding:6px 8px">完整 SpEL；本工具不支持</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

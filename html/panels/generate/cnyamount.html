@@ -1,0 +1,54 @@
+<div class="tool-panel" id="panel-cnyamount">
+    <div class="toolbar">
+        <button class="outline" onclick="cnyLoadSample()">示例</button>
+        <button class="outline" onclick="cnyClear()">清空</button>
+    </div>
+
+    <div class="mb-8">
+        <div class="label">人民币金额（小写）</div>
+        <div class="flex gap-6" style="align-items:flex-end;flex-wrap:wrap">
+            <input id="cnyAmountInput" oninput="cnyConvertAmount()" placeholder="1234567.89" style="flex:1;min-width:200px" type="text">
+            <button onclick="cnyConvertAmount()">转大写</button>
+        </div>
+        <div class="copy-wrap" style="margin-top:8px">
+            <div class="label">金额大写</div>
+            <button class="copy-btn" onclick="copyText('cnyAmountOutput')">复制</button>
+            <div class="output-box" id="cnyAmountOutput" style="min-height:48px"></div>
+        </div>
+    </div>
+
+    <div class="mb-8">
+        <div class="label">统一社会信用代码（18 位）</div>
+        <div class="flex gap-6" style="align-items:flex-end;flex-wrap:wrap">
+            <input id="cnyUscInput" oninput="cnyValidateUsc()" placeholder="91110000MA0123456X" style="flex:1;min-width:200px" type="text">
+            <button onclick="cnyValidateUsc()">校验</button>
+        </div>
+        <div class="copy-wrap" style="margin-top:8px">
+            <div class="label">校验结果</div>
+            <button class="copy-btn" onclick="copyText('cnyUscOutput')">复制</button>
+            <div class="output-box" id="cnyUscOutput" style="min-height:48px"></div>
+        </div>
+    </div>
+
+    <div class="mb-8">
+        <div class="label">银行卡号（Luhn）</div>
+        <div class="flex gap-6" style="align-items:flex-end;flex-wrap:wrap">
+            <input id="cnyLuhnInput" oninput="cnyValidateLuhn()" placeholder="6222 0212 3456 7890 123" style="flex:1;min-width:200px" type="text">
+            <button onclick="cnyValidateLuhn()">校验</button>
+        </div>
+        <div class="copy-wrap" style="margin-top:8px">
+            <div class="label">校验结果</div>
+            <button class="copy-btn" onclick="copyText('cnyLuhnOutput')">复制</button>
+            <div class="output-box" id="cnyLuhnOutput" style="min-height:48px"></div>
+        </div>
+    </div>
+
+    <div style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
+        <strong>说明：</strong>
+        <ul style="margin:4px 0 0 16px">
+            <li>金额大写：壹贰叁…圆角分整，支持负号与最多 2 位小数</li>
+            <li>信用代码：GB 32100 校验位算法（字符集不含 I/O/Z/S/V）</li>
+            <li>银行卡：标准 Luhn 模 10 校验，仅校验格式合法性</li>
+        </ul>
+    </div>
+</div>

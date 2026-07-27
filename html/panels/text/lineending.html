@@ -1,0 +1,39 @@
+<div class="tool-panel" id="panel-lineending">
+    <div class="toolbar" style="flex-wrap:wrap">
+        <button onclick="lineendingDetect()">检测</button>
+        <button class="outline" onclick="lineendingConvert('LF')">→ LF</button>
+        <button class="outline" onclick="lineendingConvert('CRLF')">→ CRLF</button>
+        <button class="outline" onclick="lineendingConvert('CR')">→ CR</button>
+        <button class="outline" onclick="lineendingStripBom()">去 BOM</button>
+        <button class="outline" onclick="lineendingAddBom()">加 BOM</button>
+        <button class="outline" onclick="lineendingStripInvisible()">去不可见字符</button>
+        <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-dim)">
+            <input checked id="lineendingKeepTab" style="accent-color:var(--accent)" type="checkbox"> 保留 TAB
+        </label>
+        <button class="outline" onclick="lineendingLoadSample()">示例</button>
+        <button class="outline" onclick="lineendingClear()">清空</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入文本</div>
+        <textarea class="json-input" id="lineendingInput"
+                  placeholder="粘贴文本以检测行尾、BOM 与不可见字符"></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">检测报告</div>
+        <button class="copy-btn" onclick="copyText('lineendingOutput')">复制</button>
+        <div class="output-box" id="lineendingOutput" style="min-height:140px">点击「检测」查看行尾 / BOM / 不可见字符统计</div>
+    </div>
+    <div class="copy-wrap" style="margin-top:12px">
+        <div class="label">不可见字符可视化</div>
+        <button class="copy-btn" onclick="copyText('lineendingVisual')">复制</button>
+        <div class="output-box" id="lineendingVisual" style="min-height:100px;white-space:pre-wrap;word-break:break-all"></div>
+    </div>
+    <div style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
+        <strong>说明：</strong>
+        <ul style="margin:4px 0 0 16px">
+            <li>行尾：CRLF / LF / CR 混用统计与互转</li>
+            <li>BOM：UTF-8 BOM (U+FEFF / EF BB BF)</li>
+            <li>不可见：ZWSP、ZWNJ、ZWJ、NBSP、TAB 等，可视化用 ⟦标签⟧ 标记</li>
+        </ul>
+    </div>
+</div>

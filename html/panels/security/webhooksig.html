@@ -1,0 +1,40 @@
+<div class="tool-panel" id="panel-webhooksig">
+    <div class="flex gap-6 mb-8" style="flex-wrap:wrap;align-items:flex-end">
+        <div>
+            <div class="label">签名风格</div>
+            <select id="whsStyle" style="width:160px">
+                <option selected value="hex">通用 Hex</option>
+                <option value="base64">通用 Base64</option>
+                <option value="github">GitHub (sha256=)</option>
+                <option value="stripe">Stripe (t=,v1=)</option>
+            </select>
+        </div>
+        <div class="flex-1" style="min-width:160px">
+            <div class="label">Timestamp（可选 / Stripe）</div>
+            <input id="whsTimestamp" placeholder="Unix 秒，如 1609459200" type="text">
+        </div>
+    </div>
+    <div class="mb-8">
+        <div class="label">密钥 Secret</div>
+        <input id="whsSecret" placeholder="Webhook 密钥" type="text">
+    </div>
+    <div class="mb-8">
+        <div class="label">请求 Body</div>
+        <textarea class="json-input" id="whsBody" placeholder='{"id":1}' style="min-height:120px"></textarea>
+    </div>
+    <div class="mb-8">
+        <div class="label">待校验签名（校验时填写）</div>
+        <input id="whsProvided" placeholder="sha256=... 或 t=...,v1=... 或 hex" type="text">
+    </div>
+    <div class="toolbar">
+        <button onclick="whsGenerate()">生成签名</button>
+        <button class="outline" onclick="whsVerify()">校验签名</button>
+        <button class="outline" onclick="whsLoadSample()" style="margin-left:auto">示例</button>
+        <button class="outline" onclick="whsClear()" style="border-color:var(--danger);color:var(--danger)">清空</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">结果</div>
+        <button class="copy-btn" onclick="copyText('whsOutput')">复制</button>
+        <div class="output-box" id="whsOutput" style="white-space:pre-wrap;word-break:break-all;font-size:13px"></div>
+    </div>
+</div>

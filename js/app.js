@@ -2,941 +2,1097 @@
 // 仅当 Vite 注入的 window.__DEVTOOLS__.withGithub === true 时，才创建 GitHub 链接。
 // dev 模式下该值为 undefined，自然跳过——同时配合 removeGithubPlugin 在构建时清理硬编码链接。
 (function injectGithubLink() {
-  if (typeof window === "undefined") return;
-  const flag = window.__DEVTOOLS__;
-  if (!flag || flag.withGithub !== true) return;
-  const header = document.querySelector(".main-header");
-  if (!header) return;
-  const gh = document.createElement("a");
-  gh.id = "headerGithub";
-  gh.className = "header-github";
-  gh.href = "https://github.com/moon-stack-OAo/dev-tools";
-  gh.rel = "noopener noreferrer";
-  gh.target = "_blank";
-  gh.title = "查看 GitHub 仓库";
-  gh.innerHTML = '<i class="bi bi-github"></i><span>GitHub</span>';
-  header.appendChild(gh);
+    if (typeof window === "undefined") return;
+    const flag = window.__DEVTOOLS__;
+    if (!flag || flag.withGithub !== true) return;
+    const header = document.querySelector(".main-header");
+    if (!header) return;
+    const gh = document.createElement("a");
+    gh.id = "headerGithub";
+    gh.className = "header-github";
+    gh.href = "https://github.com/moon-stack-OAo/dev-tools";
+    gh.rel = "noopener noreferrer";
+    gh.target = "_blank";
+    gh.title = "查看 GitHub 仓库";
+    gh.innerHTML = '<i class="bi bi-github"></i><span>GitHub</span>';
+    header.appendChild(gh);
 })();
 
 // === DOM Cache ===
 const domCache = {
-  mainHeader: null,
-  homeBtn: null,
-  breadcrumb: null,
-  statusText: null,
-  loadingBar: null,
-  toast: null,
-  backToTop: null,
-  homeSearch: null,
-  homeGrid: null,
-  homeHeatmap: null,
-  homeCatAnchors: null,
-  panelHome: null,
-  sidebar: null,
-  sidebarNav: null,
-  sidebarToggle: null,
-  headerHomeTitle: null,
-  headerGithub: null,
-  panelsContainer: null,
+    mainHeader: null,
+    homeBtn: null,
+    breadcrumb: null,
+    statusText: null,
+    loadingBar: null,
+    toast: null,
+    backToTop: null,
+    homeSearch: null,
+    homeGrid: null,
+    homeHeatmap: null,
+    homeCatAnchors: null,
+    panelHome: null,
+    sidebar: null,
+    sidebarNav: null,
+    sidebarToggle: null,
+    headerHomeTitle: null,
+    headerGithub: null,
+    panelsContainer: null,
 };
 
 function initDomCache() {
-  domCache.mainHeader = document.querySelector('.main-header');
-  domCache.homeBtn = document.getElementById('homeBtn');
-  domCache.breadcrumb = document.getElementById('breadcrumb');
-  domCache.statusText = document.getElementById('statusText');
-  domCache.loadingBar = document.getElementById('loadingBar');
-  domCache.toast = document.getElementById('toast');
-  domCache.backToTop = document.getElementById('backToTop');
-  domCache.homeSearch = document.getElementById('homeSearch');
-  domCache.homeGrid = document.getElementById('homeGrid');
-  domCache.homeHeatmap = document.getElementById('homeHeatmap');
-  domCache.homeCatAnchors = document.getElementById('homeCatAnchors');
-  domCache.panelHome = document.getElementById('panel-home');
-  domCache.sidebar = document.getElementById('sidebar');
-  domCache.sidebarNav = document.getElementById('sidebarNav');
-  domCache.sidebarToggle = document.getElementById('sidebarToggle');
-  domCache.headerHomeTitle = document.getElementById('headerHomeTitle');
-  domCache.headerGithub = document.getElementById('headerGithub');
-  domCache.panelsContainer = document.getElementById('panels-container');
+    domCache.mainHeader = document.querySelector('.main-header');
+    domCache.homeBtn = document.getElementById('homeBtn');
+    domCache.breadcrumb = document.getElementById('breadcrumb');
+    domCache.statusText = document.getElementById('statusText');
+    domCache.loadingBar = document.getElementById('loadingBar');
+    domCache.toast = document.getElementById('toast');
+    domCache.backToTop = document.getElementById('backToTop');
+    domCache.homeSearch = document.getElementById('homeSearch');
+    domCache.homeGrid = document.getElementById('homeGrid');
+    domCache.homeHeatmap = document.getElementById('homeHeatmap');
+    domCache.homeCatAnchors = document.getElementById('homeCatAnchors');
+    domCache.panelHome = document.getElementById('panel-home');
+    domCache.sidebar = document.getElementById('sidebar');
+    domCache.sidebarNav = document.getElementById('sidebarNav');
+    domCache.sidebarToggle = document.getElementById('sidebarToggle');
+    domCache.headerHomeTitle = document.getElementById('headerHomeTitle');
+    domCache.headerGithub = document.getElementById('headerGithub');
+    domCache.panelsContainer = document.getElementById('panels-container');
 }
 
 // === Tools Data ===
 const categories = [
-  { id: "favorites", name: "收藏", icon: "bi-star-fill", virtual: true },
-  { id: "recent", name: "最近使用", icon: "bi-clock-history", virtual: true },
-  {
-    id: "format",
-    name: "格式化",
-    icon: "bi-file-earmark-code",
-    virtual: false,
-  },
-  { id: "encode", name: "编解码", icon: "bi-arrow-left-right", virtual: false },
-  { id: "security", name: "安全", icon: "bi-shield-lock", virtual: false },
-  { id: "generate", name: "生成与转换", icon: "bi-magic", virtual: false },
-  { id: "codegen", name: "代码生成", icon: "bi-code-square", virtual: false },
-  { id: "text", name: "文本", icon: "bi-fonts", virtual: false },
-  { id: "debug", name: "调试", icon: "bi-bug", virtual: false },
-  { id: "reference", name: "参考", icon: "bi-book", virtual: false },
+    {id: "favorites", name: "收藏", icon: "bi-star-fill", virtual: true},
+    {id: "recent", name: "最近使用", icon: "bi-clock-history", virtual: true},
+    {
+        id: "format",
+        name: "格式化",
+        icon: "bi-file-earmark-code",
+        virtual: false,
+    },
+    {id: "encode", name: "编解码", icon: "bi-arrow-left-right", virtual: false},
+    {id: "security", name: "安全", icon: "bi-shield-lock", virtual: false},
+    {id: "generate", name: "生成与转换", icon: "bi-magic", virtual: false},
+    {id: "codegen", name: "代码生成", icon: "bi-code-square", virtual: false},
+    {id: "text", name: "文本", icon: "bi-fonts", virtual: false},
+    {id: "debug", name: "调试", icon: "bi-bug", virtual: false},
+    {id: "reference", name: "参考", icon: "bi-book", virtual: false},
 ];
 const tools = [
-  {
-    id: "json",
-    icon: "bi-braces",
-    name: "JSON 格式化",
-    desc: "格式化 / 压缩 / 验证 JSON",
-    cat: "format",
-  },
-  {
-    id: "xml",
-    icon: "bi-filetype-xml",
-    name: "XML 格式化",
-    desc: "格式化 / 压缩 / 验证 XML",
-    cat: "format",
-  },
-  {
-    id: "yaml",
-    icon: "bi-filetype-yml",
-    name: "YAML 格式化",
-    desc: "YAML 格式化 / JSON 互转",
-    cat: "format",
-  },
-  {
-    id: "toml",
-    icon: "bi-file-earmark-code",
-    name: "TOML 格式化",
-    desc: "TOML 格式化 / JSON 互转 / 校验",
-    cat: "format",
-  },
-  {
-    id: "propertiesfmt",
-    icon: "bi-file-earmark-text",
-    name: "Properties 格式化",
-    desc: "Properties ↔ YAML 互转",
-    cat: "format",
-  },
-  {
-    id: "sql",
-    icon: "bi-database",
-    name: "SQL 格式化",
-    desc: "SQL 美化 / 多方言支持",
-    cat: "format",
-  },
-  {
-    id: "jsonconvert",
-    icon: "bi-arrow-left-right",
-    name: "JSON/XML/YAML 互转",
-    desc: "JSON / XML / YAML 格式互相转换",
-    cat: "format",
-  },
-  {
-    id: "jsonpath",
-    icon: "bi-search",
-    name: "JSONPath 查询",
-    desc: "JSONPath 表达式查询 / 提取",
-    cat: "format",
-  },
-  {
-    id: "jsonschema",
-    icon: "bi-diagram-3",
-    name: "JSON Schema",
-    desc: "JSON Schema 生成 / 校验",
-    cat: "format",
-  },
-  {
-    id: "sqldialect",
-    icon: "bi-translate",
-    name: "SQL 方言转换",
-    desc: "MySQL/Oracle/PG/SQLServer 互转",
-    cat: "format",
-  },
-  {
-    id: "dbtype",
-    icon: "bi-table",
-    name: "数据库类型映射",
-    desc: "MySQL/Oracle/PG/SQLServer 类型对照",
-    cat: "format",
-  },
-  {
-    id: "json2csv",
-    icon: "bi-filetype-csv",
-    name: "JSON ↔ CSV",
-    desc: "JSON 数组与 CSV 互转",
-    cat: "format",
-  },
-  {
-    id: "sqlexplain",
-    icon: "bi-diagram-3",
-    name: "SQL 执行计划",
-    desc: "MySQL/PostgreSQL EXPLAIN 格式化 / 可视化",
-    cat: "format",
-  },
-  {
-    id: "nginxfmt",
-    icon: "bi-server",
-    name: "Nginx 格式化",
-    desc: "Nginx 配置格式化 / 压缩 / Lint",
-    cat: "format",
-  },
-  {
-    id: "javafmt",
-    icon: "bi-code-square",
-    name: "Java 代码格式化",
-    desc: "Java 美化 / 缩进 / 大括号风格 / import 排序",
-    cat: "format",
-  },
-  {
-    id: "ddldiff",
-    icon: "bi-database-fill-gear",
-    name: "DDL Schema 对比",
-    desc: "两个 DDL 字段粒度 diff / 跨方言",
-    cat: "format",
-  },
-  {
-    id: "jsonexcel",
-    icon: "bi-file-earmark-spreadsheet",
-    name: "JSON ↔ Excel/CSV",
-    desc: "JSON 数组与 Excel/CSV 批量互转 / 嵌套展平",
-    cat: "format",
-  },
-  {
-    id: "imgtopdf",
-    icon: "bi-file-earmark-pdf",
-    name: "图片转 PDF",
-    desc: "多张图片合成 PDF / 页面尺寸与方向可配",
-    cat: "format",
-  },
-  {
-    id: "pdfmerge",
-    icon: "bi-union",
-    name: "PDF 合并 / 拆分",
-    desc: "多 PDF 合并 / 按页码范围拆分",
-    cat: "format",
-  },
-  {
-    id: "graphqlfmt",
-    icon: "bi-diagram-3",
-    name: "GraphQL 格式化",
-    desc: "GraphQL 查询/mutation 美化 / 压缩 / 括号检查",
-    cat: "format",
-  },
-  {
-    id: "openapiview",
-    icon: "bi-file-earmark-code",
-    name: "OpenAPI 预览",
-    desc: "OpenAPI 3 / Swagger 2 摘要预览 / paths 浏览",
-    cat: "format",
-  },
-  {
-    id: "base64",
-    icon: "bi-file-binary",
-    name: "Base64",
-    desc: "Base64 编码解码 / 文件支持",
-    cat: "encode",
-  },
-  {
-    id: "url",
-    icon: "bi-link-45deg",
-    name: "URL 编码",
-    desc: "URL 编解码 / Component 模式",
-    cat: "encode",
-  },
-  {
-    id: "unicode",
-    icon: "bi-translate",
-    name: "Unicode",
-    desc: "\\uXXXX 编码 / 解码",
-    cat: "encode",
-  },
-  {
-    id: "javaescape",
-    icon: "bi-code-slash",
-    name: "Java 转义",
-    desc: "Java 字符串转义 / 反转义",
-    cat: "encode",
-  },
-  {
-    id: "charset",
-    icon: "bi-fonts",
-    name: "编码解码",
-    desc: "字节按编码解码 / UTF-8 编码 / 乱码对照",
-    cat: "encode",
-  },
-  {
-    id: "htmlescape",
-    icon: "bi-filetype-html",
-    name: "HTML 转义",
-    desc: "HTML 实体编码 / 解码",
-    cat: "encode",
-  },
-  {
-    id: "imgbase64",
-    icon: "bi-image",
-    name: "图片 Base64",
-    desc: "图片与 Base64 互转 / DataURL",
-    cat: "encode",
-  },
-  {
-    id: "hex",
-    icon: "bi-0-circle",
-    name: "Hex 编码",
-    desc: "字符串 ↔ Hex 互转（UTF-8）",
-    cat: "encode",
-  },
-  {
-    id: "base32",
-    icon: "bi-file-binary",
-    name: "Base32 / Base58",
-    desc: "Base32 (RFC 4648) / Base58 (Bitcoin) 编解码",
-    cat: "encode",
-  },
-  {
-    id: "protobuf",
-    icon: "bi-file-earmark-binary",
-    name: "Protobuf 解码",
-    desc: "Protobuf ↔ JSON / Base64 / Hex",
-    cat: "encode",
-  },
+    {
+        id: "json",
+        icon: "bi-braces",
+        name: "JSON 格式化",
+        desc: "格式化 / 压缩 / 验证 JSON",
+        cat: "format",
+    },
+    {
+        id: "xml",
+        icon: "bi-filetype-xml",
+        name: "XML 格式化",
+        desc: "格式化 / 压缩 / 验证 XML",
+        cat: "format",
+    },
+    {
+        id: "yaml",
+        icon: "bi-filetype-yml",
+        name: "YAML 格式化",
+        desc: "YAML 格式化 / JSON 互转",
+        cat: "format",
+    },
+    {
+        id: "toml",
+        icon: "bi-file-earmark-code",
+        name: "TOML 格式化",
+        desc: "TOML 格式化 / JSON 互转 / 校验",
+        cat: "format",
+    },
+    {
+        id: "propertiesfmt",
+        icon: "bi-file-earmark-text",
+        name: "Properties 格式化",
+        desc: "Properties ↔ YAML 互转",
+        cat: "format",
+    },
+    {
+        id: "sql",
+        icon: "bi-database",
+        name: "SQL 格式化",
+        desc: "SQL 美化 / 多方言支持",
+        cat: "format",
+    },
+    {
+        id: "jsonconvert",
+        icon: "bi-arrow-left-right",
+        name: "JSON/XML/YAML 互转",
+        desc: "JSON / XML / YAML 格式互相转换",
+        cat: "format",
+    },
+    {
+        id: "jsonpath",
+        icon: "bi-search",
+        name: "JSONPath 查询",
+        desc: "JSONPath 表达式查询 / 提取",
+        cat: "format",
+    },
+    {
+        id: "jsonschema",
+        icon: "bi-diagram-3",
+        name: "JSON Schema",
+        desc: "JSON Schema 生成 / 校验",
+        cat: "format",
+    },
+    {
+        id: "sqldialect",
+        icon: "bi-translate",
+        name: "SQL 方言转换",
+        desc: "MySQL/Oracle/PG/SQLServer 互转",
+        cat: "format",
+    },
+    {
+        id: "dbtype",
+        icon: "bi-table",
+        name: "数据库类型映射",
+        desc: "MySQL/Oracle/PG/SQLServer 类型对照",
+        cat: "format",
+    },
+    {
+        id: "json2csv",
+        icon: "bi-filetype-csv",
+        name: "JSON ↔ CSV",
+        desc: "JSON 数组与 CSV 互转",
+        cat: "format",
+    },
+    {
+        id: "json2sql",
+        icon: "bi-database-add",
+        name: "JSON → SQL INSERT",
+        desc: "JSON 对象/数组生成多方言 INSERT",
+        cat: "format",
+    },
+    {
+        id: "xpath",
+        icon: "bi-diagram-3",
+        name: "XPath 查询",
+        desc: "XPath 1.0 查询 / 提取 XML 节点",
+        cat: "format",
+    },
+    {
+        id: "sqlexplain",
+        icon: "bi-diagram-3",
+        name: "SQL 执行计划",
+        desc: "MySQL/PostgreSQL EXPLAIN 格式化 / 可视化",
+        cat: "format",
+    },
+    {
+        id: "nginxfmt",
+        icon: "bi-server",
+        name: "Nginx 格式化",
+        desc: "Nginx 配置格式化 / 压缩 / Lint",
+        cat: "format",
+    },
+    {
+        id: "javafmt",
+        icon: "bi-code-square",
+        name: "Java 代码格式化",
+        desc: "Java 美化 / 缩进 / 大括号风格 / import 排序",
+        cat: "format",
+    },
+    {
+        id: "ddldiff",
+        icon: "bi-database-fill-gear",
+        name: "DDL Schema 对比",
+        desc: "两个 DDL 字段粒度 diff / 跨方言",
+        cat: "format",
+    },
+    {
+        id: "jsonexcel",
+        icon: "bi-file-earmark-spreadsheet",
+        name: "JSON ↔ Excel/CSV",
+        desc: "JSON 数组与 Excel/CSV 批量互转 / 嵌套展平",
+        cat: "format",
+    },
+    {
+        id: "imgtopdf",
+        icon: "bi-file-earmark-pdf",
+        name: "图片转 PDF",
+        desc: "多张图片合成 PDF / 页面尺寸与方向可配",
+        cat: "format",
+    },
+    {
+        id: "pdfmerge",
+        icon: "bi-union",
+        name: "PDF 合并 / 拆分",
+        desc: "多 PDF 合并 / 按页码范围拆分",
+        cat: "format",
+    },
+    {
+        id: "graphqlfmt",
+        icon: "bi-diagram-3",
+        name: "GraphQL 格式化",
+        desc: "GraphQL 查询/mutation 美化 / 压缩 / 括号检查",
+        cat: "format",
+    },
+    {
+        id: "openapiview",
+        icon: "bi-file-earmark-code",
+        name: "OpenAPI 预览",
+        desc: "OpenAPI 3 / Swagger 2 摘要预览 / paths 浏览",
+        cat: "format",
+    },
+    {
+        id: "envfmt",
+        icon: "bi-file-earmark-ruled",
+        name: ".env / 环境变量",
+        desc: ".env 解析 / 格式化对齐 / JSON 互转 / 重复 key",
+        cat: "format",
+    },
+    {
+        id: "base64",
+        icon: "bi-file-binary",
+        name: "Base64",
+        desc: "Base64 编码解码 / 文件支持",
+        cat: "encode",
+    },
+    {
+        id: "url",
+        icon: "bi-link-45deg",
+        name: "URL 编码",
+        desc: "URL 编解码 / Component 模式",
+        cat: "encode",
+    },
+    {
+        id: "unicode",
+        icon: "bi-translate",
+        name: "Unicode",
+        desc: "\\uXXXX 编码 / 解码",
+        cat: "encode",
+    },
+    {
+        id: "javaescape",
+        icon: "bi-code-slash",
+        name: "Java 转义",
+        desc: "Java 字符串转义 / 反转义",
+        cat: "encode",
+    },
+    {
+        id: "charset",
+        icon: "bi-fonts",
+        name: "编码解码",
+        desc: "字节按编码解码 / UTF-8 编码 / 乱码对照",
+        cat: "encode",
+    },
+    {
+        id: "htmlescape",
+        icon: "bi-filetype-html",
+        name: "HTML 转义",
+        desc: "HTML 实体编码 / 解码",
+        cat: "encode",
+    },
+    {
+        id: "imgbase64",
+        icon: "bi-image",
+        name: "图片 Base64",
+        desc: "图片与 Base64 互转 / DataURL",
+        cat: "encode",
+    },
+    {
+        id: "hex",
+        icon: "bi-0-circle",
+        name: "Hex 编码",
+        desc: "字符串 ↔ Hex 互转（UTF-8）",
+        cat: "encode",
+    },
+    {
+        id: "base32",
+        icon: "bi-file-binary",
+        name: "Base32 / Base58",
+        desc: "Base32 (RFC 4648) / Base58 (Bitcoin) 编解码",
+        cat: "encode",
+    },
+    {
+        id: "protobuf",
+        icon: "bi-file-earmark-binary",
+        name: "Protobuf 解码",
+        desc: "Protobuf ↔ JSON / Base64 / Hex",
+        cat: "encode",
+    },
 
-  {
-    id: "jwt",
-    icon: "bi-key",
-    name: "JWT 解码",
-    desc: "解析 JWT Header / Payload",
-    cat: "security",
-  },
-  {
-    id: "jwtgen",
-    icon: "bi-pen",
-    name: "JWT 生成",
-    desc: "HS256/384/512 + RS256/384/512 签名",
-    cat: "security",
-  },
-  {
-    id: "hash",
-    icon: "bi-hash",
-    name: "Hash 计算",
-    desc: "MD5 / SHA-1 / SHA-256 / SHA-512",
-    cat: "security",
-  },
-  {
-    id: "hmac",
-    icon: "bi-key-fill",
-    name: "HMAC 计算",
-    desc: "HMAC-MD5 / SHA-1 / SHA-256 / SHA-384 / SHA-512",
-    cat: "security",
-  },
-  {
-    id: "hashext",
-    icon: "bi-hash",
-    name: "Hash 扩展",
-    desc: "CRC32 / CRC32C / Adler32 / SM3",
-    cat: "security",
-  },
-  {
-    id: "random",
-    icon: "bi-dice-6",
-    name: "随机生成器",
-    desc: "密码 / Token / PIN 生成",
-    cat: "security",
-  },
-  {
-    id: "pwdstrength",
-    icon: "bi-shield-fill-check",
-    name: "密码强度检测",
-    desc: "本地检测密码强度 / 改进建议",
-    cat: "security",
-  },
-  {
-    id: "aes",
-    icon: "bi-shield-check",
-    name: "AES 加解密",
-    desc: "AES 对称加密 / 解密",
-    cat: "security",
-  },
-  {
-    id: "jasypt",
-    icon: "bi-safe2",
-    name: "Jasypt 加解密",
-    desc: "PBEWithMD5AndDES 配置加解密 / ENC(...)",
-    cat: "security",
-  },
-  {
-    id: "rsa",
-    icon: "bi-shield-exclamation",
-    name: "RSA 工具",
-    desc: "密钥生成 / 加解密 / 签名",
-    cat: "security",
-  },
-  {
-    id: "bcrypt",
-    icon: "bi-shield-lock",
-    name: "bcrypt 加密",
-    desc: "bcrypt 哈希 / 验证",
-    cat: "security",
-  },
-  {
-    id: "totp",
-    icon: "bi-stopwatch",
-    name: "TOTP 动态令牌",
-    desc: "TOTP/HOTP 本地生成 + URI 解析",
-    cat: "security",
-  },
-  {
-    id: "gmsm",
-    icon: "bi-shield-fill",
-    name: "国密 SM2/3/4",
-    desc: "国密 SM2 公钥 / SM3 摘要 / SM4 对称",
-    cat: "security",
-  },
-  {
-    id: "pbkdf2",
-    icon: "bi-shield-shaded",
-    name: "PBKDF2 哈希",
-    desc: "PBKDF2-HMAC-SHA256/512 密码哈希（标准 PHC 格式）",
-    cat: "security",
-  },
-  {
-    id: "certparser",
-    icon: "bi-patch-check",
-    name: "X.509 证书",
-    desc: "X.509 证书 PEM/DER 解析",
-    cat: "security",
-  },
-  {
-    id: "uuid",
-    icon: "bi-fingerprint",
-    name: "UUID 生成",
-    desc: "UUID v4 / v7 / 批量生成",
-    cat: "generate",
-  },
-  {
-    id: "ulid",
-    icon: "bi-fingerprint",
-    name: "ULID / NanoID",
-    desc: "ULID / NanoID 生成与 ULID 解析",
-    cat: "generate",
-  },
-  {
-    id: "snowflake",
-    icon: "bi-snow",
-    name: "雪花 ID",
-    desc: "Snowflake / Leaf / UID 三合一生成解析",
-    cat: "generate",
-  },
-  {
-    id: "ts",
-    icon: "bi-clock",
-    name: "时间戳转换",
-    desc: "Unix 毫秒/秒 ↔ 日期",
-    cat: "generate",
-  },
-  {
-    id: "color",
-    icon: "bi-palette",
-    name: "颜色转换",
-    desc: "HEX / RGB / HSL 互转预览",
-    cat: "generate",
-  },
-  {
-    id: "baseconvert",
-    icon: "bi-calculator",
-    name: "进制转换",
-    desc: "2~36 进制互转",
-    cat: "generate",
-  },
-  {
-    id: "image-compress",
-    icon: "bi-image",
-    name: "图片压缩",
-    desc: "JPEG/PNG/WebP 互转 / 质量调节 / 批量处理",
-    cat: "generate",
-  },
-  {
-    id: "case",
-    icon: "bi-type",
-    name: "Case 转换",
-    desc: "camelCase / snake_case 等",
-    cat: "generate",
-  },
-  {
-    id: "datamock",
-    icon: "bi-people",
-    name: "数据 Mock",
-    desc: "生成姓名 / 手机号 / 邮箱等",
-    cat: "generate",
-  },
-  {
-    id: "datecalc",
-    icon: "bi-calendar",
-    name: "日期计算器",
-    desc: "日期加减 / 间隔 / 工作日",
-    cat: "generate",
-  },
-  {
-    id: "timezone",
-    icon: "bi-globe",
-    name: "时区转换",
-    desc: "跨时区时间换算",
-    cat: "generate",
-  },
-  {
-    id: "resratio",
-    icon: "bi-aspect-ratio",
-    name: "分辨率比例",
-    desc: "宽高比 / 档位匹配 / 按比例反算",
-    cat: "generate",
-  },
-  {
-    id: "bytesize",
-    icon: "bi-hdd",
-    name: "字节单位换算",
-    desc: "B/KB/MB/GB ↔ KiB/MiB/GiB，1000/1024 进制",
-    cat: "generate",
-  },
+    {
+        id: "jwt",
+        icon: "bi-key",
+        name: "JWT 解码",
+        desc: "解析 JWT Header / Payload",
+        cat: "security",
+    },
+    {
+        id: "jwtgen",
+        icon: "bi-pen",
+        name: "JWT 生成",
+        desc: "HS256/384/512 + RS256/384/512 签名",
+        cat: "security",
+    },
+    {
+        id: "hash",
+        icon: "bi-hash",
+        name: "Hash 计算",
+        desc: "MD5 / SHA-1 / SHA-256 / SHA-512",
+        cat: "security",
+    },
+    {
+        id: "hmac",
+        icon: "bi-key-fill",
+        name: "HMAC 计算",
+        desc: "HMAC-MD5 / SHA-1 / SHA-256 / SHA-384 / SHA-512",
+        cat: "security",
+    },
+    {
+        id: "hashext",
+        icon: "bi-hash",
+        name: "Hash 扩展",
+        desc: "CRC32 / CRC32C / Adler32 / SM3",
+        cat: "security",
+    },
+    {
+        id: "random",
+        icon: "bi-dice-6",
+        name: "随机生成器",
+        desc: "密码 / Token / PIN 生成",
+        cat: "security",
+    },
+    {
+        id: "pwdstrength",
+        icon: "bi-shield-fill-check",
+        name: "密码强度检测",
+        desc: "本地检测密码强度 / 改进建议",
+        cat: "security",
+    },
+    {
+        id: "aes",
+        icon: "bi-shield-check",
+        name: "AES 加解密",
+        desc: "AES 对称加密 / 解密",
+        cat: "security",
+    },
+    {
+        id: "jasypt",
+        icon: "bi-safe2",
+        name: "Jasypt 加解密",
+        desc: "PBEWithMD5AndDES 配置加解密 / ENC(...)",
+        cat: "security",
+    },
+    {
+        id: "rsa",
+        icon: "bi-shield-exclamation",
+        name: "RSA 工具",
+        desc: "密钥生成 / 加解密 / 签名",
+        cat: "security",
+    },
+    {
+        id: "bcrypt",
+        icon: "bi-shield-lock",
+        name: "bcrypt 加密",
+        desc: "bcrypt 哈希 / 验证",
+        cat: "security",
+    },
+    {
+        id: "totp",
+        icon: "bi-stopwatch",
+        name: "TOTP 动态令牌",
+        desc: "TOTP/HOTP 本地生成 + URI 解析",
+        cat: "security",
+    },
+    {
+        id: "gmsm",
+        icon: "bi-shield-fill",
+        name: "国密 SM2/3/4",
+        desc: "国密 SM2 公钥 / SM3 摘要 / SM4 对称",
+        cat: "security",
+    },
+    {
+        id: "pbkdf2",
+        icon: "bi-shield-shaded",
+        name: "PBKDF2 哈希",
+        desc: "PBKDF2-HMAC-SHA256/512 密码哈希（标准 PHC 格式）",
+        cat: "security",
+    },
+    {
+        id: "certparser",
+        icon: "bi-patch-check",
+        name: "X.509 证书",
+        desc: "X.509 证书 PEM/DER 解析",
+        cat: "security",
+    },
+    {
+        id: "webhooksig",
+        icon: "bi-shield-check",
+        name: "Webhook 签名",
+        desc: "HMAC-SHA256 生成/校验 / GitHub / Stripe",
+        cat: "security",
+    },
+    {
+        id: "oauth2pkce",
+        icon: "bi-key",
+        name: "OAuth2 / PKCE",
+        desc: "code_verifier / challenge / Authorize URL",
+        cat: "security",
+    },
+    {
+        id: "cvss",
+        icon: "bi-speedometer",
+        name: "CVSS 3.1 评分",
+        desc: "CVSS v3.1 Base Score / 向量字符串",
+        cat: "security",
+    },
+    {
+        id: "uuid",
+        icon: "bi-fingerprint",
+        name: "UUID 生成",
+        desc: "UUID v4 / v7 / 批量生成",
+        cat: "generate",
+    },
+    {
+        id: "ulid",
+        icon: "bi-fingerprint",
+        name: "ULID / NanoID",
+        desc: "ULID / NanoID 生成与 ULID 解析",
+        cat: "generate",
+    },
+    {
+        id: "snowflake",
+        icon: "bi-snow",
+        name: "雪花 ID",
+        desc: "Snowflake / Leaf / UID 三合一生成解析",
+        cat: "generate",
+    },
+    {
+        id: "ts",
+        icon: "bi-clock",
+        name: "时间戳转换",
+        desc: "Unix 毫秒/秒 ↔ 日期",
+        cat: "generate",
+    },
+    {
+        id: "color",
+        icon: "bi-palette",
+        name: "颜色转换",
+        desc: "HEX / RGB / HSL 互转预览",
+        cat: "generate",
+    },
+    {
+        id: "baseconvert",
+        icon: "bi-calculator",
+        name: "进制转换",
+        desc: "2~36 进制互转",
+        cat: "generate",
+    },
+    {
+        id: "image-compress",
+        icon: "bi-image",
+        name: "图片压缩",
+        desc: "JPEG/PNG/WebP 互转 / 质量调节 / 批量处理",
+        cat: "generate",
+    },
+    {
+        id: "case",
+        icon: "bi-type",
+        name: "Case 转换",
+        desc: "camelCase / snake_case 等",
+        cat: "generate",
+    },
+    {
+        id: "datamock",
+        icon: "bi-people",
+        name: "数据 Mock",
+        desc: "生成姓名 / 手机号 / 邮箱等",
+        cat: "generate",
+    },
+    {
+        id: "datecalc",
+        icon: "bi-calendar",
+        name: "日期计算器",
+        desc: "日期加减 / 间隔 / 工作日",
+        cat: "generate",
+    },
+    {
+        id: "timezone",
+        icon: "bi-globe",
+        name: "时区转换",
+        desc: "跨时区时间换算",
+        cat: "generate",
+    },
+    {
+        id: "resratio",
+        icon: "bi-aspect-ratio",
+        name: "分辨率比例",
+        desc: "宽高比 / 档位匹配 / 按比例反算",
+        cat: "generate",
+    },
+    {
+        id: "bytesize",
+        icon: "bi-hdd",
+        name: "字节单位换算",
+        desc: "B/KB/MB/GB ↔ KiB/MiB/GiB，1000/1024 进制",
+        cat: "generate",
+    },
+    {
+        id: "semver",
+        icon: "bi-tags",
+        name: "SemVer 版本",
+        desc: "解析 / 比较 / 排序 / 范围满足",
+        cat: "generate",
+    },
+    {
+        id: "chmodcalc",
+        icon: "bi-lock",
+        name: "chmod 权限",
+        desc: "八进制 ↔ rwx 符号 ↔ 权限说明",
+        cat: "generate",
+    },
+    {
+        id: "cnyamount",
+        icon: "bi-currency-yen",
+        name: "金额大写 / 信用代码",
+        desc: "人民币大写 / 统一社会信用代码 / 银行卡 Luhn",
+        cat: "generate",
+    },
 
-  {
-    id: "jsontopojo",
-    icon: "bi-filetype-json",
-    name: "JSON → Java",
-    desc: "JSON 生成 Java POJO 类",
-    cat: "codegen",
-  },
-  {
-    id: "json2code",
-    icon: "bi-code-slash",
-    name: "JSON → 多语言",
-    desc: "JSON 生成 TypeScript / Kotlin / Go",
-    cat: "codegen",
-  },
-  {
-    id: "sqltopojo",
-    icon: "bi-database",
-    name: "SQL → Java",
-    desc: "DDL 生成 MyBatis Plus 实体",
-    cat: "codegen",
-  },
-  {
-    id: "sql2mybatis",
-    icon: "bi-filetype-xml",
-    name: "SQL → MyBatis",
-    desc: "DDL 生成 Mapper XML + Interface",
-    cat: "codegen",
-  },
-  {
-    id: "email",
-    icon: "bi-envelope",
-    name: "邮件模板",
-    desc: "邮件 HTML 模板生成 / 预览 / 内联 CSS",
-    cat: "codegen",
-  },
-  {
-    id: "jmh",
-    icon: "bi-speedometer2",
-    name: "JMH 模板",
-    desc: "JMH 基准测试代码生成",
-    cat: "codegen",
-  },
-  {
-    id: "testgen",
-    icon: "bi-check2-square",
-    name: "测试模板",
-    desc: "JUnit 5 + Mockito 测试生成",
-    cat: "codegen",
-  },
-  {
-    id: "javastream",
-    icon: "bi-funnel",
-    name: "Java Stream 生成",
-    desc: "可视化组装 Stream API 链 / 自动 import",
-    cat: "codegen",
-  },
-  {
-    id: "jmhpro",
-    icon: "bi-speedometer",
-    name: "JMH 进阶",
-    desc: "JMH 完整注解 / Group / Compiler Control / Timeout",
-    cat: "codegen",
-  },
-  {
-    id: "beanval",
-    icon: "bi-check-circle",
-    name: "Bean Validation",
-    desc: "javax.validation 注解自动推导 / DTO 生成",
-    cat: "codegen",
-  },
-  {
-    id: "plantuml",
-    icon: "bi-diagram-2",
-    name: "PlantUML 类图",
-    desc: "Java/JSON 转 PlantUML 类图源码",
-    cat: "codegen",
-  },
-  {
-    id: "jsrun",
-    icon: "bi-play-circle",
-    name: "JS/TS 运行",
-    desc: "浏览器中执行 JS/TS 代码 / 捕获 console 输出",
-    cat: "codegen",
-  },
-  {
-    id: "pyrun",
-    icon: "bi-filetype-py",
-    name: "Python 运行",
-    desc: "基于 Pyodide 在浏览器中运行 Python 3 代码 / 捕获 stdout",
-    cat: "codegen",
-  },
-  {
-    id: "qrdecode",
-    icon: "bi-qr-code-scan",
-    name: "二维码解析",
-    desc: "图片 → URL / 文本 / WiFi",
-    cat: "text",
-  },
-  {
-    id: "diff",
-    icon: "bi-file-earmark-diff",
-    name: "文本对比",
-    desc: "文本差异对比高亮",
-    cat: "text",
-  },
-  {
-    id: "regex",
-    icon: "bi-regex",
-    name: "正则表达式",
-    desc: "正则匹配测试 / 分组查看",
-    cat: "text",
-  },
-  {
-    id: "stats",
-    icon: "bi-bar-chart",
-    name: "文本统计",
-    desc: "字符 / 单词 / 行数 / 字节",
-    cat: "text",
-  },
-  {
-    id: "csv",
-    icon: "bi-table",
-    name: "CSV 格式化",
-    desc: "CSV 表格化查看 / 校对",
-    cat: "text",
-  },
-  {
-    id: "markdown",
-    icon: "bi-markdown",
-    name: "Markdown 预览",
-    desc: "Markdown 实时预览 / 导出 HTML",
-    cat: "text",
-  },
-  {
-    id: "htmlmd",
-    icon: "bi-arrow-left-right",
-    name: "HTML ↔ Markdown",
-    desc: "HTML 与 Markdown 互转",
-    cat: "text",
-  },
-  {
-    id: "webfmt",
-    icon: "bi-filetype-html",
-    name: "Web 格式化",
-    desc: "HTML / CSS / JS 格式化压缩",
-    cat: "text",
-  },
-  {
-    id: "qrcode",
-    icon: "bi-qr-code",
-    name: "二维码生成",
-    desc: "文本 / URL 生成二维码下载",
-    cat: "text",
-  },
-  {
-    id: "barcode",
-    icon: "bi-upc",
-    name: "条形码生成",
-    desc: "Code128 / Code39 条形码生成下载",
-    cat: "text",
-  },
-  {
-    id: "tplreplace",
-    icon: "bi-braces-asterisk",
-    name: "模板替换",
-    desc: "多种语法字符串变量替换",
-    cat: "text",
-  },
+    {
+        id: "jsontopojo",
+        icon: "bi-filetype-json",
+        name: "JSON → Java",
+        desc: "JSON 生成 Java POJO 类",
+        cat: "codegen",
+    },
+    {
+        id: "json2code",
+        icon: "bi-code-slash",
+        name: "JSON → 多语言",
+        desc: "JSON 生成 TypeScript / Kotlin / Go",
+        cat: "codegen",
+    },
+    {
+        id: "sqltopojo",
+        icon: "bi-database",
+        name: "SQL → Java",
+        desc: "DDL 生成 MyBatis Plus 实体",
+        cat: "codegen",
+    },
+    {
+        id: "sql2mybatis",
+        icon: "bi-filetype-xml",
+        name: "SQL → MyBatis",
+        desc: "DDL 生成 Mapper XML + Interface",
+        cat: "codegen",
+    },
+    {
+        id: "mavencoord",
+        icon: "bi-box-seam",
+        name: "Maven 坐标",
+        desc: "GAV → pom / Gradle / SBT 依赖片段",
+        cat: "codegen",
+    },
+    {
+        id: "email",
+        icon: "bi-envelope",
+        name: "邮件模板",
+        desc: "邮件 HTML 模板生成 / 预览 / 内联 CSS",
+        cat: "codegen",
+    },
+    {
+        id: "jmh",
+        icon: "bi-speedometer2",
+        name: "JMH 模板",
+        desc: "JMH 基准测试代码生成",
+        cat: "codegen",
+    },
+    {
+        id: "testgen",
+        icon: "bi-check2-square",
+        name: "测试模板",
+        desc: "JUnit 5 + Mockito 测试生成",
+        cat: "codegen",
+    },
+    {
+        id: "javastream",
+        icon: "bi-funnel",
+        name: "Java Stream 生成",
+        desc: "可视化组装 Stream API 链 / 自动 import",
+        cat: "codegen",
+    },
+    {
+        id: "jmhpro",
+        icon: "bi-speedometer",
+        name: "JMH 进阶",
+        desc: "JMH 完整注解 / Group / Compiler Control / Timeout",
+        cat: "codegen",
+    },
+    {
+        id: "beanval",
+        icon: "bi-check-circle",
+        name: "Bean Validation",
+        desc: "javax.validation 注解自动推导 / DTO 生成",
+        cat: "codegen",
+    },
+    {
+        id: "plantuml",
+        icon: "bi-diagram-2",
+        name: "PlantUML 类图",
+        desc: "Java/JSON 转 PlantUML 类图源码",
+        cat: "codegen",
+    },
+    {
+        id: "mapstruct",
+        icon: "bi-arrow-left-right",
+        name: "MapStruct 骨架",
+        desc: "两个 Java 类生成 MapStruct Mapper 接口",
+        cat: "codegen",
+    },
+    {
+        id: "ddlmermaid",
+        icon: "bi-diagram-3",
+        name: "DDL → Mermaid ER",
+        desc: "CREATE TABLE 生成 Mermaid erDiagram",
+        cat: "codegen",
+    },
+    {
+        id: "flywaygen",
+        icon: "bi-database-gear",
+        name: "Flyway/Liquibase 骨架",
+        desc: "Flyway 文件名与 SQL / Liquibase YAML·XML changeset",
+        cat: "codegen",
+    },
 
-  {
-    id: "cron",
-    icon: "bi-clock-history",
-    name: "Cron 表达式",
-    desc: "Cron 解析 / 下次执行时间",
-    cat: "debug",
-  },
-  {
-    id: "ws",
-    icon: "bi-plug",
-    name: "WebSocket",
-    desc: "WebSocket 连接调试",
-    cat: "debug",
-  },
-  {
-    id: "stomp",
-    icon: "bi-chat-dots",
-    name: "STOMP",
-    desc: "STOMP over WebSocket 调试",
-    cat: "debug",
-  },
-  {
-    id: "httpdebug",
-    icon: "bi-send",
-    name: "HTTP 调试",
-    desc: "发送请求 / cURL 解析 / Fetch·Axios·Java 代码生成",
-    cat: "debug",
-  },
-  {
-    id: "ip",
-    icon: "bi-globe2",
-    name: "IP 工具",
-    desc: "IP 归属 / 子网计算",
-    cat: "debug",
-  },
-  {
-    id: "grpc",
-    icon: "bi-hdd-rack",
-    name: "gRPC 调试",
-    desc: "Metadata 构造 / Protobuf 解码 / 状态码",
-    cat: "debug",
-  },
-  {
-    id: "urlparser",
-    icon: "bi-link-45deg",
-    name: "URL 解析",
-    desc: "URL 拆解 / 编码解码",
-    cat: "debug",
-  },
-  {
-    id: "uaparser",
-    icon: "bi-window-desktop",
-    name: "UA 解析",
-    desc: "User-Agent 解析",
-    cat: "debug",
-  },
-  {
-    id: "logfmt",
-    icon: "bi-file-text",
-    name: "日志高亮",
-    desc: "日志格式化 + 级别着色 + 堆栈折叠",
-    cat: "debug",
-  },
-  {
-    id: "stacktrace",
-    icon: "bi-list-ol",
-    name: "异常分析",
-    desc: "Java 堆栈跟踪解析 / 格式化",
-    cat: "debug",
-  },
-  {
-    id: "sse",
-    icon: "bi-broadcast",
-    name: "SSE 调试",
-    desc: "Server-Sent Events 实时调试",
-    cat: "debug",
-  },
-  {
-    id: "arthas",
-    icon: "bi-terminal",
-    name: "Arthas 命令",
-    desc: "Arthas 诊断命令速查",
-    cat: "reference",
-  },
-  {
-    id: "linux",
-    icon: "bi-terminal-fill",
-    name: "Linux 命令",
-    desc: "常用 Linux 命令速查",
-    cat: "reference",
-  },
-  {
-    id: "jvmargs",
-    icon: "bi-cpu",
-    name: "JVM 参数",
-    desc: "JVM 启动参数速查",
-    cat: "reference",
-  },
-  {
-    id: "redisref",
-    icon: "bi-database-fill-gear",
-    name: "Redis 命令",
-    desc: "Redis 常用命令速查",
-    cat: "reference",
-  },
-  {
-    id: "springcloud",
-    icon: "bi-cloud-fog2",
-    name: "Spring Cloud",
-    desc: "Spring Cloud Alibaba 组件速查",
-    cat: "reference",
-  },
-  {
-    id: "docker",
-    icon: "bi-box-seam",
-    name: "Docker 命令",
-    desc: "Docker / K8s 命令速查",
-    cat: "reference",
-  },
-  {
-    id: "regexref",
-    icon: "bi-regex",
-    name: "正则速查表",
-    desc: "常用正则表达式分类速查",
-    cat: "reference",
-  },
-  {
-    id: "gitref",
-    icon: "bi-git",
-    name: "Git 命令",
-    desc: "Git 常用操作速查",
-    cat: "reference",
-  },
-  {
-    id: "httpstatus",
-    icon: "bi-info-circle",
-    name: "HTTP 状态码",
-    desc: "HTTP 状态码 / 方法速查",
-    cat: "reference",
-  },
-  {
-    id: "ascii",
-    icon: "bi-keyboard",
-    name: "ASCII 表",
-    desc: "ASCII / 控制字符速查",
-    cat: "reference",
-  },
-  {
-    id: "mybatisplus",
-    icon: "bi-database-gear",
-    name: "MyBatis Plus",
-    desc: "MyBatis Plus 常用方法速查",
-    cat: "reference",
-  },
-  {
-    id: "mybatissql",
-    icon: "bi-filetype-xml",
-    name: "MyBatis XML",
-    desc: "MyBatis 动态 SQL 标签速查",
-    cat: "reference",
-  },
-  {
-    id: "lombok",
-    icon: "bi-lightning",
-    name: "Lombok 注解",
-    desc: "Lombok 常用注解速查",
-    cat: "reference",
-  },
-  {
-    id: "springboot",
-    icon: "bi-stars",
-    name: "Spring Boot 注解",
-    desc: "Spring Boot 常用注解速查",
-    cat: "reference",
-  },
-  {
-    id: "txpropagation",
-    icon: "bi-diagram-3",
-    name: "事务传播",
-    desc: "Spring 事务传播行为速查",
-    cat: "reference",
-  },
-  {
-    id: "mavenref",
-    icon: "bi-box",
-    name: "Maven 命令",
-    desc: "Maven 常用命令速查",
-    cat: "reference",
-  },
-  {
-    id: "gradle",
-    icon: "bi-boxes",
-    name: "Gradle 命令",
-    desc: "Gradle 常用命令速查",
-    cat: "reference",
-  },
-  {
-    id: "jdkfeatures",
-    icon: "bi-cup-hot",
-    name: "JDK 新特性",
-    desc: "JDK 8/11/17/21 新特性速查",
-    cat: "reference",
-  },
-  {
-    id: "httpheader",
-    icon: "bi-list-columns-reverse",
-    name: "HTTP Header",
-    desc: "HTTP 通用 / 请求 / 响应头速查",
-    cat: "reference",
-  },
-  {
-    id: "mqref",
-    icon: "bi-mailbox",
-    name: "消息中间件",
-    desc: "Kafka / RabbitMQ / RocketMQ 速查",
-    cat: "reference",
-  },
-  {
-    id: "mimetype",
-    icon: "bi-file-earmark",
-    name: "MIME 类型",
-    desc: "文件扩展名 / MIME 类型对照",
-    cat: "reference",
-  },
-  {
-    id: "portref",
-    icon: "bi-ethernet",
-    name: "端口号速查",
-    desc: "常用网络服务端口号对照",
-    cat: "reference",
-  },
-  {
-    id: "ideakeys",
-    icon: "bi-keyboard",
-    name: "IDEA 快捷键",
-    desc: "IntelliJ IDEA 快捷键速查",
-    cat: "reference",
-  },
-  {
-    id: "designpatterns",
-    icon: "bi-diagram-3",
-    name: "设计模式",
-    desc: "23 种设计模式示例代码",
-    cat: "reference",
-  },
-  {
-    id: "gcref",
-    icon: "bi-cpu",
-    name: "GC 调优",
-    desc: "JVM 垃圾回收算法与参数速查",
-    cat: "reference",
-  },
-  {
-    id: "securityref",
-    icon: "bi-shield-lock",
-    name: "Spring Security",
-    desc: "Spring Security 注解与配置速查",
-    cat: "reference",
-  },
-  {
-    id: "junit5",
-    icon: "bi-check2-square",
-    name: "JUnit 5",
-    desc: "JUnit 5 注解与断言速查",
-    cat: "reference",
-  },
-  {
-    id: "flowableref",
-    icon: "bi-diagram-2",
-    name: "Flowable / BPMN",
-    desc: "Flowable API / BPMN / 监听器 / 表前缀速查（含场景与示例）",
-    cat: "reference",
-  },
+    {
+        id: "jsrun",
+        icon: "bi-play-circle",
+        name: "JS/TS 运行",
+        desc: "浏览器中执行 JS/TS 代码 / 捕获 console 输出",
+        cat: "codegen",
+    },
+    {
+        id: "pyrun",
+        icon: "bi-filetype-py",
+        name: "Python 运行",
+        desc: "基于 Pyodide 在浏览器中运行 Python 3 代码 / 捕获 stdout",
+        cat: "codegen",
+    },
+    {
+        id: "qrdecode",
+        icon: "bi-qr-code-scan",
+        name: "二维码解析",
+        desc: "图片 → URL / 文本 / WiFi",
+        cat: "text",
+    },
+    {
+        id: "diff",
+        icon: "bi-file-earmark-diff",
+        name: "文本对比",
+        desc: "文本差异对比高亮",
+        cat: "text",
+    },
+    {
+        id: "regex",
+        icon: "bi-regex",
+        name: "正则表达式",
+        desc: "正则匹配测试 / 分组查看",
+        cat: "text",
+    },
+    {
+        id: "stats",
+        icon: "bi-bar-chart",
+        name: "文本统计",
+        desc: "字符 / 单词 / 行数 / 字节",
+        cat: "text",
+    },
+    {
+        id: "csv",
+        icon: "bi-table",
+        name: "CSV 格式化",
+        desc: "CSV 表格化查看 / 校对",
+        cat: "text",
+    },
+    {
+        id: "markdown",
+        icon: "bi-markdown",
+        name: "Markdown 预览",
+        desc: "Markdown 实时预览 / 导出 HTML",
+        cat: "text",
+    },
+    {
+        id: "htmlmd",
+        icon: "bi-arrow-left-right",
+        name: "HTML ↔ Markdown",
+        desc: "HTML 与 Markdown 互转",
+        cat: "text",
+    },
+    {
+        id: "webfmt",
+        icon: "bi-filetype-html",
+        name: "Web 格式化",
+        desc: "HTML / CSS / JS 格式化压缩",
+        cat: "text",
+    },
+    {
+        id: "qrcode",
+        icon: "bi-qr-code",
+        name: "二维码生成",
+        desc: "文本 / URL 生成二维码下载",
+        cat: "text",
+    },
+    {
+        id: "barcode",
+        icon: "bi-upc",
+        name: "条形码生成",
+        desc: "Code128 / Code39 条形码生成下载",
+        cat: "text",
+    },
+    {
+        id: "tplreplace",
+        icon: "bi-braces-asterisk",
+        name: "模板替换",
+        desc: "多种语法字符串变量替换",
+        cat: "text",
+    },
+    {
+        id: "desensitize",
+        icon: "bi-eye-slash",
+        name: "数据脱敏",
+        desc: "手机/身份证/银行卡/邮箱等本地脱敏",
+        cat: "text",
+    },
+    {
+        id: "lineending",
+        icon: "bi-text-wrap",
+        name: "行尾 / BOM / 不可见字符",
+        desc: "CRLF/LF/CR、BOM、零宽字符检测与转换",
+        cat: "text",
+    },
+    {
+        id: "mdtable",
+        icon: "bi-table",
+        name: "Markdown 表格 / 文本树",
+        desc: "CSV↔MD 表格 / 路径与缩进转树形字符画",
+        cat: "text",
+    },
+
+    {
+        id: "cron",
+        icon: "bi-clock-history",
+        name: "Cron 表达式",
+        desc: "Cron 解析 / 下次执行时间",
+        cat: "debug",
+    },
+    {
+        id: "quartzcron",
+        icon: "bi-alarm",
+        name: "Quartz / 定时表达式",
+        desc: "Quartz cron 解析 / 与 Unix 差异 / @Scheduled",
+        cat: "debug",
+    },
+    {
+        id: "spel",
+        icon: "bi-code-slash",
+        name: "SpEL 速查 / 试算",
+        desc: "SpEL 语法速查 / 简易表达式求值",
+        cat: "debug",
+    },
+
+    {
+        id: "ws",
+        icon: "bi-plug",
+        name: "WebSocket",
+        desc: "WebSocket 连接调试",
+        cat: "debug",
+    },
+    {
+        id: "stomp",
+        icon: "bi-chat-dots",
+        name: "STOMP",
+        desc: "STOMP over WebSocket 调试",
+        cat: "debug",
+    },
+    {
+        id: "httpdebug",
+        icon: "bi-send",
+        name: "HTTP 调试",
+        desc: "发送请求 / cURL 解析 / Fetch·Axios·Java 代码生成",
+        cat: "debug",
+    },
+    {
+        id: "cookiecache",
+        icon: "bi-cookie",
+        name: "Cookie / 缓存头",
+        desc: "Cookie·Set-Cookie 解析构造 / Cache-Control",
+        cat: "debug",
+    },
+    {
+        id: "ip",
+        icon: "bi-globe2",
+        name: "IP 工具",
+        desc: "IP 归属 / 子网计算",
+        cat: "debug",
+    },
+    {
+        id: "grpc",
+        icon: "bi-hdd-rack",
+        name: "gRPC 调试",
+        desc: "Metadata 构造 / Protobuf 解码 / 状态码",
+        cat: "debug",
+    },
+    {
+        id: "urlparser",
+        icon: "bi-link-45deg",
+        name: "URL 解析",
+        desc: "URL 拆解 / 编码解码",
+        cat: "debug",
+    },
+    {
+        id: "uaparser",
+        icon: "bi-window-desktop",
+        name: "UA 解析",
+        desc: "User-Agent 解析",
+        cat: "debug",
+    },
+    {
+        id: "logfmt",
+        icon: "bi-file-text",
+        name: "日志高亮",
+        desc: "日志格式化 + 级别着色 + 堆栈折叠",
+        cat: "debug",
+    },
+    {
+        id: "logpattern",
+        icon: "bi-regex",
+        name: "日志 Pattern",
+        desc: "Logback/Log4j conversion word 解析与模板",
+        cat: "debug",
+    },
+    {
+        id: "traceheader",
+        icon: "bi-share",
+        name: "链路追踪头",
+        desc: "W3C traceparent / B3 生成与解析",
+        cat: "debug",
+    },
+    {
+        id: "stacktrace",
+        icon: "bi-list-ol",
+        name: "异常分析",
+        desc: "Java 堆栈跟踪解析 / 格式化",
+        cat: "debug",
+    },
+    {
+        id: "threaddump",
+        icon: "bi-diagram-3",
+        name: "线程 Dump 分析",
+        desc: "jstack 线程状态统计 / 死锁检测",
+        cat: "debug",
+    },
+    {
+        id: "sse",
+        icon: "bi-broadcast",
+        name: "SSE 调试",
+        desc: "Server-Sent Events 实时调试",
+        cat: "debug",
+    },
+    {
+        id: "arthas",
+        icon: "bi-terminal",
+        name: "Arthas 命令",
+        desc: "Arthas 诊断命令速查",
+        cat: "reference",
+    },
+    {
+        id: "linux",
+        icon: "bi-terminal-fill",
+        name: "Linux 命令",
+        desc: "常用 Linux 命令速查",
+        cat: "reference",
+    },
+    {
+        id: "jvmargs",
+        icon: "bi-cpu",
+        name: "JVM 参数",
+        desc: "JVM 启动参数速查",
+        cat: "reference",
+    },
+    {
+        id: "redisref",
+        icon: "bi-database-fill-gear",
+        name: "Redis 命令",
+        desc: "Redis 常用命令速查",
+        cat: "reference",
+    },
+    {
+        id: "springcloud",
+        icon: "bi-cloud-fog2",
+        name: "Spring Cloud",
+        desc: "Spring Cloud Alibaba 组件速查",
+        cat: "reference",
+    },
+    {
+        id: "docker",
+        icon: "bi-box-seam",
+        name: "Docker 命令",
+        desc: "Docker / K8s 命令速查",
+        cat: "reference",
+    },
+    {
+        id: "regexref",
+        icon: "bi-regex",
+        name: "正则速查表",
+        desc: "常用正则表达式分类速查",
+        cat: "reference",
+    },
+    {
+        id: "gitref",
+        icon: "bi-git",
+        name: "Git 命令",
+        desc: "Git 常用操作速查",
+        cat: "reference",
+    },
+    {
+        id: "httpstatus",
+        icon: "bi-info-circle",
+        name: "HTTP 状态码",
+        desc: "HTTP 状态码 / 方法速查",
+        cat: "reference",
+    },
+    {
+        id: "ascii",
+        icon: "bi-keyboard",
+        name: "ASCII 表",
+        desc: "ASCII / 控制字符速查",
+        cat: "reference",
+    },
+    {
+        id: "mybatisplus",
+        icon: "bi-database-gear",
+        name: "MyBatis Plus",
+        desc: "MyBatis Plus 常用方法速查",
+        cat: "reference",
+    },
+    {
+        id: "mybatissql",
+        icon: "bi-filetype-xml",
+        name: "MyBatis XML",
+        desc: "MyBatis 动态 SQL 标签速查",
+        cat: "reference",
+    },
+    {
+        id: "lombok",
+        icon: "bi-lightning",
+        name: "Lombok 注解",
+        desc: "Lombok 常用注解速查",
+        cat: "reference",
+    },
+    {
+        id: "springboot",
+        icon: "bi-stars",
+        name: "Spring Boot 注解",
+        desc: "Spring Boot 常用注解速查",
+        cat: "reference",
+    },
+    {
+        id: "txpropagation",
+        icon: "bi-diagram-3",
+        name: "事务传播",
+        desc: "Spring 事务传播行为速查",
+        cat: "reference",
+    },
+    {
+        id: "mavenref",
+        icon: "bi-box",
+        name: "Maven 命令",
+        desc: "Maven 常用命令速查",
+        cat: "reference",
+    },
+    {
+        id: "gradle",
+        icon: "bi-boxes",
+        name: "Gradle 命令",
+        desc: "Gradle 常用命令速查",
+        cat: "reference",
+    },
+    {
+        id: "jdkfeatures",
+        icon: "bi-cup-hot",
+        name: "JDK 新特性",
+        desc: "JDK 8/11/17/21 新特性速查",
+        cat: "reference",
+    },
+    {
+        id: "httpheader",
+        icon: "bi-list-columns-reverse",
+        name: "HTTP Header",
+        desc: "HTTP 通用 / 请求 / 响应头速查",
+        cat: "reference",
+    },
+    {
+        id: "mqref",
+        icon: "bi-mailbox",
+        name: "消息中间件",
+        desc: "Kafka / RabbitMQ / RocketMQ 速查",
+        cat: "reference",
+    },
+    {
+        id: "mimetype",
+        icon: "bi-file-earmark",
+        name: "MIME 类型",
+        desc: "文件扩展名 / MIME 类型对照",
+        cat: "reference",
+    },
+    {
+        id: "portref",
+        icon: "bi-ethernet",
+        name: "端口号速查",
+        desc: "常用网络服务端口号对照",
+        cat: "reference",
+    },
+    {
+        id: "ideakeys",
+        icon: "bi-keyboard",
+        name: "IDEA 快捷键",
+        desc: "IntelliJ IDEA 快捷键速查",
+        cat: "reference",
+    },
+    {
+        id: "designpatterns",
+        icon: "bi-diagram-3",
+        name: "设计模式",
+        desc: "23 种设计模式示例代码",
+        cat: "reference",
+    },
+    {
+        id: "gcref",
+        icon: "bi-cpu",
+        name: "GC 调优",
+        desc: "JVM 垃圾回收算法与参数速查",
+        cat: "reference",
+    },
+    {
+        id: "securityref",
+        icon: "bi-shield-lock",
+        name: "Spring Security",
+        desc: "Spring Security 注解与配置速查",
+        cat: "reference",
+    },
+    {
+        id: "junit5",
+        icon: "bi-check2-square",
+        name: "JUnit 5",
+        desc: "JUnit 5 注解与断言速查",
+        cat: "reference",
+    },
+    {
+        id: "flowableref",
+        icon: "bi-diagram-2",
+        name: "Flowable / BPMN",
+        desc: "Flowable API / BPMN / 监听器 / 表前缀速查（含场景与示例）",
+        cat: "reference",
+    },
 ];
 
 
@@ -949,55 +1105,59 @@ const toolsById = new Map(tools.map(t => [t.id, t]));
 const THEME_KEY = "devtools.theme";
 
 function applyTheme(theme) {
-  document.documentElement.setAttribute("data-theme", theme);
-  const icon = document.getElementById("themeIcon");
-  if (icon)
-    icon.className =
-      theme === "light" ? "bi bi-sun-fill" : "bi bi-moon-stars-fill";
-  try {
-    localStorage.setItem(THEME_KEY, theme);
-  } catch (e) {}
+    document.documentElement.setAttribute("data-theme", theme);
+    const icon = document.getElementById("themeIcon");
+    if (icon)
+        icon.className =
+            theme === "light" ? "bi bi-sun-fill" : "bi bi-moon-stars-fill";
+    try {
+        localStorage.setItem(THEME_KEY, theme);
+    } catch (e) {
+    }
 }
 
 function toggleTheme() {
-  const cur = document.documentElement.getAttribute("data-theme") || "dark";
-  applyTheme(cur === "light" ? "dark" : "light");
+    const cur = document.documentElement.getAttribute("data-theme") || "dark";
+    applyTheme(cur === "light" ? "dark" : "light");
 }
 
 (function initTheme() {
-  let saved = "dark";
-  try {
-    saved = localStorage.getItem(THEME_KEY) || "dark";
-  } catch (e) {}
-  applyTheme(saved);
+    let saved = "dark";
+    try {
+        saved = localStorage.getItem(THEME_KEY) || "dark";
+    } catch (e) {
+    }
+    applyTheme(saved);
 })();
 
 // === Usage Stats ===
 const STATS_KEY = "devtools.usage";
 
 function bumpUsage(id) {
-  try {
-    const raw = localStorage.getItem(STATS_KEY);
-    const stats = raw ? JSON.parse(raw) : {};
-    stats[id] = (stats[id] || 0) + 1;
-    localStorage.setItem(STATS_KEY, JSON.stringify(stats));
-  } catch (e) {}
+    try {
+        const raw = localStorage.getItem(STATS_KEY);
+        const stats = raw ? JSON.parse(raw) : {};
+        stats[id] = (stats[id] || 0) + 1;
+        localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+    } catch (e) {
+    }
 }
 
 function getUsageStats() {
-  try {
-    const raw = localStorage.getItem(STATS_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch (e) {
-    return {};
-  }
+    try {
+        const raw = localStorage.getItem(STATS_KEY);
+        return raw ? JSON.parse(raw) : {};
+    } catch (e) {
+        return {};
+    }
 }
 
 function clearUsageStats() {
-  try {
-    localStorage.removeItem(STATS_KEY);
-  } catch (e) {}
-  renderHomeHeatmap();
+    try {
+        localStorage.removeItem(STATS_KEY);
+    } catch (e) {
+    }
+    renderHomeHeatmap();
 }
 
 // === Recent Tools ===
@@ -1005,237 +1165,239 @@ const RECENT_KEY = "devtools.recent";
 const RECENT_MAX = 8;
 
 function pushRecent(id) {
-  try {
-    const raw = localStorage.getItem(RECENT_KEY);
-    const arr = raw ? JSON.parse(raw) : [];
-    const filtered = arr.filter((e) => e.id !== id);
-    filtered.unshift({ id: id, ts: Date.now() });
-    const truncated = filtered.slice(0, RECENT_MAX);
-    localStorage.setItem(RECENT_KEY, JSON.stringify(truncated));
-  } catch (e) {}
+    try {
+        const raw = localStorage.getItem(RECENT_KEY);
+        const arr = raw ? JSON.parse(raw) : [];
+        const filtered = arr.filter((e) => e.id !== id);
+        filtered.unshift({id: id, ts: Date.now()});
+        const truncated = filtered.slice(0, RECENT_MAX);
+        localStorage.setItem(RECENT_KEY, JSON.stringify(truncated));
+    } catch (e) {
+    }
 }
 
 function getRecent() {
-  try {
-    const raw = localStorage.getItem(RECENT_KEY);
-    const arr = raw ? JSON.parse(raw) : [];
-    return arr
-      .map((e) =>
-        Object.assign({}, e, { tool: toolsById.get(e.id) }),
-      )
-      .filter((e) => e.tool)
-      .slice(0, RECENT_MAX);
-  } catch (e) {
-    return [];
-  }
+    try {
+        const raw = localStorage.getItem(RECENT_KEY);
+        const arr = raw ? JSON.parse(raw) : [];
+        return arr
+            .map((e) =>
+                Object.assign({}, e, {tool: toolsById.get(e.id)}),
+            )
+            .filter((e) => e.tool)
+            .slice(0, RECENT_MAX);
+    } catch (e) {
+        return [];
+    }
 }
 
 function clearRecent() {
-  try {
-    localStorage.removeItem(RECENT_KEY);
-  } catch (e) {}
-  refreshRecentBlock();
-  refreshSidebarRecent();
+    try {
+        localStorage.removeItem(RECENT_KEY);
+    } catch (e) {
+    }
+    refreshRecentBlock();
+    refreshSidebarRecent();
 }
 
 // === Favorites（逻辑在 favorites.js，此处负责 UI 接入）===
 function getFavoriteTools() {
-  if (typeof getFavorites !== "function") return [];
-  return getFavorites()
-    .map((id) => toolsById.get(id))
-    .filter(Boolean);
+    if (typeof getFavorites !== "function") return [];
+    return getFavorites()
+        .map((id) => toolsById.get(id))
+        .filter(Boolean);
 }
 
 function favStarHtml(id) {
-  const fav = typeof isFavorite === "function" && isFavorite(id);
-  return (
-    '<button type="button" class="fav-star' +
-    (fav ? " active" : "") +
-    '" data-tool="' +
-    escapeHtml(id) +
-    '" title="' +
-    (fav ? "取消收藏" : "收藏") +
-    '" aria-label="' +
-    (fav ? "取消收藏" : "收藏") +
-    '"><i class="bi ' +
-    (fav ? "bi-star-fill" : "bi-star") +
-    '"></i></button>'
-  );
+    const fav = typeof isFavorite === "function" && isFavorite(id);
+    return (
+        '<button type="button" class="fav-star' +
+        (fav ? " active" : "") +
+        '" data-tool="' +
+        escapeHtml(id) +
+        '" title="' +
+        (fav ? "取消收藏" : "收藏") +
+        '" aria-label="' +
+        (fav ? "取消收藏" : "收藏") +
+        '"><i class="bi ' +
+        (fav ? "bi-star-fill" : "bi-star") +
+        '"></i></button>'
+    );
 }
 
 function sbToolHtml(t) {
-  const fav = typeof isFavorite === "function" && isFavorite(t.id);
-  return (
-    '<div class="sb-tool" data-tool="' +
-    escapeHtml(t.id) +
-    '" title="' +
-    escapeHtml(t.name) +
-    '"><i class="bi ' +
-    t.icon +
-    '"></i><span class="sb-tool-name">' +
-    escapeHtml(t.name) +
-    '</span><i class="bi ' +
-    (fav ? "bi-star-fill" : "bi-star") +
-    " fav-star" +
-    (fav ? " active" : "") +
-    '" data-tool="' +
-    escapeHtml(t.id) +
-    '" title="' +
-    (fav ? "取消收藏" : "收藏") +
-    '"></i></div>'
-  );
+    const fav = typeof isFavorite === "function" && isFavorite(t.id);
+    return (
+        '<div class="sb-tool" data-tool="' +
+        escapeHtml(t.id) +
+        '" title="' +
+        escapeHtml(t.name) +
+        '"><i class="bi ' +
+        t.icon +
+        '"></i><span class="sb-tool-name">' +
+        escapeHtml(t.name) +
+        '</span><i class="bi ' +
+        (fav ? "bi-star-fill" : "bi-star") +
+        " fav-star" +
+        (fav ? " active" : "") +
+        '" data-tool="' +
+        escapeHtml(t.id) +
+        '" title="' +
+        (fav ? "取消收藏" : "收藏") +
+        '"></i></div>'
+    );
 }
 
 function syncFavoriteStars(id, isFav) {
-  document.querySelectorAll('.fav-star[data-tool="' + id + '"]').forEach((el) => {
-    el.classList.toggle("active", isFav);
-    el.title = isFav ? "取消收藏" : "收藏";
-    if (el.getAttribute("aria-label") != null) {
-      el.setAttribute("aria-label", isFav ? "取消收藏" : "收藏");
-    }
-    const icon = el.tagName === "I" ? el : el.querySelector("i");
-    if (!icon) return;
-    icon.classList.toggle("bi-star-fill", isFav);
-    icon.classList.toggle("bi-star", !isFav);
-  });
+    document.querySelectorAll('.fav-star[data-tool="' + id + '"]').forEach((el) => {
+        el.classList.toggle("active", isFav);
+        el.title = isFav ? "取消收藏" : "收藏";
+        if (el.getAttribute("aria-label") != null) {
+            el.setAttribute("aria-label", isFav ? "取消收藏" : "收藏");
+        }
+        const icon = el.tagName === "I" ? el : el.querySelector("i");
+        if (!icon) return;
+        icon.classList.toggle("bi-star-fill", isFav);
+        icon.classList.toggle("bi-star", !isFav);
+    });
 }
 
 function handleToggleFavorite(id) {
-  if (typeof toggleFavorite !== "function" || !id) return;
-  const now = toggleFavorite(id);
-  syncFavoriteStars(id, now);
-  refreshFavoritesBlock();
-  refreshSidebarFavorites();
-  toast(now ? "已收藏" : "已取消收藏");
+    if (typeof toggleFavorite !== "function" || !id) return;
+    const now = toggleFavorite(id);
+    syncFavoriteStars(id, now);
+    refreshFavoritesBlock();
+    refreshSidebarFavorites();
+    toast(now ? "已收藏" : "已取消收藏");
 }
 
 function clearFavoritesUI() {
-  if (typeof clearFavorites === "function") clearFavorites();
-  document.querySelectorAll(".fav-star").forEach((el) => {
-    el.classList.remove("active");
-    el.title = "收藏";
-    if (el.getAttribute("aria-label") != null) {
-      el.setAttribute("aria-label", "收藏");
-    }
-    const icon = el.tagName === "I" ? el : el.querySelector("i");
-    if (!icon) return;
-    icon.classList.remove("bi-star-fill");
-    icon.classList.add("bi-star");
-  });
-  refreshFavoritesBlock();
-  refreshSidebarFavorites();
-  toast("已清空收藏");
+    if (typeof clearFavorites === "function") clearFavorites();
+    document.querySelectorAll(".fav-star").forEach((el) => {
+        el.classList.remove("active");
+        el.title = "收藏";
+        if (el.getAttribute("aria-label") != null) {
+            el.setAttribute("aria-label", "收藏");
+        }
+        const icon = el.tagName === "I" ? el : el.querySelector("i");
+        if (!icon) return;
+        icon.classList.remove("bi-star-fill");
+        icon.classList.add("bi-star");
+    });
+    refreshFavoritesBlock();
+    refreshSidebarFavorites();
+    toast("已清空收藏");
 }
 
 function createHomeCard(t, cardCat, ci) {
-  const card = document.createElement("div");
-  card.className = "home-card cat-" + cardCat;
-  card.dataset.cat = cardCat;
-  card.dataset.tool = t.id;
-  card.style.animationDelay = Math.min(ci, 11) * 0.03 + "s";
-  card.innerHTML =
-    favStarHtml(t.id) +
-    '<div class="hc-icon"><i class="bi ' +
-    t.icon +
-    '"></i></div><div class="hc-name">' +
-    escapeHtml(t.name) +
-    '</div><div class="hc-desc">' +
-    escapeHtml(t.desc) +
-    "</div>";
-  card.dataset.name = t.name.toLowerCase();
-  card.dataset.desc = t.desc.toLowerCase();
-  card.addEventListener("click", () => openTool(t.id));
-  const star = card.querySelector(".fav-star");
-  if (star) {
-    star.addEventListener("click", (e) => {
-      e.stopPropagation();
-      e.preventDefault();
-      handleToggleFavorite(t.id);
-    });
-  }
-  return card;
+    const card = document.createElement("div");
+    card.className = "home-card cat-" + cardCat;
+    card.dataset.cat = cardCat;
+    card.dataset.tool = t.id;
+    card.style.animationDelay = Math.min(ci, 11) * 0.03 + "s";
+    card.innerHTML =
+        favStarHtml(t.id) +
+        '<div class="hc-icon"><i class="bi ' +
+        t.icon +
+        '"></i></div><div class="hc-name">' +
+        escapeHtml(t.name) +
+        '</div><div class="hc-desc">' +
+        escapeHtml(t.desc) +
+        "</div>";
+    card.dataset.name = t.name.toLowerCase();
+    card.dataset.desc = t.desc.toLowerCase();
+    card.addEventListener("click", () => openTool(t.id));
+    const star = card.querySelector(".fav-star");
+    if (star) {
+        star.addEventListener("click", (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            handleToggleFavorite(t.id);
+        });
+    }
+    return card;
 }
 
 function renderHomeHeatmap() {
-  const panel = domCache.homeHeatmap;
-  if (!panel) return;
-  const stats = getUsageStats();
-  const entries = Object.entries(stats)
-    .map(([id, count]) => ({
-      id: id,
-      count: count,
-      tool: toolsById.get(id),
-    }))
-    .filter((e) => e.tool)
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 10);
-  if (!entries.length) {
+    const panel = domCache.homeHeatmap;
+    if (!panel) return;
+    const stats = getUsageStats();
+    const entries = Object.entries(stats)
+        .map(([id, count]) => ({
+            id: id,
+            count: count,
+            tool: toolsById.get(id),
+        }))
+        .filter((e) => e.tool)
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 10);
+    if (!entries.length) {
+        panel.innerHTML =
+            '<div class="home-heatmap-empty"><i class="bi bi-clock-history"></i>暂无使用记录，开始使用工具后会在这里展示 Top 10 常用工具</div>';
+        return;
+    }
+    const max = entries[0].count;
+    const total = entries.reduce((s, e) => s + e.count, 0);
+    const flames = ["🔥🔥🔥", "🔥🔥", "🔥", "", "", "", "", "", "", ""];
+    const medals = ["🥇", "🥈", "🥉"];
+    const tierClass = ["top-1", "top-2", "top-3"];
     panel.innerHTML =
-      '<div class="home-heatmap-empty"><i class="bi bi-clock-history"></i>暂无使用记录，开始使用工具后会在这里展示 Top 10 常用工具</div>';
-    return;
-  }
-  const max = entries[0].count;
-  const total = entries.reduce((s, e) => s + e.count, 0);
-  const flames = ["🔥🔥🔥", "🔥🔥", "🔥", "", "", "", "", "", "", ""];
-  const medals = ["🥇", "🥈", "🥉"];
-  const tierClass = ["top-1", "top-2", "top-3"];
-  panel.innerHTML =
-    '<div class="home-heatmap-header"><i class="bi bi-fire"></i> 常用工具 Top ' +
-    entries.length +
-    "</div>" +
-    entries
-      .map((e, i) => {
-        const pct = Math.round((e.count / max) * 100);
-        const share = total > 0 ? Math.round((e.count / total) * 100) : 0;
-        const rank = i < 3 ? " " + tierClass[i] : "";
-        const medal =
-          i < 3
-            ? '<span class="home-heatmap-medal">' + medals[i] + "</span>"
-            : '<span class="home-heatmap-rank">' + (i + 1) + "</span>";
-        const flame =
-          i < 10
-            ? '<span class="home-heatmap-flame">' + flames[i] + "</span>"
-            : "";
-        return (
-          '<div class="home-heatmap-item cat-' +
-          e.tool.cat +
-          rank +
-          '" onclick="openTool(\'' +
-          e.id +
-          "');hideHomeHeatmap()\">" +
-          medal +
-          '<span class="home-heatmap-icon"><i class="bi ' +
-          e.tool.icon +
-          '"></i></span>' +
-          '<span class="home-heatmap-name">' +
-          escapeHtml(e.tool.name) +
-          flame +
-          "</span>" +
-          '<span class="home-heatmap-bar"><i style="width:' +
-          pct +
-          '%"></i></span>' +
-          '<span class="home-heatmap-count"><b>' +
-          e.count +
-          '</b><span class="home-heatmap-share">' +
-          share +
-          "%</span></span>" +
-          "</div>"
-        );
-      })
-      .join("");
+        '<div class="home-heatmap-header"><i class="bi bi-fire"></i> 常用工具 Top ' +
+        entries.length +
+        "</div>" +
+        entries
+            .map((e, i) => {
+                const pct = Math.round((e.count / max) * 100);
+                const share = total > 0 ? Math.round((e.count / total) * 100) : 0;
+                const rank = i < 3 ? " " + tierClass[i] : "";
+                const medal =
+                    i < 3
+                        ? '<span class="home-heatmap-medal">' + medals[i] + "</span>"
+                        : '<span class="home-heatmap-rank">' + (i + 1) + "</span>";
+                const flame =
+                    i < 10
+                        ? '<span class="home-heatmap-flame">' + flames[i] + "</span>"
+                        : "";
+                return (
+                    '<div class="home-heatmap-item cat-' +
+                    e.tool.cat +
+                    rank +
+                    '" onclick="openTool(\'' +
+                    e.id +
+                    "');hideHomeHeatmap()\">" +
+                    medal +
+                    '<span class="home-heatmap-icon"><i class="bi ' +
+                    e.tool.icon +
+                    '"></i></span>' +
+                    '<span class="home-heatmap-name">' +
+                    escapeHtml(e.tool.name) +
+                    flame +
+                    "</span>" +
+                    '<span class="home-heatmap-bar"><i style="width:' +
+                    pct +
+                    '%"></i></span>' +
+                    '<span class="home-heatmap-count"><b>' +
+                    e.count +
+                    '</b><span class="home-heatmap-share">' +
+                    share +
+                    "%</span></span>" +
+                    "</div>"
+                );
+            })
+            .join("");
 }
 
 function showHomeHeatmap() {
-  const input = domCache.homeSearch;
-  if (!input || input.value.trim()) return;
-  renderHomeHeatmap();
-  const panel = domCache.homeHeatmap;
-  if (panel) panel.style.display = "";
+    const input = domCache.homeSearch;
+    if (!input || input.value.trim()) return;
+    renderHomeHeatmap();
+    const panel = domCache.homeHeatmap;
+    if (panel) panel.style.display = "";
 }
 
 function hideHomeHeatmap() {
-  const panel = domCache.homeHeatmap;
-  if (panel) panel.style.display = "none";
+    const panel = domCache.homeHeatmap;
+    if (panel) panel.style.display = "none";
 }
 
 // 懒加载状态:工具的 JS 与 HTML 面板仅在首次打开时加载
@@ -1249,64 +1411,64 @@ const loadedLibs = new Set();
 const _libPromise = {};
 
 function loadLib(name) {
-  if (loadedLibs.has(name)) return Promise.resolve();
-  if (_libPromise[name]) return _libPromise[name];
-  _libPromise[name] = new Promise((resolve, reject) => {
-    const el = document.createElement("script");
-    el.src = `lib/${name}${assetV("lib/" + name)}`;
-    el.onload = () => {
-      loadedLibs.add(name);
-      resolve();
-    };
-    el.onerror = () => {
-      delete _libPromise[name];
-      reject(new Error("加载库失败: " + name));
-    };
-    document.head.appendChild(el);
-  });
-  return _libPromise[name];
+    if (loadedLibs.has(name)) return Promise.resolve();
+    if (_libPromise[name]) return _libPromise[name];
+    _libPromise[name] = new Promise((resolve, reject) => {
+        const el = document.createElement("script");
+        el.src = `lib/${name}${assetV("lib/" + name)}`;
+        el.onload = () => {
+            loadedLibs.add(name);
+            resolve();
+        };
+        el.onerror = () => {
+            delete _libPromise[name];
+            reject(new Error("加载库失败: " + name));
+        };
+        document.head.appendChild(el);
+    });
+    return _libPromise[name];
 }
 
 // 工具→依赖库映射,openTool 在加载工具脚本前按此表先加载所需库
 const toolLibs = {
-  yaml: ["js-yaml.min.js"],
-  jsonconvert: ["js-yaml.min.js", "fxp.min.js"],
-  propertiesfmt: ["js-yaml.min.js"],
-  openapiview: ["js-yaml.min.js"],
-  sql: ["sql-formatter.min.js"],
-  sqldialect: ["sql-formatter.min.js"],
-  jsonpath: ["jsonpath.min.js"],
-  jsonschema: ["ajv.min.js"],
-  diff: ["diff.min.js"],
-  markdown: ["marked.min.js"],
-  htmlmd: ["marked.min.js"],
-  webfmt: ["js-beautify.min.js"],
-  qrcode: ["qrcode.min.js"],
-  qrdecode: ["jsqr.min.js"],
-  hash: ["md5.min.js"],
-  bcrypt: ["bcrypt.min.js"],
-  gmsm: ["sm2.min.js", "sm3.min.js", "sm4.min.js"],
-  hashext: ["sm3.min.js"],
-  certparser: ["asn1js.min.js", "pkijs.min.js"],
-  uaparser: ["ua-parser.min.js"],
-  sql2mybatis: ["jszip.min.js"],
-  "image-compress": ["jszip.min.js"],
-  imgtopdf: ["jspdf.min.js"],
-  pdfmerge: ["pdf-lib.min.js"],
-  jsonexcel: ["xlsx.min.js"],
-  jsrun: ["sucrase.min.js"],
-  pyrun: ["pyodide/pyodide.js"],
+    yaml: ["js-yaml.min.js"],
+    jsonconvert: ["js-yaml.min.js", "fxp.min.js"],
+    propertiesfmt: ["js-yaml.min.js"],
+    openapiview: ["js-yaml.min.js"],
+    sql: ["sql-formatter.min.js"],
+    sqldialect: ["sql-formatter.min.js"],
+    jsonpath: ["jsonpath.min.js"],
+    jsonschema: ["ajv.min.js"],
+    diff: ["diff.min.js"],
+    markdown: ["marked.min.js"],
+    htmlmd: ["marked.min.js"],
+    webfmt: ["js-beautify.min.js"],
+    qrcode: ["qrcode.min.js"],
+    qrdecode: ["jsqr.min.js"],
+    hash: ["md5.min.js"],
+    bcrypt: ["bcrypt.min.js"],
+    gmsm: ["sm2.min.js", "sm3.min.js", "sm4.min.js"],
+    hashext: ["sm3.min.js"],
+    certparser: ["asn1js.min.js", "pkijs.min.js"],
+    uaparser: ["ua-parser.min.js"],
+    sql2mybatis: ["jszip.min.js"],
+    "image-compress": ["jszip.min.js"],
+    imgtopdf: ["jspdf.min.js"],
+    pdfmerge: ["pdf-lib.min.js"],
+    jsonexcel: ["xlsx.min.js"],
+    jsrun: ["sucrase.min.js"],
+    pyrun: ["pyodide/pyodide.js"],
 };
 
 // 公共 HTML 转义工具:统一所有工具的转义逻辑(原 15 处重复定义已收敛至此)。
 function escapeHtml(s) {
-  if (s === undefined || s === null) return "";
-  return String(s)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
+    if (s === undefined || s === null) return "";
+    return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
 }
 
 /**
@@ -1314,51 +1476,51 @@ function escapeHtml(s) {
  * @returns {{ line: number|null, column: number|null, position: number|null, message: string }}
  */
 function locateParseError(source, err) {
-  const text = source == null ? "" : String(source);
-  const msg = (err && (err.message || err.reason)) || String(err || "解析失败");
-  let line = null;
-  let column = null;
-  let position = null;
+    const text = source == null ? "" : String(source);
+    const msg = (err && (err.message || err.reason)) || String(err || "解析失败");
+    let line = null;
+    let column = null;
+    let position = null;
 
-  // js-yaml: err.mark { line(0-based), column(0-based), position }
-  if (err && err.mark && typeof err.mark === "object") {
-    if (typeof err.mark.line === "number") line = err.mark.line + 1;
-    if (typeof err.mark.column === "number") column = err.mark.column + 1;
-    if (typeof err.mark.position === "number") position = err.mark.position;
-  }
-
-  // JSON / 通用: "at position 12 (line 3 column 5)" 或 "at position 12"
-  if (line == null) {
-    const m1 = msg.match(
-      /position\s+(\d+)\s*\(\s*line\s+(\d+)\s*column\s+(\d+)\s*\)/i,
-    );
-    if (m1) {
-      position = parseInt(m1[1], 10);
-      line = parseInt(m1[2], 10);
-      column = parseInt(m1[3], 10);
-    } else {
-      const m2 = msg.match(/position\s+(\d+)/i);
-      if (m2) position = parseInt(m2[1], 10);
+    // js-yaml: err.mark { line(0-based), column(0-based), position }
+    if (err && err.mark && typeof err.mark === "object") {
+        if (typeof err.mark.line === "number") line = err.mark.line + 1;
+        if (typeof err.mark.column === "number") column = err.mark.column + 1;
+        if (typeof err.mark.position === "number") position = err.mark.position;
     }
-  }
 
-  // XML DOMParser / 其它: "line 2 at column 15" / "Line: 2 Column: 15"
-  if (line == null) {
-    const m3 = msg.match(/line\s*[:=]?\s*(\d+)/i);
-    if (m3) line = parseInt(m3[1], 10);
-    const m4 = msg.match(/col(?:umn)?\s*[:=]?\s*(\d+)/i);
-    if (m4) column = parseInt(m4[1], 10);
-  }
+    // JSON / 通用: "at position 12 (line 3 column 5)" 或 "at position 12"
+    if (line == null) {
+        const m1 = msg.match(
+            /position\s+(\d+)\s*\(\s*line\s+(\d+)\s*column\s+(\d+)\s*\)/i,
+        );
+        if (m1) {
+            position = parseInt(m1[1], 10);
+            line = parseInt(m1[2], 10);
+            column = parseInt(m1[3], 10);
+        } else {
+            const m2 = msg.match(/position\s+(\d+)/i);
+            if (m2) position = parseInt(m2[1], 10);
+        }
+    }
 
-  // 仅有 position：换算行列
-  if (line == null && position != null && position >= 0) {
-    const head = text.slice(0, Math.min(position, text.length));
-    const parts = head.split(/\r\n|\n|\r/);
-    line = parts.length;
-    column = (parts[parts.length - 1] || "").length + 1;
-  }
+    // XML DOMParser / 其它: "line 2 at column 15" / "Line: 2 Column: 15"
+    if (line == null) {
+        const m3 = msg.match(/line\s*[:=]?\s*(\d+)/i);
+        if (m3) line = parseInt(m3[1], 10);
+        const m4 = msg.match(/col(?:umn)?\s*[:=]?\s*(\d+)/i);
+        if (m4) column = parseInt(m4[1], 10);
+    }
 
-  return { line: line, column: column, position: position, message: msg };
+    // 仅有 position：换算行列
+    if (line == null && position != null && position >= 0) {
+        const head = text.slice(0, Math.min(position, text.length));
+        const parts = head.split(/\r\n|\n|\r/);
+        line = parts.length;
+        column = (parts[parts.length - 1] || "").length + 1;
+    }
+
+    return {line: line, column: column, position: position, message: msg};
 }
 
 /**
@@ -1368,71 +1530,71 @@ function locateParseError(source, err) {
  * @param {string} [title] 标题前缀，如 "JSON 解析错误"
  */
 function formatParseErrorReport(source, err, title) {
-  const text = source == null ? "" : String(source);
-  const loc = locateParseError(text, err);
-  const head = title || "解析错误";
-  let where = "";
-  if (loc.line != null && loc.column != null) {
-    where = "（第 " + loc.line + " 行，第 " + loc.column + " 列）";
-  } else if (loc.line != null) {
-    where = "（第 " + loc.line + " 行）";
-  } else if (loc.position != null) {
-    where = "（位置 " + loc.position + "）";
-  }
-
-  const lines = text.replace(/\r\n|\r/g, "\n").split("\n");
-  const parts = [];
-  parts.push("✗ " + head + where);
-  parts.push(loc.message);
-  parts.push("");
-
-  if (loc.line != null && loc.line >= 1 && lines.length) {
-    const idx = Math.min(Math.max(loc.line - 1, 0), lines.length - 1);
-    const from = Math.max(0, idx - 2);
-    const to = Math.min(lines.length - 1, idx + 2);
-    const numW = String(to + 1).length;
-    for (let i = from; i <= to; i++) {
-      const n = String(i + 1).padStart(numW, " ");
-      const mark = i === idx ? ">" : " ";
-      const content = lines[i] == null ? "" : lines[i];
-      parts.push(mark + " " + n + " | " + content);
-      if (i === idx) {
-        const col = loc.column != null ? Math.max(1, loc.column) : 1;
-        // 指针对齐到内容列（考虑行号前缀宽度：" > NN | "）
-        const prefixLen = 1 + 1 + numW + 3; // mark + space + num + " | "
-        const caretPad = prefixLen + Math.min(col - 1, content.length);
-        parts.push(" ".repeat(caretPad) + "^");
-      }
+    const text = source == null ? "" : String(source);
+    const loc = locateParseError(text, err);
+    const head = title || "解析错误";
+    let where = "";
+    if (loc.line != null && loc.column != null) {
+        where = "（第 " + loc.line + " 行，第 " + loc.column + " 列）";
+    } else if (loc.line != null) {
+        where = "（第 " + loc.line + " 行）";
+    } else if (loc.position != null) {
+        where = "（位置 " + loc.position + "）";
     }
-  } else if (text.trim()) {
-    // 无行列时展示前几行便于对照
-    const preview = lines.slice(0, 5);
-    const numW = String(preview.length).length;
-    preview.forEach(function (ln, i) {
-      parts.push(
-        "  " + String(i + 1).padStart(numW, " ") + " | " + (ln || ""),
-      );
-    });
-    if (lines.length > 5) parts.push("  ...");
-  }
 
-  return parts.join("\n");
+    const lines = text.replace(/\r\n|\r/g, "\n").split("\n");
+    const parts = [];
+    parts.push("✗ " + head + where);
+    parts.push(loc.message);
+    parts.push("");
+
+    if (loc.line != null && loc.line >= 1 && lines.length) {
+        const idx = Math.min(Math.max(loc.line - 1, 0), lines.length - 1);
+        const from = Math.max(0, idx - 2);
+        const to = Math.min(lines.length - 1, idx + 2);
+        const numW = String(to + 1).length;
+        for (let i = from; i <= to; i++) {
+            const n = String(i + 1).padStart(numW, " ");
+            const mark = i === idx ? ">" : " ";
+            const content = lines[i] == null ? "" : lines[i];
+            parts.push(mark + " " + n + " | " + content);
+            if (i === idx) {
+                const col = loc.column != null ? Math.max(1, loc.column) : 1;
+                // 指针对齐到内容列（考虑行号前缀宽度：" > NN | "）
+                const prefixLen = 1 + 1 + numW + 3; // mark + space + num + " | "
+                const caretPad = prefixLen + Math.min(col - 1, content.length);
+                parts.push(" ".repeat(caretPad) + "^");
+            }
+        }
+    } else if (text.trim()) {
+        // 无行列时展示前几行便于对照
+        const preview = lines.slice(0, 5);
+        const numW = String(preview.length).length;
+        preview.forEach(function (ln, i) {
+            parts.push(
+                "  " + String(i + 1).padStart(numW, " ") + " | " + (ln || ""),
+            );
+        });
+        if (lines.length > 5) parts.push("  ...");
+    }
+
+    return parts.join("\n");
 }
 
 /** 行列 → 字符串偏移（line/column 均为 1-based） */
 function offsetFromLineCol(text, line, column) {
-  const src = text == null ? "" : String(text);
-  if (line == null || line < 1) return 0;
-  const lines = src.replace(/\r\n|\r/g, "\n").split("\n");
-  const idx = Math.min(Math.max(line - 1, 0), lines.length - 1);
-  let off = 0;
-  // 注意：split 后用 \n 拼接长度；原文本可能是 \r\n，近似用 \n 计数
-  for (let i = 0; i < idx; i++) {
-    off += (lines[i] || "").length + 1;
-  }
-  const col = column == null ? 1 : Math.max(1, column);
-  off += Math.min(col - 1, (lines[idx] || "").length);
-  return Math.min(Math.max(0, off), src.length);
+    const src = text == null ? "" : String(text);
+    if (line == null || line < 1) return 0;
+    const lines = src.replace(/\r\n|\r/g, "\n").split("\n");
+    const idx = Math.min(Math.max(line - 1, 0), lines.length - 1);
+    let off = 0;
+    // 注意：split 后用 \n 拼接长度；原文本可能是 \r\n，近似用 \n 计数
+    for (let i = 0; i < idx; i++) {
+        off += (lines[i] || "").length + 1;
+    }
+    const col = column == null ? 1 : Math.max(1, column);
+    off += Math.min(col - 1, (lines[idx] || "").length);
+    return Math.min(Math.max(0, off), src.length);
 }
 
 /**
@@ -1442,154 +1604,154 @@ function offsetFromLineCol(text, line, column) {
  * @param {Error|string} err
  */
 function highlightParseErrorInInput(inputElOrId, source, err) {
-  const el =
-    typeof inputElOrId === "string"
-      ? document.getElementById(inputElOrId)
-      : inputElOrId;
-  if (!el || typeof el.setSelectionRange !== "function") return;
+    const el =
+        typeof inputElOrId === "string"
+            ? document.getElementById(inputElOrId)
+            : inputElOrId;
+    if (!el || typeof el.setSelectionRange !== "function") return;
 
-  const text = source == null ? el.value || "" : String(source);
-  const loc = locateParseError(text, err);
-  let start = 0;
-  let end = 0;
+    const text = source == null ? el.value || "" : String(source);
+    const loc = locateParseError(text, err);
+    let start = 0;
+    let end = 0;
 
-  if (loc.position != null && loc.position >= 0) {
-    start = Math.min(loc.position, text.length);
-  } else if (loc.line != null) {
-    start = offsetFromLineCol(text, loc.line, loc.column || 1);
-  } else {
-    return;
-  }
+    if (loc.position != null && loc.position >= 0) {
+        start = Math.min(loc.position, text.length);
+    } else if (loc.line != null) {
+        start = offsetFromLineCol(text, loc.line, loc.column || 1);
+    } else {
+        return;
+    }
 
-  // 优先选中从错误点到本行末尾的「可疑 token」；否则整行
-  const nl = text.indexOf("\n", start);
-  const lineEnd = nl < 0 ? text.length : nl;
-  // token：连续非空白，至少 1 字符
-  let tokenEnd = start;
-  while (tokenEnd < lineEnd && !/\s/.test(text[tokenEnd])) tokenEnd++;
-  if (tokenEnd === start) {
-    // 错误点落在空白/行尾：选中整行
-    let lineStart = start;
-    while (lineStart > 0 && text[lineStart - 1] !== "\n") lineStart--;
-    start = lineStart;
-    end = lineEnd;
-  } else {
-    end = tokenEnd;
-  }
-  if (end <= start) end = Math.min(start + 1, text.length);
+    // 优先选中从错误点到本行末尾的「可疑 token」；否则整行
+    const nl = text.indexOf("\n", start);
+    const lineEnd = nl < 0 ? text.length : nl;
+    // token：连续非空白，至少 1 字符
+    let tokenEnd = start;
+    while (tokenEnd < lineEnd && !/\s/.test(text[tokenEnd])) tokenEnd++;
+    if (tokenEnd === start) {
+        // 错误点落在空白/行尾：选中整行
+        let lineStart = start;
+        while (lineStart > 0 && text[lineStart - 1] !== "\n") lineStart--;
+        start = lineStart;
+        end = lineEnd;
+    } else {
+        end = tokenEnd;
+    }
+    if (end <= start) end = Math.min(start + 1, text.length);
 
-  try {
-    el.focus({ preventScroll: false });
-    el.setSelectionRange(start, end);
-  } catch (e) {
-    /* ignore */
-  }
+    try {
+        el.focus({preventScroll: false});
+        el.setSelectionRange(start, end);
+    } catch (e) {
+        /* ignore */
+    }
 
-  // 滚动到选区附近
-  try {
-    const lineH = 18;
-    const line = loc.line != null ? loc.line : 1;
-    el.scrollTop = Math.max(0, (line - 3) * lineH);
-  } catch (e) {
-    /* ignore */
-  }
+    // 滚动到选区附近
+    try {
+        const lineH = 18;
+        const line = loc.line != null ? loc.line : 1;
+        el.scrollTop = Math.max(0, (line - 3) * lineH);
+    } catch (e) {
+        /* ignore */
+    }
 
-  el.classList.add("input-parse-error");
-  clearTimeout(el._parseErrTimer);
-  el._parseErrTimer = setTimeout(function () {
-    el.classList.remove("input-parse-error");
-  }, 3500);
+    el.classList.add("input-parse-error");
+    clearTimeout(el._parseErrTimer);
+    el._parseErrTimer = setTimeout(function () {
+        el.classList.remove("input-parse-error");
+    }, 3500);
 
-  // 用户编辑后去掉错误样式
-  if (!el._parseErrBound) {
-    el._parseErrBound = true;
-    const clear = function () {
-      el.classList.remove("input-parse-error");
-    };
-    el.addEventListener("input", clear);
-    el.addEventListener("keydown", clear);
-  }
+    // 用户编辑后去掉错误样式
+    if (!el._parseErrBound) {
+        el._parseErrBound = true;
+        const clear = function () {
+            el.classList.remove("input-parse-error");
+        };
+        el.addEventListener("input", clear);
+        el.addEventListener("keydown", clear);
+    }
 }
 
 /**
  * 输出错误报告 + 输入框定位高亮（格式化工具统一入口）
  */
 function reportParseError(outEl, inputElOrId, source, err, title) {
-  if (outEl) {
-    outEl.textContent = formatParseErrorReport(source, err, title);
-    outEl.className = "output-box error";
-  }
-  highlightParseErrorInInput(inputElOrId, source, err);
+    if (outEl) {
+        outEl.textContent = formatParseErrorReport(source, err, title);
+        outEl.className = "output-box error";
+    }
+    highlightParseErrorInInput(inputElOrId, source, err);
 }
 
 // 生产构建内联的 window.__ASSET_MAP__ 提供逐文件内容哈希,用于动态资源强缓存;
 // dev 模式无该映射,返回空串(浏览器每次取最新)。
 function assetV(p) {
-  const m = window.__ASSET_MAP__;
-  return m && m[p] ? "?v=" + m[p] : "";
+    const m = window.__ASSET_MAP__;
+    return m && m[p] ? "?v=" + m[p] : "";
 }
 
 // 递归查找首个真正可滚动的元素:工具面板自身或其任意后代。
 // 用于 backToTop 与 ResizeObserver 监听切换。
 function findScrollable(root) {
-  if (!root) return null;
-  const rs = getComputedStyle(root);
-  if (
-    (rs.overflowY === "auto" || rs.overflowY === "scroll") &&
-    root.scrollHeight > root.clientHeight + 1
-  )
-    return root;
-  const queue = [...root.children];
-  while (queue.length) {
-    const el = queue.shift();
-    const s = getComputedStyle(el);
+    if (!root) return null;
+    const rs = getComputedStyle(root);
     if (
-      (s.overflowY === "auto" || s.overflowY === "scroll") &&
-      el.scrollHeight > el.clientHeight + 1
+        (rs.overflowY === "auto" || rs.overflowY === "scroll") &&
+        root.scrollHeight > root.clientHeight + 1
     )
-      return el;
-    for (const c of el.children) queue.push(c);
-  }
-  return root;
+        return root;
+    const queue = [...root.children];
+    while (queue.length) {
+        const el = queue.shift();
+        const s = getComputedStyle(el);
+        if (
+            (s.overflowY === "auto" || s.overflowY === "scroll") &&
+            el.scrollHeight > el.clientHeight + 1
+        )
+            return el;
+        for (const c of el.children) queue.push(c);
+    }
+    return root;
 }
 
 // backToTop 统一 handler:实时定位当前激活面板的滚动元素,平滑回顶。
 function scrollActiveToTop() {
-  const active =
-    document.querySelector(".tool-panel.active") ||
-    domCache.panelHome;
-  if (!active) return;
-  const target = findScrollable(active);
-  (target || active).scrollTo({ top: 0, behavior: "smooth" });
+    const active =
+        document.querySelector(".tool-panel.active") ||
+        domCache.panelHome;
+    if (!active) return;
+    const target = findScrollable(active);
+    (target || active).scrollTo({top: 0, behavior: "smooth"});
 }
 
 function debounce(fn, ms) {
-  let t;
-  return function (...args) {
-    clearTimeout(t);
-    t = setTimeout(() => fn.apply(this, args), ms);
-  };
+    let t;
+    return function (...args) {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), ms);
+    };
 }
 
 const onHomeSearchInput = debounce(filterHomeTools, 80);
 
 // 参考面板搜索框：清除按钮显隐与点击
 function toggleRefClear(input) {
-  const btn =
-    input.parentElement &&
-    input.parentElement.querySelector(".ref-search-clear");
-  if (!btn) return;
-  btn.classList.toggle("visible", !!input.value);
+    const btn =
+        input.parentElement &&
+        input.parentElement.querySelector(".ref-search-clear");
+    if (!btn) return;
+    btn.classList.toggle("visible", !!input.value);
 }
 
 function clearRefSearch(btn) {
-  const wrap = btn.parentElement;
-  const input = wrap && wrap.querySelector("input");
-  if (!input) return;
-  input.value = "";
-  input.dispatchEvent(new Event("input", { bubbles: true }));
-  btn.classList.remove("visible");
-  input.focus();
+    const wrap = btn.parentElement;
+    const input = wrap && wrap.querySelector("input");
+    if (!input) return;
+    input.value = "";
+    input.dispatchEvent(new Event("input", {bubbles: true}));
+    btn.classList.remove("visible");
+    input.focus();
 }
 
 let homeCards = [];
@@ -1606,525 +1768,525 @@ let _routeSyncing = false;
 let _currentRouteToolId = null;
 
 function registerInit(id, fn) {
-  toolInits[id] = fn;
+    toolInits[id] = fn;
 }
 
 function loadToolScript(id) {
-  if (loadedScripts.has(id)) return Promise.resolve();
-  if (_scriptPromise[id]) return _scriptPromise[id];
-  const tool = toolsById.get(id);
-  if (!tool) return Promise.reject(new Error("未知工具: " + id));
-  const src = `js/${tool.cat}/${tool.id}.js${assetV("js/" + tool.cat + "/" + tool.id + ".js")}`;
-  _scriptPromise[id] = new Promise((resolve, reject) => {
-    const el = document.createElement("script");
-    el.src = src;
-    el.onload = () => {
-      loadedScripts.add(id);
-      resolve();
-    };
-    el.onerror = () => {
-      delete _scriptPromise[id];
-      reject(new Error("加载脚本失败: " + src));
-    };
-    document.head.appendChild(el);
-  });
-  return _scriptPromise[id];
+    if (loadedScripts.has(id)) return Promise.resolve();
+    if (_scriptPromise[id]) return _scriptPromise[id];
+    const tool = toolsById.get(id);
+    if (!tool) return Promise.reject(new Error("未知工具: " + id));
+    const src = `js/${tool.cat}/${tool.id}.js${assetV("js/" + tool.cat + "/" + tool.id + ".js")}`;
+    _scriptPromise[id] = new Promise((resolve, reject) => {
+        const el = document.createElement("script");
+        el.src = src;
+        el.onload = () => {
+            loadedScripts.add(id);
+            resolve();
+        };
+        el.onerror = () => {
+            delete _scriptPromise[id];
+            reject(new Error("加载脚本失败: " + src));
+        };
+        document.head.appendChild(el);
+    });
+    return _scriptPromise[id];
 }
 
 function loadToolPanel(id) {
-  if (loadedPanels.has(id)) return Promise.resolve();
-  if (_panelPromise[id]) return _panelPromise[id];
-  const tool = toolsById.get(id);
-  if (!tool) return Promise.reject(new Error("未知工具: " + id));
-  const url = `html/panels/${tool.cat}/${tool.id}.html${assetV("html/panels/" + tool.cat + "/" + tool.id + ".html")}`;
-  _panelPromise[id] = fetch(url)
-    .then((r) => {
-      if (!r.ok) throw new Error("面板加载失败: " + r.status);
-      return r.text();
-    })
-    .then((html) => {
-      if (!html || !html.trim()) throw new Error("面板 HTML 为空: " + id);
-      const container = domCache.panelsContainer;
-      if (!container) throw new Error("panels-container 不存在");
-      container.insertAdjacentHTML("beforeend", html);
-      loadedPanels.add(id);
-    })
-    .catch((e) => {
-      delete _panelPromise[id];
-      throw e;
-    });
-  return _panelPromise[id];
+    if (loadedPanels.has(id)) return Promise.resolve();
+    if (_panelPromise[id]) return _panelPromise[id];
+    const tool = toolsById.get(id);
+    if (!tool) return Promise.reject(new Error("未知工具: " + id));
+    const url = `html/panels/${tool.cat}/${tool.id}.html${assetV("html/panels/" + tool.cat + "/" + tool.id + ".html")}`;
+    _panelPromise[id] = fetch(url)
+        .then((r) => {
+            if (!r.ok) throw new Error("面板加载失败: " + r.status);
+            return r.text();
+        })
+        .then((html) => {
+            if (!html || !html.trim()) throw new Error("面板 HTML 为空: " + id);
+            const container = domCache.panelsContainer;
+            if (!container) throw new Error("panels-container 不存在");
+            container.insertAdjacentHTML("beforeend", html);
+            loadedPanels.add(id);
+        })
+        .catch((e) => {
+            delete _panelPromise[id];
+            throw e;
+        });
+    return _panelPromise[id];
 }
 
 function buildHomeGrid() {
-  const grid = domCache.homeGrid;
-  grid.innerHTML = "";
-  const anchors = domCache.homeCatAnchors;
-  anchors.innerHTML = "";
-  categories.forEach((cat) => {
-    let toolsInCat;
-    if (cat.id === "favorites") {
-      toolsInCat = getFavoriteTools();
-      if (!toolsInCat.length) return;
-    } else if (cat.id === "recent") {
-      toolsInCat = getRecent().map((e) => e.tool);
-      if (!toolsInCat.length) return;
-    } else {
-      toolsInCat = tools.filter((t) => t.cat === cat.id);
-      if (!toolsInCat.length) return;
-    }
-    const divider = document.createElement("div");
-    divider.className = "home-cat-divider cat-" + cat.id;
-    divider.id = "cat-" + cat.id;
-    divider.innerHTML = `<span class="hcd-icon"><i class="bi ${cat.icon}"></i></span><span>${escapeHtml(cat.name)}</span>`;
-    grid.appendChild(divider);
-    toolsInCat.forEach((t, ci) => {
-      const cardCat =
-        cat.id === "recent" || cat.id === "favorites" ? cat.id : t.cat;
-      grid.appendChild(createHomeCard(t, cardCat, ci));
+    const grid = domCache.homeGrid;
+    grid.innerHTML = "";
+    const anchors = domCache.homeCatAnchors;
+    anchors.innerHTML = "";
+    categories.forEach((cat) => {
+        let toolsInCat;
+        if (cat.id === "favorites") {
+            toolsInCat = getFavoriteTools();
+            if (!toolsInCat.length) return;
+        } else if (cat.id === "recent") {
+            toolsInCat = getRecent().map((e) => e.tool);
+            if (!toolsInCat.length) return;
+        } else {
+            toolsInCat = tools.filter((t) => t.cat === cat.id);
+            if (!toolsInCat.length) return;
+        }
+        const divider = document.createElement("div");
+        divider.className = "home-cat-divider cat-" + cat.id;
+        divider.id = "cat-" + cat.id;
+        divider.innerHTML = `<span class="hcd-icon"><i class="bi ${cat.icon}"></i></span><span>${escapeHtml(cat.name)}</span>`;
+        grid.appendChild(divider);
+        toolsInCat.forEach((t, ci) => {
+            const cardCat =
+                cat.id === "recent" || cat.id === "favorites" ? cat.id : t.cat;
+            grid.appendChild(createHomeCard(t, cardCat, ci));
+        });
+        const anchor = document.createElement("a");
+        anchor.className = "cat-anchor";
+        anchor.href = "#cat-" + cat.id;
+        anchor.innerHTML =
+            '<span class="cat-icon"><i class="bi ' +
+            cat.icon +
+            '"></i></span>' +
+            cat.name;
+        anchors.appendChild(anchor);
     });
-    const anchor = document.createElement("a");
-    anchor.className = "cat-anchor";
-    anchor.href = "#cat-" + cat.id;
-    anchor.innerHTML =
-      '<span class="cat-icon"><i class="bi ' +
-      cat.icon +
-      '"></i></span>' +
-      cat.name;
-    anchors.appendChild(anchor);
-  });
 
-  homeCards = Array.from(grid.querySelectorAll(".home-card"));
-  homeDividers = Array.from(grid.querySelectorAll(".home-cat-divider"));
+    homeCards = Array.from(grid.querySelectorAll(".home-card"));
+    homeDividers = Array.from(grid.querySelectorAll(".home-cat-divider"));
 
-  // 滚动高亮当前分类
-  const homePanel = domCache.panelHome;
-  homePanel.addEventListener("scroll", debounce(highlightAnchor, 50));
+    // 滚动高亮当前分类
+    const homePanel = domCache.panelHome;
+    homePanel.addEventListener("scroll", debounce(highlightAnchor, 50));
 }
 
 // 重绘首页虚拟分类块（收藏 / 最近使用），保持收藏在最近使用之前
 function refreshVirtualHomeBlock(catId, items, icon, name) {
-  const grid = domCache.homeGrid;
-  const anchorsBox = domCache.homeCatAnchors;
-  if (!grid || !anchorsBox) return;
-  const oldDivider = document.getElementById("cat-" + catId);
-  const oldAnchor = anchorsBox.querySelector(
-    '.cat-anchor[href="#cat-' + catId + '"]',
-  );
+    const grid = domCache.homeGrid;
+    const anchorsBox = domCache.homeCatAnchors;
+    if (!grid || !anchorsBox) return;
+    const oldDivider = document.getElementById("cat-" + catId);
+    const oldAnchor = anchorsBox.querySelector(
+        '.cat-anchor[href="#cat-' + catId + '"]',
+    );
 
-  grid
-    .querySelectorAll('.home-card[data-cat="' + catId + '"]')
-    .forEach((c) => c.remove());
+    grid
+        .querySelectorAll('.home-card[data-cat="' + catId + '"]')
+        .forEach((c) => c.remove());
 
-  if (!items.length) {
-    if (oldDivider) oldDivider.remove();
-    if (oldAnchor) oldAnchor.remove();
-  } else {
-    let divider = oldDivider;
-    if (!divider) {
-      divider = document.createElement("div");
-      divider.className = "home-cat-divider cat-" + catId;
-      divider.id = "cat-" + catId;
-      divider.innerHTML =
-        '<span class="hcd-icon"><i class="bi ' +
-        icon +
-        '"></i></span><span>' +
-        escapeHtml(name) +
-        "</span>";
-      // 插入顺序：收藏在最近使用之前；最近使用在其余分类之前
-      const favDivider = document.getElementById("cat-favorites");
-      if (catId === "favorites") {
-        grid.insertBefore(divider, grid.firstChild);
-      } else if (favDivider) {
-        let last = favDivider;
-        let n = favDivider.nextElementSibling;
-        while (
-          n &&
-          n.classList.contains("home-card") &&
-          n.dataset.cat === "favorites"
-        ) {
-          last = n;
-          n = n.nextElementSibling;
+    if (!items.length) {
+        if (oldDivider) oldDivider.remove();
+        if (oldAnchor) oldAnchor.remove();
+    } else {
+        let divider = oldDivider;
+        if (!divider) {
+            divider = document.createElement("div");
+            divider.className = "home-cat-divider cat-" + catId;
+            divider.id = "cat-" + catId;
+            divider.innerHTML =
+                '<span class="hcd-icon"><i class="bi ' +
+                icon +
+                '"></i></span><span>' +
+                escapeHtml(name) +
+                "</span>";
+            // 插入顺序：收藏在最近使用之前；最近使用在其余分类之前
+            const favDivider = document.getElementById("cat-favorites");
+            if (catId === "favorites") {
+                grid.insertBefore(divider, grid.firstChild);
+            } else if (favDivider) {
+                let last = favDivider;
+                let n = favDivider.nextElementSibling;
+                while (
+                    n &&
+                    n.classList.contains("home-card") &&
+                    n.dataset.cat === "favorites"
+                    ) {
+                    last = n;
+                    n = n.nextElementSibling;
+                }
+                last.after(divider);
+            } else {
+                grid.insertBefore(divider, grid.firstChild);
+            }
         }
-        last.after(divider);
-      } else {
-        grid.insertBefore(divider, grid.firstChild);
-      }
+        let anchor = oldAnchor;
+        if (!anchor) {
+            anchor = document.createElement("a");
+            anchor.className = "cat-anchor";
+            anchor.href = "#cat-" + catId;
+            anchor.innerHTML =
+                '<span class="cat-icon"><i class="bi ' +
+                icon +
+                '"></i></span>' +
+                escapeHtml(name);
+            const favAnchor = anchorsBox.querySelector(
+                '.cat-anchor[href="#cat-favorites"]',
+            );
+            if (catId === "favorites") {
+                anchorsBox.insertBefore(anchor, anchorsBox.firstChild);
+            } else if (favAnchor) {
+                favAnchor.after(anchor);
+            } else {
+                anchorsBox.insertBefore(anchor, anchorsBox.firstChild);
+            }
+        }
+        let prev = divider;
+        items.forEach((t, ci) => {
+            const card = createHomeCard(t, catId, ci);
+            prev.after(card);
+            prev = card;
+        });
     }
-    let anchor = oldAnchor;
-    if (!anchor) {
-      anchor = document.createElement("a");
-      anchor.className = "cat-anchor";
-      anchor.href = "#cat-" + catId;
-      anchor.innerHTML =
-        '<span class="cat-icon"><i class="bi ' +
-        icon +
-        '"></i></span>' +
-        escapeHtml(name);
-      const favAnchor = anchorsBox.querySelector(
-        '.cat-anchor[href="#cat-favorites"]',
-      );
-      if (catId === "favorites") {
-        anchorsBox.insertBefore(anchor, anchorsBox.firstChild);
-      } else if (favAnchor) {
-        favAnchor.after(anchor);
-      } else {
-        anchorsBox.insertBefore(anchor, anchorsBox.firstChild);
-      }
-    }
-    let prev = divider;
-    items.forEach((t, ci) => {
-      const card = createHomeCard(t, catId, ci);
-      prev.after(card);
-      prev = card;
-    });
-  }
 
-  homeCards = Array.from(grid.querySelectorAll(".home-card"));
-  homeDividers = Array.from(grid.querySelectorAll(".home-cat-divider"));
+    homeCards = Array.from(grid.querySelectorAll(".home-card"));
+    homeDividers = Array.from(grid.querySelectorAll(".home-cat-divider"));
 }
 
 function refreshFavoritesBlock() {
-  const cat = categories.find((c) => c.id === "favorites");
-  refreshVirtualHomeBlock(
-    "favorites",
-    getFavoriteTools(),
-    cat ? cat.icon : "bi-star-fill",
-    cat ? cat.name : "收藏",
-  );
+    const cat = categories.find((c) => c.id === "favorites");
+    refreshVirtualHomeBlock(
+        "favorites",
+        getFavoriteTools(),
+        cat ? cat.icon : "bi-star-fill",
+        cat ? cat.name : "收藏",
+    );
 }
 
 function refreshRecentBlock() {
-  const cat = categories.find((c) => c.id === "recent");
-  refreshVirtualHomeBlock(
-    "recent",
-    getRecent().map((e) => e.tool),
-    cat ? cat.icon : "bi-clock-history",
-    cat ? cat.name : "最近使用",
-  );
+    const cat = categories.find((c) => c.id === "recent");
+    refreshVirtualHomeBlock(
+        "recent",
+        getRecent().map((e) => e.tool),
+        cat ? cat.icon : "bi-clock-history",
+        cat ? cat.name : "最近使用",
+    );
 }
 
 function highlightAnchor() {
-  const homePanel = domCache.panelHome;
-  const dividers = document.querySelectorAll(".home-cat-divider");
-  const anchors = document.querySelectorAll(".cat-anchor");
-  const scrollTop = homePanel.scrollTop;
-  const threshold = scrollTop + homePanel.clientHeight * 0.25;
-  let activeIdx = 0;
-  for (let i = dividers.length - 1; i >= 0; i--) {
-    if (dividers[i].offsetTop <= threshold) {
-      activeIdx = i;
-      break;
+    const homePanel = domCache.panelHome;
+    const dividers = document.querySelectorAll(".home-cat-divider");
+    const anchors = document.querySelectorAll(".cat-anchor");
+    const scrollTop = homePanel.scrollTop;
+    const threshold = scrollTop + homePanel.clientHeight * 0.25;
+    let activeIdx = 0;
+    for (let i = dividers.length - 1; i >= 0; i--) {
+        if (dividers[i].offsetTop <= threshold) {
+            activeIdx = i;
+            break;
+        }
     }
-  }
-  anchors.forEach((a, i) => a.classList.toggle("active", i === activeIdx));
-  // 返回顶部按钮显隐
-  const btt = domCache.backToTop;
-  btt.classList.toggle("visible", scrollTop > 300);
+    anchors.forEach((a, i) => a.classList.toggle("active", i === activeIdx));
+    // 返回顶部按钮显隐
+    const btt = domCache.backToTop;
+    btt.classList.toggle("visible", scrollTop > 300);
 }
 
 async function openTool(id) {
-  const tool = toolsById.get(id);
-  if (!tool) return;
-  const gen = ++_openToolGen;
-  clearHomeSearch();
-  showLoading();
-  setStatus("加载中...");
-  try {
-    // 先按需加载依赖库(若有),再加载工具脚本与面板
-    const libs = toolLibs[id];
-    if (libs) await Promise.all(libs.map((l) => loadLib(l)));
-    await Promise.all([loadToolPanel(id), loadToolScript(id)]);
-  } catch (e) {
-    // 已被更新的 openTool 取代时不改 UI / loading，避免误关最新请求的 loading
+    const tool = toolsById.get(id);
+    if (!tool) return;
+    const gen = ++_openToolGen;
+    clearHomeSearch();
+    showLoading();
+    setStatus("加载中...");
+    try {
+        // 先按需加载依赖库(若有),再加载工具脚本与面板
+        const libs = toolLibs[id];
+        if (libs) await Promise.all(libs.map((l) => loadLib(l)));
+        await Promise.all([loadToolPanel(id), loadToolScript(id)]);
+    } catch (e) {
+        // 已被更新的 openTool 取代时不改 UI / loading，避免误关最新请求的 loading
+        if (gen !== _openToolGen) return;
+        toast("工具加载失败");
+        console.error(e);
+        setStatus("就绪");
+        hideLoading();
+        return;
+    }
+    // 异步加载期间用户又点了其他工具：丢弃本次 UI 切换（资源加载结果仍可复用）
     if (gen !== _openToolGen) return;
-    toast("工具加载失败");
-    console.error(e);
-    setStatus("就绪");
-    hideLoading();
-    return;
-  }
-  // 异步加载期间用户又点了其他工具：丢弃本次 UI 切换（资源加载结果仍可复用）
-  if (gen !== _openToolGen) return;
-  bumpUsage(id);
-  pushRecent(id);
-  refreshRecentBlock();
-  refreshSidebarRecent();
-  document
-    .querySelectorAll(".tool-panel.active")
-    .forEach((p) => p.classList.remove("active"));
-  const panel = document.getElementById("panel-" + id);
-  if (!panel) {
-    toast("面板加载失败");
-    console.error("面板元素缺失: panel-" + id);
-    setStatus("就绪");
-    hideLoading();
-    return;
-  }
-  panel.classList.add("active");
-  // 注入工具标题(仅一次)
-  if (!panel.dataset.titled) {
-    panel.dataset.titled = "1";
-    const hdr = document.createElement("div");
-    hdr.className = "tool-header cat-" + tool.cat;
-    hdr.innerHTML =
-      '<i class="bi ' +
-      tool.icon +
-      '"></i><span class="tool-header-name">' +
-      escapeHtml(tool.name) +
-      '</span><span class="tool-header-desc">' +
-      escapeHtml(tool.desc) +
-      "</span>";
-    panel.insertBefore(hdr, panel.firstChild);
-  }
-  const homeTitle = domCache.headerHomeTitle;
-  if (homeTitle) homeTitle.style.display = "none";
-  const gh = domCache.headerGithub;
-  if (gh) gh.style.display = "none";
-  domCache.homeBtn.style.display = "flex";
-  const cat = categories.find((c) => c.id === tool.cat);
-  domCache.mainHeader.classList.add("tool-mode");
-  domCache.breadcrumb.innerHTML =
-    '<span class="bc-item" onclick="goHome()">首页</span><span class="bc-sep">›</span><span class="bc-item" onclick="goHome(\'' +
-    (cat ? cat.id : "") +
-    "')\">" +
-    (cat ? cat.name : "") +
-    '</span><span class="bc-sep">›</span><span class="bc-current">' +
-    tool.name +
-    "</span>";
-  setStatus("就绪");
-  // 工具初始化仅执行一次,避免重复绑定事件/重建 UI；异常隔离确保 loading 关闭
-  try {
-    if (toolInits[id] && !initedTools.has(id)) {
-      toolInits[id]();
-      initedTools.add(id);
+    bumpUsage(id);
+    pushRecent(id);
+    refreshRecentBlock();
+    refreshSidebarRecent();
+    document
+        .querySelectorAll(".tool-panel.active")
+        .forEach((p) => p.classList.remove("active"));
+    const panel = document.getElementById("panel-" + id);
+    if (!panel) {
+        toast("面板加载失败");
+        console.error("面板元素缺失: panel-" + id);
+        setStatus("就绪");
+        hideLoading();
+        return;
     }
-  } catch (e) {
-    console.error(e);
-    toast("工具初始化失败");
-  } finally {
-    // 仅当前代关闭 loading；被取代的请求不 hide，避免提前结束最新打开的加载态
-    if (gen === _openToolGen) hideLoading();
-  }
-  if (gen !== _openToolGen) return;
-  highlightSidebarTool(id);
-  // 写入 hash，使浏览器后退可回到首页（路由回放时 _routeSyncing 为 true，跳过以免叠栈）
-  if (!_routeSyncing) {
-    setRouteTool(id, { replace: false });
-  } else {
-    _currentRouteToolId = id;
-  }
-  // 工具面板滚动 → 返回顶部按钮显隐(仅绑定一次,避免监听器累积)
-  // click handler 在 init 末尾统一绑定为 scrollActiveToTop,无需此处分发。
-  const tp = panel;
-  const btt = domCache.backToTop;
-  if (!tp.dataset.scrollBound) {
-    tp.dataset.scrollBound = "1";
-    let scrollEl = null;
-    let ro = null;
-    const updateBtn = () => {
-      btt.classList.toggle("visible", scrollEl && scrollEl.scrollTop > 300);
-    };
-    const rebind = () => {
-      const newEl = findScrollable(tp);
-      if (newEl !== scrollEl) {
-        if (scrollEl) scrollEl.removeEventListener("scroll", updateBtn);
-        scrollEl = newEl;
-        scrollEl.addEventListener("scroll", updateBtn, { passive: true });
-      }
-      updateBtn();
-    };
-    rebind();
-    // 监听 panel 大小/内容变化,内容异步填充时自动重新检测滚动元素
-    if (typeof ResizeObserver !== "undefined") {
-      ro = new ResizeObserver(rebind);
-      ro.observe(tp);
+    panel.classList.add("active");
+    // 注入工具标题(仅一次)
+    if (!panel.dataset.titled) {
+        panel.dataset.titled = "1";
+        const hdr = document.createElement("div");
+        hdr.className = "tool-header cat-" + tool.cat;
+        hdr.innerHTML =
+            '<i class="bi ' +
+            tool.icon +
+            '"></i><span class="tool-header-name">' +
+            escapeHtml(tool.name) +
+            '</span><span class="tool-header-desc">' +
+            escapeHtml(tool.desc) +
+            "</span>";
+        panel.insertBefore(hdr, panel.firstChild);
+    }
+    const homeTitle = domCache.headerHomeTitle;
+    if (homeTitle) homeTitle.style.display = "none";
+    const gh = domCache.headerGithub;
+    if (gh) gh.style.display = "none";
+    domCache.homeBtn.style.display = "flex";
+    const cat = categories.find((c) => c.id === tool.cat);
+    domCache.mainHeader.classList.add("tool-mode");
+    domCache.breadcrumb.innerHTML =
+        '<span class="bc-item" onclick="goHome()">首页</span><span class="bc-sep">›</span><span class="bc-item" onclick="goHome(\'' +
+        (cat ? cat.id : "") +
+        "')\">" +
+        (cat ? cat.name : "") +
+        '</span><span class="bc-sep">›</span><span class="bc-current">' +
+        tool.name +
+        "</span>";
+    setStatus("就绪");
+    // 工具初始化仅执行一次,避免重复绑定事件/重建 UI；异常隔离确保 loading 关闭
+    try {
+        if (toolInits[id] && !initedTools.has(id)) {
+            toolInits[id]();
+            initedTools.add(id);
+        }
+    } catch (e) {
+        console.error(e);
+        toast("工具初始化失败");
+    } finally {
+        // 仅当前代关闭 loading；被取代的请求不 hide，避免提前结束最新打开的加载态
+        if (gen === _openToolGen) hideLoading();
+    }
+    if (gen !== _openToolGen) return;
+    highlightSidebarTool(id);
+    // 写入 hash，使浏览器后退可回到首页（路由回放时 _routeSyncing 为 true，跳过以免叠栈）
+    if (!_routeSyncing) {
+        setRouteTool(id, {replace: false});
     } else {
-      setTimeout(rebind, 100);
-      setTimeout(rebind, 500);
-      setTimeout(rebind, 1500);
+        _currentRouteToolId = id;
     }
-  }
+    // 工具面板滚动 → 返回顶部按钮显隐(仅绑定一次,避免监听器累积)
+    // click handler 在 init 末尾统一绑定为 scrollActiveToTop,无需此处分发。
+    const tp = panel;
+    const btt = domCache.backToTop;
+    if (!tp.dataset.scrollBound) {
+        tp.dataset.scrollBound = "1";
+        let scrollEl = null;
+        let ro = null;
+        const updateBtn = () => {
+            btt.classList.toggle("visible", scrollEl && scrollEl.scrollTop > 300);
+        };
+        const rebind = () => {
+            const newEl = findScrollable(tp);
+            if (newEl !== scrollEl) {
+                if (scrollEl) scrollEl.removeEventListener("scroll", updateBtn);
+                scrollEl = newEl;
+                scrollEl.addEventListener("scroll", updateBtn, {passive: true});
+            }
+            updateBtn();
+        };
+        rebind();
+        // 监听 panel 大小/内容变化,内容异步填充时自动重新检测滚动元素
+        if (typeof ResizeObserver !== "undefined") {
+            ro = new ResizeObserver(rebind);
+            ro.observe(tp);
+        } else {
+            setTimeout(rebind, 100);
+            setTimeout(rebind, 500);
+            setTimeout(rebind, 1500);
+        }
+    }
 }
 
 // 切回首页 UI 状态(由 goHome / filterHomeTools 复用)
 function showHome() {
-  document
-    .querySelectorAll(".tool-panel.active")
-    .forEach((p) => p.classList.remove("active"));
-  domCache.panelHome.classList.add("active");
-  const homeTitle = domCache.headerHomeTitle;
-  if (homeTitle) homeTitle.style.display = "";
-  const gh = domCache.headerGithub;
-  if (gh) gh.style.display = "";
-  domCache.homeBtn.style.display = "none";
-  domCache.mainHeader.classList.remove("tool-mode");
-  domCache.breadcrumb.innerHTML = "";
-  clearSidebarHighlight();
-  setStatus("就绪");
+    document
+        .querySelectorAll(".tool-panel.active")
+        .forEach((p) => p.classList.remove("active"));
+    domCache.panelHome.classList.add("active");
+    const homeTitle = domCache.headerHomeTitle;
+    if (homeTitle) homeTitle.style.display = "";
+    const gh = domCache.headerGithub;
+    if (gh) gh.style.display = "";
+    domCache.homeBtn.style.display = "none";
+    domCache.mainHeader.classList.remove("tool-mode");
+    domCache.breadcrumb.innerHTML = "";
+    clearSidebarHighlight();
+    setStatus("就绪");
 }
 
 function goHome(catId) {
-  showHome();
-  clearHomeSearch();
-  if (domCache.backToTop) domCache.backToTop.classList.remove("visible");
-  // 首页按钮：替换当前历史项，避免再堆一层；浏览器「后退」从工具页仍回到首页
-  setRouteHome({ replace: true });
-  setTimeout(() => {
-    highlightAnchor();
-    if (catId) {
-      const el = document.getElementById("cat-" + catId);
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  }, 50);
+    showHome();
+    clearHomeSearch();
+    if (domCache.backToTop) domCache.backToTop.classList.remove("visible");
+    // 首页按钮：替换当前历史项，避免再堆一层；浏览器「后退」从工具页仍回到首页
+    setRouteHome({replace: true});
+    setTimeout(() => {
+        highlightAnchor();
+        if (catId) {
+            const el = document.getElementById("cat-" + catId);
+            if (el) el.scrollIntoView({behavior: "smooth", block: "start"});
+        }
+    }, 50);
 }
 
 /** 解析 location.hash → 工具 id（#/tool/json 或 #json） */
 function parseRouteHash() {
-  const raw = (location.hash || "").replace(/^#/, "").trim();
-  if (!raw) return null;
-  const m = raw.match(/^(?:\/?tool\/)?([a-zA-Z0-9_-]+)\/?$/);
-  if (!m) return null;
-  const id = m[1];
-  if (id === "home" || id === "index") return null;
-  return toolsById.has(id) ? id : null;
+    const raw = (location.hash || "").replace(/^#/, "").trim();
+    if (!raw) return null;
+    const m = raw.match(/^(?:\/?tool\/)?([a-zA-Z0-9_-]+)\/?$/);
+    if (!m) return null;
+    const id = m[1];
+    if (id === "home" || id === "index") return null;
+    return toolsById.has(id) ? id : null;
 }
 
 function setRouteTool(id, opts) {
-  if (!id || !toolsById.has(id)) return;
-  const next = "#/tool/" + id;
-  const already =
-    location.hash === next ||
-    location.hash === "#" + id ||
-    location.hash === "#/" + id;
-  _currentRouteToolId = id;
-  if (already && !(opts && opts.replace)) return;
-  _routeSyncing = true;
-  try {
-    if (opts && opts.replace) {
-      history.replaceState({ tool: id }, "", next);
-    } else {
-      history.pushState({ tool: id }, "", next);
-    }
-  } catch (e) {
+    if (!id || !toolsById.has(id)) return;
+    const next = "#/tool/" + id;
+    const already =
+        location.hash === next ||
+        location.hash === "#" + id ||
+        location.hash === "#/" + id;
+    _currentRouteToolId = id;
+    if (already && !(opts && opts.replace)) return;
+    _routeSyncing = true;
     try {
-      location.hash = next;
-    } catch (e2) {
-      /* ignore */
+        if (opts && opts.replace) {
+            history.replaceState({tool: id}, "", next);
+        } else {
+            history.pushState({tool: id}, "", next);
+        }
+    } catch (e) {
+        try {
+            location.hash = next;
+        } catch (e2) {
+            /* ignore */
+        }
     }
-  }
-  _routeSyncing = false;
+    _routeSyncing = false;
 }
 
 function setRouteHome(opts) {
-  if (!_currentRouteToolId && !location.hash) return;
-  _currentRouteToolId = null;
-  _routeSyncing = true;
-  try {
-    const url = location.pathname + location.search;
-    if (opts && opts.replace) {
-      history.replaceState({ tool: null }, "", url);
-    } else {
-      history.pushState({ tool: null }, "", url);
-    }
-  } catch (e) {
+    if (!_currentRouteToolId && !location.hash) return;
+    _currentRouteToolId = null;
+    _routeSyncing = true;
     try {
-      history.replaceState({ tool: null }, "", location.pathname + location.search);
-    } catch (e2) {
-      /* ignore */
+        const url = location.pathname + location.search;
+        if (opts && opts.replace) {
+            history.replaceState({tool: null}, "", url);
+        } else {
+            history.pushState({tool: null}, "", url);
+        }
+    } catch (e) {
+        try {
+            history.replaceState({tool: null}, "", location.pathname + location.search);
+        } catch (e2) {
+            /* ignore */
+        }
     }
-  }
-  _routeSyncing = false;
+    _routeSyncing = false;
 }
 
 function applyRouteFromLocation() {
-  if (_routeSyncing) return;
-  const id = parseRouteHash();
-  if (id) {
-    const panel = document.getElementById("panel-" + id);
-    if (
-      _currentRouteToolId === id &&
-      panel &&
-      panel.classList.contains("active")
-    ) {
-      return;
+    if (_routeSyncing) return;
+    const id = parseRouteHash();
+    if (id) {
+        const panel = document.getElementById("panel-" + id);
+        if (
+            _currentRouteToolId === id &&
+            panel &&
+            panel.classList.contains("active")
+        ) {
+            return;
+        }
+        // 由路由驱动打开：避免 openTool 末尾再次 pushState 叠栈
+        _currentRouteToolId = id;
+        openToolFromRoute(id);
+    } else {
+        // 无有效工具 hash → 首页（不写 history，避免与 popstate 打架）
+        _currentRouteToolId = null;
+        showHome();
+        clearHomeSearch();
+        if (domCache.backToTop) domCache.backToTop.classList.remove("visible");
+        setStatus("就绪");
     }
-    // 由路由驱动打开：避免 openTool 末尾再次 pushState 叠栈
-    _currentRouteToolId = id;
-    openToolFromRoute(id);
-  } else {
-    // 无有效工具 hash → 首页（不写 history，避免与 popstate 打架）
-    _currentRouteToolId = null;
-    showHome();
-    clearHomeSearch();
-    if (domCache.backToTop) domCache.backToTop.classList.remove("visible");
-    setStatus("就绪");
-  }
 }
 
 /** 路由/刷新进入工具：与 openTool 相同，但不 push 新历史 */
 async function openToolFromRoute(id) {
-  const prev = _routeSyncing;
-  _routeSyncing = true;
-  try {
-    await openTool(id);
-  } finally {
-    _routeSyncing = prev;
-    _currentRouteToolId = id;
-    // 规范化 hash，不新增历史
-    const next = "#/tool/" + id;
-    if (location.hash !== next) {
-      try {
-        history.replaceState({ tool: id }, "", next);
-      } catch (e) {
-        /* ignore */
-      }
+    const prev = _routeSyncing;
+    _routeSyncing = true;
+    try {
+        await openTool(id);
+    } finally {
+        _routeSyncing = prev;
+        _currentRouteToolId = id;
+        // 规范化 hash，不新增历史
+        const next = "#/tool/" + id;
+        if (location.hash !== next) {
+            try {
+                history.replaceState({tool: id}, "", next);
+            } catch (e) {
+                /* ignore */
+            }
+        }
     }
-  }
 }
 
 function filterHomeTools() {
-  const q = domCache.homeSearch.value.toLowerCase().trim();
+    const q = domCache.homeSearch.value.toLowerCase().trim();
 
-  // 如果当前不在首页，自动切回首页再搜索
-  const homePanel = domCache.panelHome;
-  if (!homePanel.classList.contains("active")) {
-    showHome();
-    setRouteHome({ replace: true });
-    setTimeout(highlightAnchor, 50);
-  }
-
-  const matchedCats = new Set();
-  let hasVisible = false;
-  homeCards.forEach((card) => {
-    const name = card.dataset.name;
-    const desc = card.dataset.desc;
-    const match = !q || name.includes(q) || desc.includes(q);
-    card.style.display = match ? "" : "none";
-    if (match) {
-      hasVisible = true;
-      matchedCats.add(card.dataset.cat);
+    // 如果当前不在首页，自动切回首页再搜索
+    const homePanel = domCache.panelHome;
+    if (!homePanel.classList.contains("active")) {
+        showHome();
+        setRouteHome({replace: true});
+        setTimeout(highlightAnchor, 50);
     }
-  });
-  homeDividers.forEach((d) => {
-    const catId = d.id.replace("cat-", "");
-    d.style.display = !q || matchedCats.has(catId) ? "" : "none";
-  });
-  const empty = document.querySelector(".home-search-empty");
-  if (empty) empty.remove();
-  if (q && !hasVisible) {
-    const msg = document.createElement("div");
-    msg.className = "home-search-empty";
-    msg.innerHTML = '<i class="bi bi-search"></i> 没有匹配的工具';
-    domCache.homeGrid.appendChild(msg);
-  }
-  if (q) hideHomeHeatmap();
+
+    const matchedCats = new Set();
+    let hasVisible = false;
+    homeCards.forEach((card) => {
+        const name = card.dataset.name;
+        const desc = card.dataset.desc;
+        const match = !q || name.includes(q) || desc.includes(q);
+        card.style.display = match ? "" : "none";
+        if (match) {
+            hasVisible = true;
+            matchedCats.add(card.dataset.cat);
+        }
+    });
+    homeDividers.forEach((d) => {
+        const catId = d.id.replace("cat-", "");
+        d.style.display = !q || matchedCats.has(catId) ? "" : "none";
+    });
+    const empty = document.querySelector(".home-search-empty");
+    if (empty) empty.remove();
+    if (q && !hasVisible) {
+        const msg = document.createElement("div");
+        msg.className = "home-search-empty";
+        msg.innerHTML = '<i class="bi bi-search"></i> 没有匹配的工具';
+        domCache.homeGrid.appendChild(msg);
+    }
+    if (q) hideHomeHeatmap();
 }
 
 function clearHomeSearch() {
-  const input = domCache.homeSearch;
-  if (input) input.value = "";
-  hideHomeHeatmap();
+    const input = domCache.homeSearch;
+    if (input) input.value = "";
+    hideHomeHeatmap();
 }
 
 // === Sidebar ===
@@ -2132,50 +2294,51 @@ const SIDEBAR_KEY = "devtools_sidebar";
 let sidebarCollapsed = false;
 
 function readSidebarState() {
-  try {
-    const s = JSON.parse(localStorage.getItem(SIDEBAR_KEY) || "{}");
-    sidebarCollapsed = !!s.collapsed;
-  } catch (e) {
-    sidebarCollapsed = false;
-  }
+    try {
+        const s = JSON.parse(localStorage.getItem(SIDEBAR_KEY) || "{}");
+        sidebarCollapsed = !!s.collapsed;
+    } catch (e) {
+        sidebarCollapsed = false;
+    }
 }
 
 function saveSidebarState() {
-  try {
-    localStorage.setItem(
-      SIDEBAR_KEY,
-      JSON.stringify({ collapsed: sidebarCollapsed }),
-    );
-  } catch (e) {}
+    try {
+        localStorage.setItem(
+            SIDEBAR_KEY,
+            JSON.stringify({collapsed: sidebarCollapsed}),
+        );
+    } catch (e) {
+    }
 }
 
 function buildSidebar() {
-  readSidebarState();
-  const nav = domCache.sidebarNav;
-  if (!nav) return;
-  nav.innerHTML = "";
-  categories.forEach((cat) => {
-    let toolsInCat;
-    if (cat.id === "favorites") {
-      toolsInCat = getFavoriteTools();
-    } else if (cat.id === "recent") {
-      toolsInCat = getRecent().map((e) => e.tool);
-    } else {
-      toolsInCat = tools.filter((t) => t.cat === cat.id);
-    }
-    if (!toolsInCat.length) return;
-    const wrap = document.createElement("div");
-    wrap.className = "sb-cat cat-" + cat.id;
-    wrap.dataset.cat = cat.id;
-    let clearBtn = "";
-    if (cat.id === "recent") {
-      clearBtn =
-        '<i class="bi bi-x-circle sb-cat-clear" title="清空最近使用" onclick="event.stopPropagation();clearRecent()"></i>';
-    } else if (cat.id === "favorites") {
-      clearBtn =
-        '<i class="bi bi-x-circle sb-cat-clear" title="清空收藏" onclick="event.stopPropagation();clearFavoritesUI()"></i>';
-    }
-    wrap.innerHTML = `
+    readSidebarState();
+    const nav = domCache.sidebarNav;
+    if (!nav) return;
+    nav.innerHTML = "";
+    categories.forEach((cat) => {
+        let toolsInCat;
+        if (cat.id === "favorites") {
+            toolsInCat = getFavoriteTools();
+        } else if (cat.id === "recent") {
+            toolsInCat = getRecent().map((e) => e.tool);
+        } else {
+            toolsInCat = tools.filter((t) => t.cat === cat.id);
+        }
+        if (!toolsInCat.length) return;
+        const wrap = document.createElement("div");
+        wrap.className = "sb-cat cat-" + cat.id;
+        wrap.dataset.cat = cat.id;
+        let clearBtn = "";
+        if (cat.id === "recent") {
+            clearBtn =
+                '<i class="bi bi-x-circle sb-cat-clear" title="清空最近使用" onclick="event.stopPropagation();clearRecent()"></i>';
+        } else if (cat.id === "favorites") {
+            clearBtn =
+                '<i class="bi bi-x-circle sb-cat-clear" title="清空收藏" onclick="event.stopPropagation();clearFavoritesUI()"></i>';
+        }
+        wrap.innerHTML = `
             <div class="sb-cat-header" data-cat="${escapeHtml(cat.id)}" title="${escapeHtml(cat.name)}">
                 <i class="bi ${cat.icon} sb-cat-icon"></i>
                 <span class="sb-cat-name">${escapeHtml(cat.name)}</span>
@@ -2186,146 +2349,146 @@ function buildSidebar() {
                 ${toolsInCat.map((t) => sbToolHtml(t)).join("")}
             </div>
         `;
-    nav.appendChild(wrap);
-  });
+        nav.appendChild(wrap);
+    });
 
-  nav.addEventListener("click", (e) => {
-    const favEl = e.target.closest(".fav-star");
-    if (favEl) {
-      e.stopPropagation();
-      e.preventDefault();
-      handleToggleFavorite(favEl.dataset.tool);
-      return;
-    }
-    const catHeader = e.target.closest(".sb-cat-header");
-    if (catHeader) {
-      const catEl = catHeader.parentElement;
-        const sidebar = domCache.sidebar;
-        if (sidebar.classList.contains("collapsed")) {
-          sidebar.classList.remove("collapsed");
-        sidebarCollapsed = false;
+    nav.addEventListener("click", (e) => {
+        const favEl = e.target.closest(".fav-star");
+        if (favEl) {
+            e.stopPropagation();
+            e.preventDefault();
+            handleToggleFavorite(favEl.dataset.tool);
+            return;
+        }
+        const catHeader = e.target.closest(".sb-cat-header");
+        if (catHeader) {
+            const catEl = catHeader.parentElement;
+            const sidebar = domCache.sidebar;
+            if (sidebar.classList.contains("collapsed")) {
+                sidebar.classList.remove("collapsed");
+                sidebarCollapsed = false;
+                saveSidebarState();
+                document
+                    .querySelectorAll(".sb-cat.expanded")
+                    .forEach((el) => el.classList.remove("expanded"));
+                catEl.classList.add("expanded");
+            } else {
+                catEl.classList.toggle("expanded");
+            }
+            return;
+        }
+        const toolEl = e.target.closest(".sb-tool");
+        if (toolEl) {
+            openTool(toolEl.dataset.tool);
+        }
+    });
+
+    domCache.sidebarToggle.addEventListener("click", () => {
+        sidebarCollapsed = !sidebarCollapsed;
+        domCache.sidebar
+            .classList.toggle("collapsed", sidebarCollapsed);
         saveSidebarState();
-        document
-          .querySelectorAll(".sb-cat.expanded")
-          .forEach((el) => el.classList.remove("expanded"));
-        catEl.classList.add("expanded");
-      } else {
-        catEl.classList.toggle("expanded");
-      }
-      return;
-    }
-    const toolEl = e.target.closest(".sb-tool");
-    if (toolEl) {
-      openTool(toolEl.dataset.tool);
-    }
-  });
+    });
 
-  domCache.sidebarToggle.addEventListener("click", () => {
-    sidebarCollapsed = !sidebarCollapsed;
-    domCache.sidebar
-      .classList.toggle("collapsed", sidebarCollapsed);
-    saveSidebarState();
-  });
-
-  if (sidebarCollapsed) {
-    domCache.sidebar.classList.add("collapsed");
-  }
+    if (sidebarCollapsed) {
+        domCache.sidebar.classList.add("collapsed");
+    }
 }
 
 // 重绘侧边栏虚拟分类（收藏 / 最近使用），顺序：收藏 → 最近使用 → 其余
 function refreshSidebarVirtualCat(catId, toolsInCat, clearTitle, clearFnName) {
-  const nav = domCache.sidebarNav;
-  if (!nav) return;
-  const wasExpanded = !!nav.querySelector(
-    '.sb-cat[data-cat="' + catId + '"].expanded',
-  );
-  nav.querySelector('.sb-cat[data-cat="' + catId + '"]')?.remove();
-  if (!toolsInCat.length) return;
-  const cat = categories.find((c) => c.id === catId);
-  if (!cat) return;
-  const wrap = document.createElement("div");
-  wrap.className = "sb-cat cat-" + catId + (wasExpanded ? " expanded" : "");
-  wrap.dataset.cat = catId;
-  wrap.innerHTML =
-    '<div class="sb-cat-header" data-cat="' +
-    escapeHtml(catId) +
-    '" title="' +
-    escapeHtml(cat.name) +
-    '"><i class="bi ' +
-    cat.icon +
-    ' sb-cat-icon"></i><span class="sb-cat-name">' +
-    escapeHtml(cat.name) +
-    "</span>" +
-    '<i class="bi bi-x-circle sb-cat-clear" title="' +
-    escapeHtml(clearTitle) +
-    '" onclick="event.stopPropagation();' +
-    clearFnName +
-    '()"></i>' +
-    '<i class="bi bi-chevron-right sb-cat-arrow"></i></div>' +
-    '<div class="sb-tools">' +
-    toolsInCat.map((t) => sbToolHtml(t)).join("") +
-    "</div>";
-  if (catId === "favorites") {
-    nav.insertBefore(wrap, nav.firstChild);
-  } else {
-    const favCat = nav.querySelector('.sb-cat[data-cat="favorites"]');
-    if (favCat) {
-      favCat.after(wrap);
+    const nav = domCache.sidebarNav;
+    if (!nav) return;
+    const wasExpanded = !!nav.querySelector(
+        '.sb-cat[data-cat="' + catId + '"].expanded',
+    );
+    nav.querySelector('.sb-cat[data-cat="' + catId + '"]')?.remove();
+    if (!toolsInCat.length) return;
+    const cat = categories.find((c) => c.id === catId);
+    if (!cat) return;
+    const wrap = document.createElement("div");
+    wrap.className = "sb-cat cat-" + catId + (wasExpanded ? " expanded" : "");
+    wrap.dataset.cat = catId;
+    wrap.innerHTML =
+        '<div class="sb-cat-header" data-cat="' +
+        escapeHtml(catId) +
+        '" title="' +
+        escapeHtml(cat.name) +
+        '"><i class="bi ' +
+        cat.icon +
+        ' sb-cat-icon"></i><span class="sb-cat-name">' +
+        escapeHtml(cat.name) +
+        "</span>" +
+        '<i class="bi bi-x-circle sb-cat-clear" title="' +
+        escapeHtml(clearTitle) +
+        '" onclick="event.stopPropagation();' +
+        clearFnName +
+        '()"></i>' +
+        '<i class="bi bi-chevron-right sb-cat-arrow"></i></div>' +
+        '<div class="sb-tools">' +
+        toolsInCat.map((t) => sbToolHtml(t)).join("") +
+        "</div>";
+    if (catId === "favorites") {
+        nav.insertBefore(wrap, nav.firstChild);
     } else {
-      nav.insertBefore(wrap, nav.firstChild);
+        const favCat = nav.querySelector('.sb-cat[data-cat="favorites"]');
+        if (favCat) {
+            favCat.after(wrap);
+        } else {
+            nav.insertBefore(wrap, nav.firstChild);
+        }
     }
-  }
 }
 
 function refreshSidebarFavorites() {
-  refreshSidebarVirtualCat(
-    "favorites",
-    getFavoriteTools(),
-    "清空收藏",
-    "clearFavoritesUI",
-  );
+    refreshSidebarVirtualCat(
+        "favorites",
+        getFavoriteTools(),
+        "清空收藏",
+        "clearFavoritesUI",
+    );
 }
 
 // 重绘侧边栏"最近使用"分类:每次打开工具后调用,使其与首页最近块保持同步。
 // 未产生过最近使用时整段不渲染,与普通分类"无工具则隐藏"的约定一致。
 function refreshSidebarRecent() {
-  refreshSidebarVirtualCat(
-    "recent",
-    getRecent().map((e) => e.tool),
-    "清空最近使用",
-    "clearRecent",
-  );
+    refreshSidebarVirtualCat(
+        "recent",
+        getRecent().map((e) => e.tool),
+        "清空最近使用",
+        "clearRecent",
+    );
 }
 
 function highlightSidebarTool(id) {
-  document
-    .querySelectorAll(".sb-tool.current")
-    .forEach((el) => el.classList.remove("current"));
-  document
-    .querySelectorAll(".sb-cat.expanded")
-    .forEach((el) => el.classList.remove("expanded"));
-  const toolEl = document.querySelector('.sb-tool[data-tool="' + id + '"]');
-  if (!toolEl) return;
-  toolEl.classList.add("current");
-  const catEl = toolEl.closest(".sb-cat");
-  if (catEl) catEl.classList.add("expanded");
+    document
+        .querySelectorAll(".sb-tool.current")
+        .forEach((el) => el.classList.remove("current"));
+    document
+        .querySelectorAll(".sb-cat.expanded")
+        .forEach((el) => el.classList.remove("expanded"));
+    const toolEl = document.querySelector('.sb-tool[data-tool="' + id + '"]');
+    if (!toolEl) return;
+    toolEl.classList.add("current");
+    const catEl = toolEl.closest(".sb-cat");
+    if (catEl) catEl.classList.add("expanded");
 }
 
 function clearSidebarHighlight() {
-  document
-    .querySelectorAll(".sb-tool.current")
-    .forEach((el) => el.classList.remove("current"));
-  document
-    .querySelectorAll(".sb-cat.expanded")
-    .forEach((el) => el.classList.remove("expanded"));
+    document
+        .querySelectorAll(".sb-tool.current")
+        .forEach((el) => el.classList.remove("current"));
+    document
+        .querySelectorAll(".sb-cat.expanded")
+        .forEach((el) => el.classList.remove("expanded"));
 }
 
 // 首页静态就绪:立即显示容器并构建首页网格(工具面板/脚本按需懒加载)
 {
-  const loading = document.getElementById("panels-loading");
-  if (loading) loading.style.display = "none";
-  const container = document.getElementById("panels-container");
-  if (container) container.style.display = "";
+    const loading = document.getElementById("panels-loading");
+    if (loading) loading.style.display = "none";
+    const container = document.getElementById("panels-container");
+    if (container) container.style.display = "";
 }
 initDomCache();
 buildHomeGrid();
@@ -2335,107 +2498,107 @@ domCache.backToTop.onclick = scrollActiveToTop;
 
 // === Utils ===
 function setStatus(msg) {
-  domCache.statusText.textContent = msg;
+    domCache.statusText.textContent = msg;
 }
 
 function showLoading() {
-  const bar = domCache.loadingBar;
-  if (!bar) return;
-  clearTimeout(bar._hideTimer);
-  bar.classList.remove("done", "active");
-  void bar.offsetWidth;
-  bar.classList.add("active");
+    const bar = domCache.loadingBar;
+    if (!bar) return;
+    clearTimeout(bar._hideTimer);
+    bar.classList.remove("done", "active");
+    void bar.offsetWidth;
+    bar.classList.add("active");
 }
 
 function hideLoading() {
-  const bar = domCache.loadingBar;
-  if (!bar) return;
-  if (!bar.classList.contains("active")) return;
-  bar.classList.remove("active");
-  bar.classList.add("done");
-  bar._hideTimer = setTimeout(() => {
-    bar.classList.remove("done");
-    bar._hideTimer = null;
-  }, 600);
+    const bar = domCache.loadingBar;
+    if (!bar) return;
+    if (!bar.classList.contains("active")) return;
+    bar.classList.remove("active");
+    bar.classList.add("done");
+    bar._hideTimer = setTimeout(() => {
+        bar.classList.remove("done");
+        bar._hideTimer = null;
+    }, 600);
 }
 
 function toast(msg) {
-  const t = domCache.toast;
-  t.textContent = msg;
-  t.classList.add("show");
-  clearTimeout(t._hide);
-  t._hide = setTimeout(() => t.classList.remove("show"), 2500);
+    const t = domCache.toast;
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(t._hide);
+    t._hide = setTimeout(() => t.classList.remove("show"), 2500);
 }
 
 function safeCopy(text, msg) {
-  msg = msg || "已复制";
-  const doFallback = () => {
-    const ta = document.createElement("textarea");
-    ta.value = text;
-    ta.style.position = "fixed";
-    ta.style.opacity = "0";
-    document.body.appendChild(ta);
-    ta.select();
-    try {
-      document.execCommand("copy");
-      toast(msg);
-    } catch (e) {
-      toast("复制失败，请手动选择复制");
+    msg = msg || "已复制";
+    const doFallback = () => {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+            document.execCommand("copy");
+            toast(msg);
+        } catch (e) {
+            toast("复制失败，请手动选择复制");
+        }
+        ta.remove();
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard
+            .writeText(text)
+            .then(() => toast(msg))
+            .catch(doFallback);
+    } else {
+        doFallback();
     }
-    ta.remove();
-  };
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard
-      .writeText(text)
-      .then(() => toast(msg))
-      .catch(doFallback);
-  } else {
-    doFallback();
-  }
 }
 
 function copyText(id) {
-  const el = typeof id === "string" ? document.getElementById(id) : id;
-  const text = el.textContent || el.innerText;
-  if (!text) {
-    toast("没有内容可复制");
-    return;
-  }
-  safeCopy(text);
+    const el = typeof id === "string" ? document.getElementById(id) : id;
+    const text = el.textContent || el.innerText;
+    if (!text) {
+        toast("没有内容可复制");
+        return;
+    }
+    safeCopy(text);
 }
 
 function safeJSON(s) {
-  try {
-    return JSON.parse(s);
-  } catch (e) {
-    return null;
-  }
+    try {
+        return JSON.parse(s);
+    } catch (e) {
+        return null;
+    }
 }
 
 // 路由：hash 变化 / 浏览器前进后退
 window.addEventListener("hashchange", function () {
-  if (_routeSyncing) return;
-  applyRouteFromLocation();
+    if (_routeSyncing) return;
+    applyRouteFromLocation();
 });
 window.addEventListener("popstate", function () {
-  if (_routeSyncing) return;
-  applyRouteFromLocation();
+    if (_routeSyncing) return;
+    applyRouteFromLocation();
 });
 
 // 首屏：有 #/tool/id 则打开对应工具，否则首页
 (function bootRoute() {
-  const id = parseRouteHash();
-  if (id) {
-    openToolFromRoute(id);
-  } else {
-    showHome();
-    _currentRouteToolId = null;
-    if (location.hash) {
-      try {
-        history.replaceState({ tool: null }, "", location.pathname + location.search);
-      } catch (e) {
-        /* ignore */
-      }
+    const id = parseRouteHash();
+    if (id) {
+        openToolFromRoute(id);
+    } else {
+        showHome();
+        _currentRouteToolId = null;
+        if (location.hash) {
+            try {
+                history.replaceState({tool: null}, "", location.pathname + location.search);
+            } catch (e) {
+                /* ignore */
+            }
+        }
     }
-  }
 })();

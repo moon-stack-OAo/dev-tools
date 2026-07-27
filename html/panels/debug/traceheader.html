@@ -1,0 +1,62 @@
+<div class="tool-panel" id="panel-traceheader">
+    <div class="toolbar" style="flex-wrap:wrap">
+        <button onclick="thGenerateIds()">随机 Trace/Span</button>
+        <button onclick="thBuildAll()">生成头</button>
+        <button class="outline" onclick="thLoadSample()">示例</button>
+        <button class="outline" onclick="thClear()">清空</button>
+    </div>
+
+    <div class="mb-8">
+        <div class="flex gap-6" style="flex-wrap:wrap;align-items:flex-end">
+            <div style="flex:1;min-width:200px">
+                <div class="label">TraceId (32 hex)</div>
+                <input id="thTraceId" oninput="thBuildAll()" placeholder="自动生成" type="text">
+            </div>
+            <div style="flex:1;min-width:160px">
+                <div class="label">SpanId (16 hex)</div>
+                <input id="thSpanId" oninput="thBuildAll()" placeholder="自动生成" type="text">
+            </div>
+            <div style="flex:1;min-width:160px">
+                <div class="label">ParentSpanId（B3 可选）</div>
+                <input id="thParentSpanId" oninput="thBuildAll()" placeholder="可选" type="text">
+            </div>
+            <div style="width:120px">
+                <div class="label">Sampled</div>
+                <select id="thSampled" onchange="thBuildAll()" style="width:100%">
+                    <option selected value="1">1 (采样)</option>
+                    <option value="0">0 (不采样)</option>
+                    <option value="d">d (debug)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="copy-wrap mb-8">
+        <div class="label">生成结果（traceparent + B3）</div>
+        <button class="copy-btn" onclick="copyText('thBuildOutput')">复制</button>
+        <div class="output-box" id="thBuildOutput" style="min-height:120px"></div>
+    </div>
+
+    <div class="mb-8">
+        <div class="label">解析输入（traceparent 或 b3 单头/多头）</div>
+        <textarea class="json-input" id="thParseInput" placeholder="00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01&#10;或&#10;b3: 80f198ee56343ba864fe8b2a57d3eff7-e457b5a2e4d86bd1-1" style="min-height:80px"></textarea>
+        <div class="toolbar" style="margin-top:6px">
+            <button onclick="thParseInput()">解析</button>
+        </div>
+    </div>
+
+    <div class="copy-wrap">
+        <div class="label">解析结果</div>
+        <button class="copy-btn" onclick="copyText('thParseOutput')">复制</button>
+        <div class="output-box" id="thParseOutput" style="min-height:100px"></div>
+    </div>
+
+    <div style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
+        <strong>说明：</strong>
+        <ul style="margin:4px 0 0 16px">
+            <li>W3C: <code>traceparent: version-traceid-spanid-flags</code>（flags 最低位为 sampled）</li>
+            <li>B3 单头: <code>b3: TraceId-SpanId-Sampled[-ParentSpanId]</code></li>
+            <li>B3 多头: X-B3-TraceId / SpanId / Sampled / ParentSpanId / Flags</li>
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,35 @@
+<div class="tool-panel" id="panel-xpath">
+    <div class="toolbar" style="flex-wrap:wrap">
+        <button onclick="xpathRun()">执行查询</button>
+        <button class="outline" onclick="xpathLoadSample()">示例 XML</button>
+        <button class="outline" onclick="xpathClear()">清空</button>
+        <span class="label" style="margin:0 0 0 8px">示例:</span>
+        <select id="xpathSample" onchange="xpathOnSampleChange()" style="width:280px">
+            <option value="">选择示例表达式...</option>
+            <option value="//book/title">//book/title（所有书名节点）</option>
+            <option value="//book/@category">//book/@category（分类属性）</option>
+            <option value="//book[price&lt;30]/title/text()">//book[price&lt;30]/title/text()</option>
+            <option value="count(//book)">count(//book)</option>
+            <option value="//book[@category='web']/author">//book[@category='web']/author</option>
+        </select>
+    </div>
+    <div class="mb-8">
+        <div class="label">XPath 表达式</div>
+        <input id="xpathExpr" placeholder="//book/title/text()" value="//book/title">
+    </div>
+    <div class="mb-8">
+        <div class="label">XML 数据</div>
+        <textarea class="json-input" id="xpathInput"
+                  placeholder="&lt;root&gt;&lt;item&gt;...&lt;/item&gt;&lt;/root&gt;"></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">匹配结果 <span id="xpathCount"
+                                          style="color:var(--text-muted);text-transform:none;letter-spacing:0"></span>
+        </div>
+        <button class="copy-btn" onclick="copyText('xpathOutput')">复制</button>
+        <div class="output-box" id="xpathOutput"></div>
+    </div>
+    <div style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
+        <strong>说明：</strong>使用浏览器原生 XPath 1.0（document.evaluate）。命名空间场景请写本地名匹配或完整 QName。
+    </div>
+</div>
