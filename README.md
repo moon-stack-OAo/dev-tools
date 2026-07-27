@@ -1,6 +1,6 @@
 # Java 开发工具箱
 
-> 一个面向 Java 开发者的**纯前端**在线工具集 —— **144 个工具、8 大分类**
+> 一个面向 Java 开发者的**纯前端**在线工具集 —— **143 个工具、8 大分类**
 > ，覆盖格式化、编解码、安全、生成与转换、代码生成、文本、调试、参考速查。无需后端、无需联网、无需上传数据，所有计算均在浏览器本地完成。支持
 > Vite 开发、Docker 一键部署、Nginx 静态托管，开箱即用。
 
@@ -16,7 +16,7 @@
 - 🚀 **零依赖开箱即用**：纯静态 HTML / CSS / JavaScript，无任何前端框架；业务代码无构建期编译，第三方库通过 Vite + esbuild
   打包为 IIFE
 - 🔒 **数据 100% 本地处理**：所有计算在浏览器内完成，不会上传任何内容到服务器，支持离线使用
-- 🧰 **144 个工具 / 8 大分类**：覆盖 Java 开发日常所需，工具持续扩充
+- 🧰 **143 个工具 / 8 大分类**：覆盖 Java 开发日常所需，工具持续扩充
 - ⭐ **收藏与最近使用**：侧边栏 / 首页星标收藏（`localStorage`），虚拟分类「收藏」「最近使用」
 - 🎨 **深色主题 + 响应式**：桌面 / 平板 / 手机均可使用
 - 🐳 **多种部署方式**：Vite 开发、Docker 容器、Nginx 静态托管、GitHub Pages（`main` 推送触发）
@@ -74,7 +74,7 @@ npm run build     # 输出到 dist/
 
 ```
 ├── index.html                      # 入口（首页；工具脚本/面板/依赖库均按需懒加载）
-├── html/panels/                    # 工具面板（144 个文件，每个工具一个 HTML）
+├── html/panels/                    # 工具面板（143 个文件，每个工具一个 HTML）
 │   ├── format/                     #  格式化：json / yaml / toml / graphqlfmt / openapiview / ...
 │   ├── encode/                     #  编解码：base64 / base32 / charset / protobuf / ...
 │   ├── security/                   #  安全：jwt / jasypt / pwdstrength / hashext / gmsm / ...
@@ -125,10 +125,10 @@ npm run build     # 输出到 dist/
 
 ## 🧰 工具列表
 
-> 工具总数 **144 个**，分为 **8 大业务分类**（另有虚拟分类「收藏」「最近使用」）。下表功能描述与 `js/app.js` 中 `tools[]` 的
+> 工具总数 **143 个**，分为 **8 大业务分类**（另有虚拟分类「收藏」「最近使用」）。下表功能描述与 `js/app.js` 中 `tools[]` 的
 `desc` 保持一致。
 
-### 一、格式化（24）
+### 一、格式化（23）
 
 | 工具                | 功能                                    |
 |-------------------|---------------------------------------|
@@ -143,14 +143,13 @@ npm run build     # 输出到 dist/
 | JSON Schema       | JSON Schema 生成 / 校验                   |
 | SQL 方言转换          | MySQL/Oracle/PG/SQLServer 互转          |
 | 数据库类型映射           | MySQL/Oracle/PG/SQLServer 类型对照        |
-| JSON ↔ CSV        | JSON 数组与 CSV 互转                       |
 | JSON → SQL INSERT | JSON 对象/数组生成多方言 INSERT                |
 | XPath 查询          | XPath 1.0 查询 / 提取 XML 节点              |
 | SQL 执行计划          | MySQL/PostgreSQL EXPLAIN 格式化 / 可视化    |
 | Nginx 格式化         | Nginx 配置格式化 / 压缩 / Lint               |
 | Java 代码格式化        | Java 美化 / 缩进 / 大括号风格 / import 排序      |
 | DDL Schema 对比     | 两个 DDL 字段粒度 diff / 跨方言                |
-| JSON ↔ Excel/CSV  | JSON 数组与 Excel/CSV 批量互转 / 嵌套展平        |
+| JSON ↔ Excel/CSV  | JSON / CSV / Excel 互转 · 嵌套展平 · 多分隔符  |
 | 图片转 PDF           | 多张图片合成 PDF / 页面尺寸与方向可配                |
 | PDF 合并 / 拆分       | 多 PDF 合并 / 按页码范围拆分                    |
 | GraphQL 格式化       | GraphQL 查询/mutation 美化 / 压缩 / 括号检查    |

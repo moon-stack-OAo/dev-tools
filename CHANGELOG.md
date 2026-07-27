@@ -7,7 +7,11 @@
 
 ## [Unreleased]
 
-本轮体验与工程改进（未发布）；工具 **144**，单元测试 **1305 passed**（74 files）。
+本轮体验与工程改进（未发布）；工具 **143**，单元测试 **1305 passed**（74 files，合并后减少 1 个测试文件）。
+
+### 变更
+
+- **合并 json2csv → jsonexcel**：下线独立「JSON ↔ CSV」入口，CSV 能力统一由「JSON ↔ Excel/CSV」提供；`#/tool/json2csv` 路由别名重定向至 `jsonexcel`，避免旧书签失效
 
 ### 新增
 
@@ -44,7 +48,7 @@
 
 ### 工程
 
-- 工具注册表 **144**；首页 / meta / README 数量同步
+- 工具注册表 **143**（json2csv 并入 jsonexcel）；首页 / meta / README 数量同步
 - 无新增 npm 依赖（XPath 用浏览器原生 `document.evaluate`）
 
 ### 测试
@@ -53,7 +57,7 @@
 
 ### 文档
 
-- README 工具列表与数量同步为 144；CHANGELOG 记录本轮增量
+- README 工具列表与数量同步为 143；CHANGELOG 记录本轮增量
 
 ## [1.1.0] - 2026-06-27
 

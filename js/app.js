@@ -158,13 +158,6 @@ const tools = [
         cat: "format",
     },
     {
-        id: "json2csv",
-        icon: "bi-filetype-csv",
-        name: "JSON ↔ CSV",
-        desc: "JSON 数组与 CSV 互转",
-        cat: "format",
-    },
-    {
         id: "json2sql",
         icon: "bi-database-add",
         name: "JSON → SQL INSERT",
@@ -210,7 +203,7 @@ const tools = [
         id: "jsonexcel",
         icon: "bi-file-earmark-spreadsheet",
         name: "JSON ↔ Excel/CSV",
-        desc: "JSON 数组与 Excel/CSV 批量互转 / 嵌套展平",
+        desc: "JSON / CSV / Excel 互转 · 嵌套展平 · 多分隔符",
         cat: "format",
     },
     {
@@ -2141,14 +2134,20 @@ function goHome(catId) {
     }, 50);
 }
 
+/** 旧工具 id → 新工具 id（书签 / 分享链接兼容） */
+const toolIdAliases = {
+    json2csv: "jsonexcel",
+};
+
 /** 解析 location.hash → 工具 id（#/tool/json 或 #json） */
 function parseRouteHash() {
     const raw = (location.hash || "").replace(/^#/, "").trim();
     if (!raw) return null;
     const m = raw.match(/^(?:\/?tool\/)?([a-zA-Z0-9_-]+)\/?$/);
     if (!m) return null;
-    const id = m[1];
+    let id = m[1];
     if (id === "home" || id === "index") return null;
+    if (toolIdAliases[id]) id = toolIdAliases[id];
     return toolsById.has(id) ? id : null;
 }
 
