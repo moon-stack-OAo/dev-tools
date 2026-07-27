@@ -934,7 +934,7 @@ const tools = [
     id: "flowableref",
     icon: "bi-diagram-2",
     name: "Flowable / BPMN",
-    desc: "Flowable API / 任务 / 监听器 / 表前缀速查",
+    desc: "Flowable API / BPMN / 监听器 / 表前缀速查（含场景与示例）",
     cat: "reference",
   },
 ];
