@@ -40,6 +40,28 @@
     }
 }
 
+/* JSON 输出区语法高亮（仅成功输出，不影响 .output-box.error） */
+.output-box.json-hl .json-key {
+    color: var(--info);
+}
+
+.output-box.json-hl .json-string {
+    color: var(--success);
+}
+
+.output-box.json-hl .json-number {
+    color: var(--warning);
+}
+
+.output-box.json-hl .json-boolean,
+.output-box.json-hl .json-null {
+    color: var(--accent2);
+}
+
+.output-box.json-hl .json-punct {
+    color: var(--text-muted);
+}
+
 /* dbtype 表格 */
 .dbtype-table-wrap {
     background: var(--bg-card);
