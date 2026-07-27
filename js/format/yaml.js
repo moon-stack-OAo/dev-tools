@@ -16,15 +16,18 @@ function yamlProcess(fn) {
   }
 }
 
+function yamlDumpOpts() {
+  // 格式化默认保留键顺序，避免静默按字母排序打乱配置语义
+  return {
+    indent: 2,
+    lineWidth: -1,
+    noCompatMode: true,
+    sortKeys: false,
+  };
+}
+
 function yamlFormat() {
-  yamlProcess((raw) =>
-    jsyaml.dump(jsyaml.load(raw), {
-      indent: 2,
-      lineWidth: -1,
-      noCompatMode: true,
-      sortKeys: true,
-    }),
-  );
+  yamlProcess((raw) => jsyaml.dump(jsyaml.load(raw), yamlDumpOpts()));
 }
 
 function yamlToJson() {
@@ -32,12 +35,5 @@ function yamlToJson() {
 }
 
 function jsonToYaml() {
-  yamlProcess((raw) =>
-    jsyaml.dump(JSON.parse(raw), {
-      indent: 2,
-      lineWidth: -1,
-      noCompatMode: true,
-      sortKeys: true,
-    }),
-  );
+  yamlProcess((raw) => jsyaml.dump(JSON.parse(raw), yamlDumpOpts()));
 }

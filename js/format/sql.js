@@ -8,10 +8,11 @@ function sqlFormat() {
     return;
   }
   try {
+    // sql-formatter v15+：keywordCase / tabWidth（旧版 uppercase/indent 已失效）
     out.textContent = sqlFormatter.format(raw, {
       language: dialect,
-      indent: "  ",
-      uppercase: true,
+      tabWidth: 2,
+      keywordCase: "upper",
     });
     out.className = "output-box";
     setStatus("SQL 格式化成功");
