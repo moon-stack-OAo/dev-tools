@@ -2,6 +2,44 @@
  * 复用 css/base.css 中的通用类；此处只放置新增专属样式。
  */
 
+/* 输入/输出左右布局（json / xml / yaml） */
+.fmt-split {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+}
+
+.fmt-pane {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.fmt-pane textarea.json-input {
+    min-height: 380px;
+    flex: 1;
+}
+
+.fmt-pane .output-box {
+    min-height: 380px;
+    flex: 1;
+    max-height: 560px;
+}
+
+.fmt-pane .copy-wrap {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
+@media (max-width: 900px) {
+    .fmt-split {
+        flex-direction: column;
+    }
+}
+
 /* dbtype 表格 */
 .dbtype-table-wrap {
     background: var(--bg-card);
