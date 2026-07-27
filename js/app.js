@@ -1601,6 +1601,9 @@ const toolInits = {};
 const initedTools = new Set();
 // openTool 并发代数：快速连点时只应用最新一次打开的 UI，旧请求完成后忽略
 let _openToolGen = 0;
+// hash 路由同步：浏览器后退应回到首页，而非离开站点
+let _routeSyncing = false;
+let _currentRouteToolId = null;
 
 function registerInit(id, fn) {
   toolInits[id] = fn;
@@ -1905,6 +1908,12 @@ async function openTool(id) {
   }
   if (gen !== _openToolGen) return;
   highlightSidebarTool(id);
+  // 写入 hash，使浏览器后退可回到首页（路由回放时 _routeSyncing 为 true，跳过以免叠栈）
+  if (!_routeSyncing) {
+    setRouteTool(id, { replace: false });
+  } else {
+    _currentRouteToolId = id;
+  }
   // 工具面板滚动 → 返回顶部按钮显隐(仅绑定一次,避免监听器累积)
   // click handler 在 init 末尾统一绑定为 scrollActiveToTop,无需此处分发。
   const tp = panel;
@@ -1958,7 +1967,9 @@ function showHome() {
 function goHome(catId) {
   showHome();
   clearHomeSearch();
-  domCache.backToTop.classList.remove("visible");
+  if (domCache.backToTop) domCache.backToTop.classList.remove("visible");
+  // 首页按钮：替换当前历史项，避免再堆一层；浏览器「后退」从工具页仍回到首页
+  setRouteHome({ replace: true });
   setTimeout(() => {
     highlightAnchor();
     if (catId) {
@@ -1968,6 +1979,110 @@ function goHome(catId) {
   }, 50);
 }
 
+/** 解析 location.hash → 工具 id（#/tool/json 或 #json） */
+function parseRouteHash() {
+  const raw = (location.hash || "").replace(/^#/, "").trim();
+  if (!raw) return null;
+  const m = raw.match(/^(?:\/?tool\/)?([a-zA-Z0-9_-]+)\/?$/);
+  if (!m) return null;
+  const id = m[1];
+  if (id === "home" || id === "index") return null;
+  return toolsById.has(id) ? id : null;
+}
+
+function setRouteTool(id, opts) {
+  if (!id || !toolsById.has(id)) return;
+  const next = "#/tool/" + id;
+  const already =
+    location.hash === next ||
+    location.hash === "#" + id ||
+    location.hash === "#/" + id;
+  _currentRouteToolId = id;
+  if (already && !(opts && opts.replace)) return;
+  _routeSyncing = true;
+  try {
+    if (opts && opts.replace) {
+      history.replaceState({ tool: id }, "", next);
+    } else {
+      history.pushState({ tool: id }, "", next);
+    }
+  } catch (e) {
+    try {
+      location.hash = next;
+    } catch (e2) {
+      /* ignore */
+    }
+  }
+  _routeSyncing = false;
+}
+
+function setRouteHome(opts) {
+  if (!_currentRouteToolId && !location.hash) return;
+  _currentRouteToolId = null;
+  _routeSyncing = true;
+  try {
+    const url = location.pathname + location.search;
+    if (opts && opts.replace) {
+      history.replaceState({ tool: null }, "", url);
+    } else {
+      history.pushState({ tool: null }, "", url);
+    }
+  } catch (e) {
+    try {
+      history.replaceState({ tool: null }, "", location.pathname + location.search);
+    } catch (e2) {
+      /* ignore */
+    }
+  }
+  _routeSyncing = false;
+}
+
+function applyRouteFromLocation() {
+  if (_routeSyncing) return;
+  const id = parseRouteHash();
+  if (id) {
+    const panel = document.getElementById("panel-" + id);
+    if (
+      _currentRouteToolId === id &&
+      panel &&
+      panel.classList.contains("active")
+    ) {
+      return;
+    }
+    // 由路由驱动打开：避免 openTool 末尾再次 pushState 叠栈
+    _currentRouteToolId = id;
+    openToolFromRoute(id);
+  } else {
+    // 无有效工具 hash → 首页（不写 history，避免与 popstate 打架）
+    _currentRouteToolId = null;
+    showHome();
+    clearHomeSearch();
+    if (domCache.backToTop) domCache.backToTop.classList.remove("visible");
+    setStatus("就绪");
+  }
+}
+
+/** 路由/刷新进入工具：与 openTool 相同，但不 push 新历史 */
+async function openToolFromRoute(id) {
+  const prev = _routeSyncing;
+  _routeSyncing = true;
+  try {
+    await openTool(id);
+  } finally {
+    _routeSyncing = prev;
+    _currentRouteToolId = id;
+    // 规范化 hash，不新增历史
+    const next = "#/tool/" + id;
+    if (location.hash !== next) {
+      try {
+        history.replaceState({ tool: id }, "", next);
+      } catch (e) {
+        /* ignore */
+      }
+    }
+  }
+}
+
 function filterHomeTools() {
   const q = domCache.homeSearch.value.toLowerCase().trim();
 
@@ -1975,6 +2090,7 @@ function filterHomeTools() {
   const homePanel = domCache.panelHome;
   if (!homePanel.classList.contains("active")) {
     showHome();
+    setRouteHome({ replace: true });
     setTimeout(highlightAnchor, 50);
   }
 
@@ -2296,5 +2412,30 @@ function safeJSON(s) {
   }
 }
 
-// Go home on initial load
-goHome();
+// 路由：hash 变化 / 浏览器前进后退
+window.addEventListener("hashchange", function () {
+  if (_routeSyncing) return;
+  applyRouteFromLocation();
+});
+window.addEventListener("popstate", function () {
+  if (_routeSyncing) return;
+  applyRouteFromLocation();
+});
+
+// 首屏：有 #/tool/id 则打开对应工具，否则首页
+(function bootRoute() {
+  const id = parseRouteHash();
+  if (id) {
+    openToolFromRoute(id);
+  } else {
+    showHome();
+    _currentRouteToolId = null;
+    if (location.hash) {
+      try {
+        history.replaceState({ tool: null }, "", location.pathname + location.search);
+      } catch (e) {
+        /* ignore */
+      }
+    }
+  }
+})();
