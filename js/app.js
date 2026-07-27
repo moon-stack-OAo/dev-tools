@@ -89,7 +89,7 @@ const tools = [
   },
   {
     id: "xml",
-    icon: "bi-code",
+    icon: "bi-filetype-xml",
     name: "XML 格式化",
     desc: "格式化 / 压缩 / 验证 XML",
     cat: "format",
@@ -103,7 +103,7 @@ const tools = [
   },
   {
     id: "toml",
-    icon: "bi-filetype-toml",
+    icon: "bi-file-earmark-code",
     name: "TOML 格式化",
     desc: "TOML 格式化 / JSON 互转 / 校验",
     cat: "format",
@@ -173,7 +173,7 @@ const tools = [
   },
   {
     id: "nginxfmt",
-    icon: "bi-gear",
+    icon: "bi-server",
     name: "Nginx 格式化",
     desc: "Nginx 配置格式化 / 压缩 / Lint",
     cat: "format",
@@ -229,7 +229,7 @@ const tools = [
   },
   {
     id: "base64",
-    icon: "bi-lock",
+    icon: "bi-file-binary",
     name: "Base64",
     desc: "Base64 编码解码 / 文件支持",
     cat: "encode",
@@ -250,7 +250,7 @@ const tools = [
   },
   {
     id: "javaescape",
-    icon: "bi-slash-lg",
+    icon: "bi-code-slash",
     name: "Java 转义",
     desc: "Java 字符串转义 / 反转义",
     cat: "encode",
@@ -278,7 +278,7 @@ const tools = [
   },
   {
     id: "hex",
-    icon: "bi-123",
+    icon: "bi-0-circle",
     name: "Hex 编码",
     desc: "字符串 ↔ Hex 互转（UTF-8）",
     cat: "encode",
@@ -321,7 +321,7 @@ const tools = [
   },
   {
     id: "hmac",
-    icon: "bi-shield-lock",
+    icon: "bi-key-fill",
     name: "HMAC 计算",
     desc: "HMAC-MD5 / SHA-1 / SHA-256 / SHA-384 / SHA-512",
     cat: "security",
@@ -356,7 +356,7 @@ const tools = [
   },
   {
     id: "jasypt",
-    icon: "bi-lock",
+    icon: "bi-safe2",
     name: "Jasypt 加解密",
     desc: "PBEWithMD5AndDES 配置加解密 / ENC(...)",
     cat: "security",
@@ -370,7 +370,7 @@ const tools = [
   },
   {
     id: "bcrypt",
-    icon: "bi-asterisk",
+    icon: "bi-shield-lock",
     name: "bcrypt 加密",
     desc: "bcrypt 哈希 / 验证",
     cat: "security",
@@ -384,7 +384,7 @@ const tools = [
   },
   {
     id: "gmsm",
-    icon: "bi-flag",
+    icon: "bi-shield-fill",
     name: "国密 SM2/3/4",
     desc: "国密 SM2 公钥 / SM3 摘要 / SM4 对称",
     cat: "security",
@@ -412,7 +412,7 @@ const tools = [
   },
   {
     id: "ulid",
-    icon: "bi-hash",
+    icon: "bi-fingerprint",
     name: "ULID / NanoID",
     desc: "ULID / NanoID 生成与 ULID 解析",
     cat: "generate",
@@ -497,7 +497,7 @@ const tools = [
 
   {
     id: "jsontopojo",
-    icon: "bi-arrow-repeat",
+    icon: "bi-filetype-json",
     name: "JSON → Java",
     desc: "JSON 生成 Java POJO 类",
     cat: "codegen",
@@ -511,14 +511,14 @@ const tools = [
   },
   {
     id: "sqltopojo",
-    icon: "bi-arrow-repeat",
+    icon: "bi-database",
     name: "SQL → Java",
     desc: "DDL 生成 MyBatis Plus 实体",
     cat: "codegen",
   },
   {
     id: "sql2mybatis",
-    icon: "bi-diagram-3",
+    icon: "bi-filetype-xml",
     name: "SQL → MyBatis",
     desc: "DDL 生成 Mapper XML + Interface",
     cat: "codegen",
@@ -602,7 +602,7 @@ const tools = [
   },
   {
     id: "regex",
-    icon: "bi-asterisk",
+    icon: "bi-regex",
     name: "正则表达式",
     desc: "正则匹配测试 / 分组查看",
     cat: "text",
@@ -680,14 +680,14 @@ const tools = [
   },
   {
     id: "stomp",
-    icon: "bi-hdd-network",
+    icon: "bi-chat-dots",
     name: "STOMP",
     desc: "STOMP over WebSocket 调试",
     cat: "debug",
   },
   {
     id: "httpdebug",
-    icon: "bi-cloud-arrow-down",
+    icon: "bi-send",
     name: "HTTP 调试",
     desc: "发送请求 / cURL 解析 / Fetch·Axios·Java 代码生成",
     cat: "debug",
@@ -701,7 +701,7 @@ const tools = [
   },
   {
     id: "grpc",
-    icon: "bi-hdd-network",
+    icon: "bi-hdd-rack",
     name: "gRPC 调试",
     desc: "Metadata 构造 / Protobuf 解码 / 状态码",
     cat: "debug",
@@ -715,7 +715,7 @@ const tools = [
   },
   {
     id: "uaparser",
-    icon: "bi-browser-chrome",
+    icon: "bi-window-desktop",
     name: "UA 解析",
     desc: "User-Agent 解析",
     cat: "debug",
@@ -785,7 +785,7 @@ const tools = [
   },
   {
     id: "regexref",
-    icon: "bi-book",
+    icon: "bi-regex",
     name: "正则速查表",
     desc: "常用正则表达式分类速查",
     cat: "reference",
@@ -827,7 +827,7 @@ const tools = [
   },
   {
     id: "lombok",
-    icon: "bi-magic",
+    icon: "bi-lightning",
     name: "Lombok 注解",
     desc: "Lombok 常用注解速查",
     cat: "reference",
@@ -855,7 +855,7 @@ const tools = [
   },
   {
     id: "gradle",
-    icon: "bi-box-seam",
+    icon: "bi-boxes",
     name: "Gradle 命令",
     desc: "Gradle 常用命令速查",
     cat: "reference",
@@ -876,7 +876,7 @@ const tools = [
   },
   {
     id: "mqref",
-    icon: "bi-broadcast",
+    icon: "bi-mailbox",
     name: "消息中间件",
     desc: "Kafka / RabbitMQ / RocketMQ 速查",
     cat: "reference",
@@ -890,7 +890,7 @@ const tools = [
   },
   {
     id: "portref",
-    icon: "bi-plug",
+    icon: "bi-ethernet",
     name: "端口号速查",
     desc: "常用网络服务端口号对照",
     cat: "reference",
