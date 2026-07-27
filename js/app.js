@@ -1309,6 +1309,219 @@ function escapeHtml(s) {
     .replace(/'/g, "&#39;");
 }
 
+/**
+ * 从解析异常中提取行列位置（JSON / YAML / XML 等）
+ * @returns {{ line: number|null, column: number|null, position: number|null, message: string }}
+ */
+function locateParseError(source, err) {
+  const text = source == null ? "" : String(source);
+  const msg = (err && (err.message || err.reason)) || String(err || "解析失败");
+  let line = null;
+  let column = null;
+  let position = null;
+
+  // js-yaml: err.mark { line(0-based), column(0-based), position }
+  if (err && err.mark && typeof err.mark === "object") {
+    if (typeof err.mark.line === "number") line = err.mark.line + 1;
+    if (typeof err.mark.column === "number") column = err.mark.column + 1;
+    if (typeof err.mark.position === "number") position = err.mark.position;
+  }
+
+  // JSON / 通用: "at position 12 (line 3 column 5)" 或 "at position 12"
+  if (line == null) {
+    const m1 = msg.match(
+      /position\s+(\d+)\s*\(\s*line\s+(\d+)\s*column\s+(\d+)\s*\)/i,
+    );
+    if (m1) {
+      position = parseInt(m1[1], 10);
+      line = parseInt(m1[2], 10);
+      column = parseInt(m1[3], 10);
+    } else {
+      const m2 = msg.match(/position\s+(\d+)/i);
+      if (m2) position = parseInt(m2[1], 10);
+    }
+  }
+
+  // XML DOMParser / 其它: "line 2 at column 15" / "Line: 2 Column: 15"
+  if (line == null) {
+    const m3 = msg.match(/line\s*[:=]?\s*(\d+)/i);
+    if (m3) line = parseInt(m3[1], 10);
+    const m4 = msg.match(/col(?:umn)?\s*[:=]?\s*(\d+)/i);
+    if (m4) column = parseInt(m4[1], 10);
+  }
+
+  // 仅有 position：换算行列
+  if (line == null && position != null && position >= 0) {
+    const head = text.slice(0, Math.min(position, text.length));
+    const parts = head.split(/\r\n|\n|\r/);
+    line = parts.length;
+    column = (parts[parts.length - 1] || "").length + 1;
+  }
+
+  return { line: line, column: column, position: position, message: msg };
+}
+
+/**
+ * 生成带行号上下文与 ^ 指针的错误报告（纯文本，写入 output-box）
+ * @param {string} source 原始输入
+ * @param {Error|string} err 异常
+ * @param {string} [title] 标题前缀，如 "JSON 解析错误"
+ */
+function formatParseErrorReport(source, err, title) {
+  const text = source == null ? "" : String(source);
+  const loc = locateParseError(text, err);
+  const head = title || "解析错误";
+  let where = "";
+  if (loc.line != null && loc.column != null) {
+    where = "（第 " + loc.line + " 行，第 " + loc.column + " 列）";
+  } else if (loc.line != null) {
+    where = "（第 " + loc.line + " 行）";
+  } else if (loc.position != null) {
+    where = "（位置 " + loc.position + "）";
+  }
+
+  const lines = text.replace(/\r\n|\r/g, "\n").split("\n");
+  const parts = [];
+  parts.push("✗ " + head + where);
+  parts.push(loc.message);
+  parts.push("");
+
+  if (loc.line != null && loc.line >= 1 && lines.length) {
+    const idx = Math.min(Math.max(loc.line - 1, 0), lines.length - 1);
+    const from = Math.max(0, idx - 2);
+    const to = Math.min(lines.length - 1, idx + 2);
+    const numW = String(to + 1).length;
+    for (let i = from; i <= to; i++) {
+      const n = String(i + 1).padStart(numW, " ");
+      const mark = i === idx ? ">" : " ";
+      const content = lines[i] == null ? "" : lines[i];
+      parts.push(mark + " " + n + " | " + content);
+      if (i === idx) {
+        const col = loc.column != null ? Math.max(1, loc.column) : 1;
+        // 指针对齐到内容列（考虑行号前缀宽度：" > NN | "）
+        const prefixLen = 1 + 1 + numW + 3; // mark + space + num + " | "
+        const caretPad = prefixLen + Math.min(col - 1, content.length);
+        parts.push(" ".repeat(caretPad) + "^");
+      }
+    }
+  } else if (text.trim()) {
+    // 无行列时展示前几行便于对照
+    const preview = lines.slice(0, 5);
+    const numW = String(preview.length).length;
+    preview.forEach(function (ln, i) {
+      parts.push(
+        "  " + String(i + 1).padStart(numW, " ") + " | " + (ln || ""),
+      );
+    });
+    if (lines.length > 5) parts.push("  ...");
+  }
+
+  return parts.join("\n");
+}
+
+/** 行列 → 字符串偏移（line/column 均为 1-based） */
+function offsetFromLineCol(text, line, column) {
+  const src = text == null ? "" : String(text);
+  if (line == null || line < 1) return 0;
+  const lines = src.replace(/\r\n|\r/g, "\n").split("\n");
+  const idx = Math.min(Math.max(line - 1, 0), lines.length - 1);
+  let off = 0;
+  // 注意：split 后用 \n 拼接长度；原文本可能是 \r\n，近似用 \n 计数
+  for (let i = 0; i < idx; i++) {
+    off += (lines[i] || "").length + 1;
+  }
+  const col = column == null ? 1 : Math.max(1, column);
+  off += Math.min(col - 1, (lines[idx] || "").length);
+  return Math.min(Math.max(0, off), src.length);
+}
+
+/**
+ * 在输入框中选中并高亮解析错误位置（整行或错误 token）
+ * @param {HTMLTextAreaElement|HTMLInputElement|string} inputElOrId
+ * @param {string} source
+ * @param {Error|string} err
+ */
+function highlightParseErrorInInput(inputElOrId, source, err) {
+  const el =
+    typeof inputElOrId === "string"
+      ? document.getElementById(inputElOrId)
+      : inputElOrId;
+  if (!el || typeof el.setSelectionRange !== "function") return;
+
+  const text = source == null ? el.value || "" : String(source);
+  const loc = locateParseError(text, err);
+  let start = 0;
+  let end = 0;
+
+  if (loc.position != null && loc.position >= 0) {
+    start = Math.min(loc.position, text.length);
+  } else if (loc.line != null) {
+    start = offsetFromLineCol(text, loc.line, loc.column || 1);
+  } else {
+    return;
+  }
+
+  // 优先选中从错误点到本行末尾的「可疑 token」；否则整行
+  const nl = text.indexOf("\n", start);
+  const lineEnd = nl < 0 ? text.length : nl;
+  // token：连续非空白，至少 1 字符
+  let tokenEnd = start;
+  while (tokenEnd < lineEnd && !/\s/.test(text[tokenEnd])) tokenEnd++;
+  if (tokenEnd === start) {
+    // 错误点落在空白/行尾：选中整行
+    let lineStart = start;
+    while (lineStart > 0 && text[lineStart - 1] !== "\n") lineStart--;
+    start = lineStart;
+    end = lineEnd;
+  } else {
+    end = tokenEnd;
+  }
+  if (end <= start) end = Math.min(start + 1, text.length);
+
+  try {
+    el.focus({ preventScroll: false });
+    el.setSelectionRange(start, end);
+  } catch (e) {
+    /* ignore */
+  }
+
+  // 滚动到选区附近
+  try {
+    const lineH = 18;
+    const line = loc.line != null ? loc.line : 1;
+    el.scrollTop = Math.max(0, (line - 3) * lineH);
+  } catch (e) {
+    /* ignore */
+  }
+
+  el.classList.add("input-parse-error");
+  clearTimeout(el._parseErrTimer);
+  el._parseErrTimer = setTimeout(function () {
+    el.classList.remove("input-parse-error");
+  }, 3500);
+
+  // 用户编辑后去掉错误样式
+  if (!el._parseErrBound) {
+    el._parseErrBound = true;
+    const clear = function () {
+      el.classList.remove("input-parse-error");
+    };
+    el.addEventListener("input", clear);
+    el.addEventListener("keydown", clear);
+  }
+}
+
+/**
+ * 输出错误报告 + 输入框定位高亮（格式化工具统一入口）
+ */
+function reportParseError(outEl, inputElOrId, source, err, title) {
+  if (outEl) {
+    outEl.textContent = formatParseErrorReport(source, err, title);
+    outEl.className = "output-box error";
+  }
+  highlightParseErrorInInput(inputElOrId, source, err);
+}
+
 // 生产构建内联的 window.__ASSET_MAP__ 提供逐文件内容哈希,用于动态资源强缓存;
 // dev 模式无该映射,返回空串(浏览器每次取最新)。
 function assetV(p) {

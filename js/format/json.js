@@ -12,8 +12,8 @@ function jsonProcess(fn) {
     out.className = "output-box";
     setStatus("JSON 处理成功");
   } catch (e) {
-    out.textContent = "JSON 解析错误: " + e.message;
-    out.className = "output-box error";
+    reportParseError(out, "jsonInput", raw, e, "JSON 解析错误");
+    setStatus("JSON 解析失败");
   }
 }
 
@@ -39,7 +39,7 @@ function jsonValidate() {
     out.className = "output-box";
     setStatus("JSON 有效");
   } catch (e) {
-    out.textContent = "✗ 无效的 JSON: " + e.message;
-    out.className = "output-box error";
+    reportParseError(out, "jsonInput", raw, e, "无效的 JSON");
+    setStatus("JSON 无效");
   }
 }

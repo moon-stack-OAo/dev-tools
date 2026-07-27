@@ -449,6 +449,33 @@ button:disabled {
     background: rgba(var(--danger-rgb), 0.06);
 }
 
+/* 解析错误：输入框定位高亮（选区 + 边框闪烁） */
+textarea.input-parse-error,
+input.input-parse-error {
+    border-color: var(--danger) !important;
+    box-shadow: 0 0 0 2px rgba(var(--danger-rgb), 0.25),
+        0 0 16px rgba(var(--danger-rgb), 0.18) !important;
+    animation: inputParseErrorPulse 0.9s ease-in-out 2;
+}
+
+textarea.input-parse-error::selection,
+input.input-parse-error::selection {
+    background: rgba(var(--danger-rgb), 0.45);
+    color: var(--text);
+}
+
+@keyframes inputParseErrorPulse {
+    0%,
+    100% {
+        box-shadow: 0 0 0 2px rgba(var(--danger-rgb), 0.25),
+            0 0 12px rgba(var(--danger-rgb), 0.15);
+    }
+    50% {
+        box-shadow: 0 0 0 3px rgba(var(--danger-rgb), 0.4),
+            0 0 22px rgba(var(--danger-rgb), 0.28);
+    }
+}
+
 .copy-btn {
     position: absolute;
     top: 6px;

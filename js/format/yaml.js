@@ -11,8 +11,10 @@ function yamlProcess(fn) {
     out.className = "output-box";
     setStatus("YAML 处理成功");
   } catch (e) {
-    out.textContent = "错误: " + e.message;
-    out.className = "output-box error";
+    const title =
+      e && e.name === "YAMLException" ? "YAML 解析错误" : "处理错误";
+    reportParseError(out, "yamlInput", raw, e, title);
+    setStatus("YAML 处理失败");
   }
 }
 

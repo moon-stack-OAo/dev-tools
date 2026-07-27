@@ -12,8 +12,8 @@ function xmlFormat() {
     out.className = "output-box";
     setStatus("XML 格式化成功");
   } catch (e) {
-    out.textContent = "XML 错误: " + e.message;
-    out.className = "output-box error";
+    reportParseError(out, "xmlInput", raw, e, "XML 解析错误");
+    setStatus("XML 解析失败");
   }
 }
 
@@ -27,7 +27,8 @@ function xmlParseAndSerialize(raw) {
   const doc = parser.parseFromString(raw, "text/xml");
   const errors = doc.getElementsByTagName("parsererror");
   if (errors.length) {
-    throw new Error((errors[0].textContent || "解析失败").trim());
+    const detail = (errors[0].textContent || "解析失败").trim();
+    throw new Error(detail);
   }
   return new XMLSerializer().serializeToString(doc);
 }
@@ -110,8 +111,8 @@ function xmlCompress() {
     out.className = "output-box";
     setStatus("XML 压缩成功");
   } catch (e) {
-    out.textContent = "XML 错误: " + e.message;
-    out.className = "output-box error";
+    reportParseError(out, "xmlInput", raw, e, "XML 解析错误");
+    setStatus("XML 解析失败");
   }
 }
 
@@ -137,8 +138,8 @@ function xmlValidate() {
     out.className = "output-box";
     setStatus("XML 有效");
   } catch (e) {
-    out.textContent = "✗ 无效的 XML: " + e.message;
-    out.className = "output-box error";
+    reportParseError(out, "xmlInput", raw, e, "无效的 XML");
+    setStatus("XML 无效");
   }
 }
 
