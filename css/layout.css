@@ -25,7 +25,8 @@
     letter-spacing: 0.3px;
     backdrop-filter: blur(8px);
     position: relative;
-    z-index: 1;
+    /* 高于工具内 sticky 搜索栏(.ref-search-bar z-index:10)，避免挡住顶栏首页搜索 */
+    z-index: 20;
 }
 
 .main-header .header-home-title {
