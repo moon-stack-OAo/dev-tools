@@ -422,6 +422,56 @@ function quartzVsUnixNotes() {
 
 // ---------- UI ----------
 
+/** 常用 IANA 时区（与 timezone 工具对齐；不 import，避免懒加载依赖） */
+const QC_COMMON_ZONES = [
+    'UTC',
+    'Asia/Shanghai',
+    'Asia/Tokyo',
+    'Asia/Singapore',
+    'Asia/Seoul',
+    'Asia/Dubai',
+    'Asia/Kolkata',
+    'Asia/Hong_Kong',
+    'Europe/London',
+    'Europe/Paris',
+    'Europe/Berlin',
+    'Europe/Moscow',
+    'America/New_York',
+    'America/Chicago',
+    'America/Denver',
+    'America/Los_Angeles',
+    'America/Sao_Paulo',
+    'Australia/Sydney',
+    'Pacific/Auckland',
+];
+
+/**
+ * 读取 zone：自定义优先，否则取下拉；空字符串表示不指定 zone
+ * @returns {string}
+ */
+function quartzcronGetZone() {
+    const customEl = document.getElementById('qcZoneCustom');
+    const custom = customEl ? String(customEl.value || '').trim() : '';
+    if (custom) return custom;
+    const sel = document.getElementById('qcZone');
+    return sel ? String(sel.value || '').trim() : '';
+}
+
+function quartzcronPopulateZoneSelect() {
+    const sel = document.getElementById('qcZone');
+    if (!sel) return;
+    const opts = ['<option value="">（不指定 zone / 使用服务器默认）</option>'];
+    QC_COMMON_ZONES.forEach(function (z) {
+        opts.push('<option value="' + z + '">' + z + '</option>');
+    });
+    sel.innerHTML = opts.join('');
+    sel.value = 'Asia/Shanghai';
+}
+
+function quartzcronInit() {
+    quartzcronPopulateZoneSelect();
+}
+
 function quartzcronParse() {
     const expr = document.getElementById('qcInput').value;
     const out = document.getElementById('qcOutput');
@@ -467,7 +517,7 @@ function quartzcronParse() {
 
 function quartzcronToSpring() {
     const expr = document.getElementById('qcInput').value;
-    const zone = (document.getElementById('qcZone') || {}).value || '';
+    const zone = quartzcronGetZone();
     const mode = (document.getElementById('qcMode') || {}).value || 'cron';
     const fixedRate = (document.getElementById('qcFixedRate') || {}).value;
     const fixedDelay = (document.getElementById('qcFixedDelay') || {}).value;
@@ -505,6 +555,8 @@ function quartzcronLoadSample() {
     document.getElementById('qcInput').value = '0 0 12 * * ?';
     const zone = document.getElementById('qcZone');
     if (zone) zone.value = 'Asia/Shanghai';
+    const custom = document.getElementById('qcZoneCustom');
+    if (custom) custom.value = '';
     setStatus('已加载示例：每天中午 12:00:00');
 }
 
@@ -515,6 +567,10 @@ function quartzcronPreset(expr) {
 
 function quartzcronClear() {
     document.getElementById('qcInput').value = '';
+    const zone = document.getElementById('qcZone');
+    if (zone) zone.value = 'Asia/Shanghai';
+    const custom = document.getElementById('qcZoneCustom');
+    if (custom) custom.value = '';
     const out = document.getElementById('qcOutput');
     if (out) out.textContent = '';
     const so = document.getElementById('qcSpringOut');
@@ -524,11 +580,16 @@ function quartzcronClear() {
     setStatus('已清空');
 }
 
+if (typeof registerInit === 'function') {
+    registerInit('quartzcron', quartzcronInit);
+}
+
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         parseQuartzCron: parseQuartzCron,
         describeQuartzCron: describeQuartzCron,
         toSpringScheduled: toSpringScheduled,
         quartzVsUnixNotes: quartzVsUnixNotes,
+        QC_COMMON_ZONES: QC_COMMON_ZONES,
     };
 }

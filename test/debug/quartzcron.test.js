@@ -68,6 +68,18 @@ describe('toSpringScheduled', () => {
         expect(s.all).toContain('@EnableScheduling');
     });
 
+    test('zone 为空时不输出 zone 属性', () => {
+        const s = toSpringScheduled({ cron: '0 0 12 * * ?', zone: '', methodName: 'job' });
+        expect(s.cron).toContain('@Scheduled(cron = "0 0 12 * * ?"');
+        expect(s.cron).not.toContain('zone =');
+        expect(s.cron).toMatch(/@Scheduled\(cron = "0 0 12 \* \* \?"\)\n/);
+    });
+
+    test('zone 省略等同不指定', () => {
+        const s = toSpringScheduled({ cron: '0 0 * * * ?', methodName: 'tick' });
+        expect(s.cron).not.toContain('zone');
+    });
+
     test('fixedRate / fixedDelay', () => {
         const s = toSpringScheduled({
             mode: 'fixedRate',

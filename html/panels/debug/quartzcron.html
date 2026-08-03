@@ -11,13 +11,17 @@
             <input id="qcInput" placeholder="0 0 12 * * ?" style="width:100%;font-family:var(--font)" type="text"
                    value="0 0 12 * * ?">
         </div>
-        <div style="width:160px">
-            <div class="label">时区 zone</div>
-            <input id="qcZone" placeholder="Asia/Shanghai" style="width:100%" type="text" value="Asia/Shanghai">
-        </div>
         <div style="width:140px">
             <div class="label">方法名</div>
             <input id="qcMethod" style="width:100%" type="text" value="scheduledTask">
+        </div>
+        <div style="min-width:200px;flex:1">
+            <div class="label">时区 zone</div>
+            <select id="qcZone" style="width:100%"></select>
+        </div>
+        <div style="min-width:160px;flex:1">
+            <div class="label">自定义时区（可选）</div>
+            <input id="qcZoneCustom" placeholder="如 America/Chicago" style="width:100%" type="text">
         </div>
     </div>
     <div class="toolbar" style="flex-wrap:wrap;margin-bottom:8px">
