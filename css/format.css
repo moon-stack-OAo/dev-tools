@@ -62,6 +62,53 @@
     color: var(--text-muted);
 }
 
+.output-box.json-hl .json-key-warn {
+    color: var(--warning);
+    background: rgba(var(--warning-rgb), 0.18);
+    border-radius: 2px;
+    padding: 0 2px;
+}
+
+.output-box.json-hl .json-key-error {
+    color: var(--danger);
+    background: rgba(var(--danger-rgb), 0.15);
+    border-radius: 2px;
+    padding: 0 2px;
+}
+
+.json-key-issues {
+    margin-bottom: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm, 4px);
+    border: 1px solid rgba(var(--warning-rgb), 0.4);
+    background: var(--warning-glow);
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--text-dim, var(--text));
+    white-space: normal;
+}
+
+.json-key-issues-title {
+    font-weight: 600;
+    color: var(--warning);
+    margin-bottom: 6px;
+}
+
+.json-key-issues-list {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.json-key-issues-list li {
+    margin: 3px 0;
+    color: var(--text);
+}
+
+.json-hl-body {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
 /* dbtype 表格 */
 .dbtype-table-wrap {
     background: var(--bg-card);

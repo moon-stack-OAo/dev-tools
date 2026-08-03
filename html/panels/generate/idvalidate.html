@@ -1,0 +1,39 @@
+<div class="tool-panel" id="panel-idvalidate">
+    <div class="toolbar" style="flex-wrap:wrap">
+        <button onclick="idvValidateUi()">校验</button>
+        <button class="outline" onclick="idvLoadSample()">示例</button>
+        <button class="outline" onclick="idvClear()">清空</button>
+    </div>
+
+    <div class="mb-8 flex gap-6" style="flex-wrap:wrap;align-items:flex-end">
+        <div style="min-width:140px">
+            <div class="label">类型</div>
+            <select id="idvType" style="width:100%;padding:6px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text)">
+                <option value="auto">自动识别</option>
+                <option value="idcard">身份证</option>
+                <option value="mobile">手机号</option>
+                <option value="bank">银行卡</option>
+            </select>
+        </div>
+        <div class="flex-1" style="min-width:220px">
+            <div class="label">号码</div>
+            <input id="idvInput" onkeydown="if(event.key==='Enter')idvValidateUi()" placeholder="身份证 / 手机号 / 银行卡" style="width:100%;font-family:var(--font)" type="text">
+        </div>
+    </div>
+
+    <div class="copy-wrap">
+        <div class="label">结果详情</div>
+        <button class="copy-btn" onclick="copyText('idvOutput')">复制</button>
+        <div class="output-box" id="idvOutput" style="min-height:120px;white-space:pre-wrap;font-family:var(--font)"></div>
+    </div>
+
+    <div style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
+        <strong>说明：</strong>
+        <ul style="margin:4px 0 0 16px">
+            <li>身份证：18 位 ISO 7064 MOD 11-2 校验位，解析地区/出生/性别；15 位仅格式粗检</li>
+            <li>手机号：11 位格式 + 号段粗分（移动/联通/电信/广电/虚拟），号段会变化仅供参考</li>
+            <li>银行卡：标准 Luhn 模 10，仅校验格式合法性</li>
+            <li>全部本地计算，不调用外部 API</li>
+        </ul>
+    </div>
+</div>

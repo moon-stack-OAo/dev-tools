@@ -1,0 +1,38 @@
+<div class="tool-panel" id="panel-sqlbind">
+    <div class="mb-8">
+        <div class="label">SQL（含 ? / :name / #{name}）</div>
+        <textarea class="api-body-input" id="sbSql"
+                  placeholder="SELECT * FROM t WHERE id = ? AND name = ?"
+                  style="min-height:100px"></textarea>
+    </div>
+    <div class="mb-8">
+        <div class="label">参数</div>
+        <textarea class="api-body-input" id="sbParams"
+                  placeholder="每行一个，或逗号分隔"
+                  style="min-height:100px"></textarea>
+        <div class="stomp-tip" id="sbParamsTip" style="margin-top:4px">位置参数：每行一个，或逗号分隔；也支持 JSON 数组</div>
+    </div>
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div>
+            <div class="label">模式</div>
+            <select id="sbMode" onchange="sqlbindOnModeChange()" style="min-width:140px">
+                <option value="positional">位置 ?</option>
+                <option value="named">命名 :name / #{name}</option>
+            </select>
+        </div>
+        <label style="display:flex;align-items:center;gap:6px;margin-top:18px;cursor:pointer">
+            <input id="sbForceString" type="checkbox">
+            <span>全部当字符串</span>
+        </label>
+    </div>
+    <div class="toolbar">
+        <button onclick="sqlbindFill()">绑定</button>
+        <button class="outline" onclick="sqlbindSample()">示例</button>
+        <button class="outline" onclick="sqlbindClear()">清空</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">完整 SQL</div>
+        <button class="copy-btn" onclick="copyText('sbOutput')">复制</button>
+        <div class="output-box" id="sbOutput" style="min-height:100px">点击「绑定」查看完整 SQL</div>
+    </div>
+</div>

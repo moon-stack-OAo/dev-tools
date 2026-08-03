@@ -1,0 +1,28 @@
+<div class="tool-panel" id="panel-jsonflat">
+    <div class="toolbar">
+        <button onclick="jsonflatFlatten()">扁平化</button>
+        <button class="outline" onclick="jsonflatUnflatten()">反扁平化</button>
+        <label style="margin-left:8px">分隔符
+            <input id="jfSeparator" style="width:48px;margin-left:4px" title="路径分隔符" value=".">
+        </label>
+        <label style="margin-left:8px">数组风格
+            <select id="jfArrayStyle" style="width:110px;margin-left:4px">
+                <option value="bracket">bracket [0]</option>
+                <option value="dot">dot .0</option>
+            </select>
+        </label>
+        <button class="outline" onclick="jsonflatLoadSample()" style="margin-left:auto">示例</button>
+        <button class="outline" onclick="jsonflatClear()" style="border-color:var(--danger);color:var(--danger)">清空</button>
+    </div>
+    <div class="mb-8">
+        <div class="label">输入 JSON</div>
+        <textarea class="json-input" id="jfInput"
+                  placeholder='{"user":{"name":"alice","tags":["a","b"]}}'
+                  style="min-height:220px;font-family:var(--font)"></textarea>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="copyText('jfOutput')">复制</button>
+        <div class="output-box" id="jfOutput" style="white-space:pre-wrap;font-family:var(--font)"></div>
+    </div>
+</div>

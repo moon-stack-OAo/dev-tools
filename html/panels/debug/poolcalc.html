@@ -1,0 +1,44 @@
+<div class="tool-panel" id="panel-poolcalc">
+    <div class="mb-8" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px">
+        <div>
+            <div class="label">QPS</div>
+            <input id="pcQps" min="0" placeholder="如 200" step="any" type="number">
+        </div>
+        <div>
+            <div class="label">平均耗时 (ms)</div>
+            <input id="pcAvgMs" min="0" placeholder="如 50" step="any" type="number">
+        </div>
+        <div>
+            <div class="label">CPU 核数</div>
+            <input id="pcCores" min="1" step="1" type="number" value="8">
+        </div>
+        <div>
+            <div class="label">阻塞比 (wait/compute)</div>
+            <input id="pcBlock" min="0" placeholder="CPU≈0 IO≥1" step="any" type="number" value="1">
+        </div>
+        <div>
+            <div class="label">目标利用率 (0~1)</div>
+            <input id="pcUtil" max="1" min="0" step="0.05" type="number" value="0.7">
+        </div>
+        <div>
+            <div class="label">可接受排队 (秒)</div>
+            <input id="pcQueueSec" min="0" step="0.1" type="number" value="1.5">
+        </div>
+    </div>
+    <div class="toolbar">
+        <button onclick="poolcalcEstimate()">估算</button>
+        <button class="outline" onclick="poolcalcSample()">示例 (IO 密集)</button>
+        <button class="outline" onclick="poolcalcClear()">清空</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">估算结果</div>
+        <button class="copy-btn" onclick="copyText('pcOutput')">复制</button>
+        <div class="output-box" id="pcOutput" style="min-height:200px;white-space:pre-wrap">填写参数后点击「估算」</div>
+    </div>
+    <div style="margin-top:12px;color:var(--text-dim);font-size:12px;line-height:1.6">
+        <div><b>说明</b></div>
+        <div>· 理论并发 ≈ QPS × 平均耗时(秒)（Little's Law）</div>
+        <div>· 阻塞比：CPU 密集填 0~0.5；纯 IO 可填 5~10+</div>
+        <div>· 结果仅供参考，请结合压测与业务超时调整</div>
+    </div>
+</div>

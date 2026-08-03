@@ -1,0 +1,33 @@
+<div class="tool-panel" id="panel-urlquery">
+    <div class="mb-8">
+        <div class="label">完整 URL（解析用）</div>
+        <div class="flex gap-6" style="align-items:center">
+            <input id="uqUrl" placeholder="https://example.com/path?a=1&b=2#hash" style="flex:1" type="text">
+            <button onclick="urlqueryParse()">解析回填</button>
+        </div>
+    </div>
+    <div class="mb-8">
+        <div class="label">Base URL</div>
+        <input id="uqBase" placeholder="https://example.com/path" style="width:100%" type="text">
+    </div>
+    <div class="mb-8">
+        <div class="label">Query 参数（每行 key=value）</div>
+        <textarea class="api-body-input" id="uqParams"
+                  placeholder="page=1&#10;size=20&#10;keyword=hello"
+                  style="min-height:120px"></textarea>
+    </div>
+    <div class="mb-8">
+        <div class="label">Hash（不含 #）</div>
+        <input id="uqHash" placeholder="section" style="width:100%" type="text">
+    </div>
+    <div class="toolbar">
+        <button onclick="urlqueryBuild()">生成 URL</button>
+        <button class="outline" onclick="urlquerySample()">示例</button>
+        <button class="outline" onclick="urlqueryClear()">清空</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">结果</div>
+        <button class="copy-btn" onclick="copyText('uqOutput')">复制</button>
+        <div class="output-box" id="uqOutput" style="min-height:60px">生成或解析后显示结果</div>
+    </div>
+</div>

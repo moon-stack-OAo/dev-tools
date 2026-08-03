@@ -1,6 +1,6 @@
-# Java 开发工具箱
+﻿# Java 开发工具箱
 
-> 一个面向 Java 开发者的**纯前端**在线工具集 —— **143 个工具、8 大分类**
+> 一个面向 Java 开发者的**纯前端**在线工具集 —— **155 个工具、8 大分类**
 > ，覆盖格式化、编解码、安全、生成与转换、代码生成、文本、调试、参考速查。无需后端、无需联网、无需上传数据，所有计算均在浏览器本地完成。支持
 > Vite 开发、Docker 一键部署、Nginx 静态托管，开箱即用。
 
@@ -16,7 +16,7 @@
 - 🚀 **零依赖开箱即用**：纯静态 HTML / CSS / JavaScript，无任何前端框架；业务代码无构建期编译，第三方库通过 Vite + esbuild
   打包为 IIFE
 - 🔒 **数据 100% 本地处理**：所有计算在浏览器内完成，不会上传任何内容到服务器，支持离线使用
-- 🧰 **143 个工具 / 8 大分类**：覆盖 Java 开发日常所需，工具持续扩充
+- 🧰 **155 个工具 / 8 大分类**：覆盖 Java 开发日常所需，工具持续扩充
 - ⭐ **收藏与最近使用**：侧边栏 / 首页星标收藏（`localStorage`），虚拟分类「收藏」「最近使用」
 - 🎨 **深色主题 + 响应式**：桌面 / 平板 / 手机均可使用
 - 🐳 **多种部署方式**：Vite 开发、Docker 容器、Nginx 静态托管、GitHub Pages（`main` 推送触发）
@@ -74,7 +74,7 @@ npm run build     # 输出到 dist/
 
 ```
 ├── index.html                      # 入口（首页；工具脚本/面板/依赖库均按需懒加载）
-├── html/panels/                    # 工具面板（143 个文件，每个工具一个 HTML）
+├── html/panels/                    # 工具面板（155 个文件，每个工具一个 HTML）
 │   ├── format/                     #  格式化：json / yaml / toml / graphqlfmt / openapiview / ...
 │   ├── encode/                     #  编解码：base64 / base32 / charset / protobuf / ...
 │   ├── security/                   #  安全：jwt / jasypt / pwdstrength / hashext / gmsm / ...
@@ -125,10 +125,10 @@ npm run build     # 输出到 dist/
 
 ## 🧰 工具列表
 
-> 工具总数 **143 个**，分为 **8 大业务分类**（另有虚拟分类「收藏」「最近使用」）。下表功能描述与 `js/app.js` 中 `tools[]` 的
+> 工具总数 **155 个**，分为 **8 大业务分类**（另有虚拟分类「收藏」「最近使用」）。下表功能描述与 `js/app.js` 中 `tools[]` 的
 `desc` 保持一致。
 
-### 一、格式化（23）
+### 一、格式化（25）
 
 | 工具                | 功能                                    |
 |-------------------|---------------------------------------|
@@ -149,12 +149,14 @@ npm run build     # 输出到 dist/
 | Nginx 格式化         | Nginx 配置格式化 / 压缩 / Lint               |
 | Java 代码格式化        | Java 美化 / 缩进 / 大括号风格 / import 排序      |
 | DDL Schema 对比     | 两个 DDL 字段粒度 diff / 跨方言                |
-| JSON ↔ Excel/CSV  | JSON / CSV / Excel 互转 · 嵌套展平 · 多分隔符  |
+| JSON ↔ Excel/CSV  | JSON / CSV / Excel 互转 · 嵌套展平 · 多分隔符   |
 | 图片转 PDF           | 多张图片合成 PDF / 页面尺寸与方向可配                |
 | PDF 合并 / 拆分       | 多 PDF 合并 / 按页码范围拆分                    |
 | GraphQL 格式化       | GraphQL 查询/mutation 美化 / 压缩 / 括号检查    |
 | OpenAPI 预览        | OpenAPI 3 / Swagger 2 摘要预览 / paths 浏览 |
 | .env / 环境变量       | .env 解析 / 格式化对齐 / JSON 互转 / 重复 key    |
+| JSON 扁平化          | 嵌套 JSON ↔ 点号/括号路径扁平 Map               |
+| JSON 结构化对比        | 两份 JSON 键路径级 diff / 增删改报告             |
 
 ### 二、编解码（10）
 
@@ -171,7 +173,7 @@ npm run build     # 输出到 dist/
 | Base32 / Base58 | Base32 (RFC 4648) / Base58 (Bitcoin) 编解码 |
 | Protobuf 解码     | Protobuf ↔ JSON / Base64 / Hex           |
 
-### 三、安全（18）
+### 三、安全（19）
 
 | 工具            | 功能                                             |
 |---------------|------------------------------------------------|
@@ -193,27 +195,31 @@ npm run build     # 输出到 dist/
 | Webhook 签名    | HMAC-SHA256 生成/校验 / GitHub / Stripe            |
 | OAuth2 / PKCE | code_verifier / challenge / Authorize URL      |
 | CVSS 3.1 评分   | CVSS v3.1 Base Score / 向量字符串                   |
+| JWT 验签        | HMAC/RSA 验签 / exp·nbf·iat 时间声明校验               |
 
-### 四、生成与转换（16）
+### 四、生成与转换（19）
 
-| 工具            | 功能                                    |
-|---------------|---------------------------------------|
-| UUID 生成       | UUID v4 / v7 / 批量生成                   |
-| ULID / NanoID | ULID / NanoID 生成与 ULID 解析             |
-| 雪花 ID         | Snowflake / Leaf / UID 三合一生成解析        |
-| 时间戳转换         | Unix 毫秒/秒 ↔ 日期                        |
-| 颜色转换          | HEX / RGB / HSL 互转预览                  |
-| 进制转换          | 2~36 进制互转                             |
-| 图片压缩          | JPEG/PNG/WebP 互转 / 质量调节 / 批量处理        |
-| Case 转换       | camelCase / snake_case 等              |
-| 数据 Mock       | 生成姓名 / 手机号 / 邮箱等                      |
-| 日期计算器         | 日期加减 / 间隔 / 工作日                       |
-| 时区转换          | 跨时区时间换算                               |
-| 分辨率比例         | 宽高比 / 档位匹配 / 按比例反算                    |
-| 字节单位换算        | B/KB/MB/GB ↔ KiB/MiB/GiB，1000/1024 进制 |
-| SemVer 版本     | 解析 / 比较 / 排序 / 范围满足                   |
-| chmod 权限      | 八进制 ↔ rwx 符号 ↔ 权限说明                   |
-| 金额大写 / 信用代码   | 人民币大写 / 统一社会信用代码 / 银行卡 Luhn           |
+| 工具            | 功能                                     |
+|---------------|----------------------------------------|
+| UUID 生成       | UUID v4 / v7 / 批量生成                    |
+| ULID / NanoID | ULID / NanoID 生成与 ULID 解析              |
+| 雪花 ID         | Snowflake / Leaf / UID 三合一生成解析         |
+| 时间戳转换         | Unix 毫秒/秒 ↔ 日期                         |
+| 颜色转换          | HEX / RGB / HSL 互转预览                   |
+| 进制转换          | 2~36 进制互转                              |
+| 图片压缩          | JPEG/PNG/WebP 互转 / 质量调节 / 批量处理         |
+| Case 转换       | camelCase / snake_case 等               |
+| 数据 Mock       | 生成姓名 / 手机号 / 邮箱等                       |
+| 日期计算器         | 日期加减 / 间隔 / 工作日                        |
+| 时区转换          | 跨时区时间换算                                |
+| 分辨率比例         | 宽高比 / 档位匹配 / 按比例反算                     |
+| 字节单位换算        | B/KB/MB/GB ↔ KiB/MiB/GiB，1000/1024 进制  |
+| SemVer 版本     | 解析 / 比较 / 排序 / 范围满足                    |
+| chmod 权限      | 八进制 ↔ rwx 符号 ↔ 权限说明                    |
+| 金额大写 / 信用代码   | 人民币大写 / 统一社会信用代码 / 银行卡 Luhn            |
+| Java 时间格式     | DateTimeFormatter 模式试算 / 字母速查 / 常见模板   |
+| Spring 配置键转换  | relaxed binding：kebab / camel / env 互转 |
+| 证件号校验         | 身份证校验位/地区 / 手机号段 / 银行卡 Luhn            |
 
 ### 五、代码生成（17）
 
@@ -237,26 +243,27 @@ npm run build     # 输出到 dist/
 | JS/TS 运行            | 浏览器中执行 JS/TS 代码 / 捕获 console 输出                |
 | Python 运行           | 基于 Pyodide 在浏览器中运行 Python 3 代码 / 捕获 stdout     |
 
-### 六、文本（14）
+### 六、文本（15）
 
-| 工具                | 功能                       |
-|-------------------|--------------------------|
-| 二维码解析             | 图片 → URL / 文本 / WiFi     |
-| 文本对比              | 文本差异对比高亮                 |
-| 正则表达式             | 正则匹配测试 / 分组查看            |
-| 文本统计              | 字符 / 单词 / 行数 / 字节        |
-| CSV 格式化           | CSV 表格化查看 / 校对           |
-| Markdown 预览       | Markdown 实时预览 / 导出 HTML  |
-| HTML ↔ Markdown   | HTML 与 Markdown 互转       |
-| Web 格式化           | HTML / CSS / JS 格式化压缩    |
-| 二维码生成             | 文本 / URL 生成二维码下载         |
-| 条形码生成             | Code128 / Code39 条形码生成下载 |
-| 模板替换              | 多种语法字符串变量替换              |
-| 数据脱敏              | 手机/身份证/银行卡/邮箱等本地脱敏       |
-| 行尾 / BOM / 不可见字符  | CRLF/LF/CR、BOM、零宽字符检测与转换 |
-| Markdown 表格 / 文本树 | CSV↔MD 表格 / 路径与缩进转树形字符画  |
+| 工具                | 功能                          |
+|-------------------|-----------------------------|
+| 二维码解析             | 图片 → URL / 文本 / WiFi        |
+| 文本对比              | 文本差异对比高亮                    |
+| 正则表达式             | 正则匹配测试 / 分组查看               |
+| 文本统计              | 字符 / 单词 / 行数 / 字节           |
+| CSV 格式化           | CSV 表格化查看 / 校对              |
+| Markdown 预览       | Markdown 实时预览 / 导出 HTML     |
+| HTML ↔ Markdown   | HTML 与 Markdown 互转          |
+| Web 格式化           | HTML / CSS / JS 格式化压缩       |
+| 二维码生成             | 文本 / URL 生成二维码下载            |
+| 条形码生成             | Code128 / Code39 条形码生成下载    |
+| 模板替换              | 多种语法字符串变量替换                 |
+| 数据脱敏              | 手机/身份证/银行卡/邮箱等本地脱敏          |
+| 行尾 / BOM / 不可见字符  | CRLF/LF/CR、BOM、零宽字符检测与转换    |
+| Markdown 表格 / 文本树 | CSV↔MD 表格 / 路径与缩进转树形字符画     |
+| 正则 → Java 代码      | 生成 Pattern/Matcher 与正确转义字面量 |
 
-### 七、调试（17）
+### 七、调试（21）
 
 | 工具             | 功能                                      |
 |----------------|-----------------------------------------|
@@ -277,8 +284,12 @@ npm run build     # 输出到 dist/
 | 异常分析           | Java 堆栈跟踪解析 / 格式化                       |
 | 线程 Dump 分析     | jstack 线程状态统计 / 死锁检测                    |
 | SSE 调试         | Server-Sent Events 实时调试                 |
+| MyBatis SQL 还原 | Preparing + Parameters 合成可执行 SQL        |
+| SQL 参数绑定       | ? / :name 占位符 + 参数列表填充为完整 SQL           |
+| URL 参数构造器      | 表格编辑 query，生成 URL / 解析回填                |
+| 线程池参数估算        | 按 QPS/耗时估算 core/max/queue 与说明           |
 
-### 八、参考（28）
+### 八、参考（29）
 
 | 工具              | 功能                                        |
 |-----------------|-------------------------------------------|
@@ -310,6 +321,7 @@ npm run build     # 输出到 dist/
 | Spring Security | Spring Security 注解与配置速查                   |
 | JUnit 5         | JUnit 5 注解与断言速查                           |
 | Flowable / BPMN | Flowable API / BPMN / 监听器 / 表前缀速查（含场景与示例） |
+| JPA / Hibernate | 注解、关系映射、JPQL / FetchType 速查               |
 
 ---
 

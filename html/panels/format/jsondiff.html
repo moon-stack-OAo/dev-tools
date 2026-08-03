@@ -1,0 +1,29 @@
+<div class="tool-panel" id="panel-jsondiff">
+    <div class="toolbar">
+        <button onclick="jsondiffCompare()">对比</button>
+        <label style="margin-left:8px">
+            <input id="jdIgnoreOrder" style="accent-color:var(--accent)" type="checkbox"> 忽略数组顺序
+        </label>
+        <button class="outline" onclick="jsondiffLoadSample()" style="margin-left:auto">示例</button>
+        <button class="outline" onclick="jsondiffClear()" style="border-color:var(--danger);color:var(--danger)">清空</button>
+    </div>
+    <div class="grid-2col">
+        <div class="mb-8">
+            <div class="label">左侧 JSON</div>
+            <textarea class="json-input" id="jdLeft"
+                      placeholder='{"name":"alice","age":30}'
+                      style="min-height:220px;font-family:var(--font)"></textarea>
+        </div>
+        <div class="mb-8">
+            <div class="label">右侧 JSON</div>
+            <textarea class="json-input" id="jdRight"
+                      placeholder='{"name":"alice","age":31}'
+                      style="min-height:220px;font-family:var(--font)"></textarea>
+        </div>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">对比结果</div>
+        <button class="copy-btn" onclick="copyText('jdOutput')">复制</button>
+        <div class="output-box" id="jdOutput" style="white-space:pre-wrap;font-family:var(--font)"></div>
+    </div>
+</div>

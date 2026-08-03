@@ -1,0 +1,24 @@
+<div class="tool-panel" id="panel-mybatissqllog">
+    <div class="mb-8">
+        <div class="label">MyBatis 日志（Preparing + Parameters）</div>
+        <textarea class="api-body-input" id="mslInput"
+                  placeholder="粘贴 MyBatis 日志，至少包含 Preparing: 与 Parameters: 行"
+                  style="min-height:160px"></textarea>
+    </div>
+    <div class="toolbar">
+        <button onclick="mybatissqllogRestore()">还原 SQL</button>
+        <button class="outline" onclick="mybatissqllogSample()">示例</button>
+        <button class="outline" onclick="mybatissqllogClear()">清空</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">可执行 SQL</div>
+        <button class="copy-btn" onclick="copyText('mslOutput')">复制</button>
+        <div class="output-box" id="mslOutput" style="min-height:120px">点击「还原」查看可执行 SQL</div>
+    </div>
+    <div style="margin-top:12px;color:var(--text-dim);font-size:12px;line-height:1.6">
+        <div><b>说明</b></div>
+        <div>· 识别 <code>Preparing:</code> / <code>Parameters:</code>（可含 <code>==&gt;</code> 前缀）</div>
+        <div>· 参数格式如 <code>123(Integer), abc(String), null, true(Boolean)</code></div>
+        <div>· 多组日志时用 <code>---</code> 分隔输出全部 SQL</div>
+    </div>
+</div>

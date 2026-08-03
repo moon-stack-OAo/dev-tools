@@ -1,0 +1,30 @@
+<div class="tool-panel" id="panel-regexjava">
+    <div class="mb-8">
+        <div class="label">正则表达式</div>
+        <textarea class="json-input" id="rjPattern" placeholder="例如：\d{3}-\d{4} 或 ^[a-z]+$" rows="4"
+                  style="font-family:var(--font);min-height:90px"></textarea>
+    </div>
+    <div class="mb-8" style="display:flex;flex-wrap:wrap;gap:10px 16px;font-size:12px;color:var(--text-dim)">
+        <span style="align-self:center;font-weight:600;color:var(--text)">Flags</span>
+        <label><input data-rj-flag="i" style="accent-color:var(--accent)" type="checkbox"> i CASE_INSENSITIVE</label>
+        <label><input data-rj-flag="m" style="accent-color:var(--accent)" type="checkbox"> m MULTILINE</label>
+        <label><input data-rj-flag="s" style="accent-color:var(--accent)" type="checkbox"> s DOTALL</label>
+        <label><input data-rj-flag="u" style="accent-color:var(--accent)" type="checkbox"> u UNICODE_CASE</label>
+        <label><input data-rj-flag="COMMENTS" style="accent-color:var(--accent)" type="checkbox"> COMMENTS (x)</label>
+    </div>
+    <div class="toolbar">
+        <button onclick="regexjavaGenerate()">生成 Java 代码</button>
+        <button class="outline" onclick="regexjavaLoadSample()">示例</button>
+        <button class="outline" onclick="regexjavaClear()"
+                style="margin-left:auto;border-color:var(--danger);color:var(--danger)">清空</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">Java 代码</div>
+        <button class="copy-btn" onclick="copyText('rjOutput')">复制</button>
+        <div class="output-box" id="rjOutput" style="min-height:160px;white-space:pre-wrap;font-family:var(--font)"></div>
+    </div>
+    <div style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
+        <strong>说明：</strong>自动将 <code>\</code> → <code>\\</code>、<code>"</code> → <code>\"</code> 转义为 Java 字符串字面量，并映射到
+        <code>Pattern.compile</code> 标志常量。
+    </div>
+</div>

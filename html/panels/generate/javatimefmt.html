@@ -1,0 +1,44 @@
+<div class="tool-panel" id="panel-javatimefmt">
+    <div class="toolbar" style="flex-wrap:wrap">
+        <button onclick="jtfFormatUi()">格式化</button>
+        <button class="outline" onclick="jtfParseUi()">解析</button>
+        <button class="outline" onclick="jtfLoadSample()">示例</button>
+        <button class="outline" onclick="jtfClear()">清空</button>
+        <button class="outline" id="jtfHelpToggle" onclick="jtfToggleHelp()">展开字母速查</button>
+    </div>
+
+    <div class="mb-8">
+        <div class="label">DateTimeFormatter 模式 (pattern)</div>
+        <input id="jtfPattern" placeholder="yyyy-MM-dd HH:mm:ss" style="width:100%;font-family:var(--font)" type="text">
+    </div>
+
+    <div class="mb-8" id="jtfPresetBar" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+
+    <div class="mb-8 flex gap-6" style="flex-wrap:wrap">
+        <div class="flex-1" style="min-width:200px">
+            <div class="label">时间输入（空=当前；ISO / yyyy-MM-dd HH:mm:ss）</div>
+            <input id="jtfDateInput" placeholder="2026-08-03 14:05:09" style="width:100%;font-family:var(--font)" type="text">
+        </div>
+        <div class="flex-1" style="min-width:200px">
+            <div class="label">解析文本（可选，默认用上方时间）</div>
+            <input id="jtfParseInput" placeholder="2026-08-03 14:05:09" style="width:100%;font-family:var(--font)" type="text">
+        </div>
+    </div>
+
+    <div class="copy-wrap">
+        <div class="label">结果</div>
+        <button class="copy-btn" onclick="copyText('jtfOutput')">复制</button>
+        <div class="output-box" id="jtfOutput" style="min-height:80px;white-space:pre-wrap;font-family:var(--font)"></div>
+    </div>
+
+    <div id="jtfHelpBody" style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;display:none"></div>
+
+    <div style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
+        <strong>说明：</strong>
+        <ul style="margin:4px 0 0 16px">
+            <li>浏览器模拟 DateTimeFormatter，支持 yyyy/yy、MM/M、dd/d、HH/H、hh/h、mm、ss、SSS、a、EEE/EEEE、Z/XXX</li>
+            <li>与 JDK 在时区、本地化（中文星期/月份名）上可能有差异，生产请以 JDK 为准</li>
+            <li>字面量用单引号包裹，如 yyyy-MM-dd'T'HH:mm:ss</li>
+        </ul>
+    </div>
+</div>

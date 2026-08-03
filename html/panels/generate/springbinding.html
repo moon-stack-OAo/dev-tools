@@ -1,0 +1,37 @@
+<div class="tool-panel" id="panel-springbinding">
+    <div class="toolbar" style="flex-wrap:wrap">
+        <button onclick="spbConvertUi()">转换</button>
+        <button class="outline" onclick="spbLoadSample()">示例</button>
+        <button class="outline" onclick="spbClear()">清空</button>
+    </div>
+
+    <div class="mb-8">
+        <div class="label">配置键（支持 camel / kebab / snake / ENV / 点号）</div>
+        <input id="spbInput" onkeydown="if(event.key==='Enter')spbConvertUi()" placeholder="my.prop-name 或 MY_PROP_NAME 或 myPropName" style="width:100%;font-family:var(--font)" type="text">
+    </div>
+
+    <div class="toolbar" style="flex-wrap:wrap;margin-bottom:8px">
+        <button class="outline" onclick="document.getElementById('spbInput').value='my.prop-name';spbConvertUi()" type="button">my.prop-name</button>
+        <button class="outline" onclick="document.getElementById('spbInput').value='myPropName';spbConvertUi()" type="button">myPropName</button>
+        <button class="outline" onclick="document.getElementById('spbInput').value='MY_PROP_NAME';spbConvertUi()" type="button">MY_PROP_NAME</button>
+        <button class="outline" onclick="document.getElementById('spbInput').value='spring.datasource.url';spbConvertUi()" type="button">spring.datasource.url</button>
+    </div>
+
+    <div class="copy-wrap">
+        <div class="label">结果（多种 relaxed 形式）</div>
+        <button class="copy-btn" onclick="copyText('spbOutput')">复制</button>
+        <div class="output-box" id="spbOutput" style="min-height:140px;white-space:pre-wrap;font-family:var(--font)"></div>
+    </div>
+
+    <div style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
+        <strong>说明：</strong>
+        <ul style="margin:4px 0 0 16px">
+            <li>camelCase: myPropName</li>
+            <li>kebab-case: my-prop-name（application.yml 常用）</li>
+            <li>snake_case: my_prop_name</li>
+            <li>ENV: MY_PROP_NAME（. 与 - 均变为 _，并大写）</li>
+            <li>system property / canonical: 点分小写 my.prop.name</li>
+            <li>简化实现，覆盖 Spring Boot relaxed binding 约 90% 常见场景</li>
+        </ul>
+    </div>
+</div>

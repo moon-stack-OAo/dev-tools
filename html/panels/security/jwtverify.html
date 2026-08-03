@@ -1,0 +1,36 @@
+<div class="tool-panel" id="panel-jwtverify">
+    <div class="mb-8">
+        <div class="label">JWT Token</div>
+        <textarea class="json-input" id="jwtvToken" placeholder="header.payload.signature" rows="4"
+                  style="font-family:var(--font);min-height:100px;word-break:break-all"></textarea>
+    </div>
+    <div class="mb-8">
+        <div class="label">密钥 / 公钥</div>
+        <textarea id="jwtvKey" placeholder="HS: 字符串密钥；RS: PEM 公钥（-----BEGIN PUBLIC KEY-----）" rows="4"
+                  style="font-family:var(--font)"></textarea>
+    </div>
+    <div class="flex gap-6 mb-8" style="flex-wrap:wrap;align-items:flex-end">
+        <div style="width:140px">
+            <div class="label">时钟偏差 (秒)</div>
+            <input id="jwtvSkew" min="0" step="1" type="number" value="60">
+        </div>
+        <div style="font-size:12px;color:var(--text-dim);align-self:center">
+            支持算法：HS256 / HS384 / HS512 / RS256 / RS384 / RS512；校验 exp、nbf、iat
+        </div>
+    </div>
+    <div class="toolbar">
+        <button onclick="jwtverifyRun()">验签</button>
+        <button class="outline" onclick="jwtverifyLoadSample()">示例 (HS256)</button>
+        <button class="outline" onclick="jwtverifyClear()"
+                style="margin-left:auto;border-color:var(--danger);color:var(--danger)">清空</button>
+    </div>
+    <div class="copy-wrap">
+        <div class="label">结果</div>
+        <button class="copy-btn" onclick="copyText('jwtvOutput')">复制</button>
+        <div class="output-box" id="jwtvOutput" style="min-height:180px;white-space:pre-wrap;font-family:var(--font)"></div>
+    </div>
+    <div style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
+        <strong>说明：</strong>全部本地验签，不上传。示例 Token 密钥为 <code>secret</code>（经典 jwt.io HS256 样例，无 exp）。
+        RS 算法请粘贴 SPKI 格式公钥 PEM。
+    </div>
+</div>

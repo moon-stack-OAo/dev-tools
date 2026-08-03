@@ -242,6 +242,20 @@ const tools = [
         cat: "format",
     },
     {
+        id: "jsonflat",
+        icon: "bi-diagram-3",
+        name: "JSON 扁平化",
+        desc: "嵌套 JSON ↔ 点号/括号路径扁平 Map",
+        cat: "format",
+    },
+    {
+        id: "jsondiff",
+        icon: "bi-file-diff",
+        name: "JSON 结构化对比",
+        desc: "两份 JSON 键路径级 diff / 增删改报告",
+        cat: "format",
+    },
+    {
         id: "base64",
         icon: "bi-file-binary",
         name: "Base64",
@@ -439,6 +453,13 @@ const tools = [
         cat: "security",
     },
     {
+        id: "jwtverify",
+        icon: "bi-shield-check",
+        name: "JWT 验签",
+        desc: "HMAC/RSA 验签 / exp·nbf·iat 时间声明校验",
+        cat: "security",
+    },
+    {
         id: "uuid",
         icon: "bi-fingerprint",
         name: "UUID 生成",
@@ -548,6 +569,27 @@ const tools = [
         icon: "bi-currency-yen",
         name: "金额大写 / 信用代码",
         desc: "人民币大写 / 统一社会信用代码 / 银行卡 Luhn",
+        cat: "generate",
+    },
+    {
+        id: "javatimefmt",
+        icon: "bi-calendar3",
+        name: "Java 时间格式",
+        desc: "DateTimeFormatter 模式试算 / 字母速查 / 常见模板",
+        cat: "generate",
+    },
+    {
+        id: "springbinding",
+        icon: "bi-sliders",
+        name: "Spring 配置键转换",
+        desc: "relaxed binding：kebab / camel / env 互转",
+        cat: "generate",
+    },
+    {
+        id: "idvalidate",
+        icon: "bi-person-vcard",
+        name: "证件号校验",
+        desc: "身份证校验位/地区 / 手机号段 / 银行卡 Luhn",
         cat: "generate",
     },
 
@@ -769,6 +811,13 @@ const tools = [
         desc: "CSV↔MD 表格 / 路径与缩进转树形字符画",
         cat: "text",
     },
+    {
+        id: "regexjava",
+        icon: "bi-regex",
+        name: "正则 → Java 代码",
+        desc: "生成 Pattern/Matcher 与正确转义字面量",
+        cat: "text",
+    },
 
     {
         id: "cron",
@@ -888,6 +937,34 @@ const tools = [
         icon: "bi-broadcast",
         name: "SSE 调试",
         desc: "Server-Sent Events 实时调试",
+        cat: "debug",
+    },
+    {
+        id: "mybatissqllog",
+        icon: "bi-journal-code",
+        name: "MyBatis SQL 还原",
+        desc: "Preparing + Parameters 合成可执行 SQL",
+        cat: "debug",
+    },
+    {
+        id: "sqlbind",
+        icon: "bi-link-45deg",
+        name: "SQL 参数绑定",
+        desc: "? / :name 占位符 + 参数列表填充为完整 SQL",
+        cat: "debug",
+    },
+    {
+        id: "urlquery",
+        icon: "bi-link",
+        name: "URL 参数构造器",
+        desc: "表格编辑 query，生成 URL / 解析回填",
+        cat: "debug",
+    },
+    {
+        id: "poolcalc",
+        icon: "bi-cpu",
+        name: "线程池参数估算",
+        desc: "按 QPS/耗时估算 core/max/queue 与说明",
         cat: "debug",
     },
     {
@@ -1084,6 +1161,13 @@ const tools = [
         icon: "bi-diagram-2",
         name: "Flowable / BPMN",
         desc: "Flowable API / BPMN / 监听器 / 表前缀速查（含场景与示例）",
+        cat: "reference",
+    },
+    {
+        id: "jparef",
+        icon: "bi-database",
+        name: "JPA / Hibernate 速查",
+        desc: "注解、关系映射、JPQL / FetchType 速查",
         cat: "reference",
     },
 ];
