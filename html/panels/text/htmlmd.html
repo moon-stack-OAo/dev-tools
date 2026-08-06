@@ -13,15 +13,19 @@
             <input id="htmlmdShowPreview" style="accent-color:var(--accent)" type="checkbox"> 预览
         </label>
     </div>
-    <div class="mb-8">
-        <div class="label" id="htmlmdInputLabel">Markdown 输入</div>
-        <textarea class="json-input" id="htmlmdInput"
-                  placeholder="# Hello&#10;&#10;**加粗** *斜体* `代码`&#10;&#10;- 列表项"></textarea>
-    </div>
-    <div class="copy-wrap mb-8">
-        <div class="label" id="htmlmdOutputLabel">HTML 输出</div>
-        <button class="copy-btn" onclick="htmlmdCopy()">复制</button>
-        <div class="output-box" id="htmlmdOutput"></div>
+    <div class="fmt-split">
+        <div class="fmt-pane">
+            <div class="label" id="htmlmdInputLabel">Markdown 输入</div>
+            <textarea class="json-input" id="htmlmdInput"
+                      placeholder="# Hello&#10;&#10;**加粗** *斜体* `代码`&#10;&#10;- 列表项"></textarea>
+        </div>
+        <div class="fmt-pane">
+            <div class="copy-wrap">
+                <div class="label" id="htmlmdOutputLabel">HTML 输出</div>
+                <button class="copy-btn" onclick="htmlmdCopy()">复制</button>
+                <div class="output-box" id="htmlmdOutput"></div>
+            </div>
+        </div>
     </div>
     <div id="htmlmdPreviewWrap" style="display:none">
         <div class="label">预览</div>

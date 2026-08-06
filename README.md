@@ -95,7 +95,14 @@ npm run build     # 输出到 dist/
 │   ├── debug.css                   #  调试类别样式
 │   └── reference.css               #  参考类别样式
 ├── js/
-│   ├── app.js                      # 核心：导航 / 工具注册表 / 收藏 UI / 懒加载 / 通用函数
+│   ├── app.js                      # 启动装配：主题 / DOM 缓存 / toast / openTool 生命周期
+│   ├── tools-registry.js           # 工具分类 + tools[] 注册表（纯数据，单一事实来源）
+│   ├── loader.js                   # 懒加载：toolLibs / loadLib / loadTool* / registerInit
+│   ├── router.js                   # hash 路由 #/tool/{id}
+│   ├── ui-home.js                  # 首页网格 / 搜索 / 收藏星标
+│   ├── ui-sidebar.js               # 侧边栏导航
+│   ├── utils.js                    # escapeHtml / debounce / download / formatBytes 等
+│   ├── crypto-utils.js             # 编解码公共：bytes ↔ hex / base64 等
 │   ├── favorites.js                # 收藏持久化（localStorage）
 │   ├── format/                     #  格式化工具脚本
 │   ├── encode/                     #  编解码工具脚本
@@ -104,7 +111,7 @@ npm run build     # 输出到 dist/
 │   ├── codegen/                    #  代码生成工具脚本
 │   ├── text/                       #  文本工具脚本
 │   ├── debug/                      #  调试工具脚本
-│   └── reference/                  #  参考工具脚本
+│   └── reference/                  #  参考工具脚本（含 _ref-engine.js 公共引擎）
 ├── public/lib/                     # 本地化的第三方库（22 个 .min.js，对应 20 个 npm 包）
 ├── scripts/
 │   ├── copy-libs.js                # 从 node_modules 复制依赖到 public/lib
@@ -125,8 +132,8 @@ npm run build     # 输出到 dist/
 
 ## 🧰 工具列表
 
-> 工具总数 **155 个**，分为 **8 大业务分类**（另有虚拟分类「收藏」「最近使用」）。下表功能描述与 `js/app.js` 中 `tools[]` 的
-`desc` 保持一致。
+> 工具总数 **155 个**，分为 **8 大业务分类**（另有虚拟分类「收藏」「最近使用」）。下表功能描述与 `js/tools-registry.js` 中
+`tools[]` 的 `desc` 保持一致。
 
 ### 一、格式化（25）
 
@@ -332,15 +339,19 @@ npm run build     # 输出到 dist/
 - **静态站点**：纯 HTML + CSS + JavaScript，无后端、无 SPA 框架
 - **数据本地化**：所有计算在浏览器中执行，断网可正常使用（依赖已本地化）
 - **主题与布局**：深色主题优先，CSS 变量驱动，支持响应式断点
-- **收藏**：`js/favorites.js` 持久化到 `localStorage`（key：`devtools.favorites`），`app.js` 负责首页 / 侧边栏星标 UI
+- **收藏**：`js/favorites.js` 持久化到 `localStorage`（key：`devtools.favorites`），首页 / 侧边栏星标 UI 由 `ui-home.js` /
+  `ui-sidebar.js` 负责
 
 ### 模块加载机制
 
-- **懒加载（按需加载）**：首屏仅加载 `index.html` + `favorites.js` + `app.js`，首页网格立即可用；打开某工具时才动态加载该工具依赖的
+- **首屏核心脚本**（`index.html` 顺序加载）：`utils` → `crypto-utils` → `tools-registry` → `favorites` →
+  `_ref-engine` → `loader` → `router` → `ui-home` → `ui-sidebar` → `app`
+- **懒加载（按需加载）**：首屏仅加载上述核心脚本，首页网格立即可用；打开某工具时才由 `loader.js` 动态加载该工具依赖的
   第三方库（`loadLib`）、工具 JS（`loadToolScript`）与 HTML 面板（`loadToolPanel`）
 - **文件组织**：JS 按类别目录拆分 `js/{cat}/{toolId}.js`，HTML 面板 `html/panels/{cat}/{toolId}.html`（目录必须与注册表中的
   `cat` 一致）
-- **工具注册表**：`app.js` 中 `tools[]` 集中维护所有工具元信息（id、名称、分类、入口），是懒加载路径构造与首页网格的单一事实来源
+- **工具注册表**：`js/tools-registry.js` 中 `categories` + `tools[]` 集中维护所有工具元信息（id、名称、分类、入口），是懒加载路径构造与首页网格的单一事实来源
+- **第三方库映射**：`js/loader.js` 中 `toolLibs` 登记各工具依赖的本地化库
 - **初始化入口**：需初始化的工具在自身 JS 末尾调用 `registerInit(id, fn)` 登记；`openTool` 打开工具后调用
   `toolInits[id]()` 完成渲染 / 绑定 / 启动定时器
 
@@ -470,8 +481,9 @@ Chrome / Firefox / Edge / Safari 现代浏览器（支持 ES2020+ 语法）。
 
 1. 在对应分类下创建 `html/panels/{cat}/{toolId}.html` 与 `js/{cat}/{toolId}.js`（*
    *注意：文件所在目录必须与注册表中的 `cat` 一致**，懒加载按 `js/{cat}/{id}.js` 构造路径，不一致会 404 打不开）
-2. 在 `app.js` 的 `tools[]` 注册表中登记元信息（id、名称、分类、图标、描述）
-3. 若工具需要初始化（渲染数据、绑定事件、启动定时器等），在工具 JS 末尾调用 `registerInit(toolId, initFn)` 登记，`openTool`
+2. 在 `js/tools-registry.js` 的 `tools[]` 中登记元信息（id、名称、分类、图标、描述）
+3. 若依赖第三方库，在 `js/loader.js` 的 `toolLibs` 映射中登记
+4. 若工具需要初始化（渲染数据、绑定事件、启动定时器等），在工具 JS 末尾调用 `registerInit(toolId, initFn)` 登记，`openTool`
    会自动调用
-4. 同步更新本 README 工具列表与数量
-5. 保持深色主题一致性与响应式适配；核心纯逻辑建议补充 Vitest 单测
+5. 同步更新本 README 工具列表与数量
+6. 保持深色主题一致性与响应式适配；核心纯逻辑建议补充 Vitest 单测

@@ -1,22 +1,20 @@
 let rsaKeyPair = null;
 
-/** 将 Uint8Array 转为 Base64，分块避免大数组栈溢出 */
-function rsaBytesToBase64(bytes) {
-  const arr = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
-  let bin = "";
-  const chunk = 0x8000;
-  for (let i = 0; i < arr.length; i += chunk) {
-    bin += String.fromCharCode.apply(null, arr.subarray(i, i + chunk));
-  }
-  return btoa(bin);
+// 编解码依赖全局 crypto-utils（ADR PR-1.2）
+if (typeof bytesToBase64 !== "function" && typeof require === "function") {
+  try {
+    require("../crypto-utils.js");
+  } catch (e) {}
 }
 
-/** Base64 解码为 Uint8Array */
+/** @deprecated 兼容旧导出名；实现委托公共 API */
+function rsaBytesToBase64(bytes) {
+  return bytesToBase64(bytes);
+}
+
+/** @deprecated 兼容旧导出名；实现委托公共 API */
 function rsaBase64ToBytes(b64) {
-  const bin = atob(String(b64 || "").trim());
-  const bytes = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  return bytes;
+  return base64ToBytes(String(b64 || "").trim());
 }
 
 async function rsaGenKeys() {

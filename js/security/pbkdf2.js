@@ -28,26 +28,12 @@ async function pbkdf2(password, salt, iterations, dkLen, algorithm) {
   return new Uint8Array(bits);
 }
 
-// === 2. Base64 编解码（标准非 URL-safe）===
-function bytesToBase64(bytes) {
-  let bin = "";
-  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
-  return btoa(bin);
-}
-
-function base64ToBytes(b64) {
-  const bin = atob(b64);
-  const bytes = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  return bytes;
-}
-
-function bytesToHex(bytes) {
-  return Array.from(bytes)
-    .map(function (b) {
-      return b.toString(16).padStart(2, "0");
-    })
-    .join("");
+// === 2. 编解码：使用全局 crypto-utils（bytesToHex / bytesToBase64 / base64ToBytes）===
+// 测试环境若未加载 crypto-utils，则从模块侧加载一次
+if (typeof bytesToHex !== "function" && typeof require === "function") {
+  try {
+    require("../crypto-utils.js");
+  } catch (e) {}
 }
 
 // === 3. 标准 PHC 格式编解码 ===

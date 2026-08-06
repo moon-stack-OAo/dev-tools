@@ -24,15 +24,19 @@
         <label><input checked data-ds-type="ipv4" style="accent-color:var(--accent)" type="checkbox"> IPv4</label>
         <label><input data-ds-type="name" style="accent-color:var(--accent)" type="checkbox"> 中文姓名（启发式）</label>
     </div>
-    <div class="mb-8">
-        <div class="label">输入</div>
-        <textarea class="json-input" id="dsInput"
-                  placeholder="粘贴日志、JSON 或含敏感信息的文本"></textarea>
-    </div>
-    <div class="copy-wrap">
-        <div class="label">脱敏结果</div>
-        <button class="copy-btn" onclick="copyText('dsOutput')">复制</button>
-        <div class="output-box" id="dsOutput" style="min-height:140px"></div>
+    <div class="fmt-split">
+        <div class="fmt-pane">
+            <div class="label">输入</div>
+            <textarea class="json-input" id="dsInput"
+                      placeholder="粘贴日志、JSON 或含敏感信息的文本"></textarea>
+        </div>
+        <div class="fmt-pane">
+            <div class="copy-wrap">
+                <div class="label">脱敏结果</div>
+                <button class="copy-btn" onclick="copyText('dsOutput')">复制</button>
+                <div class="output-box" id="dsOutput"></div>
+            </div>
+        </div>
     </div>
     <div style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
         <strong>说明：</strong>全部本地处理，不上传。中文姓名为启发式匹配，可能误伤，建议仅在确需时开启。

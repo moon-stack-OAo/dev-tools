@@ -79,6 +79,12 @@
 - 工具注册表 **155**；首页 / meta / README 数量同步
 - 无新增 npm 依赖（第二批 12 工具均为零依赖纯前端）
 - `vitest.config.js` 从 CommonJS 统一为 ESM 风格
+- **架构重构（行为不变，见 `docs/ADR-refactor-guide.md`）**
+    - Phase1：`tools-registry.js`、`crypto-utils.js`、`utils.js`（download / formatBytes / escapeHtml / debounce）
+    - Phase2：`loader.js`、`router.js`；`reference/_ref-engine.js` 试点 + 迁移 7 个速查（`jparef` / `httpstatus` /
+      `mavenref` / `gitref` / `lombok` / `docker` / `gradle`）
+    - Phase3：`ui-home.js` / `ui-sidebar.js` 迁出，`app.js` 由约 2688 行降至 **~474 行**
+- 单测覆盖引擎过滤与 utils 公共 API；`npm test` / `npm run lint` 作为护栏
 
 ### 测试
 

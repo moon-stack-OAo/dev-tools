@@ -6,13 +6,17 @@
         <label><input id="hexSpaceSep" style="accent-color:var(--accent)" type="checkbox"> 空格分隔</label>
         <label><input id="hex0xPrefix" style="accent-color:var(--accent)" type="checkbox"> 0x 前缀</label>
     </div>
-    <div class="mb-8">
-        <div class="label">字符串输入</div>
-        <textarea class="json-input" id="hexInput" placeholder="输入需要编码的字符串（支持 UTF-8 中文/Emoji）"></textarea>
-    </div>
-    <div class="copy-wrap">
-        <div class="label">Hex 输出</div>
-        <button class="copy-btn" onclick="copyText('hexOutput')">复制</button>
-        <div class="output-box" id="hexOutput"></div>
+    <div class="fmt-split">
+        <div class="fmt-pane">
+            <div class="label">字符串输入</div>
+            <textarea class="json-input" id="hexInput" placeholder="输入需要编码的字符串（支持 UTF-8 中文/Emoji）"></textarea>
+        </div>
+        <div class="fmt-pane">
+            <div class="copy-wrap">
+                <div class="label">Hex 输出</div>
+                <button class="copy-btn" onclick="copyText('hexOutput')">复制</button>
+                <div class="output-box" id="hexOutput"></div>
+            </div>
+        </div>
     </div>
 </div>

@@ -61,35 +61,40 @@ const DOCKER_CMDS = [
   },
 ];
 
-function dockerRender() {
+// ADR PR-2.3: RefEngine 迁移
+let _dockerApi = null;
+
+function dockerRender(filter) {
+  if (typeof RefEngine !== 'undefined' && RefEngine.mount && !_dockerApi) {
+    _dockerApi = RefEngine.mount({
+      containerId: 'dockerContent',
+
+      data: DOCKER_CMDS,
+    });
+    if (filter) _dockerApi.render(filter);
+    return;
+  }
+  if (_dockerApi) {
+    _dockerApi.render(filter || '');
+    return;
+  }
   const container = document.getElementById('dockerContent');
   if (!container) return;
-  // 事件委托：data-copy 取值经 escapeHtml 写入属性，getAttribute 还原原文
-  if (!container.dataset.copyDelegate) {
-    container.dataset.copyDelegate = '1';
-    container.addEventListener('click', function (e) {
-      const btn = e.target.closest('[data-copy]');
-      if (!btn || !container.contains(btn)) return;
-      const text = btn.getAttribute('data-copy');
-      if (text != null) safeCopy(text);
-    });
+  if (typeof RefEngine !== 'undefined' && RefEngine.render && RefEngine.filterGroups) {
+    RefEngine.render(container, RefEngine.filterGroups(DOCKER_CMDS, filter || ''));
   }
-  container.innerHTML = '';
-  DOCKER_CMDS.forEach((group) => {
-    const section = document.createElement('div');
-    section.className = 'ref-group';
-    section.innerHTML = `<div class="ref-group-title">${escapeHtml(group.cat)}</div>`;
-    group.items.forEach((item) => {
-      const card = document.createElement('div');
-      card.className = 'ref-card';
-      card.innerHTML =
-        `<div class="ref-cmd-head"><code class="ref-cmd-name">${escapeHtml(item.cmd)}</code>` +
-        `<span class="ref-cmd-desc">${escapeHtml(item.desc)}</span>` +
-        `<button class="sm outline" type="button" data-copy="${escapeHtml(item.cmd)}">复制</button></div>`;
-      section.appendChild(card);
-    });
-    container.appendChild(section);
+}
+
+if (typeof registerInit === 'function') {
+  registerInit('docker', function () {
+    _dockerApi = null;
+    dockerRender('');
   });
 }
 
-registerInit('docker', dockerRender);
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    DOCKER_CMDS: DOCKER_CMDS,
+    dockerRender: dockerRender,
+  };
+}

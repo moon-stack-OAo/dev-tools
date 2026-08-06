@@ -1,16 +1,19 @@
 // Webhook 签名：HMAC-SHA256 生成 / 校验
 // 通用 hex|base64、GitHub sha256=hex、Stripe 风格 t=...,v1=...
 
+// 编解码依赖全局 crypto-utils（ADR PR-1.2）
+if (typeof bytesToHex !== 'function' && typeof require === 'function') {
+    try {
+        require('../crypto-utils.js');
+    } catch (e) {}
+}
+
 /**
  * @param {ArrayBuffer|Uint8Array} buf
  * @returns {string}
  */
 function whsBufToHex(buf) {
-    return Array.from(new Uint8Array(buf))
-        .map(function (b) {
-            return b.toString(16).padStart(2, '0');
-        })
-        .join('');
+    return bytesToHex(buf);
 }
 
 /**
@@ -18,17 +21,7 @@ function whsBufToHex(buf) {
  * @returns {string}
  */
 function whsBufToBase64(buf) {
-    const arr = buf instanceof Uint8Array ? buf : new Uint8Array(buf);
-    let bin = '';
-    const chunk = 0x8000;
-    for (let i = 0; i < arr.length; i += chunk) {
-        bin += String.fromCharCode.apply(null, arr.subarray(i, i + chunk));
-    }
-    if (typeof btoa === 'function') {
-        return btoa(bin);
-    }
-    // Node
-    return Buffer.from(arr).toString('base64');
+    return bytesToBase64(buf);
 }
 
 /**

@@ -2,7 +2,7 @@
  * 复用 css/base.css 中的通用类；此处只放置新增专属样式。
  */
 
-/* 输入/输出左右布局（json / xml / yaml） */
+/* 输入/输出左右布局（format / encode / text / codegen 等 IO 工具） */
 .fmt-split {
     display: flex;
     gap: 12px;

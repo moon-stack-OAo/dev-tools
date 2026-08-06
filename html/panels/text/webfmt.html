@@ -16,15 +16,19 @@
             <button class="outline" onclick="htmlfmtMinify()">压缩</button>
             <button class="outline" onclick="htmlfmtClear()">清空</button>
         </div>
-        <div class="mb-8">
-            <div class="label">输入 HTML</div>
-            <textarea class="json-input" id="htmlfmtInput"
-                      placeholder="<div><p>hello</p><span>world</span></div>"></textarea>
-        </div>
-        <div class="copy-wrap">
-            <div class="label">输出</div>
-            <button class="copy-btn" onclick="copyText('htmlfmtOutput')">复制</button>
-            <div class="output-box" id="htmlfmtOutput"></div>
+        <div class="fmt-split">
+            <div class="fmt-pane">
+                <div class="label">输入 HTML</div>
+                <textarea class="json-input" id="htmlfmtInput"
+                          placeholder="<div><p>hello</p><span>world</span></div>"></textarea>
+            </div>
+            <div class="fmt-pane">
+                <div class="copy-wrap">
+                    <div class="label">输出</div>
+                    <button class="copy-btn" onclick="copyText('htmlfmtOutput')">复制</button>
+                    <div class="output-box" id="htmlfmtOutput"></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -39,15 +43,19 @@
             <button class="outline" onclick="cssfmtMinify()">压缩</button>
             <button class="outline" onclick="cssfmtClear()">清空</button>
         </div>
-        <div class="mb-8">
-            <div class="label">输入 CSS</div>
-            <textarea class="json-input" id="cssfmtInput"
-                      placeholder=".a{color:red;background:#fff;padding:10px 20px}"></textarea>
-        </div>
-        <div class="copy-wrap">
-            <div class="label">输出</div>
-            <button class="copy-btn" onclick="copyText('cssfmtOutput')">复制</button>
-            <div class="output-box" id="cssfmtOutput"></div>
+        <div class="fmt-split">
+            <div class="fmt-pane">
+                <div class="label">输入 CSS</div>
+                <textarea class="json-input" id="cssfmtInput"
+                          placeholder=".a{color:red;background:#fff;padding:10px 20px}"></textarea>
+            </div>
+            <div class="fmt-pane">
+                <div class="copy-wrap">
+                    <div class="label">输出</div>
+                    <button class="copy-btn" onclick="copyText('cssfmtOutput')">复制</button>
+                    <div class="output-box" id="cssfmtOutput"></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -62,15 +70,19 @@
             <button class="outline" onclick="jsfmtMinify()">压缩</button>
             <button class="outline" onclick="jsfmtClear()">清空</button>
         </div>
-        <div class="mb-8">
-            <div class="label">输入 JS</div>
-            <textarea class="json-input" id="jsfmtInput"
-                      placeholder="function foo(a,b){return a+b}var x=foo(1,2);console.log(x);"></textarea>
-        </div>
-        <div class="copy-wrap">
-            <div class="label">输出</div>
-            <button class="copy-btn" onclick="copyText('jsfmtOutput')">复制</button>
-            <div class="output-box" id="jsfmtOutput"></div>
+        <div class="fmt-split">
+            <div class="fmt-pane">
+                <div class="label">输入 JS</div>
+                <textarea class="json-input" id="jsfmtInput"
+                          placeholder="function foo(a,b){return a+b}var x=foo(1,2);console.log(x);"></textarea>
+            </div>
+            <div class="fmt-pane">
+                <div class="copy-wrap">
+                    <div class="label">输出</div>
+                    <button class="copy-btn" onclick="copyText('jsfmtOutput')">复制</button>
+                    <div class="output-box" id="jsfmtOutput"></div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -74,35 +74,40 @@ const GIT_CMDS = [
   },
 ];
 
-function gitRender() {
+// ADR PR-2.3: RefEngine 迁移
+let _gitrefApi = null;
+
+function gitrefRender(filter) {
+  if (typeof RefEngine !== 'undefined' && RefEngine.mount && !_gitrefApi) {
+    _gitrefApi = RefEngine.mount({
+      containerId: 'gitContent',
+
+      data: GIT_CMDS,
+    });
+    if (filter) _gitrefApi.render(filter);
+    return;
+  }
+  if (_gitrefApi) {
+    _gitrefApi.render(filter || '');
+    return;
+  }
   const container = document.getElementById('gitContent');
   if (!container) return;
-  // 事件委托：避免把命令拼进 onclick
-  if (!container.dataset.copyDelegate) {
-    container.dataset.copyDelegate = '1';
-    container.addEventListener('click', function (e) {
-      const btn = e.target.closest('[data-copy]');
-      if (!btn || !container.contains(btn)) return;
-      const text = btn.getAttribute('data-copy');
-      if (text != null) safeCopy(text);
-    });
+  if (typeof RefEngine !== 'undefined' && RefEngine.render && RefEngine.filterGroups) {
+    RefEngine.render(container, RefEngine.filterGroups(GIT_CMDS, filter || ''));
   }
-  container.innerHTML = '';
-  GIT_CMDS.forEach((group) => {
-    const section = document.createElement('div');
-    section.className = 'ref-group';
-    section.innerHTML = `<div class="ref-group-title">${escapeHtml(group.cat)}</div>`;
-    group.items.forEach((item) => {
-      const card = document.createElement('div');
-      card.className = 'ref-card';
-      card.innerHTML =
-        `<div class="ref-cmd-head"><code class="ref-cmd-name">${escapeHtml(item.cmd)}</code>` +
-        `<span class="ref-cmd-desc">${escapeHtml(item.desc)}</span>` +
-        `<button class="sm outline" type="button" data-copy="${escapeHtml(item.cmd)}">复制</button></div>`;
-      section.appendChild(card);
-    });
-    container.appendChild(section);
+}
+
+if (typeof registerInit === 'function') {
+  registerInit('gitref', function () {
+    _gitrefApi = null;
+    gitrefRender('');
   });
 }
 
-registerInit('gitref', gitRender);
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    GIT_CMDS: GIT_CMDS,
+    gitrefRender: gitrefRender,
+  };
+}

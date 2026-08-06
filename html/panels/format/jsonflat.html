@@ -14,15 +14,19 @@
         <button class="outline" onclick="jsonflatLoadSample()" style="margin-left:auto">示例</button>
         <button class="outline" onclick="jsonflatClear()" style="border-color:var(--danger);color:var(--danger)">清空</button>
     </div>
-    <div class="mb-8">
-        <div class="label">输入 JSON</div>
-        <textarea class="json-input" id="jfInput"
-                  placeholder='{"user":{"name":"alice","tags":["a","b"]}}'
-                  style="min-height:220px;font-family:var(--font)"></textarea>
-    </div>
-    <div class="copy-wrap">
-        <div class="label">输出</div>
-        <button class="copy-btn" onclick="copyText('jfOutput')">复制</button>
-        <div class="output-box" id="jfOutput" style="white-space:pre-wrap;font-family:var(--font)"></div>
+    <div class="fmt-split">
+        <div class="fmt-pane">
+            <div class="label">输入 JSON</div>
+            <textarea class="json-input" id="jfInput"
+                      placeholder='{"user":{"name":"alice","tags":["a","b"]}}'
+                      style="font-family:var(--font)"></textarea>
+        </div>
+        <div class="fmt-pane">
+            <div class="copy-wrap">
+                <div class="label">输出</div>
+                <button class="copy-btn" onclick="copyText('jfOutput')">复制</button>
+                <div class="output-box" id="jfOutput" style="white-space:pre-wrap;font-family:var(--font)"></div>
+            </div>
+        </div>
     </div>
 </div>

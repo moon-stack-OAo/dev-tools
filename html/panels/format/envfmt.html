@@ -8,14 +8,18 @@
         <button class="outline" onclick="envfmtLoadSample()" style="margin-left:auto">示例</button>
         <button class="outline" onclick="envfmtClear()" style="border-color:var(--danger);color:var(--danger)">清空</button>
     </div>
-    <div class="mb-8">
-        <div class="label">输入（.env 或 JSON）</div>
-        <textarea class="json-input" id="envfmtInput" placeholder="# KEY=VALUE&#10;DB_HOST=localhost&#10;export API_KEY=secret" style="min-height:220px;font-family:var(--font)"></textarea>
+    <div class="fmt-split">
+        <div class="fmt-pane">
+            <div class="label">输入（.env 或 JSON）</div>
+            <textarea class="json-input" id="envfmtInput" placeholder="# KEY=VALUE&#10;DB_HOST=localhost&#10;export API_KEY=secret" style="font-family:var(--font)"></textarea>
+        </div>
+        <div class="fmt-pane">
+            <div class="copy-wrap">
+                <div class="label">输出</div>
+                <button class="copy-btn" onclick="copyText('envfmtOutput')">复制</button>
+                <div class="output-box" id="envfmtOutput" style="white-space:pre-wrap;font-family:var(--font)"></div>
+            </div>
+        </div>
     </div>
     <div id="envfmtWarn" style="display:none;padding:10px 12px;background:rgba(220,53,69,.1);border:1px solid var(--danger);border-radius:6px;color:var(--danger);font-size:13px;margin-bottom:8px"></div>
-    <div class="copy-wrap">
-        <div class="label">输出</div>
-        <button class="copy-btn" onclick="copyText('envfmtOutput')">复制</button>
-        <div class="output-box" id="envfmtOutput" style="white-space:pre-wrap;font-family:var(--font)"></div>
-    </div>
 </div>

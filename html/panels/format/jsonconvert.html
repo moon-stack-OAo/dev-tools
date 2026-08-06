@@ -22,14 +22,18 @@
         <button class="outline" onclick="jsonconvertSwap()">交换方向</button>
         <button class="outline" onclick="jsonconvertBeautify()">美化输出</button>
     </div>
-    <div class="mb-8">
-        <div class="label">输入内容</div>
-        <textarea class="json-input" id="jsonconvertInput"
-                  placeholder='{"name":"alice","age":30}'></textarea>
-    </div>
-    <div class="copy-wrap">
-        <div class="label">转换结果</div>
-        <button class="copy-btn" onclick="copyText('jsonconvertOutput')">复制</button>
-        <div class="output-box" id="jsonconvertOutput"></div>
+    <div class="fmt-split">
+        <div class="fmt-pane">
+            <div class="label">输入内容</div>
+            <textarea class="json-input" id="jsonconvertInput"
+                      placeholder='{"name":"alice","age":30}'></textarea>
+        </div>
+        <div class="fmt-pane">
+            <div class="copy-wrap">
+                <div class="label">转换结果</div>
+                <button class="copy-btn" onclick="copyText('jsonconvertOutput')">复制</button>
+                <div class="output-box" id="jsonconvertOutput"></div>
+            </div>
+        </div>
     </div>
 </div>

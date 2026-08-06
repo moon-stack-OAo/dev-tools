@@ -7,18 +7,22 @@
         <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-dim)">
             <input checked id="j2pLombok" style="accent-color:var(--accent)" type="checkbox"> Lombok @Data
         </label>
+        <div class="toolbar" style="margin:0">
+            <button onclick="jsonToPojo()">生成代码</button>
+        </div>
     </div>
-    <div class="mb-8">
-        <div class="label">输入 JSON</div>
-        <textarea class="json-input" id="j2pInput"
-                  placeholder='{"name":"张三","age":25,"active":true}'></textarea>
-    </div>
-    <div class="toolbar">
-        <button onclick="jsonToPojo()">生成代码</button>
-    </div>
-    <div class="copy-wrap">
-        <div class="label">生成的 Java 类</div>
-        <button class="copy-btn" onclick="copyText('j2pOutput')">复制</button>
-        <div class="output-box" id="j2pOutput" style="min-height:120px;max-height:400px"></div>
+    <div class="fmt-split">
+        <div class="fmt-pane">
+            <div class="label">输入 JSON</div>
+            <textarea class="json-input" id="j2pInput"
+                      placeholder='{"name":"张三","age":25,"active":true}'></textarea>
+        </div>
+        <div class="fmt-pane">
+            <div class="copy-wrap">
+                <div class="label">生成的 Java 类</div>
+                <button class="copy-btn" onclick="copyText('j2pOutput')">复制</button>
+                <div class="output-box" id="j2pOutput"></div>
+            </div>
+        </div>
     </div>
 </div>

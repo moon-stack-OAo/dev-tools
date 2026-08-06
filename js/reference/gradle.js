@@ -474,74 +474,49 @@ const GRADLE_CMDS = [
   },
 ];
 
-let _gradleSearchTimer = null;
-
-function gradleCopyPre(btn, ev) {
-  if (ev) ev.stopPropagation();
-  const pre = btn.parentElement.querySelector("pre");
-  if (!pre) return;
-  safeCopy(pre.innerText);
-}
+// ADR PR-2.3: RefEngine 迁移
+let _gradleApi = null;
 
 function gradleRender(filter) {
-  if (filter === undefined) {
-    const el = document.getElementById("gradleSearch");
-    filter = el ? el.value : "";
-  }
-  filter = (filter || "").toLowerCase();
-  const container = document.getElementById("gradleContent");
-  if (!container) return;
-  container.innerHTML = "";
-  let hasResult = false;
-  GRADLE_CMDS.forEach((group) => {
-    const matched = filter
-      ? group.items.filter(
-          (it) =>
-            it.cmd.toLowerCase().includes(filter) ||
-            it.desc.toLowerCase().includes(filter) ||
-            (it.syntax && it.syntax.toLowerCase().includes(filter)) ||
-            (it.examples &&
-              it.examples.some((ex) => ex.toLowerCase().includes(filter))),
-        )
-      : group.items;
-    if (matched.length === 0) return;
-    hasResult = true;
-    const section = document.createElement("div");
-    section.className = "ref-group";
-    section.innerHTML = `<div class="ref-group-title">${escapeHtml(group.cat)}</div>`;
-    matched.forEach((item) => {
-      const card = document.createElement("div");
-      card.className = "ref-card";
-      let html = `<div class="ref-cmd-head"><code class="ref-cmd-name">${escapeHtml(item.cmd)}</code><span class="ref-cmd-desc">${escapeHtml(item.desc)}</span><button class="sm outline" onclick="safeCopy('${escapeHtml(item.cmd).replace(/'/g, "\\'")}')">复制</button></div>`;
-      if (item.syntax && item.syntax !== item.cmd) {
-        html += `<div class="ref-syntax">${escapeHtml(item.syntax)}</div>`;
-      }
-      if (item.examples && item.examples.length) {
-        html += `<div class="ref-section-title">示例</div>`;
-        item.examples.forEach((ex) => {
-          html += `<div class="ref-copy-wrap"><pre class="ref-pre"><code>${escapeHtml(ex)}</code></pre><button class="ref-copy-btn" onclick="gradleCopyPre(this, event)">复制</button></div>`;
-        });
-      }
-      if (item.returns) {
-        html += `<div style="font-size:11px;color:var(--text-muted);margin-top:6px"><strong>输出:</strong> ${escapeHtml(item.returns)}</div>`;
-      }
-      card.innerHTML = html;
-      section.appendChild(card);
+  if (typeof RefEngine !== 'undefined' && RefEngine.mount && !_gradleApi) {
+    _gradleApi = RefEngine.mount({
+      containerId: 'gradleContent',
+      searchId: 'gradleSearch',
+      data: GRADLE_CMDS,
     });
-    container.appendChild(section);
-  });
-  if (!hasResult) {
-    container.innerHTML =
-      '<div style="color:var(--text-muted);padding:20px;text-align:center">无匹配结果</div>';
+    if (filter) _gradleApi.render(filter);
+    return;
+  }
+  if (_gradleApi) {
+    _gradleApi.render(filter || '');
+    return;
+  }
+  const container = document.getElementById('gradleContent');
+  if (!container) return;
+  if (typeof RefEngine !== 'undefined' && RefEngine.render && RefEngine.filterGroups) {
+    RefEngine.render(container, RefEngine.filterGroups(GRADLE_CMDS, filter || ''));
   }
 }
 
 function gradleSearch() {
-  clearTimeout(_gradleSearchTimer);
-  _gradleSearchTimer = setTimeout(function () {
-    const el = document.getElementById("gradleSearch");
-    gradleRender(el ? el.value : "");
-  }, 200);
+  if (_gradleApi) {
+    _gradleApi.search();
+    return;
+  }
+  const el = document.getElementById('gradleSearch');
+  gradleRender(el ? el.value : '');
 }
 
-registerInit("gradle", gradleRender);
+if (typeof registerInit === 'function') {
+  registerInit('gradle', function () {
+    _gradleApi = null;
+    gradleRender('');
+  });
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    GRADLE_CMDS: GRADLE_CMDS,
+    gradleRender: gradleRender,
+  };
+}

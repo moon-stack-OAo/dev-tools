@@ -12,14 +12,18 @@
             </select>
         </div>
     </div>
-    <div class="mb-8">
-        <div class="label">输入 SQL</div>
-        <textarea class="json-input" id="sqlInput"
-                  placeholder="SELECT id,name FROM users WHERE age > 18 ORDER BY name"></textarea>
-    </div>
-    <div class="copy-wrap">
-        <div class="label">输出</div>
-        <button class="copy-btn" onclick="copyText('sqlOutput')">复制</button>
-        <div class="output-box" id="sqlOutput"></div>
+    <div class="fmt-split">
+        <div class="fmt-pane">
+            <div class="label">输入 SQL</div>
+            <textarea class="json-input" id="sqlInput"
+                      placeholder="SELECT id,name FROM users WHERE age > 18 ORDER BY name"></textarea>
+        </div>
+        <div class="fmt-pane">
+            <div class="copy-wrap">
+                <div class="label">输出</div>
+                <button class="copy-btn" onclick="copyText('sqlOutput')">复制</button>
+                <div class="output-box" id="sqlOutput"></div>
+            </div>
+        </div>
     </div>
 </div>

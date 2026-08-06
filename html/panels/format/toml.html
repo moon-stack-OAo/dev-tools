@@ -11,14 +11,18 @@
         <button class="outline" onclick="tomlSample()" style="margin-left:auto">示例</button>
         <button class="outline" onclick="tomlClear()">清空</button>
     </div>
-    <div class="mb-8">
-        <div class="label">输入</div>
-        <textarea class="json-input" id="tomlInput"
-                  placeholder='title = "demo"&#10;&#10;[server]&#10;port = 8080'></textarea>
-    </div>
-    <div class="copy-wrap">
-        <div class="label">输出</div>
-        <button class="copy-btn" onclick="copyText('tomlOutput')">复制</button>
-        <div class="output-box" id="tomlOutput"></div>
+    <div class="fmt-split">
+        <div class="fmt-pane">
+            <div class="label">输入</div>
+            <textarea class="json-input" id="tomlInput"
+                      placeholder='title = "demo"&#10;&#10;[server]&#10;port = 8080'></textarea>
+        </div>
+        <div class="fmt-pane">
+            <div class="copy-wrap">
+                <div class="label">输出</div>
+                <button class="copy-btn" onclick="copyText('tomlOutput')">复制</button>
+                <div class="output-box" id="tomlOutput"></div>
+            </div>
+        </div>
     </div>
 </div>

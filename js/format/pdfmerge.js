@@ -171,17 +171,11 @@
 
   // ============== 工具函数 ==============
 
-  function readFileAsBytes(file) {
-    return new Promise((resolve, reject) => {
-      if (!(file instanceof Blob)) {
-        reject(new Error("参数必须是 File 或 Blob"));
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = () => resolve(new Uint8Array(reader.result));
-      reader.onerror = () => reject(new Error("文件读取失败"));
-      reader.readAsArrayBuffer(file);
-    });
+  // readFileAsBytes / formatBytes / downloadBlob 由 js/utils.js 提供（ADR PR-1.3）
+  if (typeof readFileAsBytes !== "function" && typeof require === "function") {
+    try {
+      require("../utils.js");
+    } catch (e) {}
   }
 
   function timestamp() {
@@ -189,14 +183,7 @@
   }
 
   function triggerDownload(blob, filename) {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    downloadBlob(filename, blob);
   }
 
   function newId() {
@@ -252,12 +239,6 @@
   function pmMergeSortByName() {
     mergeState.files.sort((a, b) => a.name.localeCompare(b.name, "zh-Hans-CN"));
     pmMergeRender();
-  }
-
-  function formatBytes(n) {
-    if (n < 1024) return n + " B";
-    if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
-    return (n / 1024 / 1024).toFixed(2) + " MB";
   }
 
   function pmMergeRender() {

@@ -237,18 +237,11 @@
     setTimeout(() => {
       try {
         const blob = buildPdf(state.images, options);
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
         const stamp = new Date()
           .toISOString()
           .replace(/[:.]/g, "-")
           .slice(0, 19);
-        a.download = `images-${stamp}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        downloadBlob(`images-${stamp}.pdf`, blob);
       } catch (err) {
         console.error("[imgtopdf]", err);
         toast("导出失败：" + (err.message || err));

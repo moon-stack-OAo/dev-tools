@@ -633,10 +633,11 @@ function emailCopyInlined() {
   );
 }
 
-function formatBytes(n) {
-  if (n < 1024) return n + " B";
-  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
-  return (n / 1024 / 1024).toFixed(2) + " MB";
+// formatBytes 由 js/utils.js 提供（ADR PR-1.3）
+if (typeof formatBytes !== "function" && typeof require === "function") {
+  try {
+    require("../utils.js");
+  } catch (e) {}
 }
 
 function emailLoadTemplate() {

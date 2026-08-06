@@ -103,21 +103,19 @@ function hmacMd5Bytes(key, data) {
   return md5Bytes(new Uint8Array([...oKey, ...inner]));
 }
 
-function bufToHex(buf) {
-  return Array.from(new Uint8Array(buf))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
+// 编解码依赖全局 crypto-utils（ADR PR-1.2）
+if (typeof bytesToHex !== "function" && typeof require === "function") {
+  try {
+    require("../crypto-utils.js");
+  } catch (e) {}
 }
 
-/** 将 Uint8Array 转为 Base64，分块避免大数组栈溢出 */
+function bufToHex(buf) {
+  return bytesToHex(buf);
+}
+
 function hmacBytesToBase64(bytes) {
-  const arr = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
-  let bin = "";
-  const chunk = 0x8000;
-  for (let i = 0; i < arr.length; i += chunk) {
-    bin += String.fromCharCode.apply(null, arr.subarray(i, i + chunk));
-  }
-  return btoa(bin);
+  return bytesToBase64(bytes);
 }
 
 /**

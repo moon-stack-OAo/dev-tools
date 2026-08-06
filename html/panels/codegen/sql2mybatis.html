@@ -17,12 +17,6 @@
         </div>
     </div>
 
-    <div class="mb-8">
-        <div class="label">DDL (CREATE TABLE)</div>
-        <textarea class="json-input" id="sql2mbInput"
-                  placeholder="CREATE TABLE `user` (&#10;  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',&#10;  `user_name` varchar(50) DEFAULT NULL COMMENT '用户名',&#10;  `email` varchar(100) DEFAULT NULL COMMENT '邮箱',&#10;  `age` int(11) DEFAULT NULL COMMENT '年龄',&#10;  `created_at` datetime DEFAULT NULL COMMENT '创建时间',&#10;  PRIMARY KEY (`id`)&#10;) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"></textarea>
-    </div>
-
     <div class="toolbar">
         <button onclick="sql2mbLoadExample()">加载示例</button>
         <button class="outline" onclick="sql2mbClearInput()">清空</button>
@@ -69,22 +63,29 @@
         <span class="status-text" id="sql2mbStatus" style="font-size:12px;color:var(--text-muted)"></span>
     </div>
 
-    <div class="tab-bar">
-        <div class="tab active" id="sql2mbTab-xml" onclick="sql2mbSwitchTab('xml')">Mapper XML</div>
-        <div class="tab" id="sql2mbTab-mapper" onclick="sql2mbSwitchTab('mapper')">Mapper Interface</div>
-    </div>
-
-    <div class="tab-content active" id="sql2mbTabContent-xml">
-        <div class="copy-wrap">
-            <button class="copy-btn" onclick="copyText('sql2mbXmlOutput')">复制</button>
-            <div class="output-box" id="sql2mbXmlOutput" style="min-height:240px;max-height:520px"></div>
+    <div class="fmt-split">
+        <div class="fmt-pane">
+            <div class="label">DDL (CREATE TABLE)</div>
+            <textarea class="json-input" id="sql2mbInput"
+                      placeholder="CREATE TABLE `user` (&#10;  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',&#10;  `user_name` varchar(50) DEFAULT NULL COMMENT '用户名',&#10;  `email` varchar(100) DEFAULT NULL COMMENT '邮箱',&#10;  `age` int(11) DEFAULT NULL COMMENT '年龄',&#10;  `created_at` datetime DEFAULT NULL COMMENT '创建时间',&#10;  PRIMARY KEY (`id`)&#10;) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"></textarea>
         </div>
-    </div>
-
-    <div class="tab-content" id="sql2mbTabContent-mapper">
-        <div class="copy-wrap">
-            <button class="copy-btn" onclick="copyText('sql2mbJavaOutput')">复制</button>
-            <div class="output-box" id="sql2mbJavaOutput" style="min-height:240px;max-height:520px"></div>
+        <div class="fmt-pane">
+            <div class="tab-bar">
+                <div class="tab active" id="sql2mbTab-xml" onclick="sql2mbSwitchTab('xml')">Mapper XML</div>
+                <div class="tab" id="sql2mbTab-mapper" onclick="sql2mbSwitchTab('mapper')">Mapper Interface</div>
+            </div>
+            <div class="tab-content active" id="sql2mbTabContent-xml">
+                <div class="copy-wrap">
+                    <button class="copy-btn" onclick="copyText('sql2mbXmlOutput')">复制</button>
+                    <div class="output-box" id="sql2mbXmlOutput"></div>
+                </div>
+            </div>
+            <div class="tab-content" id="sql2mbTabContent-mapper">
+                <div class="copy-wrap">
+                    <button class="copy-btn" onclick="copyText('sql2mbJavaOutput')">复制</button>
+                    <div class="output-box" id="sql2mbJavaOutput"></div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

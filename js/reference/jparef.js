@@ -279,13 +279,17 @@ const JPAREF_DATA = [
 ];
 
 /**
- * 搜索过滤速查条目
+ * 搜索过滤速查条目（委托 RefEngine）
  * @param {Array<{cat:string, items: Array<{name:string, desc:string, code?:string}>}>} items
  * @param {string} keyword
  * @returns {Array}
  */
 function jparefSearch(items, keyword) {
     const data = items || JPAREF_DATA;
+    if (typeof RefEngine !== 'undefined' && RefEngine.filterGroups) {
+        return RefEngine.filterGroups(data, keyword);
+    }
+    // 测试环境未加载引擎时的降级（与历史行为一致）
     const kw = (keyword == null ? '' : String(keyword)).trim().toLowerCase();
     if (!kw) {
         return data.map(function (g) {
@@ -309,55 +313,44 @@ function jparefSearch(items, keyword) {
 }
 
 let jparefSearchTimer = null;
+let _jparefApi = null;
 
 function jparefRender(filter) {
+    if (typeof RefEngine !== 'undefined' && RefEngine.mount && !_jparefApi) {
+        _jparefApi = RefEngine.mount({
+            containerId: 'jparefContent',
+            searchId: 'jparefSearch',
+            data: JPAREF_DATA,
+        });
+        return;
+    }
+    if (_jparefApi) {
+        _jparefApi.render(filter || '');
+        return;
+    }
+    // 无引擎降级：仅容器清空提示
     const container = document.getElementById('jparefContent');
     if (!container) return;
     const groups = jparefSearch(JPAREF_DATA, filter);
-    container.innerHTML = '';
-    if (!groups.length) {
-        container.innerHTML =
-            '<div style="color:var(--text-muted);padding:20px;text-align:center">无匹配结果</div>';
-        return;
+    if (typeof RefEngine !== 'undefined' && RefEngine.render) {
+        RefEngine.render(container, groups);
     }
-    groups.forEach(function (group) {
-        const section = document.createElement('div');
-        section.className = 'ref-group';
-        section.innerHTML = '<div class="ref-group-title">' + group.cat + '</div>';
-        group.items.forEach(function (item) {
-            const card = document.createElement('div');
-            card.className = 'ref-card';
-            let html =
-                '<div class="ref-cmd-head"><code class="ref-cmd-name">' +
-                escapeHtml(item.name) +
-                '</code><span class="ref-cmd-desc">' +
-                escapeHtml(item.desc) +
-                '</span><button class="sm outline" onclick="safeCopy(\'' +
-                String(item.name).replace(/'/g, "\\'") +
-                '\')">复制</button></div>';
-            if (item.code) {
-                html +=
-                    '<div class="ref-copy-wrap"><pre class="ref-pre"><code>' +
-                    escapeHtml(item.code) +
-                    '</code></pre><button class="ref-copy-btn" onclick="safeCopy(this.parentElement.querySelector(\'pre\').innerText)">复制</button></div>';
-            }
-            card.innerHTML = html;
-            section.appendChild(card);
-        });
-        container.appendChild(section);
-    });
 }
 
 function jparefSearchInput() {
     clearTimeout(jparefSearchTimer);
     jparefSearchTimer = setTimeout(function () {
         const el = document.getElementById('jparefSearch');
-        jparefRender(el ? el.value : '');
+        if (_jparefApi) _jparefApi.render(el ? el.value : '');
+        else jparefRender(el ? el.value : '');
     }, 200);
 }
 
 if (typeof registerInit === 'function') {
-    registerInit('jparef', jparefRender);
+    registerInit('jparef', function () {
+        _jparefApi = null;
+        jparefRender('');
+    });
 }
 
 if (typeof module !== 'undefined' && module.exports) {

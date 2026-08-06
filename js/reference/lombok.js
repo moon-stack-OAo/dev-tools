@@ -141,51 +141,49 @@ const LOMBOK_DATA = [
   },
 ];
 
-let lombokSearchTimer = null;
+// ADR PR-2.3: RefEngine 迁移
+let _lombokApi = null;
 
 function lombokRender(filter) {
-  const container = document.getElementById("lombokContent");
-  if (!container) return;
-  filter = (filter || "").trim().toLowerCase();
-  container.innerHTML = "";
-  let hasResult = false;
-  LOMBOK_DATA.forEach((group) => {
-    const matched = filter
-      ? group.items.filter(
-          (i) =>
-            i.name.toLowerCase().includes(filter) ||
-            i.desc.toLowerCase().includes(filter) ||
-            (i.code || "").toLowerCase().includes(filter),
-        )
-      : group.items;
-    if (!matched.length) return;
-    hasResult = true;
-    const section = document.createElement("div");
-    section.className = "ref-group";
-    section.innerHTML = `<div class="ref-group-title">${group.cat}</div>`;
-    matched.forEach((item) => {
-      const card = document.createElement("div");
-      card.className = "ref-card";
-      let html = `<div class="ref-cmd-head"><code class="ref-cmd-name">${item.name}</code><span class="ref-cmd-desc">${item.desc}</span><button class="sm outline" onclick="safeCopy('${item.name.replace(/'/g, "\\'")}')">复制</button></div>`;
-      if (item.code) {
-        html += `<div class="ref-copy-wrap"><pre class="ref-pre"><code>${item.code.replace(/</g, "&lt;")}</code></pre><button class="ref-copy-btn" onclick="safeCopy(this.parentElement.querySelector('pre').innerText)">复制</button></div>`;
-      }
-      card.innerHTML = html;
-      section.appendChild(card);
+  if (typeof RefEngine !== 'undefined' && RefEngine.mount && !_lombokApi) {
+    _lombokApi = RefEngine.mount({
+      containerId: 'lombokContent',
+      searchId: 'lombokSearch',
+      data: LOMBOK_DATA,
     });
-    container.appendChild(section);
-  });
-  if (!hasResult) {
-    container.innerHTML =
-      '<div style="color:var(--text-muted);padding:20px;text-align:center">无匹配结果</div>';
+    if (filter) _lombokApi.render(filter);
+    return;
+  }
+  if (_lombokApi) {
+    _lombokApi.render(filter || '');
+    return;
+  }
+  const container = document.getElementById('lombokContent');
+  if (!container) return;
+  if (typeof RefEngine !== 'undefined' && RefEngine.render && RefEngine.filterGroups) {
+    RefEngine.render(container, RefEngine.filterGroups(LOMBOK_DATA, filter || ''));
   }
 }
 
 function lombokSearch() {
-  clearTimeout(lombokSearchTimer);
-  lombokSearchTimer = setTimeout(() => {
-    lombokRender(document.getElementById("lombokSearch").value);
-  }, 200);
+  if (_lombokApi) {
+    _lombokApi.search();
+    return;
+  }
+  const el = document.getElementById('lombokSearch');
+  lombokRender(el ? el.value : '');
 }
 
-registerInit("lombok", lombokRender);
+if (typeof registerInit === 'function') {
+  registerInit('lombok', function () {
+    _lombokApi = null;
+    lombokRender('');
+  });
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    LOMBOK_DATA: LOMBOK_DATA,
+    lombokRender: lombokRender,
+  };
+}

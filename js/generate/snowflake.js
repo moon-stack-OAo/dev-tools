@@ -293,15 +293,11 @@ function sfExportCSV() {
     .join("\n");
   // 加 BOM 让 Excel 正确识别 UTF-8
   const csv = "\uFEFF" + header + rows;
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `snowflake-ids-${Date.now()}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  downloadText(
+    `snowflake-ids-${Date.now()}.csv`,
+    csv,
+    "text/csv;charset=utf-8",
+  );
   setStatus(`已导出 ${sfHistory.length} 条到 CSV`);
 }
 

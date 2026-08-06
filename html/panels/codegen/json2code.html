@@ -20,19 +20,23 @@
             </select>
         </div>
     </div>
-    <div class="mb-8">
-        <div class="label">输入 JSON</div>
-        <textarea class="json-input" id="j2cInput"
-                  placeholder='{"name":"张三","age":25,"active":true}'></textarea>
-    </div>
     <div class="toolbar">
         <button onclick="j2cGenerate()">生成代码</button>
         <button class="outline" onclick="j2cLoadSample()" type="button">示例</button>
         <button class="outline" onclick="j2cClear()" type="button">清空</button>
     </div>
-    <div class="copy-wrap">
-        <div class="label" id="j2cOutLabel">生成的 TypeScript 代码</div>
-        <button class="copy-btn" onclick="j2cCopy()">复制</button>
-        <div class="output-box" id="j2cOutput" style="min-height:120px;max-height:480px"></div>
+    <div class="fmt-split">
+        <div class="fmt-pane">
+            <div class="label">输入 JSON</div>
+            <textarea class="json-input" id="j2cInput"
+                      placeholder='{"name":"张三","age":25,"active":true}'></textarea>
+        </div>
+        <div class="fmt-pane">
+            <div class="copy-wrap">
+                <div class="label" id="j2cOutLabel">生成的 TypeScript 代码</div>
+                <button class="copy-btn" onclick="j2cCopy()">复制</button>
+                <div class="output-box" id="j2cOutput"></div>
+            </div>
+        </div>
     </div>
 </div>

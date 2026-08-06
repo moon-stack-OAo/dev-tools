@@ -137,46 +137,49 @@ const MAVEN_CMDS = [
   },
 ];
 
-let mavenrefSearchTimer = null;
+// ADR PR-2.3: RefEngine 迁移
+let _mavenrefApi = null;
 
 function mavenrefRender(filter) {
-  const container = document.getElementById("mavenrefContent");
-  if (!container) return;
-  filter = (filter || "").trim().toLowerCase();
-  container.innerHTML = "";
-  let hasResult = false;
-  MAVEN_CMDS.forEach((group) => {
-    const matched = filter
-      ? group.items.filter(
-          (i) =>
-            i.cmd.toLowerCase().includes(filter) ||
-            i.desc.toLowerCase().includes(filter),
-        )
-      : group.items;
-    if (!matched.length) return;
-    hasResult = true;
-    const section = document.createElement("div");
-    section.className = "ref-group";
-    section.innerHTML = `<div class="ref-group-title">${group.cat}</div>`;
-    matched.forEach((item) => {
-      const card = document.createElement("div");
-      card.className = "ref-card";
-      card.innerHTML = `<div class="ref-cmd-head"><code class="ref-cmd-name">${item.cmd.replace(/</g, "&lt;")}</code><span class="ref-cmd-desc">${item.desc}</span><button class="sm outline" onclick="safeCopy('${item.cmd.replace(/'/g, "\\'")}')">复制</button></div>`;
-      section.appendChild(card);
+  if (typeof RefEngine !== 'undefined' && RefEngine.mount && !_mavenrefApi) {
+    _mavenrefApi = RefEngine.mount({
+      containerId: 'mavenrefContent',
+      searchId: 'mavenrefSearch',
+      data: MAVEN_CMDS,
     });
-    container.appendChild(section);
-  });
-  if (!hasResult) {
-    container.innerHTML =
-      '<div style="color:var(--text-muted);padding:20px;text-align:center">无匹配结果</div>';
+    if (filter) _mavenrefApi.render(filter);
+    return;
+  }
+  if (_mavenrefApi) {
+    _mavenrefApi.render(filter || '');
+    return;
+  }
+  const container = document.getElementById('mavenrefContent');
+  if (!container) return;
+  if (typeof RefEngine !== 'undefined' && RefEngine.render && RefEngine.filterGroups) {
+    RefEngine.render(container, RefEngine.filterGroups(MAVEN_CMDS, filter || ''));
   }
 }
 
 function mavenrefSearch() {
-  clearTimeout(mavenrefSearchTimer);
-  mavenrefSearchTimer = setTimeout(() => {
-    mavenrefRender(document.getElementById("mavenrefSearch").value);
-  }, 200);
+  if (_mavenrefApi) {
+    _mavenrefApi.search();
+    return;
+  }
+  const el = document.getElementById('mavenrefSearch');
+  mavenrefRender(el ? el.value : '');
 }
 
-registerInit("mavenref", mavenrefRender);
+if (typeof registerInit === 'function') {
+  registerInit('mavenref', function () {
+    _mavenrefApi = null;
+    mavenrefRender('');
+  });
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    MAVEN_CMDS: MAVEN_CMDS,
+    mavenrefRender: mavenrefRender,
+  };
+}

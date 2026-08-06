@@ -21,15 +21,19 @@
         <button class="outline" onclick="sqldialectClear()">清空</button>
         <button class="outline" onclick="sqldialectSwap()">交换</button>
     </div>
-    <div class="mb-8">
-        <div class="label">输入 SQL</div>
-        <textarea class="json-input" id="sqldialectInput"
-                  placeholder="SELECT NVL(a, b), sysdate, ROWNUM FROM t WHERE ROWNUM <= 10"></textarea>
-    </div>
-    <div class="copy-wrap">
-        <div class="label">目标 SQL</div>
-        <button class="copy-btn" onclick="copyText('sqldialectOutput')">复制</button>
-        <div class="output-box" id="sqldialectOutput"></div>
+    <div class="fmt-split">
+        <div class="fmt-pane">
+            <div class="label">输入 SQL</div>
+            <textarea class="json-input" id="sqldialectInput"
+                      placeholder="SELECT NVL(a, b), sysdate, ROWNUM FROM t WHERE ROWNUM <= 10"></textarea>
+        </div>
+        <div class="fmt-pane">
+            <div class="copy-wrap">
+                <div class="label">目标 SQL</div>
+                <button class="copy-btn" onclick="copyText('sqldialectOutput')">复制</button>
+                <div class="output-box" id="sqldialectOutput"></div>
+            </div>
+        </div>
     </div>
     <div class="mt-8"
          style="font-size:12px;color:var(--warning);padding:8px 12px;background:rgba(255,167,38,.08);border:1px solid rgba(255,167,38,.25);border-radius:var(--radius-sm)">
