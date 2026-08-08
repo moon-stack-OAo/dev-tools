@@ -50,8 +50,37 @@ const updateState = {
     child: null,
 };
 
+/** curl 进度条 / 回车覆写行：取 \r 最后一段，并过滤 meter 噪音 */
+function sanitizeLogLine(line) {
+    let text = String(line == null ? '' : line);
+    // 进度条用 \r 覆写同一行：只保留最后一段
+    if (text.indexOf('\r') >= 0) {
+        const parts = text.split(/\r+/);
+        text = parts[parts.length - 1] || '';
+    }
+    text = text.replace(/\r?\n$/, '').replace(/\x1b\[[0-9;?]*[ -/]*[@-~]/g, '');
+    text = text.trimEnd();
+    if (!text.trim()) return '';
+    // curl 默认进度：% Total / % Received / Dload  Upload  Average Speed ...
+    if (/^\s*%\s*Total\b/i.test(text)) return '';
+    if (/^\s*Dload\s+Upload\b/i.test(text)) return '';
+    if (/^\s*100\s+\d/.test(text) && /\d+k?\s+\d+k?\s+\d/.test(text) && /--:--:--|\d+:\d{2}:\d{2}/.test(text)) {
+        // 完整进度行（偶发无 \r 直接换行）
+        return '';
+    }
+    // 碎片进度：大量数字 + 时间占位
+    if (
+        /^\s*[\d.]+\w*\s+[\d.]+\w*\s+[\d.]+\w*/.test(text) &&
+        /(--:--:--|:\d{2}:\d{2})/.test(text) &&
+        !/\[update-|error|fail|ok\b/i.test(text)
+    ) {
+        return '';
+    }
+    return text;
+}
+
 function appendLog(line) {
-    const text = String(line).replace(/\r?\n$/, '');
+    const text = sanitizeLogLine(line);
     if (!text) return;
     updateState.log.push(text);
     if (updateState.log.length > MAX_LOG_LINES) {
@@ -102,7 +131,36 @@ function resolveVersionPaths() {
     ];
 }
 
+/** docker 模式：从运行中容器读取 /usr/share/nginx/html/version.json */
+function readVersionFromDockerContainer() {
+    if (DEPLOY_MODE !== 'docker') return null;
+    const name = process.env.DOCKER_CONTAINER || 'dev-tools';
+    const inPath = process.env.DOCKER_VERSION_PATH || '/usr/share/nginx/html/version.json';
+    try {
+        const { execFileSync } = require('child_process');
+        const raw = execFileSync('docker', ['exec', name, 'cat', inPath], {
+            encoding: 'utf8',
+            timeout: 8000,
+            maxBuffer: 256 * 1024,
+        });
+        const data = JSON.parse(String(raw || '').trim());
+        return { path: 'docker:' + name + ':' + inPath, data };
+    } catch (err) {
+        appendLog(
+            'docker version read failed: ' +
+                name +
+                ' ' +
+                (err && err.message ? err.message.split('\n')[0] : err),
+        );
+        return null;
+    }
+}
+
 function readLocalVersion() {
+    if (DEPLOY_MODE === 'docker') {
+        const fromDocker = readVersionFromDockerContainer();
+        if (fromDocker) return fromDocker;
+    }
     const paths = resolveVersionPaths();
     for (const p of paths) {
         try {
@@ -332,15 +390,25 @@ function startUpdate() {
     });
     updateState.child = child;
 
-    const onData = (buf) => {
-        String(buf)
-            .split(/\r?\n/)
-            .forEach((line) => appendLog(line));
+    let stdoutBuf = '';
+    let stderrBuf = '';
+    const flushChunk = (chunk, which) => {
+        const prev = which === 'out' ? stdoutBuf : stderrBuf;
+        const mixed = prev + String(chunk);
+        // 按 \n 切完整行；\r 覆写由 sanitizeLogLine 处理
+        const parts = mixed.split('\n');
+        if (which === 'out') stdoutBuf = parts.pop() || '';
+        else stderrBuf = parts.pop() || '';
+        parts.forEach((line) => appendLog(line));
     };
-    child.stdout.on('data', onData);
-    child.stderr.on('data', onData);
+    child.stdout.on('data', (buf) => flushChunk(buf, 'out'));
+    child.stderr.on('data', (buf) => flushChunk(buf, 'err'));
 
     child.on('error', (err) => {
+        if (stdoutBuf) appendLog(stdoutBuf);
+        if (stderrBuf) appendLog(stderrBuf);
+        stdoutBuf = '';
+        stderrBuf = '';
         appendLog('spawn error: ' + (err && err.message));
         updateState.running = false;
         updateState.exitCode = -1;
@@ -349,6 +417,10 @@ function startUpdate() {
     });
 
     child.on('close', (code) => {
+        if (stdoutBuf) appendLog(stdoutBuf);
+        if (stderrBuf) appendLog(stderrBuf);
+        stdoutBuf = '';
+        stderrBuf = '';
         appendLog('finished exitCode=' + code);
         updateState.running = false;
         updateState.exitCode = code;

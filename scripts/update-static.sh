@@ -30,7 +30,8 @@ fi
 curl_download() {
   local url=$1
   local out=$2
-  curl -fL --http1.1 \
+  # -sS：静默进度条（避免 \r 进度污染日志），仍显示错误
+  curl -fsSL --http1.1 \
     --retry 5 \
     --retry-delay 2 \
     --retry-all-errors \
@@ -48,7 +49,7 @@ curl_download "$DIST_URL" "$ARCHIVE"
 
 # 可选校验 sha256（同目录 .sha256 资产；内容形如 "<hash>  dev-tools-dist.tar.gz"）
 SHA_URL="${DIST_URL}.sha256"
-if curl -fL --http1.1 --retry 3 --connect-timeout 15 --max-time 60 \
+if curl -fsSL --http1.1 --retry 3 --connect-timeout 15 --max-time 60 \
   "${CURL_AUTH[@]}" -o "${ARCHIVE}.sha256" "$SHA_URL" 2>/dev/null; then
   echo "[update-static] verify sha256"
   # 统一为「两空格 + 纯文件名」，避免路径/星号格式导致校验失败

@@ -1,0 +1,54 @@
+# DevTools：Docker 站点 + 宿主机 update-agent（子路径 /dev-tools/）
+#
+# 架构：
+#   浏览器 ──► Nginx :80
+#                ├─ /dev-tools/api/  → 127.0.0.1:3930/api/   （systemd: update-agent）
+#                └─ /dev-tools/      → 127.0.0.1:8080/       （docker: 容器内 nginx :80）
+#
+# 要点：
+#   - Agent 必须在宿主机跑，不要放进业务容器（更新会重启容器）
+#   - 容器只提供静态站点；ops-update.html 随镜像一起更新
+#   - 管理页相对路径 api/* 会请求 /dev-tools/api/*，由本配置反代
+#
+# 使用：include 到 server {} 内，或合并进现有站点 conf
+
+# ---------- 更新 API（Agent，须写在静态 location 之前更稳妥）----------
+location /dev-tools/api/ {
+    proxy_pass http://127.0.0.1:3930/api/;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Update-Token $http_x_update_token;
+    # 一键更新可能较久（pull 镜像）
+    proxy_connect_timeout 30s;
+    proxy_send_timeout 600s;
+    proxy_read_timeout 600s;
+}
+
+# healthz 可选（Agent 根路径）
+location = /dev-tools/healthz {
+    proxy_pass http://127.0.0.1:3930/healthz;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+}
+
+# ---------- 站点（Docker 容器，默认映射 8080→80）----------
+location /dev-tools/ {
+    # 去掉 /dev-tools 前缀再转给容器根路径
+    # 浏览器: /dev-tools/ops-update.html → 容器: /ops-update.html
+    proxy_pass http://127.0.0.1:8080/;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    # 静态资源
+    proxy_set_header Connection "";
+}
+
+# 兼容无尾斜杠
+location = /dev-tools {
+    return 301 /dev-tools/;
+}

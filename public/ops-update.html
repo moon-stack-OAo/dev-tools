@@ -194,12 +194,12 @@
             transform: translateY(-1px);
         }
 
-        /* 主区：左控制 / 右日志（等高，左侧不滚动） */
+        /* 主区：左右固定分栏（等高），栏内各自滚动，互不挤占 */
         .main-layout {
             flex: 1 1 auto;
             min-height: 0;
             display: grid;
-            grid-template-columns: minmax(480px, var(--left-w)) minmax(0, 1fr);
+            grid-template-columns: var(--left-w) minmax(0, 1fr);
             gap: 14px;
             align-items: stretch;
             overflow: hidden;
@@ -210,6 +210,7 @@
             min-width: 0;
             min-height: 0;
             height: 100%;
+            max-height: 100%;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -217,9 +218,10 @@
 
         .col-left {
             gap: 12px;
-            overflow: hidden;
+            width: 100%;
         }
 
+        /* 版本卡片：占满左栏剩余高度，信息区滚动，statusHint 钉在底部 */
         .col-left > .card:first-child {
             flex: 1 1 auto;
             min-height: 0;
@@ -228,17 +230,37 @@
             overflow: hidden;
         }
 
+        .col-left > .card:first-child .card-head {
+            flex: 0 0 auto;
+        }
+
         .col-left > .card:first-child .grid {
             flex: 1 1 auto;
             min-height: 0;
+            overflow-x: hidden;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            padding-right: 2px;
+            align-content: start;
         }
 
         .col-left > .card:first-child .meta-box {
-            height: 100%;
+            height: auto;
+            min-height: 0;
+            flex-shrink: 0;
+        }
+
+        .col-left > .card:first-child .hint {
+            flex: 0 0 auto;
+            margin-top: 10px;
         }
 
         .col-left > .card-ops {
             flex: 0 0 auto;
+        }
+
+        .col-right {
+            min-width: 0;
         }
 
         .card {
@@ -395,6 +417,7 @@
             align-items: center;
             gap: 6px;
             margin-bottom: 10px;
+            margin-left: 6px;
             padding: 5px 10px;
             border-radius: 999px;
             background: rgba(var(--accent-rgb), 0.1);
@@ -404,7 +427,7 @@
             font-size: 0.82rem;
             font-weight: 600;
             letter-spacing: 0.02em;
-            max-width: 100%;
+            max-width: calc(100% - 6px);
         }
 
         .meta-box.is-remote .sha-chip {
@@ -415,7 +438,7 @@
 
         .meta-row {
             display: grid;
-            grid-template-columns: 76px minmax(0, 1fr);
+            grid-template-columns: 72px minmax(0, 1fr);
             gap: 8px;
             font-size: 0.83rem;
             margin-bottom: 6px;
@@ -446,6 +469,9 @@
             font-family: var(--font-sans);
             color: var(--text);
             font-size: 0.83rem;
+            /* Message 按词断行，避免 “Node” 被 break-all 拆成 “N ode” */
+            word-break: normal;
+            overflow-wrap: break-word;
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
@@ -761,7 +787,7 @@
             min-height: 0;
             max-height: none;
             background: linear-gradient(180deg, rgba(255, 255, 255, 0.015), transparent 40px),
-                var(--bg-terminal);
+            var(--bg-terminal);
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 10px 12px;
@@ -865,12 +891,18 @@
             .col-left,
             .col-right {
                 height: auto;
+                max-height: none;
                 overflow: visible;
             }
 
             .col-left > .card:first-child {
                 flex: none;
                 overflow: visible;
+            }
+
+            .col-left > .card:first-child .grid {
+                overflow: visible;
+                flex: none;
             }
 
             .col-right {
@@ -894,10 +926,6 @@
 
             .card {
                 padding: 13px;
-            }
-
-            .meta-row {
-                grid-template-columns: 68px minmax(0, 1fr);
             }
 
             .page-header {
@@ -953,21 +981,34 @@
                     <div class="meta-box is-local">
                         <h3>本地构建 · version.json</h3>
                         <div class="sha-chip" id="localSha">—</div>
-                        <div class="meta-row"><span class="k">Full SHA</span><span class="v" id="localFull">—</span>
+                        <div class="meta-row">
+                            <span class="k">Full SHA</span>
+                            <span class="v" id="localFull">—</span>
                         </div>
-                        <div class="meta-row"><span class="k">构建时间</span><span class="v" id="localTime">—</span>
+                        <div class="meta-row">
+                            <span class="k">构建时间</span>
+                            <span class="v" id="localTime">—</span>
                         </div>
-                        <div class="meta-row"><span class="k">分支 / 仓库</span><span class="v msg"
-                                                                                      id="localMeta">—</span></div>
+                        <div class="meta-row">
+                            <span class="k">分支 / 仓库</span>
+                            <span class="v msg" id="localMeta">—</span>
+                        </div>
                     </div>
                     <div class="meta-box is-remote">
                         <h3>远程 main · api/status</h3>
                         <div class="sha-chip" id="remoteSha">—</div>
-                        <div class="meta-row"><span class="k">Message</span><span class="v msg" id="remoteMsg">—</span>
+                        <div class="meta-row">
+                            <span class="k">Message</span>
+                            <span class="v msg" id="remoteMsg">—</span>
                         </div>
-                        <div class="meta-row"><span class="k">时间</span><span class="v" id="remoteTime">—</span></div>
-                        <div class="meta-row"><span class="k">分支 / 模式</span><span class="v msg"
-                                                                                      id="remoteBranch">—</span></div>
+                        <div class="meta-row">
+                            <span class="k">时间</span>
+                            <span class="v" id="remoteTime">—</span>
+                        </div>
+                        <div class="meta-row">
+                            <span class="k">分支 / 模式</span>
+                            <span class="v msg" id="remoteBranch">—</span>
+                        </div>
                     </div>
                 </div>
                 <div class="hint" id="statusHint">正在加载…</div>
@@ -998,7 +1039,6 @@
                         <button type="button" class="btn-danger" id="btnUpdate">立即更新</button>
                     </div>
                 </div>
-                <div class="hint" id="actionHint" style="display:none"></div>
             </section>
         </div>
 
@@ -1048,7 +1088,6 @@
             remoteTime: document.getElementById('remoteTime'),
             remoteBranch: document.getElementById('remoteBranch'),
             statusHint: document.getElementById('statusHint'),
-            actionHint: document.getElementById('actionHint'),
             tokenInput: document.getElementById('tokenInput'),
             rememberToken: document.getElementById('rememberToken'),
             logView: document.getElementById('logView'),
@@ -1157,6 +1196,26 @@
             return remote;
         }
 
+        var currentStatusKind = 'unknown';
+        var updateRunning = false;
+
+        /** 已是最新 / 更新中：禁用「立即更新」；可更新或失败可重试时启用 */
+        function syncUpdateButton() {
+            var disable = updateRunning || currentStatusKind === 'ok' || currentStatusKind === 'updating';
+            el.btnUpdate.disabled = disable;
+            if (updateRunning || currentStatusKind === 'updating') {
+                el.btnUpdate.title = '更新进行中';
+            } else if (currentStatusKind === 'ok') {
+                el.btnUpdate.title = '本地已与远程一致，无需更新';
+            } else if (currentStatusKind === 'update') {
+                el.btnUpdate.title = '立即从远程拉取并部署最新构建';
+            } else if (currentStatusKind === 'failed') {
+                el.btnUpdate.title = '上次失败，可重试更新';
+            } else {
+                el.btnUpdate.title = '状态未知时仍可尝试更新（请确认 Token）';
+            }
+        }
+
         function resolveStatus(data, local, remote) {
             var s = String(pick(data, ['status', 'state'], '')).toLowerCase();
             var updating = !!(data.updating || data.inProgress || data.running || s === 'updating' || s === 'running');
@@ -1166,18 +1225,26 @@
 
             if (updating) {
                 setBadge('busy', '更新中');
+                currentStatusKind = 'updating';
+                syncUpdateButton();
                 return 'updating';
             }
             if (failed) {
                 setBadge('fail', '失败');
+                currentStatusKind = 'failed';
+                syncUpdateButton();
                 return 'failed';
             }
             if (upToDate) {
                 setBadge('ok', '已是最新');
+                currentStatusKind = 'ok';
+                syncUpdateButton();
                 return 'ok';
             }
             if (canUpdate) {
                 setBadge('update', '可更新');
+                currentStatusKind = 'update';
+                syncUpdateButton();
                 return 'update';
             }
 
@@ -1186,13 +1253,19 @@
             if (l !== '—' && r !== '—') {
                 if (l === r) {
                     setBadge('ok', '已是最新');
+                    currentStatusKind = 'ok';
+                    syncUpdateButton();
                     return 'ok';
                 }
                 setBadge('update', '可更新');
+                currentStatusKind = 'update';
+                syncUpdateButton();
                 return 'update';
             }
 
             setBadge('unknown', '未知');
+            currentStatusKind = 'unknown';
+            syncUpdateButton();
             return 'unknown';
         }
 
@@ -1216,6 +1289,50 @@
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;');
+        }
+
+        /** 清洗 curl 进度条 / \r 覆写 / ANSI，兼容历史脏日志 */
+        function sanitizeLogText(text) {
+            var raw = String(text || '')
+                .replace(/\x1b\[[0-9;?]*[ -/]*[@-~]/g, '')
+                .replace(/\r\n/g, '\n');
+            // \r 覆写：每行只保留最后一段
+            raw = raw
+                .split('\n')
+                .map(function (line) {
+                    if (line.indexOf('\r') < 0) return line;
+                    var parts = line.split(/\r+/);
+                    return parts[parts.length - 1] || '';
+                })
+                .join('\n');
+            var lines = raw.split('\n');
+            var out = [];
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i];
+                var t = line.replace(/\s+$/, '');
+                if (!t.trim()) {
+                    // 保留有意义的空行间隔（最多连续 1 个）
+                    if (out.length && out[out.length - 1] !== '') out.push('');
+                    continue;
+                }
+                if (/^\s*%\s*Total\b/i.test(t)) continue;
+                if (/^\s*Dload\s+Upload\b/i.test(t)) continue;
+                // curl 进度整行 / 碎片（数字 + 时间码）
+                if (
+                    /(--:--:--|:\d{2}:\d{2})/.test(t) &&
+                    /^\s*[\d.]+\w*(\s+[\d.]+\w*){2,}/.test(t) &&
+                    !/\[update-|error|fail|exception|ok\b|deploy/i.test(t)
+                ) {
+                    continue;
+                }
+                // 纯数字碎片行（进度被 \r 拆碎后）
+                if (/^[\d.\skKMG%:-]+$/.test(t) && t.replace(/\s+/g, ' ').split(' ').length >= 3) {
+                    continue;
+                }
+                out.push(t);
+            }
+            while (out.length && out[out.length - 1] === '') out.pop();
+            return out.join('\n');
         }
 
         function classifyLogLine(line) {
@@ -1253,13 +1370,11 @@
         }
 
         function renderLogHtml(text) {
-            var raw = String(text || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+            var raw = sanitizeLogText(text);
             if (!raw.trim()) {
-                return { html: '<span class="log-empty">（日志为空）</span>', lines: 0 };
+                return {html: '<span class="log-empty">（日志为空）</span>', lines: 0};
             }
             var lines = raw.split('\n');
-            // 去掉末尾空行
-            while (lines.length && lines[lines.length - 1] === '') lines.pop();
             var html = lines
                 .map(function (line) {
                     var cls = classifyLogLine(line);
@@ -1272,7 +1387,7 @@
                     );
                 })
                 .join('');
-            return { html: html, lines: lines.length };
+            return {html: html, lines: lines.length};
         }
 
         function setLogPill(kind, label) {
@@ -1295,11 +1410,11 @@
         function startPoll() {
             if (pollTimer) return;
             pollTimer = setInterval(function () {
-                loadLog({ quiet: true }).then(function (info) {
+                loadLog({quiet: true}).then(function (info) {
                     if (info && info.running) return;
                     stopPoll();
                     loadVersion().then(function () {
-                        return loadStatus(false);
+                        return loadStatus();
                     });
                 });
             }, 1500);
@@ -1334,13 +1449,15 @@
             return s;
         }
 
-        async function loadStatus(showActionHint) {
+        async function loadStatus() {
             setHint(el.statusHint, '正在拉取远程状态…');
             try {
                 // 相对路径，兼容子路径部署如 /dev-tools/
-                var r = await fetchJson('api/status', { cache: 'no-store' });
+                var r = await fetchJson('api/status', {cache: 'no-store'});
                 if (!r.ok) {
                     setBadge('unknown', '未知');
+                    currentStatusKind = 'unknown';
+                    syncUpdateButton();
                     setText(el.remoteSha, '—');
                     setText(el.remoteMsg, '—');
                     setText(el.remoteTime, '—');
@@ -1349,7 +1466,6 @@
                     // 兼容旧 Agent：502 常是 GitHub 限流，不是反代挂了
                     if (errBody && /rate limit|GitHub HTTP/i.test(errBody)) {
                         setHint(el.statusHint, formatStatusError(errBody), 'err');
-                        if (showActionHint) setHint(el.actionHint, '远程查询失败（GitHub 限流/API）', 'err');
                         if (r.body && r.body.local) applyLocal(Object.assign({}, r.body.local));
                         if (r.body && r.body.remote) applyRemote(r.body);
                         return r.body;
@@ -1359,7 +1475,6 @@
                         'Agent 未连接或未配置反代（HTTP ' + r.status + (errBody ? '：' + errBody : '') + '）',
                         'warn'
                     );
-                    if (showActionHint) setHint(el.actionHint, '检查更新失败：Agent 未连接或未配置反代', 'err');
                     return null;
                 }
                 var data = r.body || {};
@@ -1384,6 +1499,8 @@
                         if (!kind || kind === 'unknown') {
                             setBadge('unknown', '远程不可用');
                             kind = 'failed';
+                            currentStatusKind = 'failed';
+                            syncUpdateButton();
                         }
                     }
                 }
@@ -1406,22 +1523,16 @@
                     msg,
                     kind === 'failed' || data.error ? 'err' : kind === 'ok' ? 'ok' : kind === 'update' ? 'warn' : ''
                 );
-                if (showActionHint) {
-                    setHint(
-                        el.actionHint,
-                        data.error ? formatStatusError(data.error) : '状态已刷新',
-                        data.error || kind === 'failed' ? 'err' : 'ok'
-                    );
-                }
                 return data;
             } catch (e) {
                 setBadge('unknown', '未知');
+                currentStatusKind = 'unknown';
+                syncUpdateButton();
                 setText(el.remoteSha, '—');
                 setText(el.remoteMsg, '—');
                 setText(el.remoteTime, '—');
                 setText(el.remoteBranch, '—');
                 setHint(el.statusHint, 'Agent 未连接或未配置反代', 'warn');
-                if (showActionHint) setHint(el.actionHint, '检查更新失败：' + (e.message || e), 'err');
                 return null;
             }
         }
@@ -1438,12 +1549,12 @@
             }
             if (logLoading && quiet) {
                 // 上一请求未完成则跳过本次 quiet 轮询
-                return { running: lastRunning, skipped: true };
+                return {running: lastRunning, skipped: true};
             }
             logLoading = true;
 
             try {
-                var r = await fetchJson('api/update/log', { cache: 'no-store' });
+                var r = await fetchJson('api/update/log', {cache: 'no-store'});
                 if (seq !== logReqSeq) return null;
 
                 if (!r.ok) {
@@ -1472,7 +1583,7 @@
                 } else {
                     text = JSON.stringify(body, null, 2);
                 }
-                text = String(text || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+                text = sanitizeLogText(text);
 
                 var nearBottom = true;
                 try {
@@ -1503,14 +1614,14 @@
                 metaParts.push(rendered.lines + ' 行');
                 metaParts.push(new Date().toLocaleTimeString());
 
+                updateRunning = running;
                 if (running) {
                     metaParts.push('自动刷新');
                     setLogPill('run', '运行中');
                     setBadge('busy', '更新中');
-                    el.btnUpdate.disabled = true;
+                    currentStatusKind = 'updating';
                     startPoll();
                 } else {
-                    el.btnUpdate.disabled = false;
                     if (exitCode === 0) {
                         setLogPill('ok', '成功');
                         metaParts.push('exit=0');
@@ -1525,19 +1636,22 @@
                     if (finishedAt) metaParts.push(formatTime(finishedAt));
                     if (lastRunning && !running) {
                         if (exitCode === 0) {
-                            setHint(el.actionHint, '更新完成（exitCode=0），已刷新版本', 'ok');
+                            setHint(el.statusHint, '更新完成（exitCode=0），已刷新版本', 'ok');
                             setBadge('ok', '已是最新');
+                            currentStatusKind = 'ok';
                         } else if (exitCode != null) {
-                            setHint(el.actionHint, '更新结束但失败（exitCode=' + exitCode + '）', 'err');
+                            setHint(el.statusHint, '更新结束但失败（exitCode=' + exitCode + '）', 'err');
                             setBadge('fail', '失败');
+                            currentStatusKind = 'failed';
                         }
                     }
                 }
+                syncUpdateButton();
 
                 lastRunning = running;
                 el.logMeta.textContent = metaParts.join(' · ');
                 el.logMeta.title = 'api/update/log';
-                return { running: running, exitCode: exitCode, finishedAt: finishedAt, lines: rendered.lines };
+                return {running: running, exitCode: exitCode, finishedAt: finishedAt, lines: rendered.lines};
             } catch (e) {
                 if (seq !== logReqSeq) return null;
                 lastLogText = null;
@@ -1559,7 +1673,7 @@
         async function doUpdate() {
             var token = (el.tokenInput.value || '').trim();
             if (!token) {
-                setHint(el.actionHint, '请先填写 Update Token', 'err');
+                setHint(el.statusHint, '请先填写 Update Token', 'err');
                 el.tokenInput.focus();
                 return;
             }
@@ -1575,10 +1689,11 @@
                 }
             }
 
-            el.btnUpdate.disabled = true;
+            updateRunning = true;
+            currentStatusKind = 'updating';
+            syncUpdateButton();
             el.btnCheck.disabled = true;
             setBadge('busy', '更新中');
-            setHint(el.actionHint, '正在触发更新…');
             setHint(el.statusHint, '更新请求已发送，日志将自动刷新。');
 
             try {
@@ -1595,21 +1710,23 @@
                     if (r.status === 401 || r.status === 403) errMsg = 'Token 无效或无权限（' + r.status + '）';
                     if (r.status === 409) errMsg = '更新正在进行中，请稍候查看日志';
                     setBadge('fail', '失败');
-                    setHint(el.actionHint, '更新失败：' + errMsg, 'err');
+                    currentStatusKind = 'failed';
+                    updateRunning = false;
                     setHint(el.statusHint, '更新失败：' + errMsg, 'err');
-                    el.btnUpdate.disabled = false;
+                    syncUpdateButton();
                 } else {
                     var okMsg = pick(r.body || {}, ['message', 'msg'], '') || '更新已触发';
-                    setHint(el.actionHint, okMsg + '，正在拉取日志…', 'ok');
+                    setHint(el.statusHint, okMsg + '，正在拉取日志…', 'ok');
                     lastRunning = true;
                     startPoll();
                 }
                 await loadLog();
             } catch (e) {
                 setBadge('fail', '失败');
-                setHint(el.actionHint, '更新请求失败：' + (e.message || e), 'err');
-                setHint(el.statusHint, 'Agent 未连接或未配置反代', 'warn');
-                el.btnUpdate.disabled = false;
+                currentStatusKind = 'failed';
+                updateRunning = false;
+                setHint(el.statusHint, '更新请求失败：' + (e.message || e), 'err');
+                syncUpdateButton();
             } finally {
                 el.btnCheck.disabled = false;
             }
@@ -1628,12 +1745,20 @@
 
         el.btnCheck.addEventListener('click', function () {
             loadVersion().then(function () {
-                return loadStatus(true);
+                return loadStatus();
             });
         });
-        el.btnUpdate.addEventListener('click', doUpdate);
+        el.btnUpdate.addEventListener('click', function () {
+            if (el.btnUpdate.disabled) return;
+            if (currentStatusKind === 'ok') {
+                setHint(el.statusHint, '本地已与远程一致，无需更新', 'ok');
+                return;
+            }
+            doUpdate();
+        });
+        syncUpdateButton();
         el.btnLog.addEventListener('click', function () {
-            loadLog({ quiet: false });
+            loadLog({quiet: false});
         });
 
         if (el.btnToggleToken) {
@@ -1680,7 +1805,7 @@
                     } catch (e5) { /* ignore */
                     }
                 },
-                { passive: true }
+                {passive: true}
             );
         }
 
@@ -1700,7 +1825,7 @@
 
         // 初始加载
         restoreToken();
-        Promise.all([loadVersion(), loadStatus(false), loadLog({ quiet: false })]);
+        Promise.all([loadVersion(), loadStatus(), loadLog({quiet: false})]);
     })();
 </script>
 </body>
