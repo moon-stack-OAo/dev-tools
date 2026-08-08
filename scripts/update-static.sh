@@ -25,11 +25,29 @@ if [ -n "${GITHUB_TOKEN:-}" ]; then
   CURL_AUTH=(-H "Authorization: Bearer ${GITHUB_TOKEN}")
 fi
 
-curl -fsSL "${CURL_AUTH[@]}" -o "$TMP/dist.tar.gz" "$DIST_URL"
+# GitHub Release 大文件经 CDN 时 HTTP/2 偶发 stream 中断（curl exit 18）
+# 强制 HTTP/1.1 + 重试 + 断点续传，避免一直卡在 download
+curl_download() {
+  local url=$1
+  local out=$2
+  curl -fL --http1.1 \
+    --retry 5 \
+    --retry-delay 2 \
+    --retry-all-errors \
+    --connect-timeout 30 \
+    --max-time 600 \
+    -C - \
+    "${CURL_AUTH[@]}" \
+    -o "$out" \
+    "$url"
+}
+
+curl_download "$DIST_URL" "$TMP/dist.tar.gz"
 
 # 可选校验 sha256（同目录 .sha256 资产）
 SHA_URL="${DIST_URL}.sha256"
-if curl -fsSL "${CURL_AUTH[@]}" -o "$TMP/dist.tar.gz.sha256" "$SHA_URL" 2>/dev/null; then
+if curl -fL --http1.1 --retry 3 --connect-timeout 15 --max-time 60 \
+  "${CURL_AUTH[@]}" -o "$TMP/dist.tar.gz.sha256" "$SHA_URL" 2>/dev/null; then
   echo "[update-static] verify sha256"
   (cd "$TMP" && sha256sum -c dist.tar.gz.sha256)
 else
