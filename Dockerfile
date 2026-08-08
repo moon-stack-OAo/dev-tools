@@ -5,10 +5,10 @@ WORKDIR /app
 
 # 安装依赖（先复制 lock 文件以利用缓存 + 保证可复现构建）
 COPY package.json package-lock.json ./
-# postinstall 钩子会执行 copy-libs.js 将第三方库打包到 public/lib
-RUN npm ci
+# postinstall 会跑 copy-libs.js，此时 scripts/ 尚未 COPY，故忽略生命周期脚本
+RUN npm ci --ignore-scripts
 
-# 复制源码并构建
+# 复制源码并构建（build 脚本内会执行 copy-libs）
 COPY . .
 RUN npm run build
 
