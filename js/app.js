@@ -25,6 +25,9 @@ const domCache = {
     breadcrumb: null,
     statusText: null,
     loadingBar: null,
+    toolLoadingOverlay: null,
+    toolLoadingText: null,
+    toolLoadingSub: null,
     toast: null,
     backToTop: null,
     homeSearch: null,
@@ -46,6 +49,9 @@ function initDomCache() {
     domCache.breadcrumb = document.getElementById('breadcrumb');
     domCache.statusText = document.getElementById('statusText');
     domCache.loadingBar = document.getElementById('loadingBar');
+    domCache.toolLoadingOverlay = document.getElementById('toolLoadingOverlay');
+    domCache.toolLoadingText = document.getElementById('toolLoadingText');
+    domCache.toolLoadingSub = document.getElementById('toolLoadingSub');
     domCache.toast = document.getElementById('toast');
     domCache.backToTop = document.getElementById('backToTop');
     domCache.homeSearch = document.getElementById('homeSearch');
@@ -444,6 +450,40 @@ function hideLoading() {
         bar.classList.remove("done");
         bar._hideTimer = null;
     }, 600);
+}
+
+/** 面板区加载遮罩（深链/切换工具时避免先闪首页） */
+function showToolLoading(toolName, toolDesc) {
+    const overlay = domCache.toolLoadingOverlay;
+    if (!overlay) return;
+    clearTimeout(overlay._hideTimer);
+    if (domCache.toolLoadingText) {
+        domCache.toolLoadingText.textContent = toolName
+            ? '正在打开「' + toolName + '」…'
+            : '正在打开工具…';
+    }
+    if (domCache.toolLoadingSub) {
+        domCache.toolLoadingSub.textContent = toolDesc ? String(toolDesc) : '';
+    }
+    overlay.hidden = false;
+    overlay.setAttribute('aria-hidden', 'false');
+    // 强制 reflow，保证从 hidden 切到可见时 transition 生效
+    void overlay.offsetWidth;
+    overlay.classList.add('is-visible');
+}
+
+function hideToolLoading() {
+    const overlay = domCache.toolLoadingOverlay;
+    if (!overlay) return;
+    overlay.classList.remove('is-visible');
+    overlay.setAttribute('aria-hidden', 'true');
+    clearTimeout(overlay._hideTimer);
+    overlay._hideTimer = setTimeout(() => {
+        if (!overlay.classList.contains('is-visible')) {
+            overlay.hidden = true;
+        }
+        overlay._hideTimer = null;
+    }, 200);
 }
 
 function toast(msg) {

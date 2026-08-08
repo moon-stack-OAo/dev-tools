@@ -528,11 +528,84 @@
 /* Panels container 必须作为 flex 列容器，让内部 .tool-panel (flex:1) 获得受限高度，
    触发 overflow-y: auto 滚动以及子元素的 position: sticky。 */
 #panels-container {
+    position: relative;
     flex: 1 1 0;
     overflow: hidden;
     display: flex;
     flex-direction: column;
     min-height: 0;
+}
+
+/* 工具懒加载遮罩：覆盖面板区，避免深链/切换时先闪首页 */
+.tool-loading-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: color-mix(in srgb, var(--bg) 78%, transparent);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.18s ease, visibility 0.18s ease;
+}
+
+.tool-loading-overlay.is-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.tool-loading-overlay[hidden] {
+    display: none !important;
+}
+
+.tool-loading-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    min-width: min(280px, 100%);
+    max-width: 360px;
+    padding: 22px 26px;
+    border-radius: var(--radius-lg, 14px);
+    border: 1px solid var(--border);
+    background: color-mix(in srgb, var(--bg-card) 92%, #fff 4%);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
+    text-align: center;
+}
+
+.tool-loading-spinner {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2.5px solid color-mix(in srgb, var(--accent) 25%, transparent);
+    border-top-color: var(--accent);
+    animation: toolLoadingSpin 0.75s linear infinite;
+}
+
+.tool-loading-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.4;
+}
+
+.tool-loading-sub {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    min-height: 1.1em;
+}
+
+@keyframes toolLoadingSpin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 @keyframes panelIn {

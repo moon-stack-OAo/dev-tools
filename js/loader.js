@@ -140,6 +140,7 @@ async function openTool(id) {
     const gen = ++_openToolGen;
     clearHomeSearch();
     showLoading();
+    showToolLoading(tool.name, tool.desc);
     setStatus("加载中...");
     try {
         // 先按需加载依赖库(若有),再加载脚本依赖与本工具脚本/面板
@@ -155,6 +156,7 @@ async function openTool(id) {
         console.error(e);
         setStatus("就绪");
         hideLoading();
+        hideToolLoading();
         return;
     }
     // 异步加载期间用户又点了其他工具：丢弃本次 UI 切换（资源加载结果仍可复用）
@@ -172,6 +174,7 @@ async function openTool(id) {
         console.error("面板元素缺失: panel-" + id);
         setStatus("就绪");
         hideLoading();
+        hideToolLoading();
         return;
     }
     panel.classList.add("active");
@@ -217,7 +220,10 @@ async function openTool(id) {
         toast("工具初始化失败");
     } finally {
         // 仅当前代关闭 loading；被取代的请求不 hide，避免提前结束最新打开的加载态
-        if (gen === _openToolGen) hideLoading();
+        if (gen === _openToolGen) {
+            hideLoading();
+            hideToolLoading();
+        }
     }
     if (gen !== _openToolGen) return;
     highlightSidebarTool(id);
