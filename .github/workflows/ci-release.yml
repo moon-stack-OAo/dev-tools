@@ -87,30 +87,44 @@ jobs:
             dist/version.json
           retention-days: 30
 
+      # 滚动标签必须指向本次构建 commit，否则 GitHub 上 latest-dist 看起来“不是最新”
+      - name: Move rolling tag latest-dist to this commit
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -f latest-dist "${{ github.sha }}"
+          git push -f origin refs/tags/latest-dist
+
       - name: Publish rolling Release (latest-dist)
         if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
         uses: softprops/action-gh-release@v2
         with:
           tag_name: latest-dist
-          name: Latest dist (CI)
+          target_commitish: ${{ github.sha }}
+          name: 'Latest dist (CI) — ${{ github.sha }}'
           body: |
             自动滚动发布的静态产物，供服务器一键更新下载。
 
             - commit: `${{ github.sha }}`
             - ref: `${{ github.ref }}`
             - 资产：`dev-tools-dist.tar.gz`
+            - 以包内 `version.json` 为准
 
             服务器示例：
             ```bash
-            curl -fsSL -o dist.tar.gz \
+            curl -fL --http1.1 -o dist.tar.gz \
               "https://github.com/${{ github.repository }}/releases/download/latest-dist/dev-tools-dist.tar.gz"
             ```
           files: |
             dev-tools-dist.tar.gz
             dev-tools-dist.tar.gz.sha256
             dist/version.json
-          prerelease: true
-          make_latest: false
+          prerelease: false
+          make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
