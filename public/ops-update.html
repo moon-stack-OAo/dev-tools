@@ -425,7 +425,7 @@
                 <div class="meta-row"><span class="k">版本</span><span class="v" id="localVersion">—</span></div>
             </div>
             <div class="meta-box">
-                <h3>远程仓库 (/api/status)</h3>
+                <h3>远程仓库 (api/status)</h3>
                 <div class="meta-row"><span class="k">Short SHA</span><span class="v" id="remoteSha">—</span></div>
                 <div class="meta-row"><span class="k">Message</span><span class="v msg" id="remoteMsg">—</span></div>
                 <div class="meta-row"><span class="k">时间</span><span class="v" id="remoteTime">—</span></div>
@@ -458,7 +458,7 @@
     <section class="card">
         <div class="log-tools">
             <div class="card-title">更新日志</div>
-            <span style="font-size:0.78rem;color:var(--text-muted)" id="logMeta">GET /api/update/log</span>
+            <span id="logMeta" style="font-size:0.78rem;color:var(--text-muted)">GET api/update/log</span>
         </div>
         <pre id="logView">（暂无日志）</pre>
     </section>
@@ -645,7 +645,8 @@
     async function loadStatus(showActionHint) {
         setHint(el.statusHint, '正在拉取远程状态…');
         try {
-            var r = await fetchJson('/api/status', { cache: 'no-store' });
+            // 相对路径，兼容子路径部署如 /dev-tools/
+            var r = await fetchJson('api/status', { cache: 'no-store' });
             if (!r.ok) {
                 setBadge('unknown', '未知');
                 setText(el.remoteSha, '—');
@@ -693,10 +694,10 @@
     async function loadLog() {
         el.logMeta.textContent = '加载中…';
         try {
-            var r = await fetchJson('/api/update/log', { cache: 'no-store' });
+            var r = await fetchJson('api/update/log', { cache: 'no-store' });
             if (!r.ok) {
                 el.logView.textContent = '无法获取日志（HTTP ' + r.status + '）。\nAgent 未连接或未配置反代。';
-                el.logMeta.textContent = 'GET /api/update/log · 失败';
+                el.logMeta.textContent = 'GET api/update/log · 失败';
                 return;
             }
             var body = r.body;
@@ -717,10 +718,10 @@
                 text = JSON.stringify(body, null, 2);
             }
             el.logView.textContent = text.trim() ? text : '（日志为空）';
-            el.logMeta.textContent = 'GET /api/update/log · ' + new Date().toLocaleTimeString();
+            el.logMeta.textContent = 'GET api/update/log · ' + new Date().toLocaleTimeString();
         } catch (e) {
             el.logView.textContent = '无法获取日志：' + (e.message || e) + '\nAgent 未连接或未配置反代。';
-            el.logMeta.textContent = 'GET /api/update/log · 失败';
+            el.logMeta.textContent = 'GET api/update/log · 失败';
         }
     }
 
@@ -748,7 +749,7 @@
         setHint(el.statusHint, '更新请求已发送，请关注日志输出。');
 
         try {
-            var r = await fetchJson('/api/update', {
+            var r = await fetchJson('api/update', {
                 method: 'POST',
                 headers: {
                     'X-Update-Token': token,

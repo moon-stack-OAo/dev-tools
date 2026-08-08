@@ -1,6 +1,35 @@
 # 将更新 Agent API 反代到本机 127.0.0.1:3930
-# 建议仅允许内网或配合鉴权；POST /api/update 仍需 Header X-Update-Token
+# 建议仅允许内网或配合鉴权；POST api/update 仍需 Header X-Update-Token
+#
+# ---------- 站点挂在根路径 / ----------
+# location /api/ {
+#     proxy_pass http://127.0.0.1:3930;
+#     ...
+# }
+#
+# ---------- 站点挂在子路径 /dev-tools/（你的场景）----------
+# 静态：alias 指向 dist 目录（末尾斜杠要对齐）
+# API：/dev-tools/api/xxx → agent 的 /api/xxx
 
+location /dev-tools/ {
+    alias /opt/jar/dev-tools/dist/;
+    try_files $uri $uri/ /dev-tools/index.html;
+    # 若 try_files 与 alias 组合异常，可改为：
+    # index index.html;
+}
+
+# 管理页 / 静态资源里的相对请求：api/status → /dev-tools/api/status
+location /dev-tools/api/ {
+    proxy_pass http://127.0.0.1:3930/api/;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_read_timeout 300s;
+}
+
+# 根路径部署时用下面这段（与上面二选一或都保留）
 location /api/ {
     proxy_pass http://127.0.0.1:3930;
     proxy_http_version 1.1;
