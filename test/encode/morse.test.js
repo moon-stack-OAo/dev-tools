@@ -28,6 +28,16 @@ describe('morse 编解码', () => {
         expect(morseEncode('A.B')).toBe('.- .-.-.- -...');
     });
 
+    test('扩展符号 # 等可编解码往返', () => {
+        expect(morseEncode('#')).toBe('.-.-..');
+        expect(morseDecode('.-.-..')).toBe('#');
+        // 摩斯字母无大小写，解码为大写
+        const s = 'C# A*B% [X] {Y} | A<B> C^D `E` PATH ~N';
+        expect(morseDecode(morseEncode(s))).toBe(s);
+        expect(morseEncode('＃')).toBe('.-.-..');
+        expect(morseDecode(morseEncode('TAG#1'))).toBe('TAG#1');
+    });
+
     test('中文/全角标点归一为半角', () => {
         expect(normalizeMorseChar('，')).toBe(',');
         expect(normalizeMorseChar('。')).toBe('.');
@@ -45,9 +55,9 @@ describe('morse 编解码', () => {
     });
 
     test('morseEncode 自定义点划符号', () => {
-        expect(morseEncode('E', { dot: '·', dash: '−' })).toBe('·');
-        expect(morseEncode('T', { dot: '·', dash: '−' })).toBe('−');
-        expect(morseEncode('A', { dot: '·', dash: '−' })).toBe('·−');
+        expect(morseEncode('E', {dot: '·', dash: '−'})).toBe('·');
+        expect(morseEncode('T', {dot: '·', dash: '−'})).toBe('−');
+        expect(morseEncode('A', {dot: '·', dash: '−'})).toBe('·−');
     });
 
     test('morseEncode 不支持字符抛错', () => {
@@ -69,7 +79,7 @@ describe('morse 编解码', () => {
     });
 
     test('morseDecode 小写选项', () => {
-        expect(morseDecode('... --- ...', { lowerCase: true })).toBe('sos');
+        expect(morseDecode('... --- ...', {lowerCase: true})).toBe('sos');
     });
 
     test('morseDecode 未知码抛错', () => {
@@ -107,60 +117,65 @@ describe('morse 中文电码', () => {
 
     test('中文电码：中=0022', () => {
         // 0=----- 2=..---
-        expect(morseEncode('中', { chinese: true })).toBe('----- ----- ..--- ..---');
+        expect(morseEncode('中', {chinese: true})).toBe('----- ----- ..--- ..---');
     });
 
     test('中文电码：中文 往返', () => {
-        const code = morseEncode('中文', { chinese: true });
-        expect(morseDecode(code, { chinese: true })).toBe('中文');
+        const code = morseEncode('中文', {chinese: true});
+        expect(morseDecode(code, {chinese: true})).toBe('中文');
     });
 
     test('中英混合往返', () => {
         const s = 'Hello 中文';
-        const code = morseEncode(s, { chinese: true });
-        expect(morseDecode(code, { chinese: true })).toBe('HELLO 中文');
+        const code = morseEncode(s, {chinese: true});
+        expect(morseDecode(code, {chinese: true})).toBe('HELLO 中文');
     });
 
     test('中文带逗号可编码', () => {
-        const code = morseEncode('你好，世界', { chinese: true });
+        const code = morseEncode('你好，世界', {chinese: true});
         // 解码得到半角逗号
-        expect(morseDecode(code, { chinese: true })).toBe('你好,世界');
+        expect(morseDecode(code, {chinese: true})).toBe('你好,世界');
     });
 
     test('URL/IP 含数字 + 中文：中文电码模式下可往返', () => {
+        // 字母解码默认大写（摩斯无大小写）
         const s = 'HTTP://192.168.xxx.xxx/DEV-TOOLS/是';
-        const code = morseEncode(s, { chinese: true });
-        expect(morseDecode(code, { chinese: true })).toBe(s);
+        const code = morseEncode(s, {chinese: true});
+        expect(morseDecode(code, {chinese: true})).toBe('HTTP://192.168.XXX.XXX/DEV-TOOLS/是');
+        expect(morseDecode(code, {chinese: true, lowerCase: true})).toBe(
+            'http://192.168.xxx.xxx/dev-tools/是',
+        );
     });
 
     test('ASCII 数字紧贴汉字：编码插入软词界后可往返', () => {
-        const s = 'to9.9起';
-        const code = morseEncode(s, { chinese: true });
+        const s = 'TO9.9起';
+        const code = morseEncode(s, {chinese: true});
         expect(code).toContain('//');
-        expect(morseDecode(code, { chinese: true })).toBe(s);
+        expect(morseDecode(code, {chinese: true})).toBe(s);
+        expect(morseDecode(code, {chinese: true, lowerCase: true})).toBe('to9.9起');
     });
 
     test('中英数字混合：价格100元 往返', () => {
         const s = '价格100元';
-        expect(morseDecode(morseEncode(s, { chinese: true }), { chinese: true })).toBe(s);
+        expect(morseDecode(morseEncode(s, {chinese: true}), {chinese: true})).toBe(s);
     });
 
     test('纯 URL 在中文电码开启时按字面数字解码', () => {
         const code =
             '.... - - .--. ---... -..-. -..-. .---- ----. ..--- .-.-.- .---- -.... ---.. .-.-.- .---- .---- ----- .-.-.- ..--- ....- -.... -..-. -.. . ...- -....- - --- --- .-.. ... -..-.';
-        expect(morseDecode(code, { chinese: true })).toBe('HTTP://192.168.110.246/DEV-TOOLS/');
+        expect(morseDecode(code, {chinese: true})).toBe('HTTP://192.168.110.246/DEV-TOOLS/');
     });
 
     test('未开中文选项遇汉字抛错', () => {
-        expect(() => morseEncode('汉', { chinese: false })).toThrow(/中文电码/);
+        expect(() => morseEncode('汉', {chinese: false})).toThrow(/中文电码/);
     });
 
     test('setCtcTable 可注入小表', () => {
-        setCtcTable({ 测: '1234', 试: '5678' });
-        expect(morseEncode('测试', { chinese: true })).toBe(
+        setCtcTable({测: '1234', 试: '5678'});
+        expect(morseEncode('测试', {chinese: true})).toBe(
             '.---- ..--- ...-- ....- ..... -.... --... ---..',
         );
-        expect(morseDecode(morseEncode('测试', { chinese: true }), { chinese: true })).toBe('测试');
+        expect(morseDecode(morseEncode('测试', {chinese: true}), {chinese: true})).toBe('测试');
         // 恢复完整表供后续（若有）
         return loadCtcTable().then(() => {
             // loadCtcTable 在已加载时直接返回旧表；强制重载：
