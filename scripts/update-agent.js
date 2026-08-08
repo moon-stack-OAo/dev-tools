@@ -31,6 +31,16 @@ const REPO_DIR = process.env.REPO_DIR || process.cwd();
 const SITE_ROOT = process.env.SITE_ROOT || '/var/www/dev-tools';
 const LISTEN_HOST = process.env.LISTEN_HOST || '127.0.0.1';
 const LISTEN_PORT = parseInt(process.env.LISTEN_PORT || '3930', 10);
+// 远程对比：优先 CI 发布的 version.json（与一键更新下载的产物一致）
+const DIST_RELEASE_TAG = process.env.DIST_RELEASE_TAG || 'latest-dist';
+const DIST_VERSION_ASSET = process.env.DIST_VERSION_ASSET || 'version.json';
+// release | commit | auto（默认 auto：先 Release version.json，失败再 commits API）
+const REMOTE_COMPARE =
+    String(process.env.REMOTE_COMPARE || 'auto').toLowerCase() === 'commit'
+        ? 'commit'
+        : String(process.env.REMOTE_COMPARE || 'auto').toLowerCase() === 'release'
+          ? 'release'
+          : 'auto';
 
 /** @type {{ key: string, at: number, remote: object|null, error: string|null }|null} */
 let remoteStatusCache = null;
@@ -203,15 +213,29 @@ function formatGithubHttpError(statusCode, body) {
     return msg;
 }
 
-function httpsGetJson(url) {
+function httpsGetJson(url, headers) {
     return new Promise((resolve, reject) => {
         const req = https.get(
             url,
             {
-                headers: githubHeaders(),
+                headers: headers || githubHeaders(),
                 timeout: 15000,
             },
             (res) => {
+                // 跟随 Release 下载重定向（github.com → objects.githubusercontent.com）
+                if (
+                    res.statusCode &&
+                    res.statusCode >= 300 &&
+                    res.statusCode < 400 &&
+                    res.headers &&
+                    res.headers.location
+                ) {
+                    res.resume();
+                    httpsGetJson(res.headers.location, headers || { 'User-Agent': 'dev-tools-update-agent' })
+                        .then(resolve)
+                        .catch(reject);
+                    return;
+                }
                 const chunks = [];
                 res.on('data', (c) => chunks.push(c));
                 res.on('end', () => {
@@ -223,7 +247,7 @@ function httpsGetJson(url) {
                     try {
                         resolve(JSON.parse(body));
                     } catch (e) {
-                        reject(new Error('Invalid JSON from GitHub'));
+                        reject(new Error('Invalid JSON from ' + url));
                     }
                 });
             },
@@ -247,8 +271,89 @@ function extractLocalSha(localData) {
     );
 }
 
-async function fetchRemoteCommit() {
-    const cacheKey = GITHUB_REPO + '@' + GITHUB_BRANCH;
+function shaEqual(localSha, remote) {
+    if (!localSha || !remote) return false;
+    const l = String(localSha);
+    const rFull = String(remote.sha || remote.fullSha || '');
+    const rShort = String(remote.short || remote.commit || (rFull ? rFull.slice(0, 7) : ''));
+    if (!rFull && !rShort) return false;
+    return l === rFull || l.slice(0, 7) === rShort || (rShort && l.slice(0, rShort.length) === rShort);
+}
+
+/** 从 CI Release 资产 version.json 构造 remote（与 update-static 下载产物一致） */
+function remoteFromVersionJson(info, sourceUrl) {
+    const full = extractLocalSha(info) || '';
+    const short =
+        (info && (info.commit || info.shortSha || info.short)) || (full ? String(full).slice(0, 7) : '');
+    return {
+        sha: full || short,
+        short: short || (full ? String(full).slice(0, 7) : ''),
+        fullSha: full || '',
+        commit: short || '',
+        date: (info && (info.builtAt || info.time || info.date)) || null,
+        builtAt: (info && info.builtAt) || null,
+        message:
+            (info && (info.message || info.msg)) ||
+            (short ? 'CI 构建 version.json · ' + short : 'CI 构建 version.json'),
+        branch: (info && info.branch) || GITHUB_BRANCH,
+        repo: (info && info.repo) || GITHUB_REPO,
+        source: 'release-version',
+        releaseTag: DIST_RELEASE_TAG,
+        versionUrl: sourceUrl || '',
+    };
+}
+
+async function fetchRemoteReleaseVersion() {
+    // 与 ci-release 发布资产一致：releases/download/latest-dist/version.json
+    const url =
+        'https://github.com/' +
+        GITHUB_REPO +
+        '/releases/download/' +
+        encodeURIComponent(DIST_RELEASE_TAG) +
+        '/' +
+        DIST_VERSION_ASSET;
+    const info = await httpsGetJson(url, {
+        'User-Agent': 'dev-tools-update-agent',
+        Accept: 'application/json',
+    });
+    if (!info || typeof info !== 'object') {
+        throw new Error('Release version.json 无效');
+    }
+    if (!extractLocalSha(info) && !info.commit) {
+        throw new Error('Release version.json 缺少 fullSha/commit');
+    }
+    return remoteFromVersionJson(info, url);
+}
+
+async function fetchRemoteBranchCommit() {
+    const url =
+        'https://api.github.com/repos/' + GITHUB_REPO + '/commits/' + encodeURIComponent(GITHUB_BRANCH);
+    const commit = await httpsGetJson(url);
+    const sha = commit.sha || '';
+    return {
+        sha,
+        short: sha ? sha.slice(0, 7) : '',
+        fullSha: sha,
+        commit: sha ? sha.slice(0, 7) : '',
+        date: (commit.commit && commit.commit.committer && commit.commit.committer.date) || null,
+        message: (commit.commit && commit.commit.message && commit.commit.message.split('\n')[0]) || '',
+        branch: GITHUB_BRANCH,
+        repo: GITHUB_REPO,
+        source: 'commit',
+    };
+}
+
+async function fetchRemoteTarget() {
+    const cacheKey =
+        GITHUB_REPO +
+        '|' +
+        REMOTE_COMPARE +
+        '|' +
+        DIST_RELEASE_TAG +
+        '|' +
+        DIST_VERSION_ASSET +
+        '|' +
+        GITHUB_BRANCH;
     const now = Date.now();
     if (
         remoteStatusCache &&
@@ -264,24 +369,34 @@ async function fetchRemoteCommit() {
         };
     }
 
-    // repo 保留 owner/name 中的 /，仅对 branch 编码
-    const url =
-        'https://api.github.com/repos/' + GITHUB_REPO + '/commits/' + encodeURIComponent(GITHUB_BRANCH);
+    let remote = null;
+    let error = null;
 
     try {
-        const commit = await httpsGetJson(url);
-        const sha = commit.sha || '';
-        const remote = {
-            sha,
-            short: sha ? sha.slice(0, 7) : '',
-            date: (commit.commit && commit.commit.committer && commit.commit.committer.date) || null,
-            message: (commit.commit && commit.commit.message && commit.commit.message.split('\n')[0]) || '',
-        };
-        remoteStatusCache = { key: cacheKey, at: now, remote, error: null };
-        return { remote, error: null, cached: false, cacheAgeMs: 0 };
+        if (REMOTE_COMPARE === 'commit') {
+            remote = await fetchRemoteBranchCommit();
+        } else {
+            // release / auto：优先 CI 产物 version.json
+            try {
+                remote = await fetchRemoteReleaseVersion();
+            } catch (errRelease) {
+                if (REMOTE_COMPARE === 'release') {
+                    throw errRelease;
+                }
+                // auto：回退到分支最新 commit（兼容旧环境 / Release 尚未发布 version.json）
+                const releaseErr = errRelease && errRelease.message ? errRelease.message : String(errRelease);
+                remote = await fetchRemoteBranchCommit();
+                remote.message =
+                    (remote.message || '') +
+                    (remote.message ? ' · ' : '') +
+                    '（Release version.json 不可用，已回退 commits API：' +
+                    releaseErr.slice(0, 80) +
+                    '）';
+                remote.fallbackFrom = 'release-version';
+            }
+        }
     } catch (err) {
-        const error = err && err.message ? err.message : String(err);
-        // 限流时若有旧缓存，继续用旧 remote（并带上 error 说明）
+        error = err && err.message ? err.message : String(err);
         if (
             remoteStatusCache &&
             remoteStatusCache.key === cacheKey &&
@@ -290,7 +405,7 @@ async function fetchRemoteCommit() {
         ) {
             return {
                 remote: remoteStatusCache.remote,
-                error: error + '（展示缓存的远程提交）',
+                error: error + '（展示缓存的远程版本）',
                 cached: true,
                 cacheAgeMs: now - remoteStatusCache.at,
             };
@@ -308,24 +423,22 @@ async function fetchRemoteCommit() {
             cacheAgeMs: remoteStatusCache.remote ? now - remoteStatusCache.at : 0,
         };
     }
+
+    remoteStatusCache = { key: cacheKey, at: now, remote, error: null };
+    return { remote, error: null, cached: false, cacheAgeMs: 0 };
 }
 
 async function handleStatus() {
     const local = readLocalVersion();
-    const remoteResult = await fetchRemoteCommit();
+    const remoteResult = await fetchRemoteTarget();
     const remote = remoteResult.remote;
     const error = remoteResult.error;
-    // Agent 自身正常；仅 GitHub 查询失败时 ok 仍为 true，避免页面误报「未连接」
+    // Agent 自身正常；仅远程查询失败时 ok 仍为 true，避免页面误报「未连接」
     const ok = true;
     const remoteOk = !error || !!remote;
 
     const localSha = extractLocalSha(local.data);
-    const upToDate =
-        remoteOk && remote && localSha && !error
-            ? String(localSha).slice(0, 7) === remote.short || String(localSha) === remote.sha
-            : remote && localSha
-              ? String(localSha).slice(0, 7) === remote.short || String(localSha) === remote.sha
-              : null;
+    const upToDate = remote && localSha ? shaEqual(localSha, remote) : null;
 
     return {
         ok,
@@ -342,6 +455,9 @@ async function handleStatus() {
             repo: GITHUB_REPO,
             branch: GITHUB_BRANCH,
             mode: DEPLOY_MODE,
+            compare: (remote && remote.source) || REMOTE_COMPARE,
+            releaseTag: DIST_RELEASE_TAG,
+            versionAsset: DIST_VERSION_ASSET,
             githubAuth: GITHUB_TOKEN ? 'token' : 'anonymous',
             statusCacheMs: STATUS_CACHE_MS,
         },

@@ -188,8 +188,12 @@ static 与 docker **二选一**做主站即可，Agent 只按当前 `DEPLOY_MODE
 
 ## 状态对比原理
 
-- 构建时写入 `version.json`（commit / fullSha）
-- Agent `GET /api/status`：本地 fullSha vs GitHub `main` 最新 commit
+- 构建时写入 `version.json`（commit / fullSha / builtAt）
+- Agent `GET /api/status` 默认对比：
+  1. **本地**已部署 `version.json`（static 目录或 docker 容器内）
+  2. **远程** CI Release `latest-dist` 资产里的 **`version.json`**（与一键更新下载的产物一致）
+- 若 Release 中没有 `version.json`（旧发布），`REMOTE_COMPARE=auto` 会回退到 GitHub 分支最新 commit
+- 可选环境变量：`REMOTE_COMPARE=release|commit|auto`、`DIST_RELEASE_TAG`、`DIST_VERSION_ASSET`
 - 你点更新后，新 dist/镜像带上新 version.json，状态变为「已是最新」
 
 ## 安全

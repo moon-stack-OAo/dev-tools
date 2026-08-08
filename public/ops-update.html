@@ -997,18 +997,18 @@
                         </div>
                     </div>
                     <div class="meta-box is-remote">
-                        <h3>远程 main · api/status</h3>
+                        <h3>远程构建 · latest-dist</h3>
                         <div class="sha-chip" id="remoteSha">—</div>
                         <div class="meta-row">
-                            <span class="k">Message</span>
+                            <span class="k">说明</span>
                             <span class="v msg" id="remoteMsg">—</span>
                         </div>
                         <div class="meta-row">
-                            <span class="k">时间</span>
+                            <span class="k">构建时间</span>
                             <span class="v" id="remoteTime">—</span>
                         </div>
                         <div class="meta-row">
-                            <span class="k">分支 / 模式</span>
+                            <span class="k">来源 / 模式</span>
                             <span class="v msg" id="remoteBranch">—</span>
                         </div>
                     </div>
@@ -1187,11 +1187,19 @@
             setText(el.remoteMsg, remote.message || '—');
             setText(el.remoteTime, formatTime(remote.time));
             var meta = data.meta || {};
+            var src = (data.remote && data.remote.source) || meta.compare || '';
+            var tag = (data.remote && data.remote.releaseTag) || meta.releaseTag || '';
             var branch = remote.branch || meta.branch || pick(data, ['branch', 'ref'], '');
             var mode = meta.mode || '';
-            var repo = meta.repo || '';
+            var repo = meta.repo || remote.repo || '';
             var bits = [];
-            if (branch) bits.push(branch);
+            if (src === 'release-version' || src === 'release') {
+                bits.push(tag ? 'Release ' + tag : 'Release version.json');
+            } else if (src === 'commit') {
+                bits.push(branch ? 'commits/' + branch : 'GitHub commit');
+            } else if (branch) {
+                bits.push(branch);
+            }
             if (mode) bits.push('mode=' + mode);
             if (repo) bits.push(repo);
             setText(el.remoteBranch, bits.length ? bits.join(' · ') : '—');
@@ -1507,11 +1515,20 @@
                     }
                 }
                 if (!msg) {
+                    var compareSrc =
+                        (data.remote && data.remote.source) ||
+                        (data.meta && data.meta.compare) ||
+                        '';
                     if (kind === 'ok') {
-                        msg = '本地 version.json 与远程 main 一致，无需更新。';
+                        msg =
+                            compareSrc === 'commit'
+                                ? '本地 version.json 与远程分支最新 commit 一致，无需更新。'
+                                : '本地 version.json 与 CI 发布产物（latest-dist）一致，无需更新。';
                     } else if (kind === 'update') {
                         msg =
-                            '远程 main 有新提交。立即更新将下载 Release latest-dist 资产（需 CI 已发布到该 commit）。';
+                            compareSrc === 'commit'
+                                ? '远程分支有新提交。立即更新将下载 Release latest-dist（请确认 CI 已发布）。'
+                                : 'CI 有更新的构建产物（latest-dist/version.json）。立即更新将下载并部署该版本。';
                     } else if (kind === 'updating') {
                         msg = '更新任务进行中，日志将自动刷新。';
                     } else if (kind === 'failed') {
