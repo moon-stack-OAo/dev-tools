@@ -179,7 +179,7 @@ npm run build     # 输出到 dist/
 | Hex 编码          | 字符串 ↔ Hex 互转（UTF-8）                      |
 | Base32 / Base58 | Base32 (RFC 4648) / Base58 (Bitcoin) 编解码 |
 | Protobuf 解码     | Protobuf ↔ JSON / Base64 / Hex           |
-| 摩斯电码            | 文本 ↔ 摩斯电码（ITU 国际 ·− / 空格与 / 分隔）         |
+| 摩斯电码            | 文本 ↔ 摩斯电码（ITU；可选中文电码汉字↔四位电报码）     |
 
 ### 三、安全（19）
 

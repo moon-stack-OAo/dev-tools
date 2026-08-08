@@ -2,6 +2,9 @@
     <div class="toolbar">
         <button onclick="morseDoEncode()">文本 → 摩斯</button>
         <button class="outline" onclick="morseDoDecode()">摩斯 → 文本</button>
+        <label title="汉字经「中文电码」转四位数字后再编摩斯（大陆标准）">
+            <input checked id="morseChinese" style="accent-color:var(--accent)" type="checkbox"> 中文电码
+        </label>
         <label><input id="morseUnicode" style="accent-color:var(--accent)" type="checkbox"> 输出 ·−</label>
         <label><input id="morseLower" style="accent-color:var(--accent)" type="checkbox"> 解码小写</label>
         <button class="outline" onclick="morseClear()" style="margin-left:auto;color:var(--danger)">清空</button>
@@ -10,7 +13,7 @@
         <div class="fmt-pane">
             <div class="label">输入（文本或摩斯码）</div>
             <textarea class="json-input" id="morseInput"
-                      placeholder="文本：HELLO WORLD&#10;摩斯：.... . .-.. .-.. --- / .-- --- .-. .-.. -.."></textarea>
+                      placeholder="英文：HELLO WORLD&#10;中文：中文&#10;摩斯：.... . .-.. .-.. --- / .-- --- .-. .-.. -.."></textarea>
         </div>
         <div class="fmt-pane">
             <div class="copy-wrap">
@@ -21,6 +24,9 @@
         </div>
     </div>
     <div class="hint" style="margin-top:10px;color:var(--text-muted);font-size:12px;line-height:1.5">
-        ITU 国际摩斯码：字母间空格分隔，词间用 <code>/</code>。解码兼容 <code>.-</code>、<code>·−</code>、<code>0/1</code>。
+        ITU 国际摩斯码：字母间空格，词间 <code>/</code>。
+        <strong>中文</strong>无直接摩斯码，启用「中文电码」后：汉字 → 四位电报码 → 数字摩斯
+        （如 <code>中</code>=0022 → <code>----- ----- ..--- ..---</code>）。解码时请保持同一选项。
+        电码表约 7k 字（Unihan 大陆标准），按需加载。
     </div>
 </div>

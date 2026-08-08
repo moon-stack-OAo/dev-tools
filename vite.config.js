@@ -334,7 +334,7 @@ function injectAssetMapPlugin(mode) {
             const full = path.join(dir, e);
             if (fs.statSync(full).isDirectory()) {
               walkLib(full, prefix + e + "/");
-            } else if (e.endsWith(".js")) {
+            } else if (e.endsWith(".js") || e.endsWith(".json")) {
               map["lib/" + prefix + e] = md5(full);
             }
           }

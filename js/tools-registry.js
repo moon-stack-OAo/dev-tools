@@ -270,7 +270,7 @@ const tools = [
         id: "morse",
         icon: "bi-broadcast",
         name: "摩斯电码",
-        desc: "文本 ↔ 摩斯电码（ITU 国际）",
+        desc: "文本 ↔ 摩斯电码（ITU / 中文电码）",
         cat: "encode",
     },
 
