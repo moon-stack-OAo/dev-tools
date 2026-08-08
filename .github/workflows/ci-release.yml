@@ -1,0 +1,158 @@
+# CI：测试 + 构建 dist 产物 + 推送 Docker 镜像到 GHCR
+# - push main / tag / 手动：完整发布（artifact + Release latest-dist + GHCR）
+# - pull_request：仅 test + build（不推镜像、不发 Release）
+#
+# 服务器「只 dist / 只 Docker」时：
+# - static：update-static.sh 下载 Release 资产 dev-tools-dist.tar.gz
+# - docker：update-docker.sh pull ghcr.io/<owner>/dev-tools:main
+name: CI Release
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+      - dev-tools
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+  attestations: write
+  id-token: write
+
+concurrency:
+  group: ci-release-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Test
+        run: npm test
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify dist + version.json
+        run: |
+          test -f dist/index.html
+          test -f dist/version.json
+          test -f dist/ops-update.html
+          test -d dist/js
+          echo "=== version.json ==="
+          cat dist/version.json
+          du -sh dist
+
+      - name: Pack dist
+        run: |
+          tar -czf dev-tools-dist.tar.gz -C dist .
+          ls -lh dev-tools-dist.tar.gz
+          sha256sum dev-tools-dist.tar.gz > dev-tools-dist.tar.gz.sha256
+
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dev-tools-dist
+          path: |
+            dev-tools-dist.tar.gz
+            dev-tools-dist.tar.gz.sha256
+            dist/version.json
+          retention-days: 30
+
+      - name: Publish rolling Release (latest-dist)
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest-dist
+          name: Latest dist (CI)
+          body: |
+            自动滚动发布的静态产物，供服务器一键更新下载。
+
+            - commit: `${{ github.sha }}`
+            - ref: `${{ github.ref }}`
+            - 资产：`dev-tools-dist.tar.gz`
+
+            服务器示例：
+            ```bash
+            curl -fsSL -o dist.tar.gz \
+              "https://github.com/${{ github.repository }}/releases/download/latest-dist/dev-tools-dist.tar.gz"
+            ```
+          files: |
+            dev-tools-dist.tar.gz
+            dev-tools-dist.tar.gz.sha256
+            dist/version.json
+          prerelease: true
+          make_latest: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  docker:
+    needs: build
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=main,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=sha,prefix=sha-,format=short
+            type=ref,event=tag
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: |
+            ${{ steps.meta.outputs.labels }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

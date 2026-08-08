@@ -2,6 +2,9 @@
 
 本文说明如何在自建环境中部署静态站点、Docker、更新 Agent、Nginx 反代与 systemd 服务，使运维可通过 `ops-update.html` 触发一键更新。
 
+> **推荐路径（GitHub CI）**：构建在 CI 完成，服务器只下载 `dist` 或 `docker pull`。详见 **[deploy-ci.md](./deploy-ci.md)**。  
+> 下方仍保留 Agent / Nginx / 管理页说明。
+
 > 安全提示：Update Token 仅通过环境变量/密钥文件注入，**切勿写入仓库或 HTML**。
 
 ## 架构概览
@@ -36,11 +39,11 @@ npm run build
 
 部署时确保：
 
-| 文件 | 说明 |
-|------|------|
-| `dist/index.html` | 主站（内联 `__BUILD_INFO__`） |
-| `dist/ops-update.html` | 更新管理页 |
-| `dist/version.json` | 当前构建元信息（`npm run build` 自动生成） |
+| 文件                     | 说明                            |
+|------------------------|-------------------------------|
+| `dist/index.html`      | 主站（内联 `__BUILD_INFO__`）       |
+| `dist/ops-update.html` | 更新管理页                         |
+| `dist/version.json`    | 当前构建元信息（`npm run build` 自动生成） |
 
 ### version.json 字段（与 Vite `writeVersionPlugin` 一致）
 
@@ -63,7 +66,8 @@ docker build -t dev-tools:latest .
 docker run -d --name dev-tools -p 8080:80 dev-tools:latest
 ```
 
-一键更新需要 **宿主机/侧车** 运行 Update Agent，并由 Nginx 将 `/api/` 反代过去。容器内仅有静态站 + CORS 代理时，`ops-update.html` 会提示「Agent 未连接或未配置反代」。
+一键更新需要 **宿主机/侧车** 运行 Update Agent，并由 Nginx 将 `/api/` 反代过去。容器内仅有静态站 + CORS 代理时，
+`ops-update.html` 会提示「Agent 未连接或未配置反代」。
 
 推荐两种模式：
 
@@ -74,22 +78,22 @@ docker run -d --name dev-tools -p 8080:80 dev-tools:latest
 
 Agent 为独立进程（可用 Node/Go/Shell 包装），需实现：
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| GET | `/api/status` | 返回本地/远程版本对比 |
-| POST | `/api/update` | 校验 `X-Update-Token` 后执行更新 |
-| GET | `/api/update/log` | 返回最近一次更新日志（文本或 JSON） |
+| 方法   | 路径                | 说明                        |
+|------|-------------------|---------------------------|
+| GET  | `/api/status`     | 返回本地/远程版本对比               |
+| POST | `/api/update`     | 校验 `X-Update-Token` 后执行更新 |
+| GET  | `/api/update/log` | 返回最近一次更新日志（文本或 JSON）      |
 
 ### 环境变量建议
 
-| 变量 | 说明 |
-|------|------|
-| `UPDATE_TOKEN` | 与页面输入一致的密钥 |
-| `UPDATE_REPO_DIR` | 代码/发布工作目录 |
-| `UPDATE_BRANCH` | 默认跟踪分支，如 `main` |
+| 变量                | 说明                           |
+|-------------------|------------------------------|
+| `UPDATE_TOKEN`    | 与页面输入一致的密钥                   |
+| `UPDATE_REPO_DIR` | 代码/发布工作目录                    |
+| `UPDATE_BRANCH`   | 默认跟踪分支，如 `main`              |
 | `UPDATE_DIST_DIR` | 静态站点目录，如 `/var/www/devtools` |
-| `UPDATE_LISTEN` | 如 `127.0.0.1:3928` |
-| `UPDATE_SCRIPT` | 实际更新脚本路径 |
+| `UPDATE_LISTEN`   | 如 `127.0.0.1:3928`           |
+| `UPDATE_SCRIPT`   | 实际更新脚本路径                     |
 
 ### /api/status 响应示例
 
@@ -126,7 +130,10 @@ X-Update-Token: <与 UPDATE_TOKEN 一致>
 成功示例：
 
 ```json
-{ "ok": true, "message": "更新已触发" }
+{
+  "ok": true,
+  "message": "更新已触发"
+}
 ```
 
 失败（Token 错误）应返回 `401`/`403`。
@@ -136,7 +143,9 @@ X-Update-Token: <与 UPDATE_TOKEN 一致>
 可返回纯文本，或：
 
 ```json
-{ "log": "....多行日志...." }
+{
+  "log": "....多行日志...."
+}
 ```
 
 也支持 `{ "lines": ["..."] }`。
@@ -248,9 +257,9 @@ openssl rand -hex 32
 
 1. 浏览器打开 `https://你的域名/ops-update.html`
 2. 页面加载时自动：
-   - 读取 `version.json` 显示本地构建
-   - 请求 `/api/status` 对比远程（失败则提示 Agent 未连接）
-   - 拉取 `/api/update/log`
+    - 读取 `version.json` 显示本地构建
+    - 请求 `/api/status` 对比远程（失败则提示 Agent 未连接）
+    - 拉取 `/api/update/log`
 3. 在 Token 框填入密钥；可选勾选「记住到 sessionStorage」（键名 `devtools.updateToken`，关标签即失）
 4. **检查更新**：重新拉取状态
 5. **立即更新**：`POST /api/update`，Header `X-Update-Token`
@@ -258,11 +267,11 @@ openssl rand -hex 32
 
 状态徽章：
 
-| 徽章 | 含义 |
-|------|------|
-| 已是最新（绿） | 本地与远程一致 |
-| 可更新（橙） | 远程有新提交 |
-| 更新中（蓝） | 任务进行中 |
+| 徽章           | 含义            |
+|--------------|---------------|
+| 已是最新（绿）      | 本地与远程一致       |
+| 可更新（橙）       | 远程有新提交        |
+| 更新中（蓝）       | 任务进行中         |
 | 失败（红）/ 未知（灰） | 出错或 Agent 不可用 |
 
 ## 7. 验收清单
@@ -277,13 +286,13 @@ openssl rand -hex 32
 
 ## 8. 故障排查
 
-| 现象 | 排查 |
-|------|------|
-| 状态始终「未知」 | `curl -i http://127.0.0.1:3928/api/status`；检查 Nginx `proxy_pass` |
-| 401/403 | Token 是否一致、是否经 Nginx 透传 `X-Update-Token` |
-| 更新无效果 | 查看 Agent 日志与 `UPDATE_SCRIPT` 退出码；站点目录权限 |
-| 页面旧内容 | `ops-update.html` / `index.html` / `version.json` 应 `no-cache` |
-| sessionStorage 无 Token | 是否隐私模式或跨站；键名是否为 `devtools.updateToken` |
+| 现象                     | 排查                                                               |
+|------------------------|------------------------------------------------------------------|
+| 状态始终「未知」               | `curl -i http://127.0.0.1:3928/api/status`；检查 Nginx `proxy_pass` |
+| 401/403                | Token 是否一致、是否经 Nginx 透传 `X-Update-Token`                         |
+| 更新无效果                  | 查看 Agent 日志与 `UPDATE_SCRIPT` 退出码；站点目录权限                          |
+| 页面旧内容                  | `ops-update.html` / `index.html` / `version.json` 应 `no-cache`   |
+| sessionStorage 无 Token | 是否隐私模式或跨站；键名是否为 `devtools.updateToken`                           |
 
 ---
 

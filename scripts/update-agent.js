@@ -223,6 +223,14 @@ function startUpdate() {
         GITHUB_BRANCH,
         DEPLOY_MODE,
         BRANCH: GITHUB_BRANCH,
+        // CI 产物模式（update-static / update-docker 读取）
+        DIST_RELEASE_TAG: process.env.DIST_RELEASE_TAG || 'latest-dist',
+        DIST_ASSET_NAME: process.env.DIST_ASSET_NAME || 'dev-tools-dist.tar.gz',
+        DIST_DOWNLOAD_URL: process.env.DIST_DOWNLOAD_URL || '',
+        DOCKER_IMAGE: process.env.DOCKER_IMAGE || 'ghcr.io/' + GITHUB_REPO,
+        DOCKER_TAG: process.env.DOCKER_TAG || 'main',
+        DOCKER_CONTAINER: process.env.DOCKER_CONTAINER || 'dev-tools',
+        DOCKER_HOST_PORT: process.env.DOCKER_HOST_PORT || '8080',
     });
 
     const child = spawn('bash', [script], {

@@ -1,0 +1,9 @@
+# 生产示例：只拉 GHCR 镜像，不在服务器 build
+# 使用前：export IMAGE=ghcr.io/moon-stack-OAo/dev-tools:main
+services:
+  dev-tools:
+    image: ${IMAGE:-ghcr.io/moon-stack-OAo/dev-tools:main}
+    container_name: ${DOCKER_CONTAINER:-dev-tools}
+    ports:
+      - "${DOCKER_HOST_PORT:-8080}:80"
+    restart: unless-stopped
