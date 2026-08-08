@@ -266,6 +266,13 @@ const tools = [
         desc: "Protobuf ↔ JSON / Base64 / Hex",
         cat: "encode",
     },
+    {
+        id: "morse",
+        icon: "bi-broadcast",
+        name: "摩斯电码",
+        desc: "文本 ↔ 摩斯电码（ITU 国际）",
+        cat: "encode",
+    },
 
     {
         id: "jwt",

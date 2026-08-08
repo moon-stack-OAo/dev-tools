@@ -7,6 +7,17 @@
 
 ## [Unreleased]
 
+### 新增
+
+- **摩斯电码**（`morse`）：ITU 国际摩斯码文本 ↔ 点划编解码，兼容 `.-` / `·−`，词间 `/` 分隔
+
+### 工程
+
+- **架构重构（行为不变，见 `docs/ADR-refactor-guide.md`）**
+    - Phase1：`tools-registry.js`、`crypto-utils.js`、`utils.js`
+    - Phase2：`loader.js`、`router.js`；`reference/_ref-engine.js` 试点
+    - Phase3：`ui-home.js` / `ui-sidebar.js` 迁出，`app.js` 降至 **~474 行**
+
 ## [1.1.0] - 2026-08-03
 
 发布摘要：工具 **155**，单元测试 **1447 passed**（85 files）；首屏懒加载、工程化与大量 Java 开发者高频工具补齐。
