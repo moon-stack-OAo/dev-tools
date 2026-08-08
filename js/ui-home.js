@@ -165,6 +165,8 @@ function createHomeCard(t, cardCat, ci) {
     card.className = "home-card cat-" + cardCat;
     card.dataset.cat = cardCat;
     card.dataset.tool = t.id;
+    const tags = t.tags && t.tags.length ? t.tags : ["common"];
+    card.dataset.tags = tags.join(",");
     card.style.animationDelay = Math.min(ci, 11) * 0.03 + "s";
     card.innerHTML =
         favStarHtml(t.id) +
@@ -274,6 +276,60 @@ function hideHomeHeatmap() {
 let homeCards = [];
 let homeDividers = [];
 
+const AUDIENCE_KEY = "devtools.audience";
+let homeAudience = "all";
+
+(function loadHomeAudience() {
+    try {
+        const saved = localStorage.getItem(AUDIENCE_KEY);
+        if (saved === "all" || saved === "common" || saved === "java") {
+            homeAudience = saved;
+        }
+    } catch (e) {
+    }
+})();
+
+function cardMatchesAudience(card) {
+    if (!homeAudience || homeAudience === "all") return true;
+    const tool = toolsById.get(card.dataset.tool);
+    if (typeof toolMatchesAudience === "function" && tool) {
+        return toolMatchesAudience(tool, homeAudience);
+    }
+    const tags = (card.dataset.tags || "common").split(",").filter(Boolean);
+    if (homeAudience === "java") {
+        return tags.indexOf("java") >= 0;
+    }
+    if (homeAudience === "common") {
+        return tags.indexOf("common") >= 0 || tags.indexOf("java") < 0;
+    }
+    return true;
+}
+
+function setHomeAudience(audience) {
+    if (audience !== "all" && audience !== "common" && audience !== "java") {
+        audience = "all";
+    }
+    homeAudience = audience;
+    try {
+        localStorage.setItem(AUDIENCE_KEY, audience);
+    } catch (e) {
+    }
+    const bar = document.getElementById("homeAudienceBar");
+    if (bar) {
+        bar.querySelectorAll(".home-audience-btn").forEach((btn) => {
+            btn.classList.toggle("active", btn.dataset.audience === audience);
+        });
+    }
+    filterHomeTools();
+}
+
+function syncHomeAudienceBar() {
+    const bar = document.getElementById("homeAudienceBar");
+    if (!bar) return;
+    bar.querySelectorAll(".home-audience-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.audience === homeAudience);
+    });
+}
 
 function buildHomeGrid() {
     const grid = domCache.homeGrid;
@@ -319,6 +375,11 @@ function buildHomeGrid() {
     // 滚动高亮当前分类
     const homePanel = domCache.panelHome;
     homePanel.addEventListener("scroll", debounce(highlightAnchor, 50));
+
+    syncHomeAudienceBar();
+    if (homeAudience !== "all" || (domCache.homeSearch && domCache.homeSearch.value.trim())) {
+        filterHomeTools();
+    }
 }
 
 // 重绘首页虚拟分类块（收藏 / 最近使用），保持收藏在最近使用之前
@@ -401,6 +462,9 @@ function refreshVirtualHomeBlock(catId, items, icon, name) {
 
     homeCards = Array.from(grid.querySelectorAll(".home-card"));
     homeDividers = Array.from(grid.querySelectorAll(".home-cat-divider"));
+    if (homeAudience !== "all" || (domCache.homeSearch && domCache.homeSearch.value.trim())) {
+        filterHomeTools();
+    }
 }
 
 function refreshFavoritesBlock() {
@@ -474,7 +538,7 @@ function goHome(catId) {
 }
 
 function filterHomeTools() {
-    const q = domCache.homeSearch.value.toLowerCase().trim();
+    const q = domCache.homeSearch ? domCache.homeSearch.value.toLowerCase().trim() : "";
 
     // 如果当前不在首页，自动切回首页再搜索
     const homePanel = domCache.panelHome;
@@ -487,9 +551,11 @@ function filterHomeTools() {
     const matchedCats = new Set();
     let hasVisible = false;
     homeCards.forEach((card) => {
-        const name = card.dataset.name;
-        const desc = card.dataset.desc;
-        const match = !q || name.includes(q) || desc.includes(q);
+        const name = card.dataset.name || "";
+        const desc = card.dataset.desc || "";
+        const textMatch = !q || name.includes(q) || desc.includes(q);
+        const audienceMatch = cardMatchesAudience(card);
+        const match = textMatch && audienceMatch;
         card.style.display = match ? "" : "none";
         if (match) {
             hasVisible = true;
@@ -498,14 +564,16 @@ function filterHomeTools() {
     });
     homeDividers.forEach((d) => {
         const catId = d.id.replace("cat-", "");
-        d.style.display = !q || matchedCats.has(catId) ? "" : "none";
+        d.style.display = matchedCats.has(catId) ? "" : "none";
     });
     const empty = document.querySelector(".home-search-empty");
     if (empty) empty.remove();
-    if (q && !hasVisible) {
+    if (!hasVisible) {
         const msg = document.createElement("div");
         msg.className = "home-search-empty";
-        msg.innerHTML = '<i class="bi bi-search"></i> 没有匹配的工具';
+        msg.innerHTML = q
+            ? '<i class="bi bi-search"></i> 没有匹配的工具'
+            : '<i class="bi bi-funnel"></i> 当前受众下没有工具';
         domCache.homeGrid.appendChild(msg);
     }
     if (q) hideHomeHeatmap();
@@ -515,6 +583,8 @@ function clearHomeSearch() {
     const input = domCache.homeSearch;
     if (input) input.value = "";
     hideHomeHeatmap();
+    // 仅清除搜索词并重算可见性，不重置 audience
+    if (homeCards.length) filterHomeTools();
 }
 
 const onHomeSearchInput = debounce(filterHomeTools, 80);

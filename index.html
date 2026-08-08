@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Java 开发工具箱</title>
+    <title>开发者工具箱</title>
     <meta
-            content="面向 Java 开发者的纯前端在线工具集 ——
+            content="面向开发者的纯前端在线工具集，含 Java 深度工具 ——
         156 个工具、8 大分类，覆盖格式化、编解码、安全、生成、代码生成、文本、调试、参考速查。数据 100% 本地处理，无需联网。"
             name="description">
     <meta content="#0f172a" name="theme-color">
@@ -47,7 +47,7 @@
             <div class="header-home-title" id="headerHomeTitle">
                 <span class="hh-title"><i class="bi bi-tools"
                                           style="margin-right:6px;font-size:18px"></i>DevTools</span>
-                <span class="hh-sub">156 个工具 · 8 大分类 · 纯前端本地处理</span>
+                <span class="hh-sub">156 个工具 · 8 大分类 · 全栈可用 · 纯前端本地处理</span>
             </div>
             <div class="breadcrumb" id="breadcrumb"></div>
             <div class="home-search-wrap">
@@ -68,6 +68,11 @@
 
         <div id="panels-container" style="display:none">
             <div class="tool-panel home-panel active" id="panel-home">
+                <div class="home-audience-bar" id="homeAudienceBar" role="tablist" aria-label="工具受众筛选">
+                    <button type="button" class="home-audience-btn active" data-audience="all" onclick="setHomeAudience('all')">全部</button>
+                    <button type="button" class="home-audience-btn" data-audience="common" onclick="setHomeAudience('common')">通用</button>
+                    <button type="button" class="home-audience-btn" data-audience="java" onclick="setHomeAudience('java')">Java</button>
+                </div>
                 <div class="home-body">
                     <div class="home-cat-anchors" id="homeCatAnchors"></div>
                     <div class="home-grid" id="homeGrid"></div>
