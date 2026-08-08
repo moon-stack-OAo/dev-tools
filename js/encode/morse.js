@@ -138,8 +138,63 @@ function applyDotDash(code, dot, dash) {
     return code.split('.').join(dot).split('-').join(dash);
 }
 
+// 中文/全角标点 → 半角（ITU 表仅有半角）
+var PUNCT_NORMALIZE = {
+    '，': ',',
+    '。': '.',
+    '！': '!',
+    '？': '?',
+    '：': ':',
+    '；': ';',
+    '（': '(',
+    '）': ')',
+    '【': '(',
+    '】': ')',
+    '「': '"',
+    '」': '"',
+    '『': '"',
+    '』': '"',
+    '“': '"',
+    '”': '"',
+    '‘': "'",
+    '’': "'",
+    '、': ',',
+    '…': '.',
+    '—': '-',
+    '－': '-',
+    '～': '-',
+    '＠': '@',
+    '＆': '&',
+    '／': '/',
+    '＝': '=',
+    '＋': '+',
+    '＄': '$',
+    '＿': '_',
+    // 全角数字/字母
+    '０': '0',
+    '１': '1',
+    '２': '2',
+    '３': '3',
+    '４': '4',
+    '５': '5',
+    '６': '6',
+    '７': '7',
+    '８': '8',
+    '９': '9',
+};
+
+function normalizeMorseChar(ch) {
+    if (PUNCT_NORMALIZE[ch] != null) return PUNCT_NORMALIZE[ch];
+    // 全角 A-Z / a-z（FF21-FF3A / FF41-FF5A）
+    var cp = ch.codePointAt(0);
+    if (cp >= 0xff21 && cp <= 0xff3a) return String.fromCharCode(cp - 0xff21 + 65);
+    if (cp >= 0xff41 && cp <= 0xff5a) return String.fromCharCode(cp - 0xff41 + 97);
+    return ch;
+}
+
 function charToMorseTokens(ch, options) {
     var chinese = !!options.chinese;
+    ch = normalizeMorseChar(ch);
     if (isCjkChar(ch)) {
         if (!chinese) {
             throw new Error('不支持中文，请勾选「中文电码」');
@@ -366,5 +421,6 @@ if (typeof module !== 'undefined' && module.exports) {
         setCtcTable: setCtcTable,
         loadCtcTable: loadCtcTable,
         hasCtcTable: hasCtcTable,
+        normalizeMorseChar: normalizeMorseChar,
     };
 }

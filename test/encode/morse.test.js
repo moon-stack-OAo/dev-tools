@@ -5,6 +5,7 @@ const {
     isCjkChar,
     setCtcTable,
     loadCtcTable,
+    normalizeMorseChar,
 } = require('../../js/encode/morse.js');
 
 describe('morse 编解码', () => {
@@ -25,6 +26,17 @@ describe('morse 编解码', () => {
     test('morseEncode 数字与标点', () => {
         expect(morseEncode('1+1=2')).toBe('.---- .-.-. .---- -...- ..---');
         expect(morseEncode('A.B')).toBe('.- .-.-.- -...');
+    });
+
+    test('中文/全角标点归一为半角', () => {
+        expect(normalizeMorseChar('，')).toBe(',');
+        expect(normalizeMorseChar('。')).toBe('.');
+        expect(normalizeMorseChar('！')).toBe('!');
+        expect(normalizeMorseChar('？')).toBe('?');
+        expect(normalizeMorseChar('（')).toBe('(');
+        expect(morseEncode('A，B')).toBe('.- --..-- -...');
+        expect(morseEncode('Hi！')).toBe('.... .. -.-.--');
+        expect(morseDecode(morseEncode('A，B'))).toBe('A,B');
     });
 
     test('morseEncode 空串返回空', () => {
@@ -107,6 +119,12 @@ describe('morse 中文电码', () => {
         const s = 'Hello 中文';
         const code = morseEncode(s, { chinese: true });
         expect(morseDecode(code, { chinese: true })).toBe('HELLO 中文');
+    });
+
+    test('中文带逗号可编码', () => {
+        const code = morseEncode('你好，世界', { chinese: true });
+        // 解码得到半角逗号
+        expect(morseDecode(code, { chinese: true })).toBe('你好,世界');
     });
 
     test('未开中文选项遇汉字抛错', () => {
