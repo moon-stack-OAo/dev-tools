@@ -4,6 +4,82 @@ import path from "path";
 import crypto from "crypto";
 import http from "node:http";
 import https from "node:https";
+import { execSync } from "node:child_process";
+
+const REPO_ID = "moon-stack-OAo/dev-tools";
+
+function getBuildInfo() {
+  const run = (cmd) => {
+    try {
+      return execSync(cmd, {
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "ignore"],
+      }).trim();
+    } catch {
+      return "";
+    }
+  };
+  const fullSha = run("git rev-parse HEAD") || "unknown";
+  const commit =
+    fullSha === "unknown"
+      ? "unknown"
+      : run("git rev-parse --short HEAD") || fullSha.slice(0, 7);
+  let branch = run("git rev-parse --abbrev-ref HEAD") || "main";
+  if (!branch || branch === "HEAD") branch = "main";
+  return {
+    commit,
+    fullSha,
+    branch,
+    builtAt: new Date().toISOString(),
+    repo: REPO_ID,
+  };
+}
+
+// 构建结束写入 dist/version.json，并在 dist/index.html 内联 window.__BUILD_INFO__
+// production 与 build:dev（mode !== development）均写入；live dev server 跳过
+function writeVersionPlugin(mode) {
+  return {
+    name: "write-version",
+    closeBundle() {
+      if (mode === "development") return;
+      const info = getBuildInfo();
+      const distDir = path.join("dist");
+      if (!fs.existsSync(distDir)) fs.mkdirSync(distDir, { recursive: true });
+      const versionPath = path.join(distDir, "version.json");
+      fs.writeFileSync(versionPath, JSON.stringify(info, null, 2) + "\n", "utf8");
+      console.log(
+        "✓ version.json 已写入 dist/ (" +
+          info.commit +
+          " @ " +
+          info.branch +
+          ")",
+      );
+
+      const idx = path.join(distDir, "index.html");
+      if (!fs.existsSync(idx)) return;
+      let h = fs.readFileSync(idx, "utf8");
+      const inline =
+        "<script>window.__BUILD_INFO__=" + JSON.stringify(info) + ";</script>";
+      // 去掉旧注入（重复构建/插件顺序）
+      h = h.replace(
+        /<script>window\.__BUILD_INFO__=[\s\S]*?<\/script>\s*/g,
+        "",
+      );
+      if (h.includes('<script src="js/app.js')) {
+        h = h.replace(
+          '<script src="js/app.js',
+          inline + '\n<script src="js/app.js',
+        );
+      } else if (h.includes("</head>")) {
+        h = h.replace("</head>", inline + "</head>");
+      } else {
+        h = inline + h;
+      }
+      fs.writeFileSync(idx, h, "utf8");
+      console.log("✓ __BUILD_INFO__ 已内联到 dist/index.html");
+    },
+  };
+}
 
 const md5 = (filePath) => {
   try {
@@ -401,5 +477,6 @@ export default defineConfig(({ mode }) => ({
     removeGithubPlugin(mode),
     injectDevtoolsFlagPlugin(mode),
     injectAssetMapPlugin(mode),
+    writeVersionPlugin(mode),
   ],
 }));

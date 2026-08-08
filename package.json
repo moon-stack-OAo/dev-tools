@@ -16,6 +16,7 @@
     "preview": "vite preview",
     "copy-libs": "node scripts/copy-libs.js",
     "cors-proxy": "node scripts/cors-proxy-server.js",
+    "update-agent": "node scripts/update-agent.js",
     "postinstall": "node scripts/copy-libs.js"
   },
   "dependencies": {

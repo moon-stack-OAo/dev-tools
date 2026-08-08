@@ -1,0 +1,14 @@
+[Unit]
+Description=DevTools update agent
+After=network.target
+
+[Service]
+Type=simple
+EnvironmentFile=-/opt/dev-tools/.env
+WorkingDirectory=/opt/dev-tools/repo
+ExecStart=/usr/bin/node /opt/dev-tools/repo/scripts/update-agent.js
+Restart=on-failure
+User=www-data
+
+[Install]
+WantedBy=multi-user.target

@@ -392,6 +392,33 @@ buildSidebar();
 domCache.backToTop.onclick = scrollActiveToTop;
 // 路由首屏（router.js 已加载）：有 #/tool/id 则打开工具，否则首页
 if (typeof bootRoute === 'function') bootRoute();
+initBuildInfo();
+
+// === Build info（状态栏版本） ===
+function initBuildInfo() {
+    const el = document.getElementById('statusBuild');
+    if (!el) return;
+    const apply = (info) => {
+        if (!info) return;
+        window.__BUILD_INFO__ = Object.assign({}, window.__BUILD_INFO__ || {}, info);
+        const c = info.commit || 'dev';
+        const t = info.builtAt ? new Date(info.builtAt).toLocaleString() : '';
+        el.innerHTML =
+            '构建 <code>' +
+            escapeHtml(c) +
+            '</code>' +
+            (t ? ' · ' + escapeHtml(t) : '') +
+            ' · <a href="ops-update.html" title="更新管理">更新</a>';
+    };
+    if (window.__BUILD_INFO__ && window.__BUILD_INFO__.commit) {
+        apply(window.__BUILD_INFO__);
+        return;
+    }
+    fetch('version.json', { cache: 'no-store' })
+        .then((r) => (r.ok ? r.json() : null))
+        .then(apply)
+        .catch(() => {});
+}
 
 // === Utils ===
 function setStatus(msg) {

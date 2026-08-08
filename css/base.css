@@ -598,6 +598,29 @@ input.input-parse-error::selection {
     flex-shrink: 0;
 }
 
+.status-build {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--text-muted);
+    cursor: default;
+}
+
+.status-build a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.status-build a:hover {
+    color: var(--accent);
+}
+
+.status-build code {
+    font-size: 11px;
+    padding: 0 4px;
+    border-radius: 3px;
+    background: var(--bg-input, rgba(127, 127, 127, 0.12));
+}
+
 .status-bar .status-dot {
     display: inline-block;
     width: 6px;
