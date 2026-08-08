@@ -565,12 +565,12 @@
 
 .home-audience-btn {
     flex-shrink: 0;
-    padding: 6px 14px;
+    padding: 5px 10px;
     border: none;
     border-radius: var(--radius-sm);
     background: transparent;
     color: var(--text-dim);
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     cursor: pointer;
     white-space: nowrap;

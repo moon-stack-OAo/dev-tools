@@ -27,7 +27,7 @@ const tools = [
         name: "JSON 格式化",
         desc: "格式化 / 压缩 / 验证 JSON",
         cat: "format",
-        tags: ["common"],
+        tags: ["common","frontend","backend"],
     },
     {
         id: "xml",
@@ -35,7 +35,7 @@ const tools = [
         name: "XML 格式化",
         desc: "格式化 / 压缩 / 验证 XML",
         cat: "format",
-        tags: ["common"],
+        tags: ["common","frontend","backend"],
     },
     {
         id: "yaml",
@@ -43,7 +43,7 @@ const tools = [
         name: "YAML 格式化",
         desc: "YAML 格式化 / JSON 互转",
         cat: "format",
-        tags: ["common"],
+        tags: ["common","frontend","backend"],
     },
     {
         id: "toml",
@@ -51,7 +51,7 @@ const tools = [
         name: "TOML 格式化",
         desc: "TOML 格式化 / JSON 互转 / 校验",
         cat: "format",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "propertiesfmt",
@@ -59,7 +59,7 @@ const tools = [
         name: "Properties 格式化",
         desc: "Properties ↔ YAML 互转",
         cat: "format",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "sql",
@@ -67,7 +67,7 @@ const tools = [
         name: "SQL 格式化",
         desc: "SQL 美化 / 多方言支持",
         cat: "format",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "jsonconvert",
@@ -75,7 +75,7 @@ const tools = [
         name: "JSON/XML/YAML 互转",
         desc: "JSON / XML / YAML 格式互相转换",
         cat: "format",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "jsonpath",
@@ -83,7 +83,7 @@ const tools = [
         name: "JSONPath 查询",
         desc: "JSONPath 表达式查询 / 提取",
         cat: "format",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "jsonschema",
@@ -91,7 +91,7 @@ const tools = [
         name: "JSON Schema",
         desc: "JSON Schema 生成 / 校验",
         cat: "format",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "sqldialect",
@@ -99,7 +99,7 @@ const tools = [
         name: "SQL 方言转换",
         desc: "MySQL/Oracle/PG/SQLServer 互转",
         cat: "format",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "dbtype",
@@ -107,7 +107,7 @@ const tools = [
         name: "数据库类型映射",
         desc: "MySQL/Oracle/PG/SQLServer 类型对照",
         cat: "format",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "json2sql",
@@ -115,7 +115,7 @@ const tools = [
         name: "JSON → SQL INSERT",
         desc: "JSON 对象/数组生成多方言 INSERT",
         cat: "format",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "xpath",
@@ -123,7 +123,7 @@ const tools = [
         name: "XPath 查询",
         desc: "XPath 1.0 查询 / 提取 XML 节点",
         cat: "format",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "sqlexplain",
@@ -131,7 +131,7 @@ const tools = [
         name: "SQL 执行计划",
         desc: "MySQL/PostgreSQL EXPLAIN 格式化 / 可视化",
         cat: "format",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "nginxfmt",
@@ -139,7 +139,7 @@ const tools = [
         name: "Nginx 格式化",
         desc: "Nginx 配置格式化 / 压缩 / Lint",
         cat: "format",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "javafmt",
@@ -147,7 +147,7 @@ const tools = [
         name: "Java 代码格式化",
         desc: "Java 美化 / 缩进 / 大括号风格 / import 排序",
         cat: "format",
-        tags: ["java"],
+        tags: ["java","backend"],
     },
     {
         id: "ddldiff",
@@ -155,7 +155,7 @@ const tools = [
         name: "DDL Schema 对比",
         desc: "两个 DDL 字段粒度 diff / 跨方言",
         cat: "format",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "jsonexcel",
@@ -163,7 +163,7 @@ const tools = [
         name: "JSON ↔ Excel/CSV",
         desc: "JSON / CSV / Excel 互转 · 嵌套展平 · 多分隔符",
         cat: "format",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "imgtopdf",
@@ -171,7 +171,7 @@ const tools = [
         name: "图片转 PDF",
         desc: "多张图片合成 PDF / 页面尺寸与方向可配",
         cat: "format",
-        tags: ["common"],
+        tags: ["common","frontend"],
     },
     {
         id: "pdfmerge",
@@ -179,7 +179,7 @@ const tools = [
         name: "PDF 合并 / 拆分",
         desc: "多 PDF 合并 / 按页码范围拆分",
         cat: "format",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "graphqlfmt",
@@ -187,7 +187,7 @@ const tools = [
         name: "GraphQL 格式化",
         desc: "GraphQL 查询/mutation 美化 / 压缩 / 括号检查",
         cat: "format",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "openapiview",
@@ -195,7 +195,7 @@ const tools = [
         name: "OpenAPI 预览",
         desc: "OpenAPI 3 / Swagger 2 摘要预览 / paths 浏览",
         cat: "format",
-        tags: ["common"],
+        tags: ["common","frontend","backend"],
     },
     {
         id: "envfmt",
@@ -203,7 +203,7 @@ const tools = [
         name: ".env / 环境变量",
         desc: ".env 解析 / 格式化对齐 / JSON 互转 / 重复 key",
         cat: "format",
-        tags: ["common"],
+        tags: ["common","frontend","backend"],
     },
     {
         id: "jsonflat",
@@ -211,7 +211,7 @@ const tools = [
         name: "JSON 扁平化",
         desc: "嵌套 JSON ↔ 点号/括号路径扁平 Map",
         cat: "format",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "jsondiff",
@@ -219,7 +219,7 @@ const tools = [
         name: "JSON 结构化对比",
         desc: "两份 JSON 键路径级 diff / 增删改报告",
         cat: "format",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "base64",
@@ -227,7 +227,7 @@ const tools = [
         name: "Base64",
         desc: "Base64 编码解码 / 文件支持",
         cat: "encode",
-        tags: ["common"],
+        tags: ["common","frontend","backend"],
     },
     {
         id: "url",
@@ -235,7 +235,7 @@ const tools = [
         name: "URL 编码",
         desc: "URL 编解码 / Component 模式",
         cat: "encode",
-        tags: ["common"],
+        tags: ["common","frontend","backend"],
     },
     {
         id: "unicode",
@@ -243,7 +243,7 @@ const tools = [
         name: "Unicode",
         desc: "\\uXXXX 编码 / 解码",
         cat: "encode",
-        tags: ["common"],
+        tags: ["common","frontend"],
     },
     {
         id: "javaescape",
@@ -251,7 +251,7 @@ const tools = [
         name: "Java 转义",
         desc: "Java 字符串转义 / 反转义",
         cat: "encode",
-        tags: ["java"],
+        tags: ["java","backend"],
     },
     {
         id: "charset",
@@ -259,7 +259,7 @@ const tools = [
         name: "编码解码",
         desc: "字节按编码解码 / UTF-8 编码 / 乱码对照",
         cat: "encode",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "htmlescape",
@@ -267,7 +267,7 @@ const tools = [
         name: "HTML 转义",
         desc: "HTML 实体编码 / 解码",
         cat: "encode",
-        tags: ["common"],
+        tags: ["common","frontend"],
     },
     {
         id: "imgbase64",
@@ -275,7 +275,7 @@ const tools = [
         name: "图片 Base64",
         desc: "图片与 Base64 互转 / DataURL",
         cat: "encode",
-        tags: ["common"],
+        tags: ["common","frontend"],
     },
     {
         id: "hex",
@@ -283,7 +283,7 @@ const tools = [
         name: "Hex 编码",
         desc: "字符串 ↔ Hex 互转（UTF-8）",
         cat: "encode",
-        tags: ["common"],
+        tags: ["common","frontend","backend"],
     },
     {
         id: "base32",
@@ -291,7 +291,7 @@ const tools = [
         name: "Base32 / Base58",
         desc: "Base32 (RFC 4648) / Base58 (Bitcoin) 编解码",
         cat: "encode",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "protobuf",
@@ -299,7 +299,7 @@ const tools = [
         name: "Protobuf 解码",
         desc: "Protobuf ↔ JSON / Base64 / Hex",
         cat: "encode",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "morse",
@@ -307,7 +307,7 @@ const tools = [
         name: "摩斯电码",
         desc: "文本 ↔ 摩斯电码（ITU / 中文电码）",
         cat: "encode",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
 
     {
@@ -316,7 +316,7 @@ const tools = [
         name: "JWT 解码",
         desc: "解析 JWT Header / Payload",
         cat: "security",
-        tags: ["common"],
+        tags: ["common","frontend","backend"],
     },
     {
         id: "jwtgen",
@@ -324,7 +324,7 @@ const tools = [
         name: "JWT 生成",
         desc: "HS256/384/512 + RS256/384/512 签名",
         cat: "security",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "hash",
@@ -332,7 +332,7 @@ const tools = [
         name: "Hash 计算",
         desc: "MD5 / SHA-1 / SHA-256 / SHA-512",
         cat: "security",
-        tags: ["common"],
+        tags: ["common","frontend","backend"],
     },
     {
         id: "hmac",
@@ -340,7 +340,7 @@ const tools = [
         name: "HMAC 计算",
         desc: "HMAC-MD5 / SHA-1 / SHA-256 / SHA-384 / SHA-512",
         cat: "security",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "hashext",
@@ -348,7 +348,7 @@ const tools = [
         name: "Hash 扩展",
         desc: "CRC32 / CRC32C / Adler32 / SM3",
         cat: "security",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "random",
@@ -356,7 +356,7 @@ const tools = [
         name: "随机生成器",
         desc: "密码 / Token / PIN 生成",
         cat: "security",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "pwdstrength",
@@ -364,7 +364,7 @@ const tools = [
         name: "密码强度检测",
         desc: "本地检测密码强度 / 改进建议",
         cat: "security",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "aes",
@@ -372,7 +372,7 @@ const tools = [
         name: "AES 加解密",
         desc: "AES 对称加密 / 解密",
         cat: "security",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "jasypt",
@@ -380,7 +380,7 @@ const tools = [
         name: "Jasypt 加解密",
         desc: "PBEWithMD5AndDES 配置加解密 / ENC(...)",
         cat: "security",
-        tags: ["java"],
+        tags: ["java","backend"],
     },
     {
         id: "rsa",
@@ -388,7 +388,7 @@ const tools = [
         name: "RSA 工具",
         desc: "密钥生成 / 加解密 / 签名",
         cat: "security",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "bcrypt",
@@ -396,7 +396,7 @@ const tools = [
         name: "bcrypt 加密",
         desc: "bcrypt 哈希 / 验证",
         cat: "security",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "totp",
@@ -404,7 +404,7 @@ const tools = [
         name: "TOTP 动态令牌",
         desc: "TOTP/HOTP 本地生成 + URI 解析",
         cat: "security",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "gmsm",
@@ -412,7 +412,7 @@ const tools = [
         name: "国密 SM2/3/4",
         desc: "国密 SM2 公钥 / SM3 摘要 / SM4 对称",
         cat: "security",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "pbkdf2",
@@ -420,7 +420,7 @@ const tools = [
         name: "PBKDF2 哈希",
         desc: "PBKDF2-HMAC-SHA256/512 密码哈希（标准 PHC 格式）",
         cat: "security",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "certparser",
@@ -428,7 +428,7 @@ const tools = [
         name: "X.509 证书",
         desc: "X.509 证书 PEM/DER 解析",
         cat: "security",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "webhooksig",
@@ -436,7 +436,7 @@ const tools = [
         name: "Webhook 签名",
         desc: "HMAC-SHA256 生成/校验 / GitHub / Stripe",
         cat: "security",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "oauth2pkce",
@@ -444,7 +444,7 @@ const tools = [
         name: "OAuth2 / PKCE",
         desc: "code_verifier / challenge / Authorize URL",
         cat: "security",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "cvss",
@@ -452,7 +452,7 @@ const tools = [
         name: "CVSS 3.1 评分",
         desc: "CVSS v3.1 Base Score / 向量字符串",
         cat: "security",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "jwtverify",
@@ -460,7 +460,7 @@ const tools = [
         name: "JWT 验签",
         desc: "HMAC/RSA 验签 / exp·nbf·iat 时间声明校验",
         cat: "security",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "uuid",
@@ -468,7 +468,7 @@ const tools = [
         name: "UUID 生成",
         desc: "UUID v4 / v7 / 批量生成",
         cat: "generate",
-        tags: ["common"],
+        tags: ["common","frontend","backend"],
     },
     {
         id: "ulid",
@@ -476,7 +476,7 @@ const tools = [
         name: "ULID / NanoID",
         desc: "ULID / NanoID 生成与 ULID 解析",
         cat: "generate",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "snowflake",
@@ -484,7 +484,7 @@ const tools = [
         name: "雪花 ID",
         desc: "Snowflake / Leaf / UID 三合一生成解析",
         cat: "generate",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "ts",
@@ -492,7 +492,7 @@ const tools = [
         name: "时间戳转换",
         desc: "Unix 毫秒/秒 ↔ 日期",
         cat: "generate",
-        tags: ["common"],
+        tags: ["common","frontend","backend"],
     },
     {
         id: "color",
@@ -500,7 +500,7 @@ const tools = [
         name: "颜色转换",
         desc: "HEX / RGB / HSL 互转预览",
         cat: "generate",
-        tags: ["common"],
+        tags: ["common","frontend"],
     },
     {
         id: "baseconvert",
@@ -508,7 +508,7 @@ const tools = [
         name: "进制转换",
         desc: "2~36 进制互转",
         cat: "generate",
-        tags: ["common"],
+        tags: ["common","frontend","backend"],
     },
     {
         id: "image-compress",
@@ -516,7 +516,15 @@ const tools = [
         name: "图片压缩",
         desc: "JPEG/PNG/WebP 互转 / 质量调节 / 批量处理",
         cat: "generate",
-        tags: ["common"],
+        tags: ["common","frontend"],
+    },
+    {
+        id: "imgshuffle",
+        icon: "bi-shuffle",
+        name: "图片混淆",
+        desc: "Gilbert 曲线像素混淆 / 解混淆（可逆 · 本地）",
+        cat: "generate",
+        tags: ["common","frontend"],
     },
     {
         id: "case",
@@ -524,7 +532,7 @@ const tools = [
         name: "Case 转换",
         desc: "camelCase / snake_case 等",
         cat: "generate",
-        tags: ["common"],
+        tags: ["common","frontend","backend"],
     },
     {
         id: "datamock",
@@ -532,7 +540,7 @@ const tools = [
         name: "数据 Mock",
         desc: "生成姓名 / 手机号 / 邮箱等",
         cat: "generate",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "datecalc",
@@ -540,7 +548,7 @@ const tools = [
         name: "日期计算器",
         desc: "日期加减 / 间隔 / 工作日",
         cat: "generate",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "timezone",
@@ -548,7 +556,7 @@ const tools = [
         name: "时区转换",
         desc: "跨时区时间换算",
         cat: "generate",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "resratio",
@@ -556,7 +564,7 @@ const tools = [
         name: "分辨率比例",
         desc: "宽高比 / 档位匹配 / 按比例反算",
         cat: "generate",
-        tags: ["common"],
+        tags: ["common","frontend"],
     },
     {
         id: "bytesize",
@@ -564,7 +572,7 @@ const tools = [
         name: "字节单位换算",
         desc: "B/KB/MB/GB ↔ KiB/MiB/GiB，1000/1024 进制",
         cat: "generate",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "semver",
@@ -572,7 +580,7 @@ const tools = [
         name: "SemVer 版本",
         desc: "解析 / 比较 / 排序 / 范围满足",
         cat: "generate",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "chmodcalc",
@@ -580,7 +588,7 @@ const tools = [
         name: "chmod 权限",
         desc: "八进制 ↔ rwx 符号 ↔ 权限说明",
         cat: "generate",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "cnyamount",
@@ -588,7 +596,7 @@ const tools = [
         name: "金额大写 / 信用代码",
         desc: "人民币大写 / 统一社会信用代码 / 银行卡 Luhn",
         cat: "generate",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "javatimefmt",
@@ -596,7 +604,7 @@ const tools = [
         name: "Java 时间格式",
         desc: "DateTimeFormatter 模式试算 / 字母速查 / 常见模板",
         cat: "generate",
-        tags: ["java"],
+        tags: ["java","backend"],
     },
     {
         id: "springbinding",
@@ -604,7 +612,7 @@ const tools = [
         name: "Spring 配置键转换",
         desc: "relaxed binding：kebab / camel / env 互转",
         cat: "generate",
-        tags: ["java"],
+        tags: ["java","backend"],
     },
     {
         id: "idvalidate",
@@ -612,7 +620,7 @@ const tools = [
         name: "证件号校验",
         desc: "身份证校验位/地区 / 手机号段 / 银行卡 Luhn",
         cat: "generate",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
 
     {
@@ -621,7 +629,7 @@ const tools = [
         name: "JSON → Java",
         desc: "JSON 生成 Java POJO 类",
         cat: "codegen",
-        tags: ["java"],
+        tags: ["java","backend"],
     },
     {
         id: "json2code",
@@ -629,7 +637,15 @@ const tools = [
         name: "JSON → 多语言",
         desc: "JSON 生成 TypeScript / Kotlin / Go",
         cat: "codegen",
-        tags: ["common"],
+        tags: ["common","frontend"],
+    },
+    {
+        id: "json2ts",
+        icon: "bi-filetype-tsx",
+        name: "JSON → Interface",
+        desc: "JSON / Object 生成 TypeScript interface / type",
+        cat: "codegen",
+        tags: ["common","frontend"],
     },
     {
         id: "sqltopojo",
@@ -637,7 +653,7 @@ const tools = [
         name: "SQL → Java",
         desc: "DDL 生成 MyBatis Plus 实体",
         cat: "codegen",
-        tags: ["java"],
+        tags: ["java","backend"],
     },
     {
         id: "sql2mybatis",
@@ -645,7 +661,7 @@ const tools = [
         name: "SQL → MyBatis",
         desc: "DDL 生成 Mapper XML + Interface",
         cat: "codegen",
-        tags: ["java"],
+        tags: ["java","backend"],
     },
     {
         id: "mavencoord",
@@ -653,7 +669,7 @@ const tools = [
         name: "Maven 坐标",
         desc: "GAV → pom / Gradle / SBT 依赖片段",
         cat: "codegen",
-        tags: ["java"],
+        tags: ["java","backend"],
     },
     {
         id: "email",
@@ -661,7 +677,7 @@ const tools = [
         name: "邮件模板",
         desc: "邮件 HTML 模板生成 / 预览 / 内联 CSS",
         cat: "codegen",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "jmh",
@@ -669,7 +685,7 @@ const tools = [
         name: "JMH 模板",
         desc: "JMH 基准测试代码生成",
         cat: "codegen",
-        tags: ["java"],
+        tags: ["java","backend"],
     },
     {
         id: "testgen",
@@ -677,7 +693,7 @@ const tools = [
         name: "测试模板",
         desc: "JUnit 5 + Mockito 测试生成",
         cat: "codegen",
-        tags: ["java"],
+        tags: ["java","backend"],
     },
     {
         id: "javastream",
@@ -685,7 +701,7 @@ const tools = [
         name: "Java Stream 生成",
         desc: "可视化组装 Stream API 链 / 自动 import",
         cat: "codegen",
-        tags: ["java"],
+        tags: ["java","backend"],
     },
     {
         id: "jmhpro",
@@ -693,7 +709,7 @@ const tools = [
         name: "JMH 进阶",
         desc: "JMH 完整注解 / Group / Compiler Control / Timeout",
         cat: "codegen",
-        tags: ["java"],
+        tags: ["java","backend"],
     },
     {
         id: "beanval",
@@ -701,7 +717,7 @@ const tools = [
         name: "Bean Validation",
         desc: "javax.validation 注解自动推导 / DTO 生成",
         cat: "codegen",
-        tags: ["java"],
+        tags: ["java","backend"],
     },
     {
         id: "plantuml",
@@ -709,7 +725,7 @@ const tools = [
         name: "PlantUML 类图",
         desc: "Java/JSON 转 PlantUML 类图源码",
         cat: "codegen",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "mapstruct",
@@ -717,7 +733,7 @@ const tools = [
         name: "MapStruct 骨架",
         desc: "两个 Java 类生成 MapStruct Mapper 接口",
         cat: "codegen",
-        tags: ["java"],
+        tags: ["java","backend"],
     },
     {
         id: "ddlmermaid",
@@ -725,7 +741,7 @@ const tools = [
         name: "DDL → Mermaid ER",
         desc: "CREATE TABLE 生成 Mermaid erDiagram",
         cat: "codegen",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "flywaygen",
@@ -733,7 +749,7 @@ const tools = [
         name: "Flyway/Liquibase 骨架",
         desc: "Flyway 文件名与 SQL / Liquibase YAML·XML changeset",
         cat: "codegen",
-        tags: ["java"],
+        tags: ["java","backend"],
     },
 
     {
@@ -742,7 +758,7 @@ const tools = [
         name: "JS/TS 运行",
         desc: "浏览器中执行 JS/TS 代码 / 捕获 console 输出",
         cat: "codegen",
-        tags: ["common"],
+        tags: ["common","frontend"],
     },
     {
         id: "pyrun",
@@ -750,7 +766,7 @@ const tools = [
         name: "Python 运行",
         desc: "基于 Pyodide 在浏览器中运行 Python 3 代码 / 捕获 stdout",
         cat: "codegen",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "qrdecode",
@@ -758,7 +774,7 @@ const tools = [
         name: "二维码解析",
         desc: "图片 → URL / 文本 / WiFi",
         cat: "text",
-        tags: ["common"],
+        tags: ["common","frontend"],
     },
     {
         id: "diff",
@@ -766,7 +782,7 @@ const tools = [
         name: "文本对比",
         desc: "文本差异对比高亮",
         cat: "text",
-        tags: ["common"],
+        tags: ["common","frontend","backend"],
     },
     {
         id: "regex",
@@ -774,7 +790,7 @@ const tools = [
         name: "正则表达式",
         desc: "正则匹配测试 / 分组查看",
         cat: "text",
-        tags: ["common"],
+        tags: ["common","frontend","backend"],
     },
     {
         id: "stats",
@@ -782,7 +798,7 @@ const tools = [
         name: "文本统计",
         desc: "字符 / 单词 / 行数 / 字节",
         cat: "text",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "csv",
@@ -790,7 +806,7 @@ const tools = [
         name: "CSV 格式化",
         desc: "CSV 表格化查看 / 校对",
         cat: "text",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "markdown",
@@ -798,7 +814,7 @@ const tools = [
         name: "Markdown 预览",
         desc: "Markdown 实时预览 / 导出 HTML",
         cat: "text",
-        tags: ["common"],
+        tags: ["common","frontend","backend"],
     },
     {
         id: "htmlmd",
@@ -806,7 +822,7 @@ const tools = [
         name: "HTML ↔ Markdown",
         desc: "HTML 与 Markdown 互转",
         cat: "text",
-        tags: ["common"],
+        tags: ["common","frontend"],
     },
     {
         id: "webfmt",
@@ -814,7 +830,7 @@ const tools = [
         name: "Web 格式化",
         desc: "HTML / CSS / JS 格式化压缩",
         cat: "text",
-        tags: ["common"],
+        tags: ["common","frontend"],
     },
     {
         id: "qrcode",
@@ -822,7 +838,7 @@ const tools = [
         name: "二维码生成",
         desc: "文本 / URL 生成二维码下载",
         cat: "text",
-        tags: ["common"],
+        tags: ["common","frontend"],
     },
     {
         id: "barcode",
@@ -830,7 +846,7 @@ const tools = [
         name: "条形码生成",
         desc: "Code128 / Code39 条形码生成下载",
         cat: "text",
-        tags: ["common"],
+        tags: ["common","frontend"],
     },
     {
         id: "tplreplace",
@@ -838,7 +854,7 @@ const tools = [
         name: "模板替换",
         desc: "多种语法字符串变量替换",
         cat: "text",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "desensitize",
@@ -846,7 +862,7 @@ const tools = [
         name: "数据脱敏",
         desc: "手机/身份证/银行卡/邮箱等本地脱敏",
         cat: "text",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "lineending",
@@ -854,7 +870,7 @@ const tools = [
         name: "行尾 / BOM / 不可见字符",
         desc: "CRLF/LF/CR、BOM、零宽字符检测与转换",
         cat: "text",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "mdtable",
@@ -862,7 +878,7 @@ const tools = [
         name: "Markdown 表格 / 文本树",
         desc: "CSV↔MD 表格 / 路径与缩进转树形字符画",
         cat: "text",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "regexjava",
@@ -870,7 +886,7 @@ const tools = [
         name: "正则 → Java 代码",
         desc: "生成 Pattern/Matcher 与正确转义字面量",
         cat: "text",
-        tags: ["java"],
+        tags: ["java","backend"],
     },
 
     {
@@ -879,7 +895,7 @@ const tools = [
         name: "Cron 表达式",
         desc: "Cron 解析 / 下次执行时间",
         cat: "debug",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "quartzcron",
@@ -887,7 +903,7 @@ const tools = [
         name: "Quartz / 定时表达式",
         desc: "Quartz cron 解析 / 与 Unix 差异 / @Scheduled",
         cat: "debug",
-        tags: ["java"],
+        tags: ["java","backend"],
     },
     {
         id: "spel",
@@ -904,7 +920,7 @@ const tools = [
         name: "WebSocket",
         desc: "WebSocket 连接调试",
         cat: "debug",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "stomp",
@@ -912,7 +928,7 @@ const tools = [
         name: "STOMP",
         desc: "STOMP over WebSocket 调试",
         cat: "debug",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "httpdebug",
@@ -920,7 +936,7 @@ const tools = [
         name: "HTTP 调试",
         desc: "发送请求 / cURL 解析 / Fetch·Axios·Java 代码生成",
         cat: "debug",
-        tags: ["common"],
+        tags: ["common","frontend","backend"],
     },
     {
         id: "cookiecache",
@@ -928,7 +944,7 @@ const tools = [
         name: "Cookie / 缓存头",
         desc: "Cookie·Set-Cookie 解析构造 / Cache-Control",
         cat: "debug",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "ip",
@@ -936,7 +952,7 @@ const tools = [
         name: "IP 工具",
         desc: "IP 归属 / 子网计算",
         cat: "debug",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "grpc",
@@ -944,7 +960,7 @@ const tools = [
         name: "gRPC 调试",
         desc: "Metadata 构造 / Protobuf 解码 / 状态码",
         cat: "debug",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "urlparser",
@@ -952,7 +968,7 @@ const tools = [
         name: "URL 解析",
         desc: "URL 拆解 / 编码解码",
         cat: "debug",
-        tags: ["common"],
+        tags: ["common","frontend","backend"],
     },
     {
         id: "uaparser",
@@ -960,7 +976,7 @@ const tools = [
         name: "UA 解析",
         desc: "User-Agent 解析",
         cat: "debug",
-        tags: ["common"],
+        tags: ["common","frontend"],
     },
     {
         id: "logfmt",
@@ -968,7 +984,7 @@ const tools = [
         name: "日志高亮",
         desc: "日志格式化 + 级别着色 + 堆栈折叠",
         cat: "debug",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "logpattern",
@@ -976,7 +992,7 @@ const tools = [
         name: "日志 Pattern",
         desc: "Logback/Log4j conversion word 解析与模板",
         cat: "debug",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "traceheader",
@@ -984,7 +1000,7 @@ const tools = [
         name: "链路追踪头",
         desc: "W3C traceparent / B3 生成与解析",
         cat: "debug",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "stacktrace",
@@ -992,7 +1008,7 @@ const tools = [
         name: "异常分析",
         desc: "Java 堆栈跟踪解析 / 格式化",
         cat: "debug",
-        tags: ["java"],
+        tags: ["java","backend"],
     },
     {
         id: "threaddump",
@@ -1000,7 +1016,7 @@ const tools = [
         name: "线程 Dump 分析",
         desc: "jstack 线程状态统计 / 死锁检测",
         cat: "debug",
-        tags: ["java"],
+        tags: ["java","backend"],
     },
     {
         id: "sse",
@@ -1008,7 +1024,7 @@ const tools = [
         name: "SSE 调试",
         desc: "Server-Sent Events 实时调试",
         cat: "debug",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "mybatissqllog",
@@ -1016,7 +1032,7 @@ const tools = [
         name: "MyBatis SQL 还原",
         desc: "Preparing + Parameters 合成可执行 SQL",
         cat: "debug",
-        tags: ["java"],
+        tags: ["java","backend"],
     },
     {
         id: "sqlbind",
@@ -1024,7 +1040,7 @@ const tools = [
         name: "SQL 参数绑定",
         desc: "? / :name 占位符 + 参数列表填充为完整 SQL",
         cat: "debug",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "urlquery",
@@ -1032,7 +1048,7 @@ const tools = [
         name: "URL 参数构造器",
         desc: "表格编辑 query，生成 URL / 解析回填",
         cat: "debug",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "poolcalc",
@@ -1040,7 +1056,7 @@ const tools = [
         name: "线程池参数估算",
         desc: "按 QPS/耗时估算 core/max/queue 与说明",
         cat: "debug",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "arthas",
@@ -1056,7 +1072,7 @@ const tools = [
         name: "Linux 命令",
         desc: "常用 Linux 命令速查",
         cat: "reference",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "jvmargs",
@@ -1072,7 +1088,7 @@ const tools = [
         name: "Redis 命令",
         desc: "Redis 常用命令速查",
         cat: "reference",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "springcloud",
@@ -1088,7 +1104,7 @@ const tools = [
         name: "Docker 命令",
         desc: "Docker / K8s 命令速查",
         cat: "reference",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "regexref",
@@ -1096,7 +1112,7 @@ const tools = [
         name: "正则速查表",
         desc: "常用正则表达式分类速查",
         cat: "reference",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "gitref",
@@ -1104,7 +1120,7 @@ const tools = [
         name: "Git 命令",
         desc: "Git 常用操作速查",
         cat: "reference",
-        tags: ["common"],
+        tags: ["common","frontend","backend"],
     },
     {
         id: "httpstatus",
@@ -1112,7 +1128,7 @@ const tools = [
         name: "HTTP 状态码",
         desc: "HTTP 状态码 / 方法速查",
         cat: "reference",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "ascii",
@@ -1120,7 +1136,7 @@ const tools = [
         name: "ASCII 表",
         desc: "ASCII / 控制字符速查",
         cat: "reference",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "mybatisplus",
@@ -1160,7 +1176,7 @@ const tools = [
         name: "事务传播",
         desc: "Spring 事务传播行为速查",
         cat: "reference",
-        tags: ["java"],
+        tags: ["java","backend"],
     },
     {
         id: "mavenref",
@@ -1184,7 +1200,7 @@ const tools = [
         name: "JDK 新特性",
         desc: "JDK 8/11/17/21 新特性速查",
         cat: "reference",
-        tags: ["common"],
+        tags: ["java"],
     },
     {
         id: "httpheader",
@@ -1192,7 +1208,7 @@ const tools = [
         name: "HTTP Header",
         desc: "HTTP 通用 / 请求 / 响应头速查",
         cat: "reference",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "mqref",
@@ -1200,7 +1216,7 @@ const tools = [
         name: "消息中间件",
         desc: "Kafka / RabbitMQ / RocketMQ 速查",
         cat: "reference",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "mimetype",
@@ -1208,7 +1224,7 @@ const tools = [
         name: "MIME 类型",
         desc: "文件扩展名 / MIME 类型对照",
         cat: "reference",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "portref",
@@ -1216,7 +1232,7 @@ const tools = [
         name: "端口号速查",
         desc: "常用网络服务端口号对照",
         cat: "reference",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "ideakeys",
@@ -1232,7 +1248,7 @@ const tools = [
         name: "设计模式",
         desc: "23 种设计模式示例代码",
         cat: "reference",
-        tags: ["common"],
+        tags: ["common","backend"],
     },
     {
         id: "gcref",
@@ -1280,14 +1296,17 @@ const tools = [
 // === Tools Map for O(1) lookup ===
 const toolsById = new Map(tools.map(t => [t.id, t]));
 
-/** 工具是否匹配受众筛选：all | common | java */
+/** 工具是否匹配受众筛选：all | common | frontend | backend | java */
 function toolMatchesAudience(tool, audience) {
     if (!audience || audience === "all") return true;
-    var tags = tool && tool.tags;
-    if (!tags || !tags.length) return audience === "common"; // 无 tags 默认当 common
+    var tags = (tool && tool.tags) || [];
+    if (!tags.length) return audience === "common";
     if (audience === "java") return tags.indexOf("java") !== -1;
+    if (audience === "frontend") return tags.indexOf("frontend") !== -1;
+    if (audience === "backend") return tags.indexOf("backend") !== -1;
     if (audience === "common") {
-        return tags.indexOf("common") !== -1 || tags.indexOf("java") === -1;
+        // 通用：有 common，且不是「仅 java」工具
+        return tags.indexOf("common") !== -1;
     }
     return true;
 }

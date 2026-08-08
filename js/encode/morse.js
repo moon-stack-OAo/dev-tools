@@ -231,7 +231,11 @@ function morseEncode(text, options) {
     var dot = options.dot != null ? options.dot : '.';
     var dash = options.dash != null ? options.dash : '-';
     var letterSep = options.letterSep != null ? options.letterSep : ' ';
+    // 硬词界：原文空白 → 解码为空格
     var wordSep = options.wordSep != null ? options.wordSep : ' / ';
+    // 软词界：CJK↔非CJK 边界 → 解码时无空格，但切断数字缓冲
+    // （汉字电码是 4 位数字摩斯，与字面数字粘连会混淆，如 to9.9起）
+    var softSep = options.softSep != null ? options.softSep : ' // ';
     if (!text) return '';
 
     var words = String(text).trim().split(/\s+/);
@@ -239,16 +243,25 @@ function morseEncode(text, options) {
     for (var wi = 0; wi < words.length; wi++) {
         var word = words[wi];
         if (!word) continue;
+        var segments = [];
         var codes = [];
-        // 正确处理代理对（罕用扩展汉字）
         var chars = Array.from(word);
+        var prevCjk = null;
         for (var i = 0; i < chars.length; i++) {
-            var tokens = charToMorseTokens(chars[i], options);
+            var ch = chars[i];
+            var cjk = isCjkChar(ch);
+            if (prevCjk !== null && cjk !== prevCjk && codes.length) {
+                segments.push(codes.join(letterSep));
+                codes = [];
+            }
+            prevCjk = cjk;
+            var tokens = charToMorseTokens(ch, options);
             for (var ti = 0; ti < tokens.length; ti++) {
                 codes.push(applyDotDash(tokens[ti], dot, dash));
             }
         }
-        outWords.push(codes.join(letterSep));
+        if (codes.length) segments.push(codes.join(letterSep));
+        if (segments.length) outWords.push(segments.join(softSep));
     }
     return outWords.join(wordSep);
 }
@@ -265,21 +278,35 @@ function assembleDecodedChars(chars, chinese) {
     }
     var out = '';
     var digitBuf = '';
+
+    /**
+     * 连续数字：优先按 4 位中文电码还原；
+     * 若长度非 4 倍数、或任一组不在电码表中，则整段按字面数字输出。
+     * 这样 URL/IP 等含数字的文本在勾选「中文电码」时也能解码，
+     * 而纯汉字电码（总是 4 的倍数且表内）仍正常还原。
+     */
     function flushDigits() {
         if (!digitBuf) return;
         if (digitBuf.length % 4 !== 0) {
-            throw new Error('中文电码位数错误（应为 4 的倍数）: ' + digitBuf);
+            out += digitBuf;
+            digitBuf = '';
+            return;
         }
+        var pieces = '';
         for (var i = 0; i < digitBuf.length; i += 4) {
             var code = digitBuf.substr(i, 4);
             var ch = _ctcCodeToChar[code];
             if (!ch) {
-                throw new Error('未知中文电码: ' + code);
+                out += digitBuf;
+                digitBuf = '';
+                return;
             }
-            out += ch;
+            pieces += ch;
         }
+        out += pieces;
         digitBuf = '';
     }
+
     for (var i = 0; i < chars.length; i++) {
         var c = chars[i];
         if (c >= '0' && c <= '9') {
@@ -300,6 +327,29 @@ function assembleDecodedChars(chars, chinese) {
  * @param {{lowerCase?: boolean, chinese?: boolean}} [options]
  * @returns {string}
  */
+/**
+ * 解码单个摩斯片段（字母间空格分隔，无词界）
+ */
+function decodeMorseSegment(part, lowerCase, chinese) {
+    var tokens = part.split(/\s+/);
+    var chars = [];
+    for (var ti = 0; ti < tokens.length; ti++) {
+        var token = tokens[ti];
+        if (!token) continue;
+        var cleaned = token.replace(/[^.\-]/g, '');
+        if (!cleaned) {
+            throw new Error('非法摩斯码片段: "' + token + '"');
+        }
+        var ch = MORSE_REVERSE[cleaned];
+        if (!ch) {
+            throw new Error('未知摩斯码: "' + cleaned + '"');
+        }
+        chars.push(lowerCase && /[A-Z]/.test(ch) ? ch.toLowerCase() : ch);
+    }
+    if (!chars.length) return '';
+    return assembleDecodedChars(chars, chinese);
+}
+
 function morseDecode(code, options) {
     options = options || {};
     var lowerCase = !!options.lowerCase;
@@ -312,27 +362,23 @@ function morseDecode(code, options) {
         .replace(/[|／]/g, '/')
         .trim();
 
+    // 软词界 // ：CJK 边界，解码后无空格；硬词界 / 或多空格：原文空白
+    var SOFT = '\x01';
+    normalized = normalized.replace(/\s*\/\/+\s*/g, SOFT);
+
     var wordParts = normalized.split(/\s*\/\s*|\s{2,}/);
     var outWords = [];
     for (var wi = 0; wi < wordParts.length; wi++) {
         var part = wordParts[wi].trim();
         if (!part) continue;
-        var tokens = part.split(/\s+/);
-        var chars = [];
-        for (var ti = 0; ti < tokens.length; ti++) {
-            var token = tokens[ti];
-            if (!token) continue;
-            var cleaned = token.replace(/[^.\-]/g, '');
-            if (!cleaned) {
-                throw new Error('非法摩斯码片段: "' + token + '"');
-            }
-            var ch = MORSE_REVERSE[cleaned];
-            if (!ch) {
-                throw new Error('未知摩斯码: "' + cleaned + '"');
-            }
-            chars.push(lowerCase && /[A-Z]/.test(ch) ? ch.toLowerCase() : ch);
+        var softParts = part.split(SOFT);
+        var joined = '';
+        for (var si = 0; si < softParts.length; si++) {
+            var seg = softParts[si].trim();
+            if (!seg) continue;
+            joined += decodeMorseSegment(seg, lowerCase, chinese);
         }
-        if (chars.length) outWords.push(assembleDecodedChars(chars, chinese));
+        if (joined) outWords.push(joined);
     }
     return outWords.join(' ');
 }

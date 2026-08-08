@@ -127,6 +127,30 @@ describe('morse 中文电码', () => {
         expect(morseDecode(code, { chinese: true })).toBe('你好,世界');
     });
 
+    test('URL/IP 含数字 + 中文：中文电码模式下可往返', () => {
+        const s = 'HTTP://192.168.xxx.xxx/DEV-TOOLS/是';
+        const code = morseEncode(s, { chinese: true });
+        expect(morseDecode(code, { chinese: true })).toBe(s);
+    });
+
+    test('ASCII 数字紧贴汉字：编码插入软词界后可往返', () => {
+        const s = 'to9.9起';
+        const code = morseEncode(s, { chinese: true });
+        expect(code).toContain('//');
+        expect(morseDecode(code, { chinese: true })).toBe(s);
+    });
+
+    test('中英数字混合：价格100元 往返', () => {
+        const s = '价格100元';
+        expect(morseDecode(morseEncode(s, { chinese: true }), { chinese: true })).toBe(s);
+    });
+
+    test('纯 URL 在中文电码开启时按字面数字解码', () => {
+        const code =
+            '.... - - .--. ---... -..-. -..-. .---- ----. ..--- .-.-.- .---- -.... ---.. .-.-.- .---- .---- ----- .-.-.- ..--- ....- -.... -..-. -.. . ...- -....- - --- --- .-.. ... -..-.';
+        expect(morseDecode(code, { chinese: true })).toBe('HTTP://192.168.110.246/DEV-TOOLS/');
+    });
+
     test('未开中文选项遇汉字抛错', () => {
         expect(() => morseEncode('汉', { chinese: false })).toThrow(/中文电码/);
     });

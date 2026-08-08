@@ -277,12 +277,13 @@ let homeCards = [];
 let homeDividers = [];
 
 const AUDIENCE_KEY = "devtools.audience";
+const VALID_AUDIENCES = { all: 1, common: 1, frontend: 1, backend: 1, java: 1 };
 let homeAudience = "all";
 
 (function loadHomeAudience() {
     try {
         const saved = localStorage.getItem(AUDIENCE_KEY);
-        if (saved === "all" || saved === "common" || saved === "java") {
+        if (saved && VALID_AUDIENCES[saved]) {
             homeAudience = saved;
         }
     } catch (e) {
@@ -296,17 +297,15 @@ function cardMatchesAudience(card) {
         return toolMatchesAudience(tool, homeAudience);
     }
     const tags = (card.dataset.tags || "common").split(",").filter(Boolean);
-    if (homeAudience === "java") {
-        return tags.indexOf("java") >= 0;
-    }
-    if (homeAudience === "common") {
-        return tags.indexOf("common") >= 0 || tags.indexOf("java") < 0;
-    }
+    if (homeAudience === "frontend") return tags.indexOf("frontend") >= 0;
+    if (homeAudience === "backend") return tags.indexOf("backend") >= 0;
+    if (homeAudience === "java") return tags.indexOf("java") >= 0;
+    if (homeAudience === "common") return tags.indexOf("common") >= 0;
     return true;
 }
 
 function setHomeAudience(audience) {
-    if (audience !== "all" && audience !== "common" && audience !== "java") {
+    if (!VALID_AUDIENCES[audience]) {
         audience = "all";
     }
     homeAudience = audience;

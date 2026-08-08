@@ -26,7 +26,8 @@
     <div class="hint" style="margin-top:10px;color:var(--text-muted);font-size:12px;line-height:1.5">
         ITU 国际摩斯码：字母间空格，词间 <code>/</code>。
         <strong>中文</strong>无直接摩斯码，启用「中文电码」后：汉字 → 四位电报码 → 数字摩斯
-        （如 <code>中</code>=0022 → <code>----- ----- ..--- ..---</code>）。解码时请保持同一选项。
+        （如 <code>中</code>=0022 → <code>----- ----- ..--- ..---</code>）。
+        与 ASCII 相邻时自动加软词界 <code>//</code>（解码无空格），避免电码数字与字面数字混淆（如 <code>9.9起</code>）。解码时请保持同一选项。
         中文/全角标点自动映射半角（<code>，</code>→<code>,</code>、<code>。</code>→<code>.</code> 等）。
         电码表约 7k 字（Unihan 大陆标准），按需加载。
     </div>

@@ -61,6 +61,11 @@ const toolLibs = {
     pyrun: ["pyodide/pyodide.js"],
 };
 
+// 工具→脚本依赖映射：打开工具前先加载其它工具脚本（复用其全局纯函数）
+const toolScriptDeps = {
+    json2ts: ["json2code"],
+};
+
 // 生产构建内联的 window.__ASSET_MAP__ 提供逐文件内容哈希,用于动态资源强缓存;
 // dev 模式无该映射,返回空串(浏览器每次取最新)。
 function assetV(p) {
@@ -137,9 +142,11 @@ async function openTool(id) {
     showLoading();
     setStatus("加载中...");
     try {
-        // 先按需加载依赖库(若有),再加载工具脚本与面板
+        // 先按需加载依赖库(若有),再加载脚本依赖与本工具脚本/面板
         const libs = toolLibs[id];
         if (libs) await Promise.all(libs.map((l) => loadLib(l)));
+        const deps = toolScriptDeps[id];
+        if (deps) await Promise.all(deps.map((d) => loadToolScript(d)));
         await Promise.all([loadToolPanel(id), loadToolScript(id)]);
     } catch (e) {
         // 已被更新的 openTool 取代时不改 UI / loading，避免误关最新请求的 loading

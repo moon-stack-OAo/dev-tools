@@ -1,0 +1,34 @@
+<div class="tool-panel" id="panel-json2ts">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div class="flex-1">
+            <div class="label">根类型名</div>
+            <input id="j2tsRoot" placeholder="Root" type="text" value="Root">
+        </div>
+        <div>
+            <div class="label">TS 风格</div>
+            <select id="j2tsStyle" style="width:130px">
+                <option value="interface">interface</option>
+                <option value="type">type</option>
+            </select>
+        </div>
+    </div>
+    <div class="toolbar">
+        <button onclick="j2tsGenerate()">生成代码</button>
+        <button class="outline" onclick="j2tsLoadSample()" type="button">示例</button>
+        <button class="outline" onclick="j2tsClear()" type="button">清空</button>
+    </div>
+    <div class="fmt-split">
+        <div class="fmt-pane">
+            <div class="label">输入 JSON</div>
+            <textarea class="json-input" id="j2tsInput"
+                      placeholder='{"name":"张三","age":25,"active":true}'></textarea>
+        </div>
+        <div class="fmt-pane">
+            <div class="copy-wrap">
+                <div class="label">生成的 TypeScript 代码</div>
+                <button class="copy-btn" onclick="j2tsCopy()">复制</button>
+                <div class="output-box" id="j2tsOutput"></div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,64 @@
+<div class="tool-panel" id="panel-imgshuffle">
+    <div class="ims-config">
+        <div class="ims-config-row">
+            <label class="ims-field">
+                <span>输出格式</span>
+                <select id="imsFormat">
+                    <option selected value="image/jpeg">JPEG</option>
+                    <option value="image/png">PNG</option>
+                </select>
+            </label>
+            <label class="ims-field ims-field-slider" id="imsQualityField">
+                <span>JPEG 质量 <em id="imsQualityVal">95</em></span>
+                <input id="imsQuality" max="100" min="1" type="range" value="95" />
+            </label>
+        </div>
+        <div class="ims-config-hint">
+            基于 Gilbert 曲线的可逆像素置换，纯本地 Canvas 处理，图片不会上传。多次混淆需对应次数解混淆；JPEG
+            有损可能影响完美还原；平台二次压缩可能导致色差。
+        </div>
+    </div>
+
+    <div class="ims-drop" id="imsDrop">
+        <div class="ims-drop-inner">
+            <i class="bi bi-cloud-arrow-up"></i>
+            <div>拖拽图片到此处，或 <span class="ims-pick">点击选择文件</span></div>
+            <div class="ims-drop-tip">支持 JPEG / PNG / WebP / GIF / BMP，单张；大图自动缩小</div>
+        </div>
+        <input accept="image/*" hidden id="imsFile" type="file" />
+    </div>
+
+    <div class="toolbar ims-toolbar">
+        <span class="ims-meta" id="imsMeta"></span>
+        <button class="outline" onclick="imsScramble()" style="margin-left: auto">混淆</button>
+        <button class="outline" onclick="imsUnscramble()">解混淆</button>
+        <button class="outline" onclick="imsRestore()">还原</button>
+        <button class="outline" onclick="imsDownload()">下载</button>
+        <button
+            class="outline"
+            onclick="imsClear()"
+            style="border-color: var(--danger); color: var(--danger)"
+        >
+            清空
+        </button>
+    </div>
+
+    <div class="ims-hint" id="imsHint"></div>
+
+    <div class="ims-previews">
+        <div class="ims-preview-box">
+            <div class="ims-preview-label">原图</div>
+            <div class="ims-preview-frame">
+                <div class="ims-preview-empty" id="imsOrigEmpty">未上传</div>
+                <img alt="原图" id="imsOrigPreview" style="display: none" />
+            </div>
+        </div>
+        <div class="ims-preview-box">
+            <div class="ims-preview-label">结果</div>
+            <div class="ims-preview-frame">
+                <div class="ims-preview-empty" id="imsResultEmpty">处理后显示</div>
+                <img alt="结果" id="imsResultPreview" style="display: none" />
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,6 +1,6 @@
 ﻿# 开发者工具箱
 
-> 一个面向开发者 / 全栈的**纯前端**在线工具集（含丰富 Java 后端深度工具）—— **156 个工具、8 大分类**
+> 一个面向开发者 / 全栈的**纯前端**在线工具集（含丰富 Java 后端深度工具）—— **158 个工具、8 大分类**
 > ，覆盖格式化、编解码、安全、生成与转换、代码生成、文本、调试、参考速查。无需后端、无需联网、无需上传数据，所有计算均在浏览器本地完成。支持
 > Vite 开发、Docker 一键部署、Nginx 静态托管，开箱即用。
 
@@ -16,7 +16,7 @@
 - 🚀 **零依赖开箱即用**：纯静态 HTML / CSS / JavaScript，无任何前端框架；业务代码无构建期编译，第三方库通过 Vite + esbuild
   打包为 IIFE
 - 🔒 **数据 100% 本地处理**：所有计算在浏览器内完成，不会上传任何内容到服务器，支持离线使用
-- 🧰 **156 个工具 / 8 大分类**：覆盖全栈日常，Java 场景深度增强，工具持续扩充
+- 🧰 **158 个工具 / 8 大分类**：覆盖全栈日常，Java 场景深度增强，工具持续扩充
 - ⭐ **收藏与最近使用**：侧边栏 / 首页星标收藏（`localStorage`），虚拟分类「收藏」「最近使用」
 - 🎨 **深色主题 + 响应式**：桌面 / 平板 / 手机均可使用
 - 🐳 **多种部署方式**：Vite 开发、Docker 容器、Nginx 静态托管、GitHub Pages（`main` 推送触发）
@@ -74,7 +74,7 @@ npm run build     # 输出到 dist/
 
 ```
 ├── index.html                      # 入口（首页；工具脚本/面板/依赖库均按需懒加载）
-├── html/panels/                    # 工具面板（156 个文件，每个工具一个 HTML）
+├── html/panels/                    # 工具面板（158 个文件，每个工具一个 HTML）
 │   ├── format/                     #  格式化：json / yaml / toml / graphqlfmt / openapiview / ...
 │   ├── encode/                     #  编解码：base64 / base32 / charset / protobuf / ...
 │   ├── security/                   #  安全：jwt / jasypt / pwdstrength / hashext / gmsm / ...
@@ -132,7 +132,7 @@ npm run build     # 输出到 dist/
 
 ## 🧰 工具列表
 
-> 工具总数 **156 个**，分为 **8 大业务分类**（另有虚拟分类「收藏」「最近使用」）。下表功能描述与 `js/tools-registry.js` 中
+> 工具总数 **158 个**，分为 **8 大业务分类**（另有虚拟分类「收藏」「最近使用」）。下表功能描述与 `js/tools-registry.js` 中
 `tools[]` 的 `desc` 保持一致。
 
 ### 一、格式化（25）
@@ -179,7 +179,7 @@ npm run build     # 输出到 dist/
 | Hex 编码          | 字符串 ↔ Hex 互转（UTF-8）                      |
 | Base32 / Base58 | Base32 (RFC 4648) / Base58 (Bitcoin) 编解码 |
 | Protobuf 解码     | Protobuf ↔ JSON / Base64 / Hex           |
-| 摩斯电码            | 文本 ↔ 摩斯电码（ITU；可选中文电码汉字↔四位电报码）     |
+| 摩斯电码            | 文本 ↔ 摩斯电码（ITU；可选中文电码汉字↔四位电报码）            |
 
 ### 三、安全（19）
 
@@ -205,7 +205,7 @@ npm run build     # 输出到 dist/
 | CVSS 3.1 评分   | CVSS v3.1 Base Score / 向量字符串                   |
 | JWT 验签        | HMAC/RSA 验签 / exp·nbf·iat 时间声明校验               |
 
-### 四、生成与转换（19）
+### 四、生成与转换（20）
 
 | 工具            | 功能                                     |
 |---------------|----------------------------------------|
@@ -216,6 +216,7 @@ npm run build     # 输出到 dist/
 | 颜色转换          | HEX / RGB / HSL 互转预览                   |
 | 进制转换          | 2~36 进制互转                              |
 | 图片压缩          | JPEG/PNG/WebP 互转 / 质量调节 / 批量处理         |
+| 图片混淆          | Gilbert 曲线像素混淆 / 解混淆（可逆 · 本地）          |
 | Case 转换       | camelCase / snake_case 等               |
 | 数据 Mock       | 生成姓名 / 手机号 / 邮箱等                       |
 | 日期计算器         | 日期加减 / 间隔 / 工作日                        |
@@ -229,12 +230,13 @@ npm run build     # 输出到 dist/
 | Spring 配置键转换  | relaxed binding：kebab / camel / env 互转 |
 | 证件号校验         | 身份证校验位/地区 / 手机号段 / 银行卡 Luhn            |
 
-### 五、代码生成（17）
+### 五、代码生成（18）
 
 | 工具                  | 功能                                             |
 |---------------------|------------------------------------------------|
 | JSON → Java         | JSON 生成 Java POJO 类                            |
 | JSON → 多语言          | JSON 生成 TypeScript / Kotlin / Go               |
+| JSON → Interface    | JSON / Object 生成 TypeScript interface / type   |
 | SQL → Java          | DDL 生成 MyBatis Plus 实体                         |
 | SQL → MyBatis       | DDL 生成 Mapper XML + Interface                  |
 | Maven 坐标            | GAV → pom / Gradle / SBT 依赖片段                  |
@@ -482,7 +484,8 @@ Chrome / Firefox / Edge / Safari 现代浏览器（支持 ES2020+ 语法）。
 
 1. 在对应分类下创建 `html/panels/{cat}/{toolId}.html` 与 `js/{cat}/{toolId}.js`（*
    *注意：文件所在目录必须与注册表中的 `cat` 一致**，懒加载按 `js/{cat}/{id}.js` 构造路径，不一致会 404 打不开）
-2. 在 `js/tools-registry.js` 的 `tools[]` 中登记元信息（id、名称、分类、图标、描述、`tags`：`common` / `java`）
+2. 在 `js/tools-registry.js` 的 `tools[]` 中登记元信息（id、名称、分类、图标、描述、`tags`：可写 `common` / `frontend` /
+   `backend` / `java`）
 3. 若依赖第三方库，在 `js/loader.js` 的 `toolLibs` 映射中登记
 4. 若工具需要初始化（渲染数据、绑定事件、启动定时器等），在工具 JS 末尾调用 `registerInit(toolId, initFn)` 登记，`openTool`
    会自动调用
