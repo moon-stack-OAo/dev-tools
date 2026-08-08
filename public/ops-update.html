@@ -420,16 +420,16 @@
             <div class="meta-box">
                 <h3>本地构建 (version.json)</h3>
                 <div class="meta-row"><span class="k">Short SHA</span><span class="v" id="localSha">—</span></div>
-                <div class="meta-row"><span class="k">Message</span><span class="v msg" id="localMsg">—</span></div>
-                <div class="meta-row"><span class="k">时间</span><span class="v" id="localTime">—</span></div>
-                <div class="meta-row"><span class="k">版本</span><span class="v" id="localVersion">—</span></div>
+                <div class="meta-row"><span class="k">Full SHA</span><span class="v msg" id="localFull">—</span></div>
+                <div class="meta-row"><span class="k">构建时间</span><span class="v" id="localTime">—</span></div>
+                <div class="meta-row"><span class="k">分支 / 仓库</span><span class="v msg" id="localMeta">—</span></div>
             </div>
             <div class="meta-box">
-                <h3>远程仓库 (api/status)</h3>
+                <h3>远程 main (api/status)</h3>
                 <div class="meta-row"><span class="k">Short SHA</span><span class="v" id="remoteSha">—</span></div>
                 <div class="meta-row"><span class="k">Message</span><span class="v msg" id="remoteMsg">—</span></div>
                 <div class="meta-row"><span class="k">时间</span><span class="v" id="remoteTime">—</span></div>
-                <div class="meta-row"><span class="k">分支</span><span class="v" id="remoteBranch">—</span></div>
+                <div class="meta-row"><span class="k">分支 / 模式</span><span class="v msg" id="remoteBranch">—</span></div>
             </div>
         </div>
         <div class="hint" id="statusHint">正在加载…</div>
@@ -471,13 +471,15 @@
     'use strict';
 
     var TOKEN_KEY = 'devtools.updateToken';
+    var pollTimer = null;
+    var lastRunning = false;
 
     var el = {
         badge: document.getElementById('statusBadge'),
         localSha: document.getElementById('localSha'),
-        localMsg: document.getElementById('localMsg'),
+        localFull: document.getElementById('localFull'),
         localTime: document.getElementById('localTime'),
-        localVersion: document.getElementById('localVersion'),
+        localMeta: document.getElementById('localMeta'),
         remoteSha: document.getElementById('remoteSha'),
         remoteMsg: document.getElementById('remoteMsg'),
         remoteTime: document.getElementById('remoteTime'),
@@ -540,35 +542,52 @@
 
     function normalizeCommit(src) {
         src = src || {};
+        var full = pick(src, ['fullSha', 'full_sha', 'sha', 'hash', 'id'], '');
+        var short = pick(src, ['shortSha', 'short_sha', 'short', 'commit'], '');
+        if (!short && full) short = shortSha(full);
+        if (!full && short) full = short;
         return {
-            sha: pick(src, ['shortSha', 'short_sha', 'sha', 'commit', 'hash', 'id'], ''),
+            sha: short || full,
+            full: full || short,
             message: pick(src, ['message', 'msg', 'subject', 'commitMessage'], ''),
             time: pick(src, ['time', 'date', 'builtAt', 'buildTime', 'committedAt', 'timestamp', 'updatedAt'], ''),
             version: pick(src, ['version', 'tag', 'release'], ''),
-            branch: pick(src, ['branch', 'ref'], '')
+            branch: pick(src, ['branch', 'ref'], ''),
+            repo: pick(src, ['repo', 'repository'], '')
         };
     }
 
     function applyLocal(data) {
         var c = normalizeCommit(data);
-        setText(el.localSha, shortSha(c.sha));
-        setText(el.localMsg, c.message || '—');
+        setText(el.localSha, shortSha(c.sha || c.full));
+        setText(el.localFull, c.full || '—');
         setText(el.localTime, formatTime(c.time));
-        setText(el.localVersion, c.version || '—');
+        var metaBits = [];
+        if (c.branch) metaBits.push(c.branch);
+        if (c.repo) metaBits.push(c.repo);
+        if (c.version) metaBits.push(c.version);
+        setText(el.localMeta, metaBits.length ? metaBits.join(' · ') : '—');
         return c;
     }
 
     function applyRemote(data) {
         var remote = normalizeCommit(data.remote || data.latest || data.target || data);
-        // 若 remote 字段本身就是扁平结构
         if (!data.remote && !data.latest && data.local) {
             remote = normalizeCommit(data);
         }
         if (data.remote) remote = normalizeCommit(data.remote);
-        setText(el.remoteSha, shortSha(remote.sha));
+        setText(el.remoteSha, shortSha(remote.sha || remote.full));
         setText(el.remoteMsg, remote.message || '—');
         setText(el.remoteTime, formatTime(remote.time));
-        setText(el.remoteBranch, remote.branch || pick(data, ['branch', 'ref'], '—'));
+        var meta = data.meta || {};
+        var branch = remote.branch || meta.branch || pick(data, ['branch', 'ref'], '');
+        var mode = meta.mode || '';
+        var repo = meta.repo || '';
+        var bits = [];
+        if (branch) bits.push(branch);
+        if (mode) bits.push('mode=' + mode);
+        if (repo) bits.push(repo);
+        setText(el.remoteBranch, bits.length ? bits.join(' · ') : '—');
         return remote;
     }
 
@@ -625,19 +644,39 @@
         return { ok: res.ok, status: res.status, body: body, text: text };
     }
 
+    function stopPoll() {
+        if (pollTimer) {
+            clearInterval(pollTimer);
+            pollTimer = null;
+        }
+    }
+
+    function startPoll() {
+        if (pollTimer) return;
+        pollTimer = setInterval(function () {
+            loadLog().then(function (info) {
+                if (info && info.running) return;
+                stopPoll();
+                loadVersion().then(function () {
+                    return loadStatus(false);
+                });
+            });
+        }, 2000);
+    }
+
     async function loadVersion() {
         try {
             var r = await fetchJson('version.json', { cache: 'no-store' });
             if (!r.ok) {
                 setText(el.localSha, '—');
-                setText(el.localMsg, '未找到 version.json');
+                setText(el.localFull, '未找到 version.json');
                 setText(el.localTime, '—');
-                setText(el.localVersion, '—');
+                setText(el.localMeta, '—');
                 return null;
             }
             return applyLocal(r.body || {});
         } catch (e) {
-            setText(el.localMsg, '加载失败: ' + (e.message || e));
+            setText(el.localFull, '加载失败: ' + (e.message || e));
             return null;
         }
     }
@@ -653,31 +692,54 @@
                 setText(el.remoteMsg, '—');
                 setText(el.remoteTime, '—');
                 setText(el.remoteBranch, '—');
-                setHint(el.statusHint, 'Agent 未连接或未配置反代（HTTP ' + r.status + '）', 'warn');
+                var errBody = pick(r.body || {}, ['error', 'message'], '');
+                setHint(
+                    el.statusHint,
+                    'Agent 未连接或未配置反代（HTTP ' + r.status + (errBody ? '：' + errBody : '') + '）',
+                    'warn'
+                );
                 if (showActionHint) setHint(el.actionHint, '检查更新失败：Agent 未连接或未配置反代', 'err');
                 return null;
             }
             var data = r.body || {};
-            // 兼容 status 内嵌 local
             if (data.local) applyLocal(Object.assign({}, data.local));
             var remote = applyRemote(data);
             var local = normalizeCommit(data.local || {
                 shortSha: el.localSha.textContent,
-                message: el.localMsg.textContent,
-                time: el.localTime.textContent,
-                version: el.localVersion.textContent
+                fullSha: el.localFull.textContent,
+                time: el.localTime.textContent
             });
             var kind = resolveStatus(data, local, remote);
             var msg = pick(data, ['message', 'detail', 'msg'], '');
-            if (!msg) {
-                if (kind === 'ok') msg = '本地与远程一致，无需更新。';
-                else if (kind === 'update') msg = '检测到远程有新提交，可执行立即更新。';
-                else if (kind === 'updating') msg = '更新任务进行中，请稍后刷新日志。';
-                else if (kind === 'failed') msg = '上次更新失败，请查看日志后重试。';
-                else msg = '已连接 Agent，状态见徽章。';
+            if (data.error) {
+                msg = (msg ? msg + ' · ' : '') + '远程查询异常：' + data.error;
             }
-            setHint(el.statusHint, msg, kind === 'failed' ? 'err' : kind === 'ok' ? 'ok' : '');
-            if (showActionHint) setHint(el.actionHint, '状态已刷新', kind === 'failed' ? 'err' : 'ok');
+            if (!msg) {
+                if (kind === 'ok') {
+                    msg = '本地 version.json 与远程 main 一致，无需更新。';
+                } else if (kind === 'update') {
+                    msg =
+                        '远程 main 有新提交。立即更新将下载 Release latest-dist 资产（需 CI 已发布到该 commit）。';
+                } else if (kind === 'updating') {
+                    msg = '更新任务进行中，日志将自动刷新。';
+                } else if (kind === 'failed') {
+                    msg = '上次更新失败，请查看日志后重试。';
+                } else {
+                    msg = '已连接 Agent，状态见徽章。';
+                }
+            }
+            setHint(
+                el.statusHint,
+                msg,
+                kind === 'failed' || data.error ? 'err' : kind === 'ok' ? 'ok' : kind === 'update' ? 'warn' : ''
+            );
+            if (showActionHint) {
+                setHint(
+                    el.actionHint,
+                    data.error ? '远程状态异常：' + data.error : '状态已刷新',
+                    data.error || kind === 'failed' ? 'err' : 'ok'
+                );
+            }
             return data;
         } catch (e) {
             setBadge('unknown', '未知');
@@ -698,13 +760,11 @@
             if (!r.ok) {
                 el.logView.textContent = '无法获取日志（HTTP ' + r.status + '）。\nAgent 未连接或未配置反代。';
                 el.logMeta.textContent = 'GET api/update/log · 失败';
-                return;
+                return null;
             }
-            var body = r.body;
+            var body = r.body || {};
             var text = '';
-            if (body == null) {
-                text = r.text || '';
-            } else if (typeof body === 'string') {
+            if (typeof body === 'string') {
                 text = body;
             } else if (body.raw) {
                 text = body.raw;
@@ -718,10 +778,40 @@
                 text = JSON.stringify(body, null, 2);
             }
             el.logView.textContent = text.trim() ? text : '（日志为空）';
-            el.logMeta.textContent = 'GET api/update/log · ' + new Date().toLocaleTimeString();
+            try {
+                el.logView.scrollTop = el.logView.scrollHeight;
+            } catch (e) { /* ignore */ }
+
+            var running = !!body.running;
+            var exitCode = body.exitCode;
+            var finishedAt = body.finishedAt;
+            var metaParts = ['GET api/update/log', new Date().toLocaleTimeString()];
+            if (running) {
+                metaParts.push('运行中');
+                setBadge('busy', '更新中');
+                el.btnUpdate.disabled = true;
+                startPoll();
+            } else {
+                el.btnUpdate.disabled = false;
+                if (exitCode != null) metaParts.push('exitCode=' + exitCode);
+                if (finishedAt) metaParts.push(formatTime(finishedAt));
+                if (lastRunning && !running) {
+                    if (exitCode === 0) {
+                        setHint(el.actionHint, '更新完成（exitCode=0），已刷新版本', 'ok');
+                        setBadge('ok', '已是最新');
+                    } else if (exitCode != null) {
+                        setHint(el.actionHint, '更新结束但失败（exitCode=' + exitCode + '）', 'err');
+                        setBadge('fail', '失败');
+                    }
+                }
+            }
+            lastRunning = running;
+            el.logMeta.textContent = metaParts.join(' · ');
+            return { running: running, exitCode: exitCode, finishedAt: finishedAt };
         } catch (e) {
             el.logView.textContent = '无法获取日志：' + (e.message || e) + '\nAgent 未连接或未配置反代。';
             el.logMeta.textContent = 'GET api/update/log · 失败';
+            return null;
         }
     }
 
@@ -746,36 +836,38 @@
         el.btnCheck.disabled = true;
         setBadge('busy', '更新中');
         setHint(el.actionHint, '正在触发更新…');
-        setHint(el.statusHint, '更新请求已发送，请关注日志输出。');
+        setHint(el.statusHint, '更新请求已发送，日志将自动刷新。');
 
         try {
             var r = await fetchJson('api/update', {
                 method: 'POST',
                 headers: {
                     'X-Update-Token': token,
-                    'Accept': 'application/json'
+                    Accept: 'application/json'
                 },
                 cache: 'no-store'
             });
             if (!r.ok) {
-                var errMsg = pick(r.body || {}, ['message', 'error', 'msg'], '') || ('HTTP ' + r.status);
+                var errMsg = pick(r.body || {}, ['message', 'error', 'msg'], '') || 'HTTP ' + r.status;
                 if (r.status === 401 || r.status === 403) errMsg = 'Token 无效或无权限（' + r.status + '）';
+                if (r.status === 409) errMsg = '更新正在进行中，请稍候查看日志';
                 setBadge('fail', '失败');
                 setHint(el.actionHint, '更新失败：' + errMsg, 'err');
                 setHint(el.statusHint, '更新失败：' + errMsg, 'err');
+                el.btnUpdate.disabled = false;
             } else {
                 var okMsg = pick(r.body || {}, ['message', 'msg'], '') || '更新已触发';
-                setHint(el.actionHint, okMsg, 'ok');
-                setHint(el.statusHint, okMsg + '。可刷新日志查看进度。', 'ok');
+                setHint(el.actionHint, okMsg + '，正在拉取日志…', 'ok');
+                lastRunning = true;
+                startPoll();
             }
             await loadLog();
-            await loadStatus(false);
         } catch (e) {
             setBadge('fail', '失败');
             setHint(el.actionHint, '更新请求失败：' + (e.message || e), 'err');
             setHint(el.statusHint, 'Agent 未连接或未配置反代', 'warn');
-        } finally {
             el.btnUpdate.disabled = false;
+        } finally {
             el.btnCheck.disabled = false;
         }
     }
