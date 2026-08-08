@@ -552,8 +552,8 @@
     display: flex;
     flex-wrap: nowrap;
     gap: 6px;
-    margin-bottom: 12px;
-    padding: 4px;
+    margin: 0 0 12px;
+    padding: 6px 4px;
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -561,6 +561,18 @@
     max-width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    /* 首页面板滚动时吸顶冻结 */
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    box-shadow: 0 1px 0 transparent;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+/* 吸顶时略加强分隔（依赖背景不透明 + 阴影层次） */
+.tool-panel.home-panel .home-audience-bar {
+    background: color-mix(in srgb, var(--bg-card) 92%, transparent);
 }
 
 .home-audience-btn {
