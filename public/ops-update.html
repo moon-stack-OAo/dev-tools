@@ -8,11 +8,13 @@
     <title>DevTools 更新管理</title>
     <style>
         :root {
+            /* 与主站 css/base.css 对齐 */
             --bg: #0f172a;
             --bg-card: #1a2235;
             --bg-card2: #232b42;
             --bg-input: #283144;
             --bg-hover: #38456a;
+            --bg-terminal: #131a2c;
             --text: #e8edf5;
             --text-dim: #a8b0cc;
             --text-muted: #7a84a8;
@@ -20,6 +22,7 @@
             --accent-glow: rgba(56, 189, 248, 0.18);
             --accent-rgb: 56, 189, 248;
             --accent2: #a78bfa;
+            --accent2-rgb: 167, 139, 250;
             --danger: #f87171;
             --danger-glow: rgba(248, 113, 113, 0.15);
             --warning: #fbbf24;
@@ -33,17 +36,33 @@
             --radius: 10px;
             --radius-sm: 7px;
             --radius-lg: 14px;
-            --font-mono: 'Cascadia Code', 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+            --font-mono: 'Cascadia Code', 'JetBrains Mono', 'Fira Code', 'Consolas', ui-monospace, monospace;
             --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei',
-                'Hiragino Sans GB', system-ui, sans-serif;
+            'Hiragino Sans GB', system-ui, sans-serif;
             --shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-            --bg-terminal: #131a2c;
+            --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.35);
+            --page-pad: 18px;
+            --max-w: 1600px;
+            --left-w: 560px;
+            --ease: cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        * {
+        *,
+        *::before,
+        *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scrollbar-gutter: stable;
         }
 
         body {
@@ -51,94 +70,229 @@
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
+            min-height: 100dvh;
             line-height: 1.5;
-            background-image:
-                radial-gradient(ellipse at 0% 0%, rgba(var(--accent-rgb), 0.07) 0%, transparent 55%),
-                radial-gradient(ellipse at 100% 100%, rgba(167, 139, 250, 0.06) 0%, transparent 55%);
+            overflow: hidden;
+            background-image: radial-gradient(ellipse at 0% 0%, rgba(var(--accent-rgb), 0.08) 0%, transparent 55%),
+            radial-gradient(ellipse at 100% 100%, rgba(var(--accent2-rgb), 0.07) 0%, transparent 55%),
+            radial-gradient(ellipse at 50% 40%, rgba(var(--accent-rgb), 0.03) 0%, transparent 70%);
+            background-attachment: fixed;
+        }
+
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(72, 82, 122, 0.7) transparent;
+        }
+
+        *::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+
+        *::-webkit-scrollbar-thumb {
+            background: rgba(72, 82, 122, 0.75);
+            border-radius: 999px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        *::-webkit-scrollbar-thumb:hover {
+            background: rgba(90, 105, 150, 0.95);
+            background-clip: padding-box;
         }
 
         .wrap {
-            max-width: 920px;
+            width: min(var(--max-w), 100%);
             margin: 0 auto;
-            padding: 28px 20px 48px;
+            padding: 14px var(--page-pad) 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: 100vh;
+            height: 100dvh;
+            max-height: 100vh;
+            max-height: 100dvh;
+            min-height: 0;
+            overflow: hidden;
         }
 
-        header {
+        /* 顶栏 */
+        .page-header {
+            flex: 0 0 auto;
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             justify-content: space-between;
-            gap: 16px;
-            margin-bottom: 24px;
+            gap: 14px;
             flex-wrap: wrap;
+            padding: 2px 2px 6px;
+        }
+
+        .title-block {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            min-width: 0;
+        }
+
+        .title-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent);
+            opacity: 0.9;
+        }
+
+        .title-kicker::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.7);
         }
 
         .title-block h1 {
-            font-size: 1.35rem;
+            font-size: clamp(1.15rem, 2.2vw, 1.35rem);
             font-weight: 650;
-            letter-spacing: 0.02em;
-            background: linear-gradient(90deg, var(--text), var(--accent));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            letter-spacing: 0.01em;
+            color: var(--text);
+            line-height: 1.25;
         }
 
         .title-block p {
-            margin-top: 4px;
             color: var(--text-muted);
-            font-size: 0.875rem;
+            font-size: 0.8rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .home-link {
             color: var(--accent);
             text-decoration: none;
-            font-size: 0.875rem;
+            font-size: 0.82rem;
+            font-weight: 500;
             border: 1px solid rgba(var(--accent-rgb), 0.35);
             background: var(--accent-glow);
-            padding: 8px 14px;
+            padding: 7px 13px;
             border-radius: var(--radius-sm);
-            transition: all 0.2s ease;
+            transition: background 0.15s var(--ease), box-shadow 0.15s var(--ease), transform 0.15s var(--ease);
             white-space: nowrap;
         }
 
         .home-link:hover {
-            background: rgba(var(--accent-rgb), 0.22);
-            box-shadow: 0 4px 14px rgba(var(--accent-rgb), 0.12);
+            background: rgba(var(--accent-rgb), 0.24);
+            box-shadow: 0 4px 14px rgba(var(--accent-rgb), 0.14);
+            transform: translateY(-1px);
+        }
+
+        /* 主区：左控制 / 右日志（等高，左侧不滚动） */
+        .main-layout {
+            flex: 1 1 auto;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: minmax(480px, var(--left-w)) minmax(0, 1fr);
+            gap: 14px;
+            align-items: stretch;
+            overflow: hidden;
+        }
+
+        .col-left,
+        .col-right {
+            min-width: 0;
+            min-height: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .col-left {
+            gap: 12px;
+            overflow: hidden;
+        }
+
+        .col-left > .card:first-child {
+            flex: 1 1 auto;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .col-left > .card:first-child .grid {
+            flex: 1 1 auto;
+            min-height: 0;
+        }
+
+        .col-left > .card:first-child .meta-box {
+            height: 100%;
+        }
+
+        .col-left > .card-ops {
+            flex: 0 0 auto;
         }
 
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
-            padding: 18px 20px;
-            margin-bottom: 16px;
+            padding: 15px 16px;
             box-shadow: var(--shadow);
+            transition: border-color 0.18s var(--ease), box-shadow 0.18s var(--ease);
+        }
+
+        .card:hover {
+            border-color: color-mix(in srgb, var(--border-light) 70%, var(--border));
         }
 
         .card-head {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 14px;
+            gap: 10px;
+            margin-bottom: 12px;
             flex-wrap: wrap;
         }
 
         .card-title {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 600;
             color: var(--text);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 3px;
+            height: 13px;
+            border-radius: 2px;
+            background: linear-gradient(180deg, var(--accent), var(--accent2));
+            box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.35);
         }
 
         .badge {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            font-size: 0.78rem;
+            font-size: 0.74rem;
             font-weight: 600;
-            padding: 4px 10px;
+            padding: 5px 11px;
             border-radius: 999px;
             border: 1px solid transparent;
             letter-spacing: 0.02em;
+            white-space: nowrap;
+            backdrop-filter: blur(6px);
         }
 
         .badge::before {
@@ -148,6 +302,7 @@
             border-radius: 50%;
             background: currentColor;
             box-shadow: 0 0 6px currentColor;
+            flex-shrink: 0;
         }
 
         .badge-ok {
@@ -168,6 +323,10 @@
             border-color: rgba(56, 189, 248, 0.35);
         }
 
+        .badge-busy::before {
+            animation: pulse-dot 1.2s ease-in-out infinite;
+        }
+
         .badge-fail {
             color: var(--danger);
             background: var(--danger-glow);
@@ -180,39 +339,88 @@
             border-color: rgba(122, 132, 168, 0.3);
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        @media (max-width: 720px) {
-            .grid {
-                grid-template-columns: 1fr;
+        @keyframes pulse-dot {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.4;
+                transform: scale(0.82);
             }
         }
 
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
         .meta-box {
-            background: var(--bg-card2);
+            position: relative;
+            background: linear-gradient(165deg, color-mix(in srgb, var(--bg-card2) 92%, #fff 4%), var(--bg-card2));
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 12px 14px;
+            padding: 12px 13px 11px;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .meta-box::before {
+            content: '';
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 3px;
+            background: linear-gradient(180deg, var(--accent), transparent 85%);
+            opacity: 0.85;
+        }
+
+        .meta-box.is-remote::before {
+            background: linear-gradient(180deg, var(--accent2), transparent 85%);
         }
 
         .meta-box h3 {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.07em;
             color: var(--text-muted);
             margin-bottom: 10px;
+            font-weight: 650;
+            padding-left: 6px;
+        }
+
+        .sha-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 10px;
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: rgba(var(--accent-rgb), 0.1);
+            border: 1px solid rgba(var(--accent-rgb), 0.28);
+            color: var(--accent);
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            max-width: 100%;
+        }
+
+        .meta-box.is-remote .sha-chip {
+            background: rgba(var(--accent2-rgb), 0.1);
+            border-color: rgba(var(--accent2-rgb), 0.28);
+            color: #c4b5fd;
         }
 
         .meta-row {
             display: grid;
-            grid-template-columns: 72px 1fr;
+            grid-template-columns: 76px minmax(0, 1fr);
             gap: 8px;
-            font-size: 0.85rem;
+            font-size: 0.83rem;
             margin-bottom: 6px;
+            align-items: start;
+            padding-left: 6px;
         }
 
         .meta-row:last-child {
@@ -221,53 +429,114 @@
 
         .meta-row .k {
             color: var(--text-muted);
+            font-size: 0.75rem;
+            padding-top: 2px;
         }
 
         .meta-row .v {
             color: var(--text-dim);
             word-break: break-all;
+            overflow-wrap: anywhere;
             font-family: var(--font-mono);
-            font-size: 0.8rem;
+            font-size: 0.76rem;
+            line-height: 1.45;
         }
 
         .meta-row .v.msg {
             font-family: var(--font-sans);
             color: var(--text);
+            font-size: 0.83rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .hint {
             margin-top: 12px;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
-            padding: 10px 12px;
+            padding: 9px 11px;
             border-radius: var(--radius-sm);
             background: rgba(122, 132, 168, 0.08);
             border: 1px solid var(--border);
+            line-height: 1.45;
         }
 
         .hint.warn {
-            color: var(--warning);
+            color: #fcd34d;
             background: var(--warning-glow);
             border-color: rgba(251, 191, 36, 0.28);
         }
 
         .hint.err {
-            color: var(--danger);
+            color: #fca5a5;
             background: var(--danger-glow);
             border-color: rgba(248, 113, 113, 0.28);
         }
 
         .hint.ok {
-            color: var(--success);
+            color: #86efac;
             background: var(--success-glow);
             border-color: rgba(74, 222, 128, 0.28);
         }
 
-        .actions {
+        .card-ops {
+            flex: 0 0 auto;
+        }
+
+        .ops-body {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 16px;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 0;
+            margin: 0;
+        }
+
+        .token-wrap {
+            position: relative;
+        }
+
+        .token-wrap input {
+            padding-right: 42px;
+        }
+
+        .token-toggle {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 6px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            letter-spacing: 0.02em;
+        }
+
+        .token-toggle:hover {
+            color: var(--accent);
+            background: rgba(var(--accent-rgb), 0.1);
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin: 0;
+        }
+
+        .actions .btn-danger {
+            grid-column: 1 / -1;
         }
 
         button {
@@ -275,28 +544,19 @@
             cursor: pointer;
             border: 1px solid transparent;
             border-radius: var(--radius-sm);
-            padding: 9px 16px;
-            font-size: 0.875rem;
+            padding: 9px 12px;
+            font-size: 0.83rem;
             font-weight: 600;
-            transition: all 0.15s ease;
+            transition: transform 0.12s var(--ease), box-shadow 0.12s var(--ease), background 0.12s var(--ease),
+            border-color 0.12s var(--ease);
+            white-space: nowrap;
         }
 
         button:disabled {
-            opacity: 0.55;
+            opacity: 0.48;
             cursor: not-allowed;
             transform: none !important;
             box-shadow: none !important;
-        }
-
-        .btn-primary {
-            color: #0b1220;
-            background: linear-gradient(180deg, var(--accent), color-mix(in srgb, var(--accent), #000 25%));
-            box-shadow: 0 2px 10px rgba(var(--accent-rgb), 0.2);
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(var(--accent-rgb), 0.35);
         }
 
         .btn-secondary {
@@ -308,29 +568,28 @@
         .btn-secondary:hover:not(:disabled) {
             background: var(--bg-hover);
             border-color: var(--accent);
+            color: #fff;
         }
 
         .btn-danger {
             color: #fff;
-            background: linear-gradient(180deg, var(--danger), color-mix(in srgb, var(--danger), #000 18%));
-            box-shadow: 0 2px 10px rgba(248, 113, 113, 0.18);
+            background: linear-gradient(
+                    180deg,
+                    var(--danger),
+                    color-mix(in srgb, var(--danger), #000 18%)
+            );
+            box-shadow: 0 2px 10px rgba(248, 113, 113, 0.2);
         }
 
         .btn-danger:hover:not(:disabled) {
             transform: translateY(-1px);
-            box-shadow: 0 6px 18px rgba(248, 113, 113, 0.3);
-        }
-
-        .form-row {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 12px;
+            box-shadow: 0 6px 18px rgba(248, 113, 113, 0.32);
         }
 
         label {
-            font-size: 0.82rem;
+            font-size: 0.78rem;
             color: var(--text-dim);
+            font-weight: 500;
         }
 
         input[type='password'],
@@ -342,8 +601,9 @@
             border-radius: var(--radius-sm);
             padding: 10px 12px;
             font-family: var(--font-mono);
-            font-size: 0.85rem;
+            font-size: 0.83rem;
             outline: none;
+            transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
         }
 
         input[type='password']:focus,
@@ -356,15 +616,29 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 0.82rem;
+            font-size: 0.76rem;
             color: var(--text-dim);
             user-select: none;
+            cursor: pointer;
         }
 
         .check-row input {
             accent-color: var(--accent);
-            width: 15px;
-            height: 15px;
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+        }
+
+        /* 右侧日志 */
+        .card-log {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 auto;
+            height: 100%;
+            min-height: 0;
+            padding: 0;
+            overflow: hidden;
+            background: linear-gradient(180deg, color-mix(in srgb, var(--bg-card) 96%, #fff 2%), var(--bg-card));
         }
 
         .log-tools {
@@ -372,540 +646,1062 @@
             align-items: center;
             justify-content: space-between;
             gap: 10px;
-            margin-bottom: 10px;
             flex-wrap: wrap;
+            flex-shrink: 0;
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            background: color-mix(in srgb, var(--bg-card2) 55%, var(--bg-card));
+        }
+
+        .log-tools .card-title {
+            margin: 0;
+        }
+
+        .log-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            min-width: 0;
+        }
+
+        #logMeta {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            max-width: min(100%, 420px);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.18);
+            border: 1px solid var(--border);
+        }
+
+        .log-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.7rem;
+            font-weight: 650;
+            padding: 3px 9px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            background: rgba(0, 0, 0, 0.16);
+            white-space: nowrap;
+        }
+
+        .log-pill::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .log-pill.is-idle {
+            color: var(--text-muted);
+        }
+
+        .log-pill.is-run {
+            color: var(--info);
+            border-color: rgba(56, 189, 248, 0.35);
+            background: var(--info-glow);
+        }
+
+        .log-pill.is-run::before {
+            animation: pulse-dot 1.2s ease-in-out infinite;
+        }
+
+        .log-pill.is-ok {
+            color: var(--success);
+            border-color: rgba(74, 222, 128, 0.35);
+            background: var(--success-glow);
+        }
+
+        .log-pill.is-err {
+            color: var(--danger);
+            border-color: rgba(248, 113, 113, 0.35);
+            background: var(--danger-glow);
+        }
+
+        .log-follow {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .log-follow input {
+            accent-color: var(--accent);
+            width: 13px;
+            height: 13px;
+        }
+
+        .log-shell {
+            position: relative;
+            flex: 1 1 auto;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            margin: 10px 12px 12px;
         }
 
         pre#logView {
             margin: 0;
-            background: var(--bg-terminal);
+            flex: 1 1 auto;
+            height: 100%;
+            min-height: 0;
+            max-height: none;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.015), transparent 40px),
+                var(--bg-terminal);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 14px;
-            min-height: 220px;
-            max-height: 420px;
+            padding: 10px 12px;
             overflow: auto;
+            overscroll-behavior: contain;
             font-family: var(--font-mono);
-            font-size: 0.78rem;
+            font-size: 0.76rem;
             line-height: 1.55;
-            color: var(--text-dim);
+            color: #b8c4dc;
             white-space: pre-wrap;
             word-break: break-word;
+            tab-size: 2;
+            scroll-behavior: auto;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+        }
+
+        pre#logView .log-line {
+            display: block;
+            padding: 1px 0;
+            border-left: 2px solid transparent;
+            padding-left: 8px;
+            margin-left: -2px;
+        }
+
+        pre#logView .log-line.is-ok {
+            color: #86efac;
+            border-left-color: rgba(74, 222, 128, 0.55);
+        }
+
+        pre#logView .log-line.is-err {
+            color: #fca5a5;
+            border-left-color: rgba(248, 113, 113, 0.65);
+            background: rgba(248, 113, 113, 0.06);
+        }
+
+        pre#logView .log-line.is-warn {
+            color: #fcd34d;
+            border-left-color: rgba(251, 191, 36, 0.55);
+        }
+
+        pre#logView .log-line.is-info {
+            color: #7dd3fc;
+            border-left-color: rgba(56, 189, 248, 0.45);
+        }
+
+        pre#logView .log-line.is-dim {
+            color: #6b7694;
+        }
+
+        pre#logView .log-empty {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        pre#logView.is-loading {
+            opacity: 0.72;
+        }
+
+        .log-shell::after {
+            content: '';
+            pointer-events: none;
+            position: absolute;
+            left: 1px;
+            right: 8px;
+            bottom: 1px;
+            height: 26px;
+            border-radius: 0 0 var(--radius) var(--radius);
+            background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--bg-terminal) 92%, #000));
+            opacity: 0.9;
         }
 
         .footer-note {
-            margin-top: 8px;
             text-align: center;
             color: var(--text-muted);
-            font-size: 0.75rem;
+            font-size: 0.7rem;
+            padding: 0 0 2px;
+            flex: 0 0 auto;
+            letter-spacing: 0.01em;
+        }
+
+        @media (max-width: 960px) {
+            body {
+                overflow: auto;
+            }
+
+            .wrap {
+                height: auto;
+                max-height: none;
+                min-height: 100vh;
+                min-height: 100dvh;
+                overflow: visible;
+            }
+
+            .main-layout {
+                grid-template-columns: 1fr;
+                flex: none;
+                overflow: visible;
+                height: auto;
+            }
+
+            .col-left,
+            .col-right {
+                height: auto;
+                overflow: visible;
+            }
+
+            .col-left > .card:first-child {
+                flex: none;
+                overflow: visible;
+            }
+
+            .col-right {
+                min-height: min(55vh, 520px);
+            }
+
+            .card-log {
+                min-height: min(55vh, 520px);
+            }
+
+            pre#logView {
+                min-height: 280px;
+                max-height: min(60vh, 560px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            :root {
+                --page-pad: 12px;
+            }
+
+            .card {
+                padding: 13px;
+            }
+
+            .meta-row {
+                grid-template-columns: 68px minmax(0, 1fr);
+            }
+
+            .page-header {
+                align-items: flex-start;
+            }
+
+            .actions {
+                grid-template-columns: 1fr;
+            }
+
+            .actions .btn-danger {
+                grid-column: auto;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            .badge-busy::before {
+                animation: none;
+            }
+
+            button,
+            .home-link {
+                transition: none;
+            }
         }
     </style>
 </head>
 <body>
 <div class="wrap">
-    <header>
+    <header class="page-header" id="pageHeader">
         <div class="title-block">
-            <h1>DevTools 更新管理</h1>
-            <p>查看当前构建、对比远程版本并触发一键更新</p>
+            <span class="title-kicker">Ops · Deploy</span>
+            <h1>更新管理</h1>
+            <p>对比本地构建与远程 main · 手动一键更新</p>
         </div>
-        <a class="home-link" href="index.html">← 返回首页</a>
+        <div class="header-actions">
+            <span class="badge badge-unknown" id="statusBadge">未知</span>
+            <a class="home-link" href="index.html">← 返回首页</a>
+        </div>
     </header>
 
-    <section class="card">
-        <div class="card-head">
-            <div class="card-title">更新状态</div>
-            <span class="badge badge-unknown" id="statusBadge">未知</span>
-        </div>
-        <div class="grid">
-            <div class="meta-box">
-                <h3>本地构建 (version.json)</h3>
-                <div class="meta-row"><span class="k">Short SHA</span><span class="v" id="localSha">—</span></div>
-                <div class="meta-row"><span class="k">Full SHA</span><span class="v msg" id="localFull">—</span></div>
-                <div class="meta-row"><span class="k">构建时间</span><span class="v" id="localTime">—</span></div>
-                <div class="meta-row"><span class="k">分支 / 仓库</span><span class="v msg" id="localMeta">—</span></div>
-            </div>
-            <div class="meta-box">
-                <h3>远程 main (api/status)</h3>
-                <div class="meta-row"><span class="k">Short SHA</span><span class="v" id="remoteSha">—</span></div>
-                <div class="meta-row"><span class="k">Message</span><span class="v msg" id="remoteMsg">—</span></div>
-                <div class="meta-row"><span class="k">时间</span><span class="v" id="remoteTime">—</span></div>
-                <div class="meta-row"><span class="k">分支 / 模式</span><span class="v msg" id="remoteBranch">—</span></div>
-            </div>
-        </div>
-        <div class="hint" id="statusHint">正在加载…</div>
-    </section>
+    <div class="main-layout">
+        <div class="col-left">
+            <section class="card">
+                <div class="card-head">
+                    <div class="card-title">版本对比</div>
+                </div>
+                <div class="grid">
+                    <div class="meta-box is-local">
+                        <h3>本地构建 · version.json</h3>
+                        <div class="sha-chip" id="localSha">—</div>
+                        <div class="meta-row"><span class="k">Full SHA</span><span class="v" id="localFull">—</span>
+                        </div>
+                        <div class="meta-row"><span class="k">构建时间</span><span class="v" id="localTime">—</span>
+                        </div>
+                        <div class="meta-row"><span class="k">分支 / 仓库</span><span class="v msg"
+                                                                                      id="localMeta">—</span></div>
+                    </div>
+                    <div class="meta-box is-remote">
+                        <h3>远程 main · api/status</h3>
+                        <div class="sha-chip" id="remoteSha">—</div>
+                        <div class="meta-row"><span class="k">Message</span><span class="v msg" id="remoteMsg">—</span>
+                        </div>
+                        <div class="meta-row"><span class="k">时间</span><span class="v" id="remoteTime">—</span></div>
+                        <div class="meta-row"><span class="k">分支 / 模式</span><span class="v msg"
+                                                                                      id="remoteBranch">—</span></div>
+                    </div>
+                </div>
+                <div class="hint" id="statusHint">正在加载…</div>
+            </section>
 
-    <section class="card">
-        <div class="card-head">
-            <div class="card-title">操作</div>
+            <section class="card card-ops">
+                <div class="card-head">
+                    <div class="card-title">操作</div>
+                </div>
+                <div class="ops-body">
+                    <div class="form-row">
+                        <label for="tokenInput">更新 Token（X-Update-Token）</label>
+                        <div class="token-wrap">
+                            <input id="tokenInput" type="password" autocomplete="off" placeholder="输入 Update Token"
+                                   spellcheck="false">
+                            <button type="button" class="token-toggle" id="btnToggleToken"
+                                    aria-label="显示或隐藏 Token">显示
+                            </button>
+                        </div>
+                        <label class="check-row">
+                            <input id="rememberToken" type="checkbox">
+                            记住到 sessionStorage（关闭标签页后清除）
+                        </label>
+                    </div>
+                    <div class="actions">
+                        <button type="button" class="btn-secondary" id="btnCheck">检查更新</button>
+                        <button type="button" class="btn-secondary" id="btnLog">刷新日志</button>
+                        <button type="button" class="btn-danger" id="btnUpdate">立即更新</button>
+                    </div>
+                </div>
+                <div class="hint" id="actionHint" style="display:none"></div>
+            </section>
         </div>
-        <div class="form-row">
-            <label for="tokenInput">更新 Token（X-Update-Token）</label>
-            <input id="tokenInput" type="password" autocomplete="off" placeholder="输入 Update Token（不会写入页面）" spellcheck="false">
-            <label class="check-row">
-                <input id="rememberToken" type="checkbox">
-                记住到 sessionStorage（关闭标签页后清除）
-            </label>
-        </div>
-        <div class="actions">
-            <button type="button" class="btn-secondary" id="btnCheck">检查更新</button>
-            <button type="button" class="btn-danger" id="btnUpdate">立即更新</button>
-            <button type="button" class="btn-secondary" id="btnLog">刷新日志</button>
-        </div>
-        <div class="hint" id="actionHint" style="display:none"></div>
-    </section>
 
-    <section class="card">
-        <div class="log-tools">
-            <div class="card-title">更新日志</div>
-            <span id="logMeta" style="font-size:0.78rem;color:var(--text-muted)">GET api/update/log</span>
+        <div class="col-right">
+            <section class="card card-log">
+                <div class="log-tools">
+                    <div class="card-title">更新日志</div>
+                    <div class="log-meta-row">
+                        <span class="log-pill is-idle" id="logPill">空闲</span>
+                        <label class="log-follow" title="新日志到达时自动滚到底部">
+                            <input type="checkbox" id="logFollow" checked>
+                            跟随
+                        </label>
+                        <span id="logMeta">等待日志…</span>
+                    </div>
+                </div>
+                <div class="log-shell">
+                    <pre id="logView" aria-live="polite"><span class="log-empty">（暂无日志）</span></pre>
+                </div>
+            </section>
         </div>
-        <pre id="logView">（暂无日志）</pre>
-    </section>
+    </div>
 
     <p class="footer-note">本页仅供运维使用 · robots noindex · 请勿将 Token 提交到仓库</p>
 </div>
 
 <script>
-(function () {
-    'use strict';
+    (function () {
+        'use strict';
 
-    var TOKEN_KEY = 'devtools.updateToken';
-    var pollTimer = null;
-    var lastRunning = false;
+        var TOKEN_KEY = 'devtools.updateToken';
+        var FOLLOW_KEY = 'devtools.logFollow';
+        var pollTimer = null;
+        var lastRunning = false;
+        var lastLogText = null;
+        var logLoading = false;
+        var logReqSeq = 0;
 
-    var el = {
-        badge: document.getElementById('statusBadge'),
-        localSha: document.getElementById('localSha'),
-        localFull: document.getElementById('localFull'),
-        localTime: document.getElementById('localTime'),
-        localMeta: document.getElementById('localMeta'),
-        remoteSha: document.getElementById('remoteSha'),
-        remoteMsg: document.getElementById('remoteMsg'),
-        remoteTime: document.getElementById('remoteTime'),
-        remoteBranch: document.getElementById('remoteBranch'),
-        statusHint: document.getElementById('statusHint'),
-        actionHint: document.getElementById('actionHint'),
-        tokenInput: document.getElementById('tokenInput'),
-        rememberToken: document.getElementById('rememberToken'),
-        logView: document.getElementById('logView'),
-        logMeta: document.getElementById('logMeta'),
-        btnCheck: document.getElementById('btnCheck'),
-        btnUpdate: document.getElementById('btnUpdate'),
-        btnLog: document.getElementById('btnLog')
-    };
-
-    function shortSha(sha) {
-        if (!sha) return '—';
-        var s = String(sha);
-        return s.length > 7 ? s.slice(0, 7) : s;
-    }
-
-    function pick(obj, keys, fallback) {
-        if (!obj) return fallback;
-        for (var i = 0; i < keys.length; i++) {
-            var k = keys[i];
-            if (obj[k] != null && obj[k] !== '') return obj[k];
-        }
-        return fallback;
-    }
-
-    function formatTime(v) {
-        if (v == null || v === '') return '—';
-        if (typeof v === 'number') {
-            var ms = v < 1e12 ? v * 1000 : v;
-            try {
-                return new Date(ms).toLocaleString();
-            } catch (e) {
-                return String(v);
-            }
-        }
-        var d = new Date(v);
-        if (!isNaN(d.getTime())) return d.toLocaleString();
-        return String(v);
-    }
-
-    function setText(node, text) {
-        node.textContent = text == null || text === '' ? '—' : String(text);
-    }
-
-    function setBadge(kind, label) {
-        el.badge.className = 'badge badge-' + kind;
-        el.badge.textContent = label;
-    }
-
-    function setHint(node, text, type) {
-        node.style.display = text ? '' : 'none';
-        node.textContent = text || '';
-        node.className = 'hint' + (type ? ' ' + type : '');
-    }
-
-    function normalizeCommit(src) {
-        src = src || {};
-        var full = pick(src, ['fullSha', 'full_sha', 'sha', 'hash', 'id'], '');
-        var short = pick(src, ['shortSha', 'short_sha', 'short', 'commit'], '');
-        if (!short && full) short = shortSha(full);
-        if (!full && short) full = short;
-        return {
-            sha: short || full,
-            full: full || short,
-            message: pick(src, ['message', 'msg', 'subject', 'commitMessage'], ''),
-            time: pick(src, ['time', 'date', 'builtAt', 'buildTime', 'committedAt', 'timestamp', 'updatedAt'], ''),
-            version: pick(src, ['version', 'tag', 'release'], ''),
-            branch: pick(src, ['branch', 'ref'], ''),
-            repo: pick(src, ['repo', 'repository'], '')
+        var el = {
+            badge: document.getElementById('statusBadge'),
+            localSha: document.getElementById('localSha'),
+            localFull: document.getElementById('localFull'),
+            localTime: document.getElementById('localTime'),
+            localMeta: document.getElementById('localMeta'),
+            remoteSha: document.getElementById('remoteSha'),
+            remoteMsg: document.getElementById('remoteMsg'),
+            remoteTime: document.getElementById('remoteTime'),
+            remoteBranch: document.getElementById('remoteBranch'),
+            statusHint: document.getElementById('statusHint'),
+            actionHint: document.getElementById('actionHint'),
+            tokenInput: document.getElementById('tokenInput'),
+            rememberToken: document.getElementById('rememberToken'),
+            logView: document.getElementById('logView'),
+            logMeta: document.getElementById('logMeta'),
+            logPill: document.getElementById('logPill'),
+            logFollow: document.getElementById('logFollow'),
+            btnCheck: document.getElementById('btnCheck'),
+            btnUpdate: document.getElementById('btnUpdate'),
+            btnLog: document.getElementById('btnLog'),
+            btnToggleToken: document.getElementById('btnToggleToken')
         };
-    }
 
-    function applyLocal(data) {
-        var c = normalizeCommit(data);
-        setText(el.localSha, shortSha(c.sha || c.full));
-        setText(el.localFull, c.full || '—');
-        setText(el.localTime, formatTime(c.time));
-        var metaBits = [];
-        if (c.branch) metaBits.push(c.branch);
-        if (c.repo) metaBits.push(c.repo);
-        if (c.version) metaBits.push(c.version);
-        setText(el.localMeta, metaBits.length ? metaBits.join(' · ') : '—');
-        return c;
-    }
-
-    function applyRemote(data) {
-        var remote = normalizeCommit(data.remote || data.latest || data.target || data);
-        if (!data.remote && !data.latest && data.local) {
-            remote = normalizeCommit(data);
-        }
-        if (data.remote) remote = normalizeCommit(data.remote);
-        setText(el.remoteSha, shortSha(remote.sha || remote.full));
-        setText(el.remoteMsg, remote.message || '—');
-        setText(el.remoteTime, formatTime(remote.time));
-        var meta = data.meta || {};
-        var branch = remote.branch || meta.branch || pick(data, ['branch', 'ref'], '');
-        var mode = meta.mode || '';
-        var repo = meta.repo || '';
-        var bits = [];
-        if (branch) bits.push(branch);
-        if (mode) bits.push('mode=' + mode);
-        if (repo) bits.push(repo);
-        setText(el.remoteBranch, bits.length ? bits.join(' · ') : '—');
-        return remote;
-    }
-
-    function resolveStatus(data, local, remote) {
-        var s = String(pick(data, ['status', 'state'], '')).toLowerCase();
-        var updating = !!(data.updating || data.inProgress || data.running || s === 'updating' || s === 'running');
-        var failed = !!(data.failed || s === 'failed' || s === 'error' || s === 'fail');
-        var upToDate = s === 'up_to_date' || s === 'uptodate' || s === 'latest' || s === 'ok' || data.upToDate === true;
-        var canUpdate = s === 'update_available' || s === 'outdated' || s === 'behind' || data.updateAvailable === true;
-
-        if (updating) {
-            setBadge('busy', '更新中');
-            return 'updating';
-        }
-        if (failed) {
-            setBadge('fail', '失败');
-            return 'failed';
-        }
-        if (upToDate) {
-            setBadge('ok', '已是最新');
-            return 'ok';
-        }
-        if (canUpdate) {
-            setBadge('update', '可更新');
-            return 'update';
+        function shortSha(sha) {
+            if (!sha) return '—';
+            var s = String(sha);
+            return s.length > 7 ? s.slice(0, 7) : s;
         }
 
-        var l = shortSha(local && local.sha);
-        var r = shortSha(remote && remote.sha);
-        if (l !== '—' && r !== '—') {
-            if (l === r) {
+        function pick(obj, keys, fallback) {
+            if (!obj) return fallback;
+            for (var i = 0; i < keys.length; i++) {
+                var k = keys[i];
+                if (obj[k] != null && obj[k] !== '') return obj[k];
+            }
+            return fallback;
+        }
+
+        function formatTime(v) {
+            if (v == null || v === '') return '—';
+            if (typeof v === 'number') {
+                var ms = v < 1e12 ? v * 1000 : v;
+                try {
+                    return new Date(ms).toLocaleString();
+                } catch (e) {
+                    return String(v);
+                }
+            }
+            var d = new Date(v);
+            if (!isNaN(d.getTime())) return d.toLocaleString();
+            return String(v);
+        }
+
+        function setText(node, text) {
+            node.textContent = text == null || text === '' ? '—' : String(text);
+        }
+
+        function setBadge(kind, label) {
+            el.badge.className = 'badge badge-' + kind;
+            el.badge.textContent = label;
+        }
+
+        function setHint(node, text, type) {
+            node.style.display = text ? '' : 'none';
+            node.textContent = text || '';
+            node.className = 'hint' + (type ? ' ' + type : '');
+        }
+
+        function normalizeCommit(src) {
+            src = src || {};
+            var full = pick(src, ['fullSha', 'full_sha', 'sha', 'hash', 'id'], '');
+            var short = pick(src, ['shortSha', 'short_sha', 'short', 'commit'], '');
+            if (!short && full) short = shortSha(full);
+            if (!full && short) full = short;
+            return {
+                sha: short || full,
+                full: full || short,
+                message: pick(src, ['message', 'msg', 'subject', 'commitMessage'], ''),
+                time: pick(src, ['time', 'date', 'builtAt', 'buildTime', 'committedAt', 'timestamp', 'updatedAt'], ''),
+                version: pick(src, ['version', 'tag', 'release'], ''),
+                branch: pick(src, ['branch', 'ref'], ''),
+                repo: pick(src, ['repo', 'repository'], '')
+            };
+        }
+
+        function applyLocal(data) {
+            var c = normalizeCommit(data);
+            setText(el.localSha, shortSha(c.sha || c.full));
+            setText(el.localFull, c.full || '—');
+            setText(el.localTime, formatTime(c.time));
+            var metaBits = [];
+            if (c.branch) metaBits.push(c.branch);
+            if (c.repo) metaBits.push(c.repo);
+            if (c.version) metaBits.push(c.version);
+            setText(el.localMeta, metaBits.length ? metaBits.join(' · ') : '—');
+            return c;
+        }
+
+        function applyRemote(data) {
+            var remote = normalizeCommit(data.remote || data.latest || data.target || data);
+            if (!data.remote && !data.latest && data.local) {
+                remote = normalizeCommit(data);
+            }
+            if (data.remote) remote = normalizeCommit(data.remote);
+            setText(el.remoteSha, shortSha(remote.sha || remote.full));
+            setText(el.remoteMsg, remote.message || '—');
+            setText(el.remoteTime, formatTime(remote.time));
+            var meta = data.meta || {};
+            var branch = remote.branch || meta.branch || pick(data, ['branch', 'ref'], '');
+            var mode = meta.mode || '';
+            var repo = meta.repo || '';
+            var bits = [];
+            if (branch) bits.push(branch);
+            if (mode) bits.push('mode=' + mode);
+            if (repo) bits.push(repo);
+            setText(el.remoteBranch, bits.length ? bits.join(' · ') : '—');
+            return remote;
+        }
+
+        function resolveStatus(data, local, remote) {
+            var s = String(pick(data, ['status', 'state'], '')).toLowerCase();
+            var updating = !!(data.updating || data.inProgress || data.running || s === 'updating' || s === 'running');
+            var failed = !!(data.failed || s === 'failed' || s === 'error' || s === 'fail');
+            var upToDate = s === 'up_to_date' || s === 'uptodate' || s === 'latest' || s === 'ok' || data.upToDate === true;
+            var canUpdate = s === 'update_available' || s === 'outdated' || s === 'behind' || data.updateAvailable === true;
+
+            if (updating) {
+                setBadge('busy', '更新中');
+                return 'updating';
+            }
+            if (failed) {
+                setBadge('fail', '失败');
+                return 'failed';
+            }
+            if (upToDate) {
                 setBadge('ok', '已是最新');
                 return 'ok';
             }
-            setBadge('update', '可更新');
-            return 'update';
+            if (canUpdate) {
+                setBadge('update', '可更新');
+                return 'update';
+            }
+
+            var l = shortSha(local && local.sha);
+            var r = shortSha(remote && remote.sha);
+            if (l !== '—' && r !== '—') {
+                if (l === r) {
+                    setBadge('ok', '已是最新');
+                    return 'ok';
+                }
+                setBadge('update', '可更新');
+                return 'update';
+            }
+
+            setBadge('unknown', '未知');
+            return 'unknown';
         }
 
-        setBadge('unknown', '未知');
-        return 'unknown';
-    }
+        async function fetchJson(url, options) {
+            var res = await fetch(url, options);
+            var text = await res.text();
+            var body = null;
+            if (text) {
+                try {
+                    body = JSON.parse(text);
+                } catch (e) {
+                    body = {raw: text};
+                }
+            }
+            return {ok: res.ok, status: res.status, body: body, text: text};
+        }
 
-    async function fetchJson(url, options) {
-        var res = await fetch(url, options);
-        var text = await res.text();
-        var body = null;
-        if (text) {
-            try {
-                body = JSON.parse(text);
-            } catch (e) {
-                body = { raw: text };
+        function escapeHtml(s) {
+            return String(s)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function classifyLogLine(line) {
+            var t = String(line || '');
+            var lower = t.toLowerCase();
+            if (
+                /error|failed|fail\b|exception|unauthorized|拒绝|失败|no such file|curl:\s*\(|exitcode=[1-9]/i.test(
+                    t
+                ) ||
+                lower.indexOf('error') >= 0
+            ) {
+                return 'is-err';
+            }
+            if (/warn|warning|skip |跳过|超时|timeout|retry/i.test(t)) {
+                return 'is-warn';
+            }
+            if (
+                /\[update-static\]\s*ok|finished exitcode=0|部署成功|已是最新|verify sha256|download:|start update/i.test(
+                    t
+                ) ||
+                /\bok\b/i.test(t)
+            ) {
+                if (/finished exitcode=0|\[update-static\]\s*ok|部署/i.test(t) || /exitcode=0/i.test(t)) {
+                    return 'is-ok';
+                }
+                return 'is-info';
+            }
+            if (/^#|^=+|^-+|loading|等待|暂无/i.test(t)) {
+                return 'is-dim';
+            }
+            if (/\[update-static\]|\[update-agent\]|start update|download|verify|version\.json/i.test(t)) {
+                return 'is-info';
+            }
+            return '';
+        }
+
+        function renderLogHtml(text) {
+            var raw = String(text || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+            if (!raw.trim()) {
+                return { html: '<span class="log-empty">（日志为空）</span>', lines: 0 };
+            }
+            var lines = raw.split('\n');
+            // 去掉末尾空行
+            while (lines.length && lines[lines.length - 1] === '') lines.pop();
+            var html = lines
+                .map(function (line) {
+                    var cls = classifyLogLine(line);
+                    return (
+                        '<span class="log-line' +
+                        (cls ? ' ' + cls : '') +
+                        '">' +
+                        escapeHtml(line || ' ') +
+                        '</span>'
+                    );
+                })
+                .join('');
+            return { html: html, lines: lines.length };
+        }
+
+        function setLogPill(kind, label) {
+            if (!el.logPill) return;
+            el.logPill.className = 'log-pill is-' + kind;
+            el.logPill.textContent = label;
+        }
+
+        function isFollowEnabled() {
+            return !el.logFollow || el.logFollow.checked;
+        }
+
+        function stopPoll() {
+            if (pollTimer) {
+                clearInterval(pollTimer);
+                pollTimer = null;
             }
         }
-        return { ok: res.ok, status: res.status, body: body, text: text };
-    }
 
-    function stopPoll() {
-        if (pollTimer) {
-            clearInterval(pollTimer);
-            pollTimer = null;
-        }
-    }
-
-    function startPoll() {
-        if (pollTimer) return;
-        pollTimer = setInterval(function () {
-            loadLog().then(function (info) {
-                if (info && info.running) return;
-                stopPoll();
-                loadVersion().then(function () {
-                    return loadStatus(false);
+        function startPoll() {
+            if (pollTimer) return;
+            pollTimer = setInterval(function () {
+                loadLog({ quiet: true }).then(function (info) {
+                    if (info && info.running) return;
+                    stopPoll();
+                    loadVersion().then(function () {
+                        return loadStatus(false);
+                    });
                 });
-            });
-        }, 2000);
-    }
+            }, 1500);
+        }
 
-    async function loadVersion() {
-        try {
-            var r = await fetchJson('version.json', { cache: 'no-store' });
-            if (!r.ok) {
-                setText(el.localSha, '—');
-                setText(el.localFull, '未找到 version.json');
-                setText(el.localTime, '—');
-                setText(el.localMeta, '—');
+        async function loadVersion() {
+            try {
+                var r = await fetchJson('version.json', {cache: 'no-store'});
+                if (!r.ok) {
+                    setText(el.localSha, '—');
+                    setText(el.localFull, '未找到 version.json');
+                    setText(el.localTime, '—');
+                    setText(el.localMeta, '—');
+                    return null;
+                }
+                return applyLocal(r.body || {});
+            } catch (e) {
+                setText(el.localFull, '加载失败: ' + (e.message || e));
                 return null;
             }
-            return applyLocal(r.body || {});
-        } catch (e) {
-            setText(el.localFull, '加载失败: ' + (e.message || e));
-            return null;
         }
-    }
 
-    async function loadStatus(showActionHint) {
-        setHint(el.statusHint, '正在拉取远程状态…');
-        try {
-            // 相对路径，兼容子路径部署如 /dev-tools/
-            var r = await fetchJson('api/status', { cache: 'no-store' });
-            if (!r.ok) {
+        function formatStatusError(err) {
+            var s = String(err || '');
+            if (/rate limit/i.test(s)) {
+                return (
+                    'GitHub API 限流（匿名约 60 次/小时）。请在服务器 .env 配置 GITHUB_TOKEN 后重启 Agent，' +
+                    '并减少「检查更新」频率。一键更新不受此影响（走 Release 下载）。'
+                );
+            }
+            if (/timeout/i.test(s)) return '访问 GitHub API 超时，请稍后重试。';
+            return s;
+        }
+
+        async function loadStatus(showActionHint) {
+            setHint(el.statusHint, '正在拉取远程状态…');
+            try {
+                // 相对路径，兼容子路径部署如 /dev-tools/
+                var r = await fetchJson('api/status', { cache: 'no-store' });
+                if (!r.ok) {
+                    setBadge('unknown', '未知');
+                    setText(el.remoteSha, '—');
+                    setText(el.remoteMsg, '—');
+                    setText(el.remoteTime, '—');
+                    setText(el.remoteBranch, '—');
+                    var errBody = pick(r.body || {}, ['error', 'message'], '');
+                    // 兼容旧 Agent：502 常是 GitHub 限流，不是反代挂了
+                    if (errBody && /rate limit|GitHub HTTP/i.test(errBody)) {
+                        setHint(el.statusHint, formatStatusError(errBody), 'err');
+                        if (showActionHint) setHint(el.actionHint, '远程查询失败（GitHub 限流/API）', 'err');
+                        if (r.body && r.body.local) applyLocal(Object.assign({}, r.body.local));
+                        if (r.body && r.body.remote) applyRemote(r.body);
+                        return r.body;
+                    }
+                    setHint(
+                        el.statusHint,
+                        'Agent 未连接或未配置反代（HTTP ' + r.status + (errBody ? '：' + errBody : '') + '）',
+                        'warn'
+                    );
+                    if (showActionHint) setHint(el.actionHint, '检查更新失败：Agent 未连接或未配置反代', 'err');
+                    return null;
+                }
+                var data = r.body || {};
+                if (data.local) applyLocal(Object.assign({}, data.local));
+                var remote = applyRemote(data);
+                var local = normalizeCommit(data.local || {
+                    shortSha: el.localSha.textContent,
+                    fullSha: el.localFull.textContent,
+                    time: el.localTime.textContent
+                });
+                var kind = resolveStatus(data, local, remote);
+                var msg = pick(data, ['message', 'detail', 'msg'], '');
+                if (data.error) {
+                    var friendly = formatStatusError(data.error);
+                    if (data.remote) {
+                        msg =
+                            (msg ? msg + ' · ' : '') +
+                            friendly +
+                            (data.cached ? '（当前展示缓存远程信息）' : '');
+                    } else {
+                        msg = friendly;
+                        if (!kind || kind === 'unknown') {
+                            setBadge('unknown', '远程不可用');
+                            kind = 'failed';
+                        }
+                    }
+                }
+                if (!msg) {
+                    if (kind === 'ok') {
+                        msg = '本地 version.json 与远程 main 一致，无需更新。';
+                    } else if (kind === 'update') {
+                        msg =
+                            '远程 main 有新提交。立即更新将下载 Release latest-dist 资产（需 CI 已发布到该 commit）。';
+                    } else if (kind === 'updating') {
+                        msg = '更新任务进行中，日志将自动刷新。';
+                    } else if (kind === 'failed') {
+                        msg = '上次更新失败，请查看日志后重试。';
+                    } else {
+                        msg = '已连接 Agent，状态见徽章。';
+                    }
+                }
+                setHint(
+                    el.statusHint,
+                    msg,
+                    kind === 'failed' || data.error ? 'err' : kind === 'ok' ? 'ok' : kind === 'update' ? 'warn' : ''
+                );
+                if (showActionHint) {
+                    setHint(
+                        el.actionHint,
+                        data.error ? formatStatusError(data.error) : '状态已刷新',
+                        data.error || kind === 'failed' ? 'err' : 'ok'
+                    );
+                }
+                return data;
+            } catch (e) {
                 setBadge('unknown', '未知');
                 setText(el.remoteSha, '—');
                 setText(el.remoteMsg, '—');
                 setText(el.remoteTime, '—');
                 setText(el.remoteBranch, '—');
-                var errBody = pick(r.body || {}, ['error', 'message'], '');
-                setHint(
-                    el.statusHint,
-                    'Agent 未连接或未配置反代（HTTP ' + r.status + (errBody ? '：' + errBody : '') + '）',
-                    'warn'
-                );
-                if (showActionHint) setHint(el.actionHint, '检查更新失败：Agent 未连接或未配置反代', 'err');
+                setHint(el.statusHint, 'Agent 未连接或未配置反代', 'warn');
+                if (showActionHint) setHint(el.actionHint, '检查更新失败：' + (e.message || e), 'err');
                 return null;
             }
-            var data = r.body || {};
-            if (data.local) applyLocal(Object.assign({}, data.local));
-            var remote = applyRemote(data);
-            var local = normalizeCommit(data.local || {
-                shortSha: el.localSha.textContent,
-                fullSha: el.localFull.textContent,
-                time: el.localTime.textContent
-            });
-            var kind = resolveStatus(data, local, remote);
-            var msg = pick(data, ['message', 'detail', 'msg'], '');
-            if (data.error) {
-                msg = (msg ? msg + ' · ' : '') + '远程查询异常：' + data.error;
-            }
-            if (!msg) {
-                if (kind === 'ok') {
-                    msg = '本地 version.json 与远程 main 一致，无需更新。';
-                } else if (kind === 'update') {
-                    msg =
-                        '远程 main 有新提交。立即更新将下载 Release latest-dist 资产（需 CI 已发布到该 commit）。';
-                } else if (kind === 'updating') {
-                    msg = '更新任务进行中，日志将自动刷新。';
-                } else if (kind === 'failed') {
-                    msg = '上次更新失败，请查看日志后重试。';
-                } else {
-                    msg = '已连接 Agent，状态见徽章。';
-                }
-            }
-            setHint(
-                el.statusHint,
-                msg,
-                kind === 'failed' || data.error ? 'err' : kind === 'ok' ? 'ok' : kind === 'update' ? 'warn' : ''
-            );
-            if (showActionHint) {
-                setHint(
-                    el.actionHint,
-                    data.error ? '远程状态异常：' + data.error : '状态已刷新',
-                    data.error || kind === 'failed' ? 'err' : 'ok'
-                );
-            }
-            return data;
-        } catch (e) {
-            setBadge('unknown', '未知');
-            setText(el.remoteSha, '—');
-            setText(el.remoteMsg, '—');
-            setText(el.remoteTime, '—');
-            setText(el.remoteBranch, '—');
-            setHint(el.statusHint, 'Agent 未连接或未配置反代', 'warn');
-            if (showActionHint) setHint(el.actionHint, '检查更新失败：' + (e.message || e), 'err');
-            return null;
         }
-    }
 
-    async function loadLog() {
-        el.logMeta.textContent = '加载中…';
-        try {
-            var r = await fetchJson('api/update/log', { cache: 'no-store' });
-            if (!r.ok) {
-                el.logView.textContent = '无法获取日志（HTTP ' + r.status + '）。\nAgent 未连接或未配置反代。';
-                el.logMeta.textContent = 'GET api/update/log · 失败';
-                return null;
+        async function loadLog(opts) {
+            opts = opts || {};
+            var quiet = !!opts.quiet;
+            var seq = ++logReqSeq;
+
+            // 轮询时不闪「加载中」，避免整块日志跳动
+            if (!quiet) {
+                el.logMeta.textContent = '拉取中…';
+                el.logView.classList.add('is-loading');
             }
-            var body = r.body || {};
-            var text = '';
-            if (typeof body === 'string') {
-                text = body;
-            } else if (body.raw) {
-                text = body.raw;
-            } else if (body.log != null) {
-                text = typeof body.log === 'string' ? body.log : JSON.stringify(body.log, null, 2);
-            } else if (Array.isArray(body.lines)) {
-                text = body.lines.join('\n');
-            } else if (Array.isArray(body)) {
-                text = body.join('\n');
-            } else {
-                text = JSON.stringify(body, null, 2);
+            if (logLoading && quiet) {
+                // 上一请求未完成则跳过本次 quiet 轮询
+                return { running: lastRunning, skipped: true };
             }
-            el.logView.textContent = text.trim() ? text : '（日志为空）';
+            logLoading = true;
+
             try {
-                el.logView.scrollTop = el.logView.scrollHeight;
-            } catch (e) { /* ignore */ }
+                var r = await fetchJson('api/update/log', { cache: 'no-store' });
+                if (seq !== logReqSeq) return null;
 
-            var running = !!body.running;
-            var exitCode = body.exitCode;
-            var finishedAt = body.finishedAt;
-            var metaParts = ['GET api/update/log', new Date().toLocaleTimeString()];
-            if (running) {
-                metaParts.push('运行中');
-                setBadge('busy', '更新中');
-                el.btnUpdate.disabled = true;
-                startPoll();
-            } else {
-                el.btnUpdate.disabled = false;
-                if (exitCode != null) metaParts.push('exitCode=' + exitCode);
-                if (finishedAt) metaParts.push(formatTime(finishedAt));
-                if (lastRunning && !running) {
-                    if (exitCode === 0) {
-                        setHint(el.actionHint, '更新完成（exitCode=0），已刷新版本', 'ok');
-                        setBadge('ok', '已是最新');
-                    } else if (exitCode != null) {
-                        setHint(el.actionHint, '更新结束但失败（exitCode=' + exitCode + '）', 'err');
-                        setBadge('fail', '失败');
+                if (!r.ok) {
+                    lastLogText = null;
+                    el.logView.innerHTML =
+                        '<span class="log-line is-err">' +
+                        escapeHtml('无法获取日志（HTTP ' + r.status + '）。Agent 未连接或未配置反代。') +
+                        '</span>';
+                    el.logMeta.textContent = '失败 · HTTP ' + r.status;
+                    setLogPill('err', '失败');
+                    return null;
+                }
+
+                var body = r.body || {};
+                var text = '';
+                if (typeof body === 'string') {
+                    text = body;
+                } else if (body.raw) {
+                    text = body.raw;
+                } else if (body.log != null) {
+                    text = typeof body.log === 'string' ? body.log : JSON.stringify(body.log, null, 2);
+                } else if (Array.isArray(body.lines)) {
+                    text = body.lines.join('\n');
+                } else if (Array.isArray(body)) {
+                    text = body.join('\n');
+                } else {
+                    text = JSON.stringify(body, null, 2);
+                }
+                text = String(text || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
+                var nearBottom = true;
+                try {
+                    var dist = el.logView.scrollHeight - el.logView.scrollTop - el.logView.clientHeight;
+                    nearBottom = dist < 56;
+                } catch (e) { /* ignore */
+                }
+
+                var shouldStick = isFollowEnabled() || nearBottom;
+                var rendered = renderLogHtml(text);
+                var changed = text !== lastLogText;
+
+                if (changed) {
+                    el.logView.innerHTML = rendered.html;
+                    lastLogText = text;
+                    if (shouldStick) {
+                        try {
+                            el.logView.scrollTop = el.logView.scrollHeight;
+                        } catch (e2) { /* ignore */
+                        }
                     }
                 }
+
+                var running = !!body.running;
+                var exitCode = body.exitCode;
+                var finishedAt = body.finishedAt;
+                var metaParts = [];
+                metaParts.push(rendered.lines + ' 行');
+                metaParts.push(new Date().toLocaleTimeString());
+
+                if (running) {
+                    metaParts.push('自动刷新');
+                    setLogPill('run', '运行中');
+                    setBadge('busy', '更新中');
+                    el.btnUpdate.disabled = true;
+                    startPoll();
+                } else {
+                    el.btnUpdate.disabled = false;
+                    if (exitCode === 0) {
+                        setLogPill('ok', '成功');
+                        metaParts.push('exit=0');
+                    } else if (exitCode != null) {
+                        setLogPill('err', '失败');
+                        metaParts.push('exit=' + exitCode);
+                    } else if (!text.trim()) {
+                        setLogPill('idle', '空闲');
+                    } else {
+                        setLogPill('idle', '已结束');
+                    }
+                    if (finishedAt) metaParts.push(formatTime(finishedAt));
+                    if (lastRunning && !running) {
+                        if (exitCode === 0) {
+                            setHint(el.actionHint, '更新完成（exitCode=0），已刷新版本', 'ok');
+                            setBadge('ok', '已是最新');
+                        } else if (exitCode != null) {
+                            setHint(el.actionHint, '更新结束但失败（exitCode=' + exitCode + '）', 'err');
+                            setBadge('fail', '失败');
+                        }
+                    }
+                }
+
+                lastRunning = running;
+                el.logMeta.textContent = metaParts.join(' · ');
+                el.logMeta.title = 'api/update/log';
+                return { running: running, exitCode: exitCode, finishedAt: finishedAt, lines: rendered.lines };
+            } catch (e) {
+                if (seq !== logReqSeq) return null;
+                lastLogText = null;
+                el.logView.innerHTML =
+                    '<span class="log-line is-err">' +
+                    escapeHtml('无法获取日志：' + (e.message || e)) +
+                    '</span><span class="log-line is-dim">Agent 未连接或未配置反代。</span>';
+                el.logMeta.textContent = '失败 · 网络异常';
+                setLogPill('err', '失败');
+                return null;
+            } finally {
+                if (seq === logReqSeq) {
+                    logLoading = false;
+                    el.logView.classList.remove('is-loading');
+                }
             }
-            lastRunning = running;
-            el.logMeta.textContent = metaParts.join(' · ');
-            return { running: running, exitCode: exitCode, finishedAt: finishedAt };
-        } catch (e) {
-            el.logView.textContent = '无法获取日志：' + (e.message || e) + '\nAgent 未连接或未配置反代。';
-            el.logMeta.textContent = 'GET api/update/log · 失败';
-            return null;
-        }
-    }
-
-    async function doUpdate() {
-        var token = (el.tokenInput.value || '').trim();
-        if (!token) {
-            setHint(el.actionHint, '请先填写 Update Token', 'err');
-            el.tokenInput.focus();
-            return;
-        }
-        if (el.rememberToken.checked) {
-            try {
-                sessionStorage.setItem(TOKEN_KEY, token);
-            } catch (e) { /* ignore */ }
-        } else {
-            try {
-                sessionStorage.removeItem(TOKEN_KEY);
-            } catch (e) { /* ignore */ }
         }
 
-        el.btnUpdate.disabled = true;
-        el.btnCheck.disabled = true;
-        setBadge('busy', '更新中');
-        setHint(el.actionHint, '正在触发更新…');
-        setHint(el.statusHint, '更新请求已发送，日志将自动刷新。');
-
-        try {
-            var r = await fetchJson('api/update', {
-                method: 'POST',
-                headers: {
-                    'X-Update-Token': token,
-                    Accept: 'application/json'
-                },
-                cache: 'no-store'
-            });
-            if (!r.ok) {
-                var errMsg = pick(r.body || {}, ['message', 'error', 'msg'], '') || 'HTTP ' + r.status;
-                if (r.status === 401 || r.status === 403) errMsg = 'Token 无效或无权限（' + r.status + '）';
-                if (r.status === 409) errMsg = '更新正在进行中，请稍候查看日志';
-                setBadge('fail', '失败');
-                setHint(el.actionHint, '更新失败：' + errMsg, 'err');
-                setHint(el.statusHint, '更新失败：' + errMsg, 'err');
-                el.btnUpdate.disabled = false;
+        async function doUpdate() {
+            var token = (el.tokenInput.value || '').trim();
+            if (!token) {
+                setHint(el.actionHint, '请先填写 Update Token', 'err');
+                el.tokenInput.focus();
+                return;
+            }
+            if (el.rememberToken.checked) {
+                try {
+                    sessionStorage.setItem(TOKEN_KEY, token);
+                } catch (e) { /* ignore */
+                }
             } else {
-                var okMsg = pick(r.body || {}, ['message', 'msg'], '') || '更新已触发';
-                setHint(el.actionHint, okMsg + '，正在拉取日志…', 'ok');
-                lastRunning = true;
-                startPoll();
+                try {
+                    sessionStorage.removeItem(TOKEN_KEY);
+                } catch (e) { /* ignore */
+                }
             }
-            await loadLog();
-        } catch (e) {
-            setBadge('fail', '失败');
-            setHint(el.actionHint, '更新请求失败：' + (e.message || e), 'err');
-            setHint(el.statusHint, 'Agent 未连接或未配置反代', 'warn');
-            el.btnUpdate.disabled = false;
-        } finally {
-            el.btnCheck.disabled = false;
+
+            el.btnUpdate.disabled = true;
+            el.btnCheck.disabled = true;
+            setBadge('busy', '更新中');
+            setHint(el.actionHint, '正在触发更新…');
+            setHint(el.statusHint, '更新请求已发送，日志将自动刷新。');
+
+            try {
+                var r = await fetchJson('api/update', {
+                    method: 'POST',
+                    headers: {
+                        'X-Update-Token': token,
+                        Accept: 'application/json'
+                    },
+                    cache: 'no-store'
+                });
+                if (!r.ok) {
+                    var errMsg = pick(r.body || {}, ['message', 'error', 'msg'], '') || 'HTTP ' + r.status;
+                    if (r.status === 401 || r.status === 403) errMsg = 'Token 无效或无权限（' + r.status + '）';
+                    if (r.status === 409) errMsg = '更新正在进行中，请稍候查看日志';
+                    setBadge('fail', '失败');
+                    setHint(el.actionHint, '更新失败：' + errMsg, 'err');
+                    setHint(el.statusHint, '更新失败：' + errMsg, 'err');
+                    el.btnUpdate.disabled = false;
+                } else {
+                    var okMsg = pick(r.body || {}, ['message', 'msg'], '') || '更新已触发';
+                    setHint(el.actionHint, okMsg + '，正在拉取日志…', 'ok');
+                    lastRunning = true;
+                    startPoll();
+                }
+                await loadLog();
+            } catch (e) {
+                setBadge('fail', '失败');
+                setHint(el.actionHint, '更新请求失败：' + (e.message || e), 'err');
+                setHint(el.statusHint, 'Agent 未连接或未配置反代', 'warn');
+                el.btnUpdate.disabled = false;
+            } finally {
+                el.btnCheck.disabled = false;
+            }
         }
-    }
 
-    function restoreToken() {
-        try {
-            var saved = sessionStorage.getItem(TOKEN_KEY);
-            if (saved) {
-                el.tokenInput.value = saved;
-                el.rememberToken.checked = true;
+        function restoreToken() {
+            try {
+                var saved = sessionStorage.getItem(TOKEN_KEY);
+                if (saved) {
+                    el.tokenInput.value = saved;
+                    el.rememberToken.checked = true;
+                }
+            } catch (e) { /* ignore */
             }
-        } catch (e) { /* ignore */ }
-    }
+        }
 
-    el.btnCheck.addEventListener('click', function () {
-        loadVersion().then(function () {
-            return loadStatus(true);
+        el.btnCheck.addEventListener('click', function () {
+            loadVersion().then(function () {
+                return loadStatus(true);
+            });
         });
-    });
-    el.btnUpdate.addEventListener('click', doUpdate);
-    el.btnLog.addEventListener('click', loadLog);
+        el.btnUpdate.addEventListener('click', doUpdate);
+        el.btnLog.addEventListener('click', function () {
+            loadLog({ quiet: false });
+        });
 
-    el.rememberToken.addEventListener('change', function () {
-        if (!el.rememberToken.checked) {
-            try {
-                sessionStorage.removeItem(TOKEN_KEY);
-            } catch (e) { /* ignore */ }
-        } else if (el.tokenInput.value) {
-            try {
-                sessionStorage.setItem(TOKEN_KEY, el.tokenInput.value);
-            } catch (e) { /* ignore */ }
+        if (el.btnToggleToken) {
+            el.btnToggleToken.addEventListener('click', function () {
+                var show = el.tokenInput.type === 'password';
+                el.tokenInput.type = show ? 'text' : 'password';
+                el.btnToggleToken.textContent = show ? '隐藏' : '显示';
+            });
         }
-    });
 
-    // 初始加载
-    restoreToken();
-    Promise.all([loadVersion(), loadStatus(false), loadLog()]);
-})();
+        // 跟随开关：上滚时自动关闭，勾选后立即贴底
+        if (el.logFollow) {
+            try {
+                var savedFollow = sessionStorage.getItem(FOLLOW_KEY);
+                if (savedFollow === '0') el.logFollow.checked = false;
+                if (savedFollow === '1') el.logFollow.checked = true;
+            } catch (e) { /* ignore */
+            }
+            el.logFollow.addEventListener('change', function () {
+                try {
+                    sessionStorage.setItem(FOLLOW_KEY, el.logFollow.checked ? '1' : '0');
+                } catch (e2) { /* ignore */
+                }
+                if (el.logFollow.checked) {
+                    try {
+                        el.logView.scrollTop = el.logView.scrollHeight;
+                    } catch (e3) { /* ignore */
+                    }
+                }
+            });
+            el.logView.addEventListener(
+                'scroll',
+                function () {
+                    if (!el.logFollow || !el.logFollow.checked) return;
+                    try {
+                        var dist = el.logView.scrollHeight - el.logView.scrollTop - el.logView.clientHeight;
+                        if (dist > 80) {
+                            el.logFollow.checked = false;
+                            try {
+                                sessionStorage.setItem(FOLLOW_KEY, '0');
+                            } catch (e4) { /* ignore */
+                            }
+                        }
+                    } catch (e5) { /* ignore */
+                    }
+                },
+                { passive: true }
+            );
+        }
+
+        el.rememberToken.addEventListener('change', function () {
+            if (!el.rememberToken.checked) {
+                try {
+                    sessionStorage.removeItem(TOKEN_KEY);
+                } catch (e) { /* ignore */
+                }
+            } else if (el.tokenInput.value) {
+                try {
+                    sessionStorage.setItem(TOKEN_KEY, el.tokenInput.value);
+                } catch (e) { /* ignore */
+                }
+            }
+        });
+
+        // 初始加载
+        restoreToken();
+        Promise.all([loadVersion(), loadStatus(false), loadLog({ quiet: false })]);
+    })();
 </script>
 </body>
 </html>

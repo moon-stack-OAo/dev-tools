@@ -1,14 +1,31 @@
 [Unit]
-Description=DevTools update agent
-After=network.target
+Description=DevTools update agent (one-click deploy)
+Documentation=file:/opt/jar/dev-tools/docs/deploy-ci.md
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=simple
-EnvironmentFile=-/opt/dev-tools/.env
-WorkingDirectory=/opt/dev-tools/repo
-ExecStart=/usr/bin/node /opt/dev-tools/repo/scripts/update-agent.js
+# 环境变量（UPDATE_TOKEN / SITE_ROOT / GITHUB_TOKEN 等）
+EnvironmentFile=-/opt/jar/dev-tools/.env
+WorkingDirectory=/opt/jar/dev-tools
+# 若 node 不在 /usr/bin，改成 which node 的路径
+ExecStart=/usr/local/bin/node /opt/jar/dev-tools/scripts/update-agent.js
 Restart=on-failure
-User=www-data
+RestartSec=3
+
+# 建议专用用户；需能写 SITE_ROOT（如 /opt/jar/dev-tools/dist）
+# User=www-data
+# Group=www-data
+
+# 仅本机监听时无需开放端口；脚本默认 127.0.0.1:3930
+NoNewPrivileges=true
+PrivateTmp=true
+
+# 便于 journalctl 查看
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=dev-tools-update
 
 [Install]
 WantedBy=multi-user.target

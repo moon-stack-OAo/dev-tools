@@ -12,21 +12,28 @@
  */
 'use strict';
 
-const http = require('node:http');
-const https = require('node:https');
-const fs = require('node:fs');
-const path = require('node:path');
-const crypto = require('node:crypto');
-const { spawn } = require('node:child_process');
+// 使用无 node: 前缀，兼容 Node 12+（Debian 默认 node 常较旧）
+const http = require('http');
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+const { spawn } = require('child_process');
 
 const UPDATE_TOKEN = process.env.UPDATE_TOKEN || '';
 const GITHUB_REPO = process.env.GITHUB_REPO || 'moon-stack-OAo/dev-tools';
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
+// 可选：提高 GitHub API 限额（检查更新 / 对比 main）。PAT 或 GITHUB_TOKEN 均可
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN || process.env.GH_TOKEN || '';
+const STATUS_CACHE_MS = Math.max(0, parseInt(process.env.STATUS_CACHE_MS || '60000', 10) || 60000);
 const DEPLOY_MODE = (process.env.DEPLOY_MODE || 'static').toLowerCase();
 const REPO_DIR = process.env.REPO_DIR || process.cwd();
 const SITE_ROOT = process.env.SITE_ROOT || '/var/www/dev-tools';
 const LISTEN_HOST = process.env.LISTEN_HOST || '127.0.0.1';
 const LISTEN_PORT = parseInt(process.env.LISTEN_PORT || '3930', 10);
+
+/** @type {{ key: string, at: number, remote: object|null, error: string|null }|null} */
+let remoteStatusCache = null;
 const UPDATE_SCRIPT_STATIC =
     process.env.UPDATE_SCRIPT_STATIC || path.join(__dirname, 'update-static.sh');
 const UPDATE_SCRIPT_DOCKER =
@@ -110,15 +117,40 @@ function readLocalVersion() {
     return { path: null, data: null };
 }
 
+function githubHeaders() {
+    const headers = {
+        'User-Agent': 'dev-tools-update-agent',
+        Accept: 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+    };
+    if (GITHUB_TOKEN) {
+        headers.Authorization = 'Bearer ' + GITHUB_TOKEN;
+    }
+    return headers;
+}
+
+function formatGithubHttpError(statusCode, body) {
+    const raw = String(body || '').slice(0, 280);
+    let msg = 'GitHub HTTP ' + statusCode;
+    try {
+        const j = JSON.parse(raw);
+        if (j && j.message) msg += ': ' + j.message;
+    } catch {
+        if (raw) msg += ': ' + raw;
+    }
+    if (statusCode === 403 && /rate limit/i.test(msg)) {
+        msg +=
+            '。匿名 API 限额已用尽：在服务器 .env 配置 GITHUB_TOKEN（PAT，无需特殊权限，public_repo 可选），并降低检查频率。';
+    }
+    return msg;
+}
+
 function httpsGetJson(url) {
     return new Promise((resolve, reject) => {
         const req = https.get(
             url,
             {
-                headers: {
-                    'User-Agent': 'dev-tools-update-agent',
-                    Accept: 'application/vnd.github+json',
-                },
+                headers: githubHeaders(),
                 timeout: 15000,
             },
             (res) => {
@@ -127,7 +159,7 @@ function httpsGetJson(url) {
                 res.on('end', () => {
                     const body = Buffer.concat(chunks).toString('utf8');
                     if (res.statusCode && res.statusCode >= 400) {
-                        reject(new Error('GitHub HTTP ' + res.statusCode + ': ' + body.slice(0, 200)));
+                        reject(new Error(formatGithubHttpError(res.statusCode, body)));
                         return;
                     }
                     try {
@@ -157,44 +189,104 @@ function extractLocalSha(localData) {
     );
 }
 
-async function handleStatus() {
-    const local = readLocalVersion();
+async function fetchRemoteCommit() {
+    const cacheKey = GITHUB_REPO + '@' + GITHUB_BRANCH;
+    const now = Date.now();
+    if (
+        remoteStatusCache &&
+        remoteStatusCache.key === cacheKey &&
+        now - remoteStatusCache.at < STATUS_CACHE_MS &&
+        (remoteStatusCache.remote || remoteStatusCache.error)
+    ) {
+        return {
+            remote: remoteStatusCache.remote,
+            error: remoteStatusCache.error,
+            cached: true,
+            cacheAgeMs: now - remoteStatusCache.at,
+        };
+    }
+
     // repo 保留 owner/name 中的 /，仅对 branch 编码
     const url =
         'https://api.github.com/repos/' + GITHUB_REPO + '/commits/' + encodeURIComponent(GITHUB_BRANCH);
 
-    let remote = null;
-    let ok = true;
-    let error = null;
     try {
         const commit = await httpsGetJson(url);
         const sha = commit.sha || '';
-        remote = {
+        const remote = {
             sha,
             short: sha ? sha.slice(0, 7) : '',
             date: (commit.commit && commit.commit.committer && commit.commit.committer.date) || null,
             message: (commit.commit && commit.commit.message && commit.commit.message.split('\n')[0]) || '',
         };
+        remoteStatusCache = { key: cacheKey, at: now, remote, error: null };
+        return { remote, error: null, cached: false, cacheAgeMs: 0 };
     } catch (err) {
-        ok = false;
-        error = err && err.message ? err.message : String(err);
+        const error = err && err.message ? err.message : String(err);
+        // 限流时若有旧缓存，继续用旧 remote（并带上 error 说明）
+        if (
+            remoteStatusCache &&
+            remoteStatusCache.key === cacheKey &&
+            remoteStatusCache.remote &&
+            /rate limit/i.test(error)
+        ) {
+            return {
+                remote: remoteStatusCache.remote,
+                error: error + '（展示缓存的远程提交）',
+                cached: true,
+                cacheAgeMs: now - remoteStatusCache.at,
+            };
+        }
+        remoteStatusCache = {
+            key: cacheKey,
+            at: now,
+            remote: remoteStatusCache && remoteStatusCache.key === cacheKey ? remoteStatusCache.remote : null,
+            error,
+        };
+        return {
+            remote: remoteStatusCache.remote,
+            error,
+            cached: !!remoteStatusCache.remote,
+            cacheAgeMs: remoteStatusCache.remote ? now - remoteStatusCache.at : 0,
+        };
     }
+}
+
+async function handleStatus() {
+    const local = readLocalVersion();
+    const remoteResult = await fetchRemoteCommit();
+    const remote = remoteResult.remote;
+    const error = remoteResult.error;
+    // Agent 自身正常；仅 GitHub 查询失败时 ok 仍为 true，避免页面误报「未连接」
+    const ok = true;
+    const remoteOk = !error || !!remote;
 
     const localSha = extractLocalSha(local.data);
     const upToDate =
-        ok && remote && localSha
+        remoteOk && remote && localSha && !error
             ? String(localSha).slice(0, 7) === remote.short || String(localSha) === remote.sha
-            : null;
+            : remote && localSha
+              ? String(localSha).slice(0, 7) === remote.short || String(localSha) === remote.sha
+              : null;
 
     return {
         ok,
+        remoteOk,
         local: local.data,
         localPath: local.path,
         remote,
         upToDate,
         checkedAt: new Date().toISOString(),
         error,
-        meta: { repo: GITHUB_REPO, branch: GITHUB_BRANCH, mode: DEPLOY_MODE },
+        cached: !!remoteResult.cached,
+        cacheAgeMs: remoteResult.cacheAgeMs || 0,
+        meta: {
+            repo: GITHUB_REPO,
+            branch: GITHUB_BRANCH,
+            mode: DEPLOY_MODE,
+            githubAuth: GITHUB_TOKEN ? 'token' : 'anonymous',
+            statusCacheMs: STATUS_CACHE_MS,
+        },
     };
 }
 
@@ -312,7 +404,8 @@ async function onRequest(req, res) {
 
         if (method === 'GET' && pathname === '/api/status') {
             const status = await handleStatus();
-            sendJson(res, status.ok ? 200 : 502, status);
+            // 始终 200：Agent 在线；GitHub 限流等写在 error 字段，由前端提示
+            sendJson(res, 200, status);
             return;
         }
 
