@@ -10,6 +10,9 @@
 ![依赖本地化](https://img.shields.io/badge/依赖-本地化-blue)
 ![离线可用](https://img.shields.io/badge/离线-可用-success)
 ![License](https://img.shields.io/badge/license-MIT-blue)
+[![在线演示](https://img.shields.io/badge/在线演示-tools.livancen.top-38bdf8?logo=googlechrome&logoColor=white)](https://tools.livancen.top/)
+
+**🌐 在线地址：[https://tools.livancen.top/](https://tools.livancen.top/)**（推荐直接使用，数据仍在浏览器本地处理）
 
 ## ✨ 核心特性
 
@@ -31,6 +34,7 @@
 
 ## 📑 目录
 
+- [在线使用](#-在线使用)
 - [快速开始](#-快速开始)
 - [项目结构](#-项目结构)
 - [工具列表](#-工具列表)
@@ -40,9 +44,20 @@
 
 ---
 
+## 🌐 在线使用
+
+|          |                                                                                    |
+|----------|------------------------------------------------------------------------------------|
+| **正式站点** | [https://tools.livancen.top/](https://tools.livancen.top/)                         |
+| **源码仓库** | [github.com/moon-stack-OAo/dev-tools](https://github.com/moon-stack-OAo/dev-tools) |
+
+打开即可使用全部工具，无需安装；计算在本地浏览器完成，不上传业务数据。
+
+---
+
 ## 🚀 快速开始
 
-### 方式一：本地开发（推荐）
+### 方式一：本地开发
 
 ```bash
 npm install
