@@ -518,6 +518,11 @@ function showHome() {
     domCache.mainHeader.classList.remove("tool-mode");
     domCache.breadcrumb.innerHTML = "";
     clearSidebarHighlight();
+    try {
+        document.title = "CodeCasket · 码匣 — 纯前端开发者工具箱";
+    } catch (e) {
+        /* ignore */
+    }
     setStatus("就绪");
 }
 

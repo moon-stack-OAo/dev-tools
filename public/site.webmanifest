@@ -1,0 +1,18 @@
+{
+  "name": "CodeCasket · 码匣",
+  "short_name": "码匣",
+  "description": "纯前端开发者工具箱，100% 本地处理，含 Java 深度工具。",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

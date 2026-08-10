@@ -1,0 +1,8 @@
+# CodeCasket（码匣）
+User-agent: *
+Allow: /
+
+# 运维页不对搜索引擎开放
+Disallow: /ops-update.html
+
+Sitemap: https://tools.livancen.top/sitemap.xml

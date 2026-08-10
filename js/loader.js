@@ -208,6 +208,13 @@ async function openTool(id) {
         '</span><span class="bc-sep">›</span><span class="bc-current">' +
         tool.name +
         "</span>";
+    // 工具页标题：利于标签页识别与 SEO 分享
+    try {
+        document.title =
+            tool.name + " · CodeCasket 码匣" + (tool.desc ? " — " + tool.desc : "");
+    } catch (e) {
+        /* ignore */
+    }
     setStatus("就绪");
     // 工具初始化仅执行一次,避免重复绑定事件/重建 UI；异常隔离确保 loading 关闭
     try {
