@@ -1051,10 +1051,6 @@
     color: #fbbf24;
 }
 
-.sidebar.collapsed .sb-tool .fav-star {
-    display: none;
-}
-
 .home-card[data-cat] .hc-icon {
     color: var(--cat-color);
 }
@@ -1371,11 +1367,6 @@
 .sidebar.collapsed .sb-cat-header {
     justify-content: center;
     padding: 7px;
-}
-
-.sidebar.collapsed .sb-tool {
-    justify-content: center;
-    padding: 5px;
 }
 
 @media (max-width: 1024px) {
