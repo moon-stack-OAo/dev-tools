@@ -180,18 +180,10 @@ function initSidebarTooltip() {
         if (_sbTipAnchor === anchor) return;
         if (relatedInside(anchor, e.relatedTarget)) return;
 
-        const text =
-            (anchor.getAttribute('data-tip') ||
-                anchor.getAttribute('title') ||
-                '').trim();
+        const text = (anchor.getAttribute('data-tip') || '').trim();
         if (!text || !shouldShowSidebarTip(anchor)) {
             hideSidebarTip();
             return;
-        }
-        // 抑制原生 title，避免双提示
-        if (anchor.getAttribute('title')) {
-            anchor.setAttribute('data-native-title', anchor.getAttribute('title'));
-            anchor.removeAttribute('title');
         }
         if (_sbTipTimer) clearTimeout(_sbTipTimer);
         _sbTipTimer = setTimeout(() => {
@@ -207,11 +199,6 @@ function initSidebarTooltip() {
         if (!anchor) return;
         // 仍在同一锚点内移动则忽略
         if (relatedInside(anchor, e.relatedTarget)) return;
-        // 恢复原生 title（备用）
-        if (anchor.getAttribute('data-native-title')) {
-            anchor.setAttribute('title', anchor.getAttribute('data-native-title'));
-            anchor.removeAttribute('data-native-title');
-        }
         if (_sbTipAnchor === anchor || !_sbTipAnchor) hideSidebarTip();
     });
 
@@ -278,7 +265,7 @@ function buildSidebar() {
                 '<i class="bi bi-x-circle sb-cat-clear" title="清空收藏" onclick="event.stopPropagation();clearFavoritesUI()"></i>';
         }
         wrap.innerHTML = `
-            <div class="sb-cat-header" data-cat="${escapeHtml(cat.id)}" data-tip="${escapeHtml(cat.name)}" title="${escapeHtml(cat.name)}">
+            <div class="sb-cat-header" data-cat="${escapeHtml(cat.id)}" data-tip="${escapeHtml(cat.name)}">
                 <i class="bi ${cat.icon} sb-cat-icon"></i>
                 <span class="sb-cat-name">${escapeHtml(cat.name)}</span>
                 ${clearBtn}
@@ -369,8 +356,6 @@ function refreshSidebarVirtualCat(catId, toolsInCat, clearTitle, clearFnName) {
         '<div class="sb-cat-header" data-cat="' +
         escapeHtml(catId) +
         '" data-tip="' +
-        escapeHtml(cat.name) +
-        '" title="' +
         escapeHtml(cat.name) +
         '"><i class="bi ' +
         cat.icon +

@@ -103,8 +103,6 @@ function sbToolHtml(t) {
         escapeHtml(t.id) +
         '" data-tip="' +
         escapeHtml(t.name) +
-        '" title="' +
-        escapeHtml(t.name) +
         '"><i class="bi ' +
         t.icon +
         '"></i><span class="sb-tool-name">' +
