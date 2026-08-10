@@ -1,14 +1,46 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="CodeCasket">
     <defs>
-        <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#38bdf8"/>
-            <stop offset="100%" style="stop-color:#a78bfa"/>
+        <linearGradient id="bg" x1="8%" y1="0%" x2="92%" y2="100%">
+            <stop offset="0%" stop-color="#22d3ee"/>
+            <stop offset="55%" stop-color="#38bdf8"/>
+            <stop offset="100%" stop-color="#8b5cf6"/>
         </linearGradient>
+        <linearGradient id="chest" x1="50%" y1="0%" x2="50%" y2="100%">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="100%" stop-color="#e2e8f0"/>
+        </linearGradient>
+        <linearGradient id="lid" x1="50%" y1="0%" x2="50%" y2="100%">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="100%" stop-color="#cbd5e1"/>
+        </linearGradient>
+        <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="1.2" stdDeviation="1.2" flood-color="#0f172a" flood-opacity="0.22"/>
+        </filter>
     </defs>
-    <rect width="64" height="64" rx="14" fill="url(#g1)"/>
-    <path d="M26 20 L14 32 L26 44" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"
-          stroke-linejoin="round"/>
-    <path d="M38 20 L50 32 L38 44" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"
-          stroke-linejoin="round"/>
-    <line x1="35" y1="18" x2="29" y2="46" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+    
+    <!-- 品牌底：圆角方块 -->
+    <rect width="64" height="64" rx="15" fill="url(#bg)"/>
+    
+    <!-- 轻微高光，增加质感 -->
+    <path d="M15 8.5 C22 5.5 42 5.5 49 8.5 C40 12 24 12 15 8.5Z" fill="#fff" opacity="0.18"/>
+    
+    <g filter="url(#soft)">
+        <!-- 匣身（略扁，小尺寸更易识别） -->
+        <rect x="13" y="29" width="38" height="23" rx="5" fill="url(#chest)"/>
+        <!-- 匣盖（微抬，形成「匣」剪影） -->
+        <path d="M13 31 L17.5 17.5 C18.2 15.8 19.8 14.8 21.6 14.8 H42.4 C44.2 14.8 45.8 15.8 46.5 17.5 L51 31 Z"
+              fill="url(#lid)"/>
+        <!-- 盖沿分缝 -->
+        <line x1="13" y1="31" x2="51" y2="31" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"/>
+        <!-- 锁扣 -->
+        <rect x="28.5" y="28.5" width="7" height="8.5" rx="2" fill="#0f172a" opacity="0.55"/>
+        <circle cx="32" cy="32.2" r="1.35" fill="#f8fafc"/>
+    </g>
+    
+    <!-- 匣内代码 </> ：加粗，保证 16px 仍可辨 -->
+    <g fill="none" stroke="#0f172a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.82">
+        <path d="M24.5 39.5 L20 44 L24.5 48.5"/>
+        <path d="M39.5 39.5 L44 44 L39.5 48.5"/>
+        <line x1="35.6" y1="39.2" x2="28.4" y2="48.8"/>
+    </g>
 </svg>
