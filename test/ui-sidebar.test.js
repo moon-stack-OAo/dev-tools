@@ -1,8 +1,12 @@
-// 侧边栏纯逻辑：虚拟分类判定与展开分类选择
+// 侧边栏纯逻辑：虚拟分类判定、展开分类选择、宽度钳制
 const {
     isSidebarVirtualCat,
     resolveSidebarExpandCatId,
+    clampSidebarWidth,
     SIDEBAR_KEY,
+    SIDEBAR_WIDTH_DEFAULT,
+    SIDEBAR_WIDTH_MIN,
+    SIDEBAR_WIDTH_MAX,
 } = require('../js/ui-sidebar.js');
 
 describe('ui-sidebar 纯逻辑', () => {
@@ -42,6 +46,33 @@ describe('ui-sidebar 纯逻辑', () => {
             expect(resolveSidebarExpandCatId(['favorites', 'format', 'encode'])).toBe(
                 'format',
             );
+        });
+    });
+
+    describe('clampSidebarWidth', () => {
+        test('默认与边界常量稳定', () => {
+            expect(SIDEBAR_WIDTH_DEFAULT).toBe(190);
+            expect(SIDEBAR_WIDTH_MIN).toBe(140);
+            expect(SIDEBAR_WIDTH_MAX).toBe(360);
+        });
+
+        test('合法值原样返回（四舍五入）', () => {
+            expect(clampSidebarWidth(190)).toBe(190);
+            expect(clampSidebarWidth(200.4)).toBe(200);
+            expect(clampSidebarWidth(200.6)).toBe(201);
+        });
+
+        test('低于 min / 高于 max 时钳制', () => {
+            expect(clampSidebarWidth(0)).toBe(SIDEBAR_WIDTH_MIN);
+            expect(clampSidebarWidth(100)).toBe(SIDEBAR_WIDTH_MIN);
+            expect(clampSidebarWidth(500)).toBe(SIDEBAR_WIDTH_MAX);
+        });
+
+        test('非法值回退默认宽度', () => {
+            expect(clampSidebarWidth(NaN)).toBe(SIDEBAR_WIDTH_DEFAULT);
+            expect(clampSidebarWidth(undefined)).toBe(SIDEBAR_WIDTH_DEFAULT);
+            expect(clampSidebarWidth(null)).toBe(SIDEBAR_WIDTH_DEFAULT);
+            expect(clampSidebarWidth('abc')).toBe(SIDEBAR_WIDTH_DEFAULT);
         });
     });
 

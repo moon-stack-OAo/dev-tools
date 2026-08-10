@@ -1134,7 +1134,8 @@
 }
 
 .sidebar {
-    width: 190px;
+    --sidebar-width: 190px;
+    width: var(--sidebar-width);
     flex-shrink: 0;
     background: var(--bg-card);
     border-right: 1px solid var(--border);
@@ -1142,10 +1143,78 @@
     flex-direction: column;
     transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
+    position: relative;
 }
 
 .sidebar.collapsed {
     width: 52px;
+}
+
+/* 侧边栏右侧拖拽调宽手柄 */
+.sidebar-resizer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 5px;
+    height: 100%;
+    cursor: col-resize;
+    z-index: 20;
+    touch-action: none;
+}
+
+.sidebar-resizer:hover,
+body.sidebar-resizing .sidebar-resizer {
+    background: var(--accent);
+    opacity: 0.45;
+}
+
+.sidebar.collapsed .sidebar-resizer {
+    display: none;
+}
+
+body.sidebar-resizing {
+    cursor: col-resize;
+    user-select: none;
+}
+
+body.sidebar-resizing .sidebar {
+    transition: none;
+}
+
+/* 侧边栏气泡 title（挂 body） */
+.sb-tip {
+    position: fixed;
+    z-index: 9999;
+    max-width: 240px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--text);
+    background: var(--bg-card2);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow);
+    pointer-events: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.12s ease, transform 0.12s ease;
+}
+
+.sb-tip.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.sb-tip.sb-tip-left {
+    transform: translateX(4px);
+}
+
+.sb-tip.sb-tip-left.visible {
+    transform: translateX(0);
 }
 
 .sidebar-header {
@@ -1250,6 +1319,7 @@
     transition: var(--transition);
     user-select: none;
     border-left: 2px solid transparent;
+    min-width: 0;
 }
 
 .sb-cat-header:hover {
@@ -1273,6 +1343,7 @@
 
 .sb-cat-name {
     flex: 1;
+    min-width: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1339,9 +1410,17 @@
     align-items: center;
     gap: 6px;
     transition: var(--transition);
+    min-width: 0;
+    overflow: hidden;
+}
+
+.sb-tool-name {
+    flex: 1;
+    min-width: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    transition: opacity 0.2s;
 }
 
 .sb-tool:hover {
