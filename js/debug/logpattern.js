@@ -223,47 +223,236 @@ function logpatternListWords() {
 
 // === UI ===
 
-function logpatternParse() {
-    const input = document.getElementById('logpatternInput').value;
-    const out = document.getElementById('logpatternOutput');
-    if (!input.trim()) {
-        out.textContent = '请输入 pattern 字符串';
-        out.className = 'output-box error';
-        return;
-    }
-    const tokens = parseLogPattern(input);
+function logpatternEsc(s) {
+    if (typeof escapeHtml === 'function') return escapeHtml(s);
+    return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function logpatternEmptyHtml() {
+    return (
+        '<div class="lp-empty">' +
+        '<i class="bi bi-file-earmark-code"></i>' +
+        '<p>输入 Pattern 后点击「解析」</p>' +
+        '<span>将拆解 conversion word、修饰符与字面量</span>' +
+        '</div>'
+    );
+}
+
+function logpatternErrorHtml(msg) {
+    return (
+        '<div class="lp-error">' +
+        '<i class="bi bi-exclamation-triangle"></i>' +
+        '<span>' +
+        logpatternEsc(msg) +
+        '</span></div>'
+    );
+}
+
+/**
+ * 将解析 token 格式化为纯文本（复制用）
+ * @param {Array} tokens
+ * @returns {string}
+ */
+function logpatternResultText(tokens) {
     const lines = [];
     lines.push('共 ' + tokens.length + ' 个 token：');
     lines.push('');
     tokens.forEach(function (t, idx) {
         if (t.type === 'literal') {
-            lines.push((idx + 1) + '. [字面量] ' + JSON.stringify(t.literal));
+            lines.push(idx + 1 + '. [字面量] ' + JSON.stringify(t.literal));
         } else {
-            lines.push((idx + 1) + '. [转换] ' + t.raw);
+            lines.push(idx + 1 + '. [转换] ' + t.raw);
             lines.push('   word : %' + t.word);
             lines.push('   名称 : ' + t.name);
             lines.push('   说明 : ' + t.desc);
             if (t.options) lines.push('   修饰 : ' + t.options);
             if (t.format) lines.push('   参数 : ' + t.format);
             if (t.nested && t.nested.length) {
-                lines.push('   嵌套 : ' + t.nested.map(function (n) {
-                    return n.type === 'conversion' ? n.raw : JSON.stringify(n.literal || '');
-                }).join(' '));
+                lines.push(
+                    '   嵌套 : ' +
+                        t.nested
+                            .map(function (n) {
+                                return n.type === 'conversion' ? n.raw : JSON.stringify(n.literal || '');
+                            })
+                            .join(' ')
+                );
             }
         }
     });
-    out.textContent = lines.join('\n');
-    out.className = 'output-box';
-    if (typeof setStatus === 'function') setStatus('Pattern 解析完成');
+    return lines.join('\n');
+}
+
+/**
+ * 渲染单个 token 卡片
+ * @param {object} t
+ * @param {number} idx
+ * @returns {string}
+ */
+function logpatternTokenHtml(t, idx) {
+    if (t.type === 'literal') {
+        return (
+            '<div class="lp-token">' +
+            '<div class="lp-token-head">' +
+            '<span class="lp-token-idx">' +
+            (idx + 1) +
+            '</span>' +
+            '<span class="lp-token-type lit">字面量</span>' +
+            '<span class="lp-token-raw">' +
+            logpatternEsc(JSON.stringify(t.literal)) +
+            '</span>' +
+            '</div></div>'
+        );
+    }
+    var meta = '';
+    meta +=
+        '<dt>word</dt><dd><code>%' +
+        logpatternEsc(t.word) +
+        '</code></dd>' +
+        '<dt>名称</dt><dd>' +
+        logpatternEsc(t.name) +
+        '</dd>' +
+        '<dt>说明</dt><dd>' +
+        logpatternEsc(t.desc) +
+        '</dd>';
+    if (t.options) {
+        meta += '<dt>修饰</dt><dd><code>' + logpatternEsc(t.options) + '</code></dd>';
+    }
+    if (t.format) {
+        meta += '<dt>参数</dt><dd><code>' + logpatternEsc(t.format) + '</code></dd>';
+    }
+    var nested = '';
+    if (t.nested && t.nested.length) {
+        nested =
+            '<div class="lp-nested">' +
+            '<div class="lp-nested-title">嵌套</div>' +
+            logpatternEsc(
+                t.nested
+                    .map(function (n) {
+                        return n.type === 'conversion' ? n.raw : JSON.stringify(n.literal || '');
+                    })
+                    .join(' ')
+            ) +
+            '</div>';
+    }
+    return (
+        '<div class="lp-token">' +
+        '<div class="lp-token-head">' +
+        '<span class="lp-token-idx">' +
+        (idx + 1) +
+        '</span>' +
+        '<span class="lp-token-type conv">转换</span>' +
+        '<span class="lp-token-raw">' +
+        logpatternEsc(t.raw) +
+        '</span>' +
+        '</div>' +
+        '<dl class="lp-token-meta">' +
+        meta +
+        '</dl>' +
+        nested +
+        '</div>'
+    );
+}
+
+/**
+ * 渲染解析结果 HTML
+ * @param {Array} tokens
+ * @returns {string}
+ */
+function logpatternResultHtml(tokens) {
+    var conv = 0;
+    var lit = 0;
+    tokens.forEach(function (t) {
+        if (t.type === 'conversion') conv++;
+        else lit++;
+    });
+    var cards = tokens
+        .map(function (t, idx) {
+            return logpatternTokenHtml(t, idx);
+        })
+        .join('');
+    return (
+        '<div class="lp-summary">' +
+        '<span class="lp-chip">共 <strong>' +
+        tokens.length +
+        '</strong> token</span>' +
+        '<span class="lp-chip lp-chip-conv">转换 <strong>' +
+        conv +
+        '</strong></span>' +
+        '<span class="lp-chip lp-chip-lit">字面量 <strong>' +
+        lit +
+        '</strong></span>' +
+        '</div>' +
+        '<div class="lp-tokens-scroll">' +
+        '<div class="lp-tokens">' +
+        cards +
+        '</div></div>'
+    );
+}
+
+function logpatternSetCopyVisible(show) {
+    var btn = document.getElementById('lpCopyBtn');
+    if (btn) btn.style.display = show ? '' : 'none';
+}
+
+function logpatternParse() {
+    var inputEl = document.getElementById('logpatternInput');
+    var out = document.getElementById('logpatternOutput');
+    var textEl = document.getElementById('logpatternResultText');
+    if (!out) return;
+    var input = inputEl ? inputEl.value : '';
+    if (!String(input).trim()) {
+        out.innerHTML = logpatternErrorHtml('请输入 pattern 字符串');
+        if (textEl) textEl.textContent = '';
+        logpatternSetCopyVisible(false);
+        return;
+    }
+    var tokens = parseLogPattern(input);
+    out.innerHTML = logpatternResultHtml(tokens);
+    if (textEl) textEl.textContent = logpatternResultText(tokens);
+    logpatternSetCopyVisible(true);
+    if (typeof setStatus === 'function') setStatus('Pattern 解析完成 · ' + tokens.length + ' token');
+}
+
+function logpatternCopy() {
+    var textEl = document.getElementById('logpatternResultText');
+    var text = textEl && textEl.textContent;
+    if (!text) {
+        if (typeof toast === 'function') toast('暂无可复制结果');
+        return;
+    }
+    if (typeof safeCopy === 'function') {
+        safeCopy(text);
+        return;
+    }
+    if (typeof copyText === 'function') {
+        copyText('logpatternResultText');
+    }
 }
 
 function logpatternApplyTemplate(id) {
-    const tpl = LOG_PATTERN_TEMPLATES.find(function (t) {
+    var tpl = LOG_PATTERN_TEMPLATES.find(function (t) {
         return t.id === id;
     });
     if (!tpl) return;
-    document.getElementById('logpatternInput').value = tpl.pattern;
+    var input = document.getElementById('logpatternInput');
+    if (input) input.value = tpl.pattern;
+    logpatternHighlightTemplate(id);
     logpatternParse();
+}
+
+function logpatternHighlightTemplate(id) {
+    var el = document.getElementById('logpatternTemplates');
+    if (!el) return;
+    var buttons = el.querySelectorAll('.lp-tpl-btn');
+    for (var i = 0; i < buttons.length; i++) {
+        var btn = buttons[i];
+        if (btn.getAttribute('data-id') === id) btn.classList.add('active');
+        else btn.classList.remove('active');
+    }
 }
 
 function logpatternLoadSample() {
@@ -271,50 +460,61 @@ function logpatternLoadSample() {
 }
 
 function logpatternClear() {
-    document.getElementById('logpatternInput').value = '';
-    document.getElementById('logpatternOutput').textContent = '';
-    document.getElementById('logpatternOutput').className = 'output-box';
+    var input = document.getElementById('logpatternInput');
+    var out = document.getElementById('logpatternOutput');
+    var textEl = document.getElementById('logpatternResultText');
+    if (input) input.value = '';
+    if (out) out.innerHTML = logpatternEmptyHtml();
+    if (textEl) textEl.textContent = '';
+    logpatternSetCopyVisible(false);
+    logpatternHighlightTemplate('');
     if (typeof setStatus === 'function') setStatus('已清空');
 }
 
 function logpatternRenderTemplates() {
-    const el = document.getElementById('logpatternTemplates');
+    var el = document.getElementById('logpatternTemplates');
     if (!el) return;
     el.innerHTML = LOG_PATTERN_TEMPLATES.map(function (t) {
         return (
-            '<button class="outline" style="margin:2px" onclick="logpatternApplyTemplate(\'' +
+            '<button type="button" class="outline lp-tpl-btn" data-id="' +
+            logpatternEsc(t.id) +
+            '" onclick="logpatternApplyTemplate(\'' +
             t.id +
             '\')" title="' +
-            (typeof escapeHtml === 'function' ? escapeHtml(t.desc) : t.desc) +
+            logpatternEsc(t.desc) +
             '">' +
-            t.name +
+            logpatternEsc(t.name) +
             '</button>'
         );
     }).join('');
 }
 
 function logpatternRenderWordTable() {
-    const el = document.getElementById('logpatternWords');
+    var el = document.getElementById('logpatternWords');
+    var countEl = document.getElementById('logpatternWordsCount');
     if (!el) return;
-    const list = logpatternListWords();
-    const rows = list
+    var list = logpatternListWords();
+    if (countEl) countEl.textContent = list.length + ' 项';
+    var rows = list
         .map(function (w) {
             return (
-                '<tr><td style="padding:4px 8px;border-bottom:1px solid var(--border)"><code>' +
-                w.word +
-                '</code></td><td style="padding:4px 8px;border-bottom:1px solid var(--border)">' +
-                w.name +
-                '</td><td style="padding:4px 8px;border-bottom:1px solid var(--border);color:var(--text-dim)">' +
-                w.desc +
-                '</td></tr>'
+                '<tr>' +
+                '<td><code>' +
+                logpatternEsc(w.word) +
+                '</code></td>' +
+                '<td class="lp-word-name">' +
+                logpatternEsc(w.name) +
+                '</td>' +
+                '<td>' +
+                logpatternEsc(w.desc) +
+                '</td>' +
+                '</tr>'
             );
         })
         .join('');
     el.innerHTML =
-        '<table style="width:100%;font-size:12px;border-collapse:collapse"><thead><tr>' +
-        '<th style="text-align:left;padding:4px 8px">Word</th>' +
-        '<th style="text-align:left;padding:4px 8px">名称</th>' +
-        '<th style="text-align:left;padding:4px 8px">说明</th>' +
+        '<table class="lp-words-table"><thead><tr>' +
+        '<th>Word</th><th>名称</th><th>说明</th>' +
         '</tr></thead><tbody>' +
         rows +
         '</tbody></table>';

@@ -1,37 +1,60 @@
 <div class="tool-panel" id="panel-logpattern">
-    <div class="toolbar" style="flex-wrap:wrap">
-        <button onclick="logpatternParse()">解析 Pattern</button>
-        <button class="outline" onclick="logpatternLoadSample()">示例</button>
-        <button class="outline" onclick="logpatternClear()">清空</button>
-    </div>
+    <div class="lp-layout">
+        <div class="lp-left">
+            <section class="lp-card">
+                <div class="lp-card-head">
+                    <i class="bi bi-braces"></i>
+                    <span>Pattern 输入</span>
+                </div>
+                <div class="lp-templates" id="logpatternTemplates"></div>
+                <label class="label" for="logpatternInput">Pattern 字符串（Logback / Log4j）</label>
+                <textarea class="json-input lp-input" id="logpatternInput"
+                          placeholder="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"></textarea>
+                <div class="toolbar lp-actions">
+                    <button onclick="logpatternParse()" type="button"><i class="bi bi-play-fill"></i> 解析</button>
+                    <button class="outline" onclick="logpatternLoadSample()" type="button">示例</button>
+                    <button class="outline" onclick="logpatternClear()" type="button">清空</button>
+                </div>
+            </section>
 
-    <div class="mb-8">
-        <div class="label">常用模板</div>
-        <div class="flex gap-6" id="logpatternTemplates" style="flex-wrap:wrap"></div>
-    </div>
+            <section class="lp-card lp-words-card">
+                <div class="lp-card-head">
+                    <i class="bi bi-book"></i>
+                    <span>Conversion Word 速查</span>
+                    <span class="lp-words-count" id="logpatternWordsCount"></span>
+                </div>
+                <div class="lp-words-wrap" id="logpatternWords"></div>
+            </section>
+        </div>
 
-    <div class="mb-8">
-        <div class="label">Pattern 字符串（Logback / Log4j）</div>
-        <textarea class="json-input" id="logpatternInput" placeholder="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n" style="min-height:80px"></textarea>
-    </div>
+        <div class="lp-right">
+            <section class="lp-card lp-result">
+                <div class="lp-card-head">
+                    <i class="bi bi-list-check"></i>
+                    <span>解析结果</span>
+                    <button class="copy-btn lp-copy" id="lpCopyBtn" onclick="logpatternCopy()" type="button" style="display:none">复制</button>
+                </div>
+                <div id="logpatternOutput" class="lp-output">
+                    <div class="lp-empty">
+                        <i class="bi bi-file-earmark-code"></i>
+                        <p>输入 Pattern 后点击「解析」</p>
+                        <span>将拆解 conversion word、修饰符与字面量</span>
+                    </div>
+                </div>
+                <div id="logpatternResultText" class="lp-result-text" hidden></div>
+            </section>
 
-    <div class="copy-wrap">
-        <div class="label">解析结果</div>
-        <button class="copy-btn" onclick="copyText('logpatternOutput')">复制</button>
-        <div class="output-box" id="logpatternOutput" style="min-height:140px"></div>
-    </div>
-
-    <div style="margin-top:16px">
-        <div class="label">Conversion Word 速查</div>
-        <div id="logpatternWords" style="max-height:320px;overflow:auto;margin-top:6px"></div>
-    </div>
-
-    <div style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
-        <strong>说明：</strong>
-        <ul style="margin:4px 0 0 16px">
-            <li>支持修饰符如 <code>%-5level</code>、<code>%logger{36}</code>、<code>%d{...}</code></li>
-            <li>支持复合转换 <code>%highlight(...)</code>、<code>%cyan(...)</code></li>
-            <li><code>%%</code> 表示字面量百分号</li>
-        </ul>
+            <section class="lp-card lp-notes">
+                <div class="lp-card-head">
+                    <i class="bi bi-info-circle"></i>
+                    <span>说明</span>
+                </div>
+                <ul class="lp-notes-list">
+                    <li>支持修饰符如 <code>%-5level</code>、<code>%logger{36}</code>、<code>%d{...}</code></li>
+                    <li>支持复合转换 <code>%highlight(...)</code>、<code>%cyan(...)</code></li>
+                    <li><code>%%</code> 表示字面量百分号</li>
+                </ul>
+            </section>
+        </div>
     </div>
 </div>

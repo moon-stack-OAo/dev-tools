@@ -1,6 +1,7 @@
 const {
     poolCalcEstimate,
     poolCalcResultText,
+    poolCalcResultHtml,
     pcParseNumber,
 } = require('../../js/debug/poolcalc.js');
 
@@ -100,5 +101,29 @@ describe('poolCalcResultText', () => {
 
     test('失败输出 msg', () => {
         expect(poolCalcResultText({ ok: false, msg: '请输入QPS' })).toBe('请输入QPS');
+    });
+});
+
+describe('poolCalcResultHtml', () => {
+    test('成功含指标卡片 class', () => {
+        const r = poolCalcEstimate({
+            qps: 50,
+            avgMs: 100,
+            cpuCores: 4,
+            blockingRatio: 2,
+            targetUtil: 0.7,
+            queueSeconds: 2,
+        });
+        const html = poolCalcResultHtml(r);
+        expect(html).toMatch(/pc-metrics/);
+        expect(html).toMatch(/pc-metric-core/);
+        expect(html).toMatch(/corePoolSize/);
+        expect(html).toMatch(/pc-detail/);
+    });
+
+    test('失败输出错误块', () => {
+        const html = poolCalcResultHtml({ ok: false, msg: '请输入QPS' });
+        expect(html).toMatch(/pc-error/);
+        expect(html).toMatch(/请输入QPS/);
     });
 });

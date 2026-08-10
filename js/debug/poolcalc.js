@@ -179,8 +179,102 @@ function poolCalcResultText(r) {
 }
 
 // === UI ===
+function poolcalcEmptyHtml() {
+    return (
+        '<div class="pc-empty">' +
+        '<i class="bi bi-cpu"></i>' +
+        '<p>填写参数后点击「估算」</p>' +
+        '<span>基于 Little\'s Law 与 CPU/IO 模型给出 core / max / queue 建议</span>' +
+        '</div>'
+    );
+}
+
+function poolcalcErrorHtml(msg) {
+    var safe =
+        typeof escapeHtml === 'function'
+            ? escapeHtml(msg || '估算失败')
+            : String(msg || '估算失败');
+    return (
+        '<div class="pc-error"><i class="bi bi-exclamation-triangle"></i><span>' +
+        safe +
+        '</span></div>'
+    );
+}
+
+/**
+ * 将估算结果渲染为指标卡片 + 说明
+ * @param {object} r poolCalcEstimate 成功结果
+ * @returns {string}
+ */
+function poolCalcResultHtml(r) {
+    if (!r || !r.ok) {
+        return poolcalcErrorHtml((r && r.msg) || '估算失败');
+    }
+    var esc =
+        typeof escapeHtml === 'function'
+            ? escapeHtml
+            : function (s) {
+                  return String(s == null ? '' : s);
+              };
+    var notes = (r.notes || [])
+        .map(function (n) {
+            return '<li>' + esc(n) + '</li>';
+        })
+        .join('');
+    return (
+        '<div class="pc-metrics">' +
+        '<div class="pc-metric pc-metric-core">' +
+        '<div class="pc-metric-val">' +
+        esc(String(r.coreSize)) +
+        '</div>' +
+        '<div class="pc-metric-label">corePoolSize</div>' +
+        '<div class="pc-metric-sub">核心线程数</div>' +
+        '</div>' +
+        '<div class="pc-metric pc-metric-max">' +
+        '<div class="pc-metric-val">' +
+        esc(String(r.maxSize)) +
+        '</div>' +
+        '<div class="pc-metric-label">maxPoolSize</div>' +
+        '<div class="pc-metric-sub">最大线程数</div>' +
+        '</div>' +
+        '<div class="pc-metric pc-metric-queue">' +
+        '<div class="pc-metric-val">' +
+        esc(String(r.queueCapacity)) +
+        '</div>' +
+        '<div class="pc-metric-label">queueCapacity</div>' +
+        '<div class="pc-metric-sub">队列容量</div>' +
+        '</div>' +
+        '<div class="pc-metric pc-metric-conc">' +
+        '<div class="pc-metric-val">' +
+        esc(String(r.concurrency)) +
+        '</div>' +
+        '<div class="pc-metric-label">concurrency</div>' +
+        '<div class="pc-metric-sub">理论并发</div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="pc-detail">' +
+        '<div class="pc-detail-title">公式</div>' +
+        '<pre>' +
+        esc(r.formula || '') +
+        '</pre>' +
+        '</div>' +
+        '<div class="pc-detail">' +
+        '<div class="pc-detail-title">计算说明</div>' +
+        '<ol>' +
+        notes +
+        '</ol>' +
+        '</div>'
+    );
+}
+
+function poolcalcSetCopyVisible(show) {
+    var btn = document.getElementById('pcCopyBtn');
+    if (btn) btn.style.display = show ? '' : 'none';
+}
+
 function poolcalcEstimate() {
     var out = document.getElementById('pcOutput');
+    var textEl = document.getElementById('pcResultText');
     if (!out) return;
     var input = {
         qps: document.getElementById('pcQps') && document.getElementById('pcQps').value,
@@ -192,15 +286,33 @@ function poolcalcEstimate() {
     };
     var r = poolCalcEstimate(input);
     if (!r.ok) {
-        out.textContent = r.msg || '估算失败';
-        out.className = 'output-box error';
+        out.innerHTML = poolcalcErrorHtml(r.msg || '估算失败');
+        if (textEl) textEl.textContent = '';
+        poolcalcSetCopyVisible(false);
         if (typeof setStatus === 'function') setStatus(r.msg || '估算失败');
         return;
     }
-    out.textContent = poolCalcResultText(r);
-    out.className = 'output-box';
+    out.innerHTML = poolCalcResultHtml(r);
+    if (textEl) textEl.textContent = poolCalcResultText(r);
+    poolcalcSetCopyVisible(true);
     if (typeof setStatus === 'function') {
         setStatus('推荐 core=' + r.coreSize + ' max=' + r.maxSize + ' queue=' + r.queueCapacity);
+    }
+}
+
+function poolcalcCopy() {
+    var textEl = document.getElementById('pcResultText');
+    var text = textEl && textEl.textContent;
+    if (!text) {
+        if (typeof toast === 'function') toast('暂无可复制结果');
+        return;
+    }
+    if (typeof safeCopy === 'function') {
+        safeCopy(text);
+        return;
+    }
+    if (typeof copyText === 'function') {
+        copyText('pcResultText');
     }
 }
 
@@ -218,10 +330,10 @@ function poolcalcClear() {
         if (el) el.value = defaults[id];
     });
     var out = document.getElementById('pcOutput');
-    if (out) {
-        out.textContent = '填写参数后点击「估算」';
-        out.className = 'output-box';
-    }
+    if (out) out.innerHTML = poolcalcEmptyHtml();
+    var textEl = document.getElementById('pcResultText');
+    if (textEl) textEl.textContent = '';
+    poolcalcSetCopyVisible(false);
     if (typeof setStatus === 'function') setStatus('已清空');
 }
 
@@ -245,6 +357,7 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         poolCalcEstimate: poolCalcEstimate,
         poolCalcResultText: poolCalcResultText,
+        poolCalcResultHtml: poolCalcResultHtml,
         pcParseNumber: pcParseNumber,
     };
 }
