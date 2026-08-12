@@ -533,7 +533,7 @@ function showHome() {
     domCache.breadcrumb.innerHTML = "";
     clearSidebarHighlight();
     try {
-        document.title = "CodeCasket · 码匣 — 纯前端开发者工具箱";
+        document.title = "CodeDeck · 码台 — 纯前端开发者工具箱";
     } catch (e) {
         /* ignore */
     }

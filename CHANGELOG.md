@@ -17,7 +17,7 @@
 
 ### 变更
 
-- **产品更名**：**CodeCasket（码匣）**（原「开发者工具箱」/ DevTools 展示名）
+- **产品更名**：**CodeDeck（码台）**（原 CodeCasket / 码匣；更早为「开发者工具箱」）
 - **SEO**：完善 description/OG/Twitter/canonical、JSON-LD、`robots.txt` / `sitemap.xml` / `site.webmanifest`；打开工具时更新 `document.title`
 - **产品定位**：Java 开发工具箱 → 开发者工具箱；首页受众筛选扩展为全部/通用/前端/后端/Java（多标签）
 - 工具总数 **156 → 158**

@@ -1,4 +1,4 @@
-# CodeCasket 一键更新部署说明
+# CodeDeck 一键更新部署说明
 
 本文说明如何在自建环境中部署静态站点、Docker、更新 Agent、Nginx 反代与 systemd 服务，使运维可通过 `ops-update.html` 触发一键更新。
 
@@ -211,7 +211,7 @@ sudo systemctl reload nginx
 
 ```ini
 [Unit]
-Description=CodeCasket Update Agent
+Description=CodeDeck Update Agent
 After=network.target
 
 [Service]
@@ -276,7 +276,7 @@ openssl rand -hex 32
 
 ## 7. 验收清单
 
-- [ ] `dist/ops-update.html` 可访问，标题为「CodeCasket 更新管理」
+- [ ] `dist/ops-update.html` 可访问，标题为「CodeDeck 更新管理」
 - [ ] `version.json` 字段完整且随发布更新
 - [ ] `/api/status` 在 Agent 停掉时页面提示「Agent 未连接或未配置反代」
 - [ ] 错误 Token 返回 401/403，正确 Token 可触发更新

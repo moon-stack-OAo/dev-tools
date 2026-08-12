@@ -1,6 +1,6 @@
 {
-  "name": "CodeCasket · 码匣",
-  "short_name": "码匣",
+  "name": "CodeDeck · 码台",
+  "short_name": "码台",
   "description": "纯前端开发者工具箱，100% 本地处理，含 Java 深度工具。",
   "start_url": "./",
   "display": "standalone",

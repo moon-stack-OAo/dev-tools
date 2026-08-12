@@ -1,4 +1,4 @@
-# CodeCasket（码匣）
+# CodeDeck（码台）
 User-agent: *
 Allow: /
 
