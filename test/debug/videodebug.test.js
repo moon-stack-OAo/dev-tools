@@ -14,6 +14,7 @@ const {
     vdResolveUrl,
     vdParseM3u,
     vdIsChannelPlaylist,
+    vdProxyUrl,
 } = require('../../js/debug/videodebug.js');
 
 describe('vdFormatDuration', () => {
@@ -267,5 +268,11 @@ segment1.ts
         const parsed = vdParseM3u(HLS_MEDIA, 'https://cdn.example/stream.m3u8');
         expect(parsed.items.length).toBeGreaterThanOrEqual(1);
         expect(vdIsChannelPlaylist(parsed, HLS_MEDIA)).toBe(false);
+    });
+
+    test('vdProxyUrl', () => {
+        expect(vdProxyUrl('https://a.com/x.m3u')).toBe(
+            '/__cors_proxy?target=' + encodeURIComponent('https://a.com/x.m3u')
+        );
     });
 });

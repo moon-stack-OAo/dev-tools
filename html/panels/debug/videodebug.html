@@ -16,7 +16,7 @@
                 <span class="vd-head-extra" id="vdChannelBadge" hidden></span>
             </div>
             <div class="vd-stage">
-                <video id="vdPlayer" controls playsinline preload="metadata" crossorigin="anonymous"></video>
+                <video id="vdPlayer" controls playsinline preload="metadata"></video>
             </div>
             <div class="vd-transport">
                 <button onclick="vdTogglePlay()" type="button"><i class="bi bi-play-fill"></i> 播放/暂停</button>
@@ -81,6 +81,6 @@
     </div>
 
     <div class="vd-hint">
-        纯前端本地处理 · 支持直链 / 本地文件 / M3U 频道列表 / HLS（hls.js）· 跨域可能无法截帧或拉流 · Object URL 重置时释放
+        纯前端本地处理 · 支持直链 / 本地文件 / M3U / HLS · 跨域 MP4 默认可直接播放（不强制 CORS）· 有 /__cors_proxy 时列表/HLS/截帧更稳
     </div>
 </div>

@@ -425,7 +425,7 @@ npm run test:watch # 监听模式
 #### Docker（推荐生产环境）
 
 - **多阶段构建**：`node:20-alpine` 构建 → 运行镜像内 **nginx 静态托管 + Node CORS 代理**
-- HTTP 调试「通过本地代理」在生产可用：nginx 将 `/__cors_proxy` 反代到本机 `127.0.0.1:3927`
+- HTTP / 视频调试跨域：须部署同源代理。Docker 镜像已内置；**纯静态 dist** 需宿主机跑 `npm run cors-proxy` 且 Nginx 反代 `/__cors_proxy`（见 `nginx-cors-proxy.conf.example`）。当前若访问 `/__cors_proxy` 返回整页 HTML，说明代理未挂上
 - 镜像可缓存，适合 CI/CD
 
 #### Nginx（自有服务器）

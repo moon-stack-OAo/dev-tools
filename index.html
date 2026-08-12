@@ -36,7 +36,8 @@
           name="twitter:description">
     <meta content="https://tools.livancen.top/favicon.svg" name="twitter:image">
     <!-- CSP：务实策略，兼容 jsrun(new Function)、内联 ASSET_MAP、pyodide(worker/blob/wasm)、懒加载与调试工具外连 -->
-    <meta content="default-src 'self'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https: http: ws: wss: blob:; worker-src 'self' blob:; child-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'"
+    <!-- media-src 须单独放宽：否则跨域 <video src=https://...> 会被 default-src 'self' 拦截（MEDIA_ERR_SRC_NOT_SUPPORTED） -->
+    <meta content="default-src 'self'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval' 'unsafe-inline' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; media-src 'self' https: http: blob: data:; connect-src 'self' https: http: ws: wss: blob:; worker-src 'self' blob:; child-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'"
           http-equiv="Content-Security-Policy">
     <link href="favicon.svg" rel="icon" type="image/svg+xml">
     <link href="favicon.svg" rel="apple-touch-icon">

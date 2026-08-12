@@ -11,6 +11,8 @@ var _vdChannels = []; // M3U 解析后的频道
 var _vdChannelIndex = -1;
 var _vdPlayMode = ''; // direct | hls | playlist
 var _vdActiveUrl = '';
+var _vdProxyAvailable = null; // null=未探测；true/false
+var _vdUseProxy = false; // 当前加载是否走同源 CORS 代理
 
 /**
  * 格式化时长
@@ -466,6 +468,7 @@ function vdClearMediaSource() {
     }
     _vdActiveUrl = '';
     _vdPlayMode = '';
+    _vdUseProxy = false;
 }
 
 function vdStatusClass(kind) {
@@ -685,6 +688,35 @@ function vdSetChannelBadge(title) {
 }
 
 /**
+ * hls.js Loader：在 load 前把跨源 URL 改写为同源代理
+ * @returns {Function|undefined} Loader 构造函数
+ */
+function vdCreateProxiedHlsLoader() {
+    if (typeof Hls === 'undefined' || !Hls.DefaultConfig || !Hls.DefaultConfig.loader) {
+        return undefined;
+    }
+    var BaseLoader = Hls.DefaultConfig.loader;
+    function ProxiedLoader(config) {
+        var loader = new BaseLoader(config);
+        var origLoad = loader.load.bind(loader);
+        loader.load = function (context, conf, callbacks) {
+            if (
+                context &&
+                context.url &&
+                _vdUseProxy &&
+                vdIsCrossOrigin(context.url)
+            ) {
+                context.url = vdProxyUrl(context.url);
+            }
+            return origLoad(context, conf, callbacks);
+        };
+        // 透传 abort/destroy
+        return loader;
+    }
+    return ProxiedLoader;
+}
+
+/**
  * 使用 hls.js 或原生 HLS 播放
  * @param {string} url
  * @param {HTMLVideoElement} video
@@ -693,15 +725,62 @@ function vdSetChannelBadge(title) {
 function vdAttachHls(url, video) {
     vdDestroyHls();
     if (typeof Hls !== 'undefined' && Hls.isSupported && Hls.isSupported()) {
-        var hls = new Hls({
+        var useProxy =
+            _vdUseProxy ||
+            (vdIsCrossOrigin(url) && _vdProxyAvailable === true);
+        if (useProxy) {
+            _vdUseProxy = true;
+            vdAddLog('info', 'HLS 经同源代理加载清单/分片');
+        }
+        var hlsOpts = {
             enableWorker: true,
             lowLatencyMode: false,
-        });
+        };
+        if (_vdUseProxy) {
+            var ProxiedLoader = vdCreateProxiedHlsLoader();
+            if (ProxiedLoader) {
+                hlsOpts.loader = ProxiedLoader;
+            }
+            hlsOpts.fetchSetup = function (context, initParams) {
+                if (context && context.url && vdIsCrossOrigin(context.url)) {
+                    context.url = vdProxyUrl(context.url);
+                }
+                return new Request(context.url, initParams || {});
+            };
+        }
+        var hls = new Hls(hlsOpts);
         _vdHls = hls;
         hls.on(Hls.Events.ERROR, function (event, data) {
             if (!data) return;
             var msg = (data.type || 'error') + ' ' + (data.details || '');
             if (data.fatal) {
+                // 网络错误且尚未用代理：探测代理后重建
+                if (
+                    data.type === Hls.ErrorTypes.NETWORK_ERROR &&
+                    !_vdUseProxy &&
+                    vdIsCrossOrigin(url)
+                ) {
+                    vdAddLog('warn', 'HLS 网络错误，尝试同源代理…');
+                    vdProbeCorsProxy().then(function (ok) {
+                        if (!ok) {
+                            vdAddLog(
+                                'error',
+                                'HLS fatal: ' +
+                                    msg +
+                                    '（无 /__cors_proxy，跨域流无法播放）'
+                            );
+                            vdUpdateStatus('HLS 错误', 'disconnected');
+                            if (typeof toast === 'function') {
+                                toast('跨域流被拦截且无本地代理');
+                            }
+                            return;
+                        }
+                        _vdUseProxy = true;
+                        vdDestroyHls();
+                        vdAttachHls(url, video);
+                    });
+                    return;
+                }
                 vdAddLog('error', 'HLS fatal: ' + msg);
                 vdUpdateStatus('HLS 错误', 'disconnected');
                 if (typeof toast === 'function') toast('HLS 播放失败: ' + (data.details || data.type));
@@ -735,9 +814,11 @@ function vdAttachHls(url, video) {
         _vdActiveUrl = url;
         return true;
     }
-    // Safari 等原生 HLS
+    // Safari 等原生 HLS（无法注入代理改写，跨域仍可能失败）
     if (video.canPlayType && video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = url;
+        var nativeSrc =
+            _vdUseProxy && vdIsCrossOrigin(url) ? vdProxyUrl(url) : url;
+        video.src = nativeSrc;
         video.load();
         _vdPlayMode = 'hls-native';
         _vdActiveUrl = url;
@@ -751,6 +832,36 @@ function vdAttachHls(url, video) {
  * @param {string} url
  * @param {{ forceHls?: boolean }} [opts]
  */
+/**
+ * 设置 video 的 CORS 模式：
+ * - 跨域直链不要设 crossorigin（否则源站无 ACAO 时连播放都会失败，如多数演示 MP4）
+ * - 同源 / blob / 经代理的 URL 可设 anonymous，便于截帧
+ * @param {HTMLVideoElement} video
+ * @param {string} srcUrl 实际赋给 video.src 的地址
+ */
+function vdApplyVideoCorsMode(video, srcUrl) {
+    if (!video) return;
+    var same =
+        !srcUrl ||
+        /^blob:|^data:/i.test(srcUrl) ||
+        !vdIsCrossOrigin(srcUrl) ||
+        (srcUrl.indexOf('/__cors_proxy') === 0);
+    if (same) {
+        video.crossOrigin = 'anonymous';
+    } else {
+        try {
+            video.removeAttribute('crossorigin');
+        } catch (e) {
+            /* ignore */
+        }
+        try {
+            video.crossOrigin = null;
+        } catch (err) {
+            /* ignore */
+        }
+    }
+}
+
 function vdPlayMediaUrl(url, opts) {
     opts = opts || {};
     var video = document.getElementById('vdPlayer');
@@ -778,8 +889,20 @@ function vdPlayMediaUrl(url, opts) {
         vdAddLog('warn', '当前环境无 hls.js 且不支持原生 HLS，尝试直链');
     }
 
-    // 直链 / 尝试原生
-    video.src = url;
+    // 直链：有同源代理时优先走代理（可播放 + 可截帧）；否则裸 src（仅播放，跨域截帧会失败）
+    var playUrl = url;
+    if (
+        vdIsCrossOrigin(url) &&
+        (_vdUseProxy || _vdProxyAvailable === true) &&
+        !/^blob:|^data:/i.test(url)
+    ) {
+        playUrl = vdProxyUrl(url);
+        _vdUseProxy = true;
+        vdAddLog('info', '直链经同源代理加载（便于跨域与截帧）');
+    }
+
+    vdApplyVideoCorsMode(video, playUrl);
+    video.src = playUrl;
     video.load();
     _vdPlayMode = 'direct';
     _vdActiveUrl = url;
@@ -857,23 +980,117 @@ function vdApplyPlaylistText(text, baseUrl, label) {
 }
 
 /**
- * fetch 文本（失败返回 null）
+ * 同源 CORS 代理 URL（与 httpdebug 一致）
+ * @param {string} url
+ * @returns {string}
+ */
+function vdProxyUrl(url) {
+    return '/__cors_proxy?target=' + encodeURIComponent(url);
+}
+
+/**
+ * 是否应视为跨源（需代理候选）
+ * @param {string} url
+ * @returns {boolean}
+ */
+function vdIsCrossOrigin(url) {
+    try {
+        if (typeof location === 'undefined' || !url) return true;
+        if (/^blob:|^data:/i.test(url)) return false;
+        var u = new URL(url, location.href);
+        return u.origin !== location.origin;
+    } catch (e) {
+        return true;
+    }
+}
+
+/**
+ * 探测 /__cors_proxy 是否可用
+ * @returns {Promise<boolean>}
+ */
+function vdProbeCorsProxy() {
+    if (_vdProxyAvailable !== null) return Promise.resolve(_vdProxyAvailable);
+    return fetch('/__cors_proxy', { method: 'GET', cache: 'no-store' })
+        .then(function (resp) {
+            var by = (resp.headers.get('x-proxied-by') || '').toLowerCase();
+            if (by.indexOf('dev-tools-cors-proxy') >= 0) {
+                _vdProxyAvailable = true;
+                return true;
+            }
+            var ct = (resp.headers.get('content-type') || '').toLowerCase();
+            // 静态站 SPA 回退 index.html → 代理未部署
+            if (ct.indexOf('text/html') >= 0) {
+                _vdProxyAvailable = false;
+                return false;
+            }
+            if (resp.status === 400) {
+                return resp.text().then(function (t) {
+                    _vdProxyAvailable =
+                        typeof t === 'string' &&
+                        /Missing target/i.test(t) &&
+                        ct.indexOf('text/html') < 0;
+                    return _vdProxyAvailable;
+                });
+            }
+            _vdProxyAvailable = false;
+            return false;
+        })
+        .catch(function () {
+            _vdProxyAvailable = false;
+            return false;
+        });
+}
+
+/**
+ * fetch 文本：直连失败时自动经同源代理重试（绕过 CORS）
  * @param {string} url
  * @returns {Promise<string|null>}
  */
 function vdFetchText(url) {
-    return fetch(url, { credentials: 'omit', mode: 'cors' })
-        .then(function (res) {
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            return res.text();
-        })
-        .catch(function (err) {
-            vdAddLog(
-                'error',
-                '拉取失败: ' + (err && err.message ? err.message : err)
-            );
+    function doFetch(reqUrl, viaProxy) {
+        return fetch(reqUrl, { credentials: 'omit', mode: 'cors', cache: 'no-store' }).then(
+            function (res) {
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                return res.text().then(function (text) {
+                    if (viaProxy) {
+                        _vdUseProxy = true;
+                        vdAddLog('info', '已通过同源代理拉取（绕过 CORS）');
+                    }
+                    return text;
+                });
+            }
+        );
+    }
+
+    return doFetch(url, false).catch(function (err) {
+        var msg = err && err.message ? err.message : String(err);
+        vdAddLog('warn', '直连拉取失败: ' + msg);
+        if (!vdIsCrossOrigin(url)) {
+            vdAddLog('error', '拉取失败: ' + msg);
             return null;
+        }
+        return vdProbeCorsProxy().then(function (ok) {
+            if (!ok) {
+                vdAddLog(
+                    'error',
+                    '拉取失败（CORS）。当前无 /__cors_proxy：请用 Docker/Vite dev，或 npm run cors-proxy + nginx 反代'
+                );
+                if (typeof toast === 'function') {
+                    toast('跨域被拦截且无本地代理，无法拉取 M3U');
+                }
+                return null;
+            }
+            vdAddLog('info', '改用同源代理重试…');
+            return doFetch(vdProxyUrl(url), true).catch(function (err2) {
+                vdAddLog(
+                    'error',
+                    '代理拉取仍失败: ' +
+                        (err2 && err2.message ? err2.message : err2)
+                );
+                return null;
+            });
         });
+    });
 }
 
 function vdBindPlayerEvents(video) {
@@ -956,6 +1173,11 @@ function vdBindPlayerEvents(video) {
         var code = video.error ? video.error.code : '?';
         var m = video.error ? vdMediaErrorMessage(video.error.code) : '未知错误';
         vdUpdateStatus('错误', 'disconnected');
+        // code=4：跨域 + crossorigin、CSP media-src、或真不支持的格式
+        if (code === 4) {
+            m +=
+                '（排查：1) 去掉 crossorigin 后硬刷新 2) CSP 是否含 media-src https: 3) 链接是否可在新标签直接打开）';
+        }
         return 'error code=' + code + ' ' + m;
     });
 
@@ -985,48 +1207,60 @@ function vdLoadUrl() {
     if (shot) shot.innerHTML = '<div class="vd-shot-empty">点击截帧</div>';
 
     var hint = vdUrlPlaylistHint(url);
-    // .m3u 或疑似列表：先 fetch 文本解析
-    if (hint.isM3u || hint.isM3u8 || /\.m3u/i.test(url)) {
-        vdUpdateStatus('拉取列表…', 'connecting');
-        vdAddLog('info', '拉取: ' + url);
-        if (typeof setStatus === 'function') setStatus('正在拉取播放列表…');
-        vdFetchText(url).then(function (text) {
-            if (text == null) {
-                // fetch 失败：m3u8 仍尝试 hls 直连
-                if (hint.isM3u8) {
+
+    function afterProxyReady() {
+        // .m3u 或疑似列表：先 fetch 文本解析
+        if (hint.isM3u || hint.isM3u8 || /\.m3u/i.test(url)) {
+            vdUpdateStatus('拉取列表…', 'connecting');
+            vdAddLog('info', '拉取: ' + url);
+            if (typeof setStatus === 'function') setStatus('正在拉取播放列表…');
+            vdFetchText(url).then(function (text) {
+                if (text == null) {
+                    // fetch 失败：m3u8 仍尝试 hls（内部会再走代理）
+                    if (hint.isM3u8) {
+                        vdPlayMediaUrl(url, { forceHls: true });
+                        return;
+                    }
+                    if (typeof toast === 'function') {
+                        toast('无法拉取列表（CORS 或网络错误）');
+                    }
+                    vdUpdateStatus('拉取失败', 'disconnected');
+                    return;
+                }
+                if (vdApplyPlaylistText(text, url, '远程')) {
+                    return;
+                }
+                if (vdLooksLikeHlsMediaPlaylist(text) || hint.isM3u8) {
                     vdPlayMediaUrl(url, { forceHls: true });
                     return;
                 }
-                if (typeof toast === 'function') {
-                    toast('无法拉取列表（CORS 或网络错误）');
-                }
-                vdUpdateStatus('拉取失败', 'disconnected');
-                return;
-            }
-            if (vdApplyPlaylistText(text, url, '远程')) {
-                return;
-            }
-            // 单流 HLS 清单
-            if (vdLooksLikeHlsMediaPlaylist(text) || hint.isM3u8) {
-                vdPlayMediaUrl(url, { forceHls: true });
-                return;
-            }
-            // 解析出 0 条或无法识别：尝试当媒体直链 / HLS
-            vdPlayMediaUrl(url, { forceHls: hint.isM3u8 });
-        });
-        return;
+                vdPlayMediaUrl(url, { forceHls: hint.isM3u8 });
+            });
+            return;
+        }
+
+        vdUpdateStatus('加载中…', 'connecting');
+        vdAddLog('info', '加载 URL: ' + url);
+        var forceHls = !/\.(mp4|webm|ogg|ogv|mov|mkv)(\?|$)/i.test(url);
+        // 跨源且代理可用：预启用，减少 HLS 首包失败
+        if (forceHls && vdIsCrossOrigin(url) && _vdProxyAvailable) {
+            _vdUseProxy = true;
+        }
+        if (forceHls && typeof Hls !== 'undefined' && Hls.isSupported && Hls.isSupported()) {
+            vdPlayMediaUrl(url, { forceHls: true });
+            return;
+        }
+        vdPlayMediaUrl(url, { forceHls: false });
     }
 
-    // 普通直链：仍可能是未带扩展名的 HLS，先尝试 fetch 探测
-    vdUpdateStatus('加载中…', 'connecting');
-    vdAddLog('info', '加载 URL: ' + url);
-    // 无扩展名的 IPTV 流：优先 HLS
-    var forceHls = !/\.(mp4|webm|ogg|ogv|mov|mkv)(\?|$)/i.test(url);
-    if (forceHls && typeof Hls !== 'undefined' && Hls.isSupported && Hls.isSupported()) {
-        vdPlayMediaUrl(url, { forceHls: true });
-        return;
+    // 跨源先探测代理，便于 M3U/HLS 一次成功
+    if (vdIsCrossOrigin(url)) {
+        vdProbeCorsProxy().then(function () {
+            afterProxyReady();
+        });
+    } else {
+        afterProxyReady();
     }
-    vdPlayMediaUrl(url, { forceHls: false });
 }
 
 function vdPickFile() {
@@ -1324,6 +1558,12 @@ function vdInit() {
 
     vdUpdateStatus('未加载', 'disconnected');
     vdRefreshInfo();
+    // 后台探测代理，不阻塞 UI
+    vdProbeCorsProxy().then(function (ok) {
+        if (ok) {
+            vdAddLog('info', '同源 CORS 代理可用（跨域 M3U/HLS 将自动走代理）');
+        }
+    });
 }
 
 if (typeof window !== 'undefined') {
@@ -1369,5 +1609,7 @@ if (typeof module !== 'undefined' && module.exports) {
         vdResolveUrl: vdResolveUrl,
         vdParseM3u: vdParseM3u,
         vdIsChannelPlaylist: vdIsChannelPlaylist,
+        vdProxyUrl: vdProxyUrl,
+        vdIsCrossOrigin: vdIsCrossOrigin,
     };
 }

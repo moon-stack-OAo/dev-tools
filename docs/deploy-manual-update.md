@@ -16,10 +16,15 @@
   │  POST /api/update           → Agent：触发更新（Header: X-Update-Token）
   │  GET  /api/update/log       → Agent：更新日志
   ▼
-Nginx（静态 + 反代 /api/*）
+Nginx（静态 + 反代）
   ├─ /               → dist 静态目录
-  └─ /api/           → 本机 Update Agent（默认 127.0.0.1:3930）
+  ├─ /api/           → 本机 Update Agent（默认 127.0.0.1:3930）
+  └─ /__cors_proxy   → 本机 CORS 代理（默认 127.0.0.1:3927，HTTP/视频调试必需）
 ```
+
+> **跨域说明**：浏览器无法直接请求第三方 API/M3U（CORS）。  
+> 生产若只解压 `dist` 而不反代 `/__cors_proxy`，HTTP 调试与视频调试会报跨域。  
+> 配置见仓库根目录 `nginx-cors-proxy.conf.example`，并运行 `npm run cors-proxy`（或 `node scripts/cors-proxy-server.js`）。
 
 页面入口（构建后位于站点根目录）：
 

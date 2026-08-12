@@ -984,10 +984,10 @@ function httpApplyProxy(url, useProxy) {
   return "/__cors_proxy?target=" + encodeURIComponent(url);
 }
 
-/** 探测 /__cors_proxy 是否可用（Vite dev 或 Docker 生产 Node 代理） */
+/** 探测 /__cors_proxy 是否可用（Vite dev 或 Docker / 静态站 Node 代理） */
 function httpProbeCorsProxy() {
   if (_httpProxyAvailable !== null) return Promise.resolve(_httpProxyAvailable);
-  // 故意缺 target → 有代理时返回 400「Missing target」+ x-proxied-by；无代理时 404/SPA/502
+  // 故意缺 target → 有代理时返回 400「Missing target」+ x-proxied-by；无代理时 404/SPA HTML/502
   return fetch("/__cors_proxy", { method: "GET", cache: "no-store" })
     .then(function (resp) {
       const by = (resp.headers.get("x-proxied-by") || "").toLowerCase();
@@ -995,11 +995,19 @@ function httpProbeCorsProxy() {
         _httpProxyAvailable = true;
         return true;
       }
+      const ct = (resp.headers.get("content-type") || "").toLowerCase();
+      // 纯静态 SPA 常把未知路径回退成 index.html（200 + text/html）
+      if (ct.indexOf("text/html") >= 0) {
+        _httpProxyAvailable = false;
+        return false;
+      }
       // 代理中间件对缺参返回 400 纯文本（Vite / Node 代理）
       if (resp.status === 400) {
         return resp.text().then(function (t) {
           _httpProxyAvailable =
-            typeof t === "string" && /Missing target/i.test(t);
+            typeof t === "string" &&
+            /Missing target/i.test(t) &&
+            ct.indexOf("text/html") < 0;
           return _httpProxyAvailable;
         });
       }
