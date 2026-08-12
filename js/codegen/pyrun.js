@@ -314,9 +314,70 @@ function pyrEnsureEditor() {
     language: "python",
     tabSize: 4,
     readOnly: !!ta.disabled,
+    onFormat: pyrFormatCode,
   });
   return _pyrEditor;
 }
+
+/**
+ * 轻量 Python 格式化：去行尾空白、统一换行、Tab→空格、压缩多余空行。
+ * 不做 AST 级改写（浏览器内无 black）；由 Ctrl/Cmd+S 触发。
+ * @param {string} code
+ * @param {number} [tabSize=4]
+ * @returns {string}
+ */
+function formatPythonLite(code, tabSize) {
+  var size = typeof tabSize === "number" && tabSize > 0 ? tabSize : 4;
+  var spaces = "";
+  var i;
+  for (i = 0; i < size; i++) spaces += " ";
+  var text = code == null ? "" : String(code);
+  text = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  var lines = text.split("\n");
+  var out = [];
+  var blankRun = 0;
+  for (i = 0; i < lines.length; i++) {
+    var line = lines[i].replace(/[ \t]+$/g, "");
+    // 行首 Tab 转空格（按 tabSize）
+    line = line.replace(/^\t+/, function (tabs) {
+      var s = "";
+      for (var t = 0; t < tabs.length; t++) s += spaces;
+      return s;
+    });
+    if (line === "") {
+      blankRun++;
+      if (blankRun <= 2) out.push("");
+    } else {
+      blankRun = 0;
+      out.push(line);
+    }
+  }
+  // 去掉文件首尾多余空行，末尾保留一个换行
+  while (out.length && out[0] === "") out.shift();
+  while (out.length && out[out.length - 1] === "") out.pop();
+  return out.length ? out.join("\n") + "\n" : "";
+}
+
+/**
+ * 格式化编辑器中的 Python；由 Ctrl/Cmd+S 触发
+ */
+function pyrFormatCode() {
+  var code = pyrGetCode();
+  if (!String(code).trim()) {
+    if (typeof setStatus === "function") setStatus("无可格式化内容");
+    return;
+  }
+  try {
+    pyrSetCode(formatPythonLite(code, 4));
+    if (typeof setStatus === "function") setStatus("已格式化 (Ctrl+S)");
+  } catch (e) {
+    var msg = e && e.message ? e.message : String(e);
+    if (typeof toast === "function") toast("格式化失败: " + msg);
+    else if (typeof setStatus === "function") setStatus("格式化失败: " + msg);
+  }
+}
+
+if (typeof window !== "undefined") window.pyrFormatCode = pyrFormatCode;
 
 function pyrGetCode() {
   var ed = pyrEnsureEditor();
@@ -475,6 +536,7 @@ if (typeof module !== "undefined" && module.exports) {
     validateCode,
     executePython,
     pyrEscapeHtml,
+    formatPythonLite,
     PY_SAMPLE,
     MAX_CODE_LENGTH,
     fetchWithTimeout,

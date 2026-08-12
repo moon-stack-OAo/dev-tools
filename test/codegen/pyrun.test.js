@@ -8,6 +8,7 @@ const {
   PY_SAMPLE,
   MAX_CODE_LENGTH,
   getPyodideIndexURL,
+  formatPythonLite,
 } = require("../../js/codegen/pyrun.js");
 
 describe("parsePythonOutput", () => {
@@ -222,6 +223,28 @@ describe("PY_SAMPLE 示例代码", () => {
   test("包含 import / print", () => {
     expect(PY_SAMPLE).toContain("import");
     expect(PY_SAMPLE).toContain("print");
+  });
+});
+
+describe("formatPythonLite", () => {
+  test("去行尾空白并统一换行", () => {
+    expect(formatPythonLite("a = 1  \r\nb = 2\t\n")).toBe("a = 1\nb = 2\n");
+  });
+
+  test("行首 Tab 转为空格", () => {
+    expect(formatPythonLite("def f():\n\treturn 1\n", 4)).toBe(
+      "def f():\n    return 1\n",
+    );
+  });
+
+  test("压缩连续空行最多保留 2 个", () => {
+    const src = "a\n\n\n\nb\n";
+    expect(formatPythonLite(src)).toBe("a\n\n\nb\n");
+  });
+
+  test("空内容返回空串", () => {
+    expect(formatPythonLite("")).toBe("");
+    expect(formatPythonLite("  \n  ")).toBe("");
   });
 });
 

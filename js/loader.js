@@ -57,7 +57,7 @@ const toolLibs = {
     imgtopdf: ["jspdf.min.js"],
     pdfmerge: ["pdf-lib.min.js"],
     jsonexcel: ["xlsx.min.js"],
-    jsrun: ["sucrase.min.js", "cm-editor.min.js"],
+    jsrun: ["sucrase.min.js", "js-beautify.min.js", "cm-editor.min.js"],
     pyrun: ["pyodide/pyodide.js", "cm-editor.min.js"],
 };
 

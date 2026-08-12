@@ -179,6 +179,7 @@ const siteTheme = EditorView.theme(
  * @param {number} [opts.tabSize=2]
  * @param {boolean} [opts.readOnly=false]
  * @param {(value: string) => void} [opts.onChange]
+ * @param {() => void} [opts.onFormat] Ctrl/Cmd+S 触发（拦截浏览器保存）
  * @returns {{
  *   getValue: () => string,
  *   setValue: (v: string) => void,
@@ -227,6 +228,7 @@ function create(parent, opts) {
     const tabSize = typeof opts.tabSize === 'number' && opts.tabSize > 0 ? opts.tabSize : 2;
     const readOnly = !!opts.readOnly;
     const onChange = typeof opts.onChange === 'function' ? opts.onChange : null;
+    const onFormat = typeof opts.onFormat === 'function' ? opts.onFormat : null;
 
     const { langExt, completions } = resolveLanguage(language);
     const indentStr = ' '.repeat(tabSize);
@@ -251,6 +253,24 @@ function create(parent, opts) {
         }
     });
 
+    /** 拦截 Ctrl/Cmd+S：阻止浏览器保存，改为格式化 */
+    const formatKeymap = keymap.of([
+        {
+            key: 'Mod-s',
+            preventDefault: true,
+            run() {
+                if (onFormat) {
+                    try {
+                        onFormat();
+                    } catch (_) {
+                        /* 忽略格式化回调异常 */
+                    }
+                }
+                return true;
+            },
+        },
+    ]);
+
     const state = EditorState.create({
         doc: initialDoc,
         extensions: [
@@ -264,6 +284,7 @@ function create(parent, opts) {
             oneDark,
             siteTheme,
             syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+            formatKeymap,
             keymap.of([
                 indentWithTab,
                 ...closeBracketsKeymap,

@@ -196,9 +196,47 @@ function jsrEnsureEditor() {
   _jsrEditor = window.CMEditor.create(wrap, {
     language: jsrMapLang(kind),
     tabSize: 2,
+    onFormat: jsrFormatCode,
   });
   return _jsrEditor;
 }
+
+/**
+ * 格式化编辑器中的 JS/TS（js-beautify）；由 Ctrl/Cmd+S 触发
+ */
+function jsrFormatCode() {
+  var code = jsrGetCode();
+  if (!String(code).trim()) {
+    if (typeof setStatus === "function") setStatus("无可格式化内容");
+    return;
+  }
+  var b =
+    typeof Beautify !== "undefined"
+      ? Beautify
+      : typeof window !== "undefined"
+        ? window.Beautify
+        : null;
+  if (!b || typeof b.js !== "function") {
+    if (typeof toast === "function") toast("格式化库未加载");
+    else if (typeof setStatus === "function") setStatus("格式化库未加载");
+    return;
+  }
+  try {
+    var formatted = b.js(code, {
+      indent_size: 2,
+      space_in_empty_paren: true,
+      end_with_newline: true,
+    });
+    jsrSetCode(formatted);
+    if (typeof setStatus === "function") setStatus("已格式化 (Ctrl+S)");
+  } catch (e) {
+    var msg = e && e.message ? e.message : String(e);
+    if (typeof toast === "function") toast("格式化失败: " + msg);
+    else if (typeof setStatus === "function") setStatus("格式化失败: " + msg);
+  }
+}
+
+if (typeof window !== "undefined") window.jsrFormatCode = jsrFormatCode;
 
 function jsrGetCode() {
   var ed = jsrEnsureEditor();
