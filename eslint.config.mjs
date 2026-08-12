@@ -29,6 +29,7 @@ const libGlobals = {
   sucrase: "readonly",
   loadPyodide: "readonly",
   CMEditor: "readonly",
+  Hls: "readonly",
 };
 
 // app.js 在浏览器环境暴露的项目级全局函数/变量

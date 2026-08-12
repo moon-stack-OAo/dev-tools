@@ -1,0 +1,86 @@
+<div class="tool-panel" id="panel-videodebug">
+    <div class="vd-topbar">
+        <input id="vdUrl" placeholder="视频 URL / M3U 列表 / HLS（.m3u8）" type="text">
+        <button onclick="vdLoadUrl()" type="button">加载 URL</button>
+        <button class="outline" onclick="vdPickFile()" type="button">本地文件</button>
+        <button class="outline" onclick="vdReset()" type="button">重置</button>
+        <span class="ws-status disconnected" id="vdStatus"><span class="ws-dot"></span> 未加载</span>
+        <input id="vdFile" accept="video/*,.mp4,.webm,.ogg,.mov,.mkv,.m3u,.m3u8,application/vnd.apple.mpegurl,audio/x-mpegurl" type="file" hidden>
+    </div>
+
+    <div class="vd-layout">
+        <div class="vd-preview pc-card">
+            <div class="pc-card-head">
+                <i class="bi bi-film"></i>
+                <span>预览</span>
+                <span class="vd-head-extra" id="vdChannelBadge" hidden></span>
+            </div>
+            <div class="vd-stage">
+                <video id="vdPlayer" controls playsinline preload="metadata" crossorigin="anonymous"></video>
+            </div>
+            <div class="vd-transport">
+                <button onclick="vdTogglePlay()" type="button"><i class="bi bi-play-fill"></i> 播放/暂停</button>
+                <button class="outline" onclick="vdCapture()" type="button"><i class="bi bi-camera"></i> 截帧</button>
+                <button class="outline" onclick="vdDownloadShot()" type="button"><i class="bi bi-download"></i> 下载截图</button>
+                <label class="vd-rate-label" for="vdRate">倍速</label>
+                <select id="vdRate" onchange="vdSetRate()">
+                    <option value="0.5">0.5×</option>
+                    <option value="0.75">0.75×</option>
+                    <option value="1" selected>1×</option>
+                    <option value="1.25">1.25×</option>
+                    <option value="1.5">1.5×</option>
+                    <option value="2">2×</option>
+                </select>
+                <label class="vd-loop-label">
+                    <input id="vdLoop" type="checkbox" onchange="vdToggleLoop()"> 循环
+                </label>
+            </div>
+            <div class="vd-meta" id="vdMeta">等待加载视频</div>
+            <div class="vd-channels" id="vdChannels" hidden>
+                <div class="vd-channels-head">
+                    <span><i class="bi bi-broadcast"></i> 频道列表</span>
+                    <span class="vd-channels-count" id="vdChannelsCount"></span>
+                </div>
+                <input id="vdChannelFilter" class="vd-channel-filter" type="search" placeholder="筛选频道名 / 分组…" oninput="vdFilterChannels()">
+                <div class="vd-channel-list" id="vdChannelList"></div>
+            </div>
+        </div>
+
+        <div class="vd-side">
+            <section class="pc-card">
+                <div class="pc-card-head">
+                    <i class="bi bi-info-circle"></i>
+                    <span>媒体信息</span>
+                    <button class="copy-btn pc-copy" onclick="vdCopyInfo()" type="button">复制</button>
+                </div>
+                <pre class="vd-info" id="vdInfo">—</pre>
+            </section>
+
+            <section class="pc-card">
+                <div class="pc-card-head">
+                    <i class="bi bi-list-ul"></i>
+                    <span>事件日志</span>
+                    <button class="outline sm" onclick="vdClearLog()" type="button">清空</button>
+                    <button class="copy-btn pc-copy" onclick="vdCopyLog()" type="button">复制</button>
+                </div>
+                <div class="vd-log" id="vdLog">
+                    <div class="vd-log-empty">暂无事件</div>
+                </div>
+            </section>
+
+            <section class="pc-card">
+                <div class="pc-card-head">
+                    <i class="bi bi-image"></i>
+                    <span>截帧预览</span>
+                </div>
+                <div class="vd-shot" id="vdShot">
+                    <div class="vd-shot-empty">点击截帧</div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="vd-hint">
+        纯前端本地处理 · 支持直链 / 本地文件 / M3U 频道列表 / HLS（hls.js）· 跨域可能无法截帧或拉流 · Object URL 重置时释放
+    </div>
+</div>

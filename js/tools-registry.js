@@ -1059,6 +1059,15 @@ const tools = [
         tags: ["common","backend"],
     },
     {
+        id: "videodebug",
+        icon: "bi-camera-video",
+        name: "视频调试",
+        desc: "本地/URL/M3U/HLS 播放 · 元数据 · 事件 · 截帧",
+        cat: "debug",
+        tags: ["common","frontend"],
+    },
+
+    {
         id: "arthas",
         icon: "bi-terminal",
         name: "Arthas 命令",
@@ -1295,6 +1304,27 @@ const tools = [
 
 // === Tools Map for O(1) lookup ===
 const toolsById = new Map(tools.map(t => [t.id, t]));
+
+/** 业务分类（排除收藏/最近等 virtual） */
+function getBusinessCategories() {
+    return categories.filter(function (c) {
+        return !c.virtual;
+    });
+}
+
+/** 注册表统计：工具数、业务分类数 */
+function getRegistryStats() {
+    return {
+        toolCount: tools.length,
+        categoryCount: getBusinessCategories().length,
+    };
+}
+
+/** 顶栏副标题文案（单一来源，勿在 HTML 写死数量） */
+function formatHomeSubtitle(stats) {
+    var s = stats || getRegistryStats();
+    return s.toolCount + ' 个工具 · ' + s.categoryCount + ' 大分类 · 全栈可用 · 纯前端本地处理';
+}
 
 /** 工具是否匹配受众筛选：all | common | frontend | backend | java */
 function toolMatchesAudience(tool, audience) {

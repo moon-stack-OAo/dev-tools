@@ -8,7 +8,7 @@ const vm = require('vm');
 function loadRegistry() {
     const code =
         fs.readFileSync(path.join(__dirname, '../js/tools-registry.js'), 'utf8') +
-        '\n;globalThis.__REG__ = { tools: tools, categories: categories, toolsById: toolsById, toolMatchesAudience: toolMatchesAudience };';
+        '\n;globalThis.__REG__ = { tools: tools, categories: categories, toolsById: toolsById, toolMatchesAudience: toolMatchesAudience, getBusinessCategories: getBusinessCategories, getRegistryStats: getRegistryStats, formatHomeSubtitle: formatHomeSubtitle };';
     const sandbox = { Map, console, globalThis: {} };
     sandbox.globalThis = sandbox;
     vm.createContext(sandbox);
@@ -19,25 +19,36 @@ function loadRegistry() {
 describe('tools-registry audience tags', () => {
     const reg = loadRegistry();
 
-    test('工具均有 tags 且数量一致', () => {
-        expect(reg.tools.length).toBe(158);
+    test('工具结构完整、id 唯一；tags 约定成立', () => {
+        expect(reg.tools.length).toBeGreaterThan(0);
+        expect(reg.tools.length).toBe(reg.toolsById.size);
+        const ids = new Set();
         reg.tools.forEach((t) => {
+            expect(t.id).toBeTruthy();
+            expect(ids.has(t.id)).toBe(false);
+            ids.add(t.id);
             expect(Array.isArray(t.tags)).toBe(true);
             expect(t.tags.length).toBeGreaterThan(0);
+            expect(t.cat).toBeTruthy();
+            expect(t.name).toBeTruthy();
         });
-        const java = reg.tools.filter((t) => t.tags.includes('java'));
-        const common = reg.tools.filter((t) => t.tags.includes('common'));
-        const frontend = reg.tools.filter((t) => t.tags.includes('frontend'));
-        const backend = reg.tools.filter((t) => t.tags.includes('backend'));
-        expect(java.length).toBeGreaterThanOrEqual(38);
-        expect(java.length).toBeLessThanOrEqual(40);
-        expect(common.length).toBeGreaterThan(100);
-        expect(frontend.length).toBeGreaterThan(20);
-        expect(backend.length).toBeGreaterThan(80);
         // 非 java 工具应带 common
         reg.tools
             .filter((t) => !t.tags.includes('java'))
             .forEach((t) => expect(t.tags).toContain('common'));
+    });
+
+    test('getRegistryStats / formatHomeSubtitle 与注册表一致', () => {
+        const biz = reg.getBusinessCategories();
+        expect(biz.length).toBeGreaterThan(0);
+        expect(biz.every((c) => !c.virtual)).toBe(true);
+        const stats = reg.getRegistryStats();
+        expect(stats.toolCount).toBe(reg.tools.length);
+        expect(stats.categoryCount).toBe(biz.length);
+        expect(reg.formatHomeSubtitle(stats)).toBe(
+            stats.toolCount + ' 个工具 · ' + stats.categoryCount + ' 大分类 · 全栈可用 · 纯前端本地处理'
+        );
+        expect(reg.formatHomeSubtitle()).toContain(String(reg.tools.length));
     });
 
     test('toolMatchesAudience', () => {

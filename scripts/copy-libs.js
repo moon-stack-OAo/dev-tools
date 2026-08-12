@@ -25,6 +25,7 @@ const libs = [
   { src: "jspdf/dist/jspdf.umd.min.js", dest: "jspdf.min.js" },
   { src: "pdf-lib/dist/pdf-lib.min.js", dest: "pdf-lib.min.js" },
   { src: "xlsx/dist/xlsx.full.min.js", dest: "xlsx.min.js" },
+  { src: "hls.js/dist/hls.min.js", dest: "hls.min.js" },
 ];
 
 // 需要 esbuild 打包为 IIFE 浏览器友好格式的库

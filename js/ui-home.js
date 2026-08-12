@@ -330,7 +330,21 @@ function syncHomeAudienceBar() {
     });
 }
 
+/** 顶栏副标题：工具数 / 分类数取自注册表，避免 HTML 写死 */
+function updateHeaderHomeSub() {
+    var el = document.getElementById('headerHomeSub');
+    if (!el) return;
+    if (typeof formatHomeSubtitle === 'function') {
+        el.textContent = formatHomeSubtitle();
+    } else if (typeof getRegistryStats === 'function') {
+        var s = getRegistryStats();
+        el.textContent =
+            s.toolCount + ' 个工具 · ' + s.categoryCount + ' 大分类 · 全栈可用 · 纯前端本地处理';
+    }
+}
+
 function buildHomeGrid() {
+    updateHeaderHomeSub();
     const grid = domCache.homeGrid;
     grid.innerHTML = "";
     const anchors = domCache.homeCatAnchors;

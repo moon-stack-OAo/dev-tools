@@ -1,6 +1,6 @@
 ﻿# CodeCasket · 码匣
 
-> **CodeCasket（码匣）** —— 面向开发者 / 全栈的**纯前端**在线工具集（含丰富 Java 后端深度工具）—— **158 个工具、8 大分类**
+> **CodeCasket（码匣）** —— 面向开发者 / 全栈的**纯前端**在线工具集（含丰富 Java 后端深度工具）—— 工具与分类以 `js/tools-registry.js` 为准
 > ，覆盖格式化、编解码、安全、生成与转换、代码生成、文本、调试、参考速查。无需后端、无需联网、无需上传数据，所有计算均在浏览器本地完成。支持
 > Vite 开发、Docker 一键部署、Nginx 静态托管，开箱即用。
 
@@ -19,7 +19,7 @@
 - 🚀 **零依赖开箱即用**：纯静态 HTML / CSS / JavaScript，无任何前端框架；业务代码无构建期编译，第三方库通过 Vite + esbuild
   打包为 IIFE
 - 🔒 **数据 100% 本地处理**：所有计算在浏览器内完成，不会上传任何内容到服务器，支持离线使用
-- 🧰 **158 个工具 / 8 大分类**：覆盖全栈日常，Java 场景深度增强，工具持续扩充
+- 🧰 **多分类工具箱**：覆盖全栈日常，Java 场景深度增强，工具持续扩充（数量见注册表 / 顶栏）
 - ⭐ **收藏与最近使用**：侧边栏 / 首页星标收藏（`localStorage`），虚拟分类「收藏」「最近使用」
 - 🎨 **深色主题 + 响应式**：桌面 / 平板 / 手机均可使用
 - 🐳 **多种部署方式**：Vite 开发、Docker 容器、Nginx 静态托管、GitHub Pages（`main` 推送触发）
@@ -89,7 +89,7 @@ npm run build     # 输出到 dist/
 
 ```
 ├── index.html                      # 入口（首页；工具脚本/面板/依赖库均按需懒加载）
-├── html/panels/                    # 工具面板（158 个文件，每个工具一个 HTML）
+├── html/panels/                    # 工具面板（每个工具一个 HTML，与注册表 id 对齐）
 │   ├── format/                     #  格式化：json / yaml / toml / graphqlfmt / openapiview / ...
 │   ├── encode/                     #  编解码：base64 / base32 / charset / protobuf / ...
 │   ├── security/                   #  安全：jwt / jasypt / pwdstrength / hashext / gmsm / ...
@@ -147,7 +147,7 @@ npm run build     # 输出到 dist/
 
 ## 🧰 工具列表
 
-> 工具总数 **158 个**，分为 **8 大业务分类**（另有虚拟分类「收藏」「最近使用」）。下表功能描述与 `js/tools-registry.js` 中
+> 工具与业务分类以 `js/tools-registry.js` 为唯一来源（另有虚拟分类「收藏」「最近使用」）。下表功能描述与注册表中
 `tools[]` 的 `desc` 保持一致。
 
 ### 一、格式化（25）
@@ -288,7 +288,7 @@ npm run build     # 输出到 dist/
 | Markdown 表格 / 文本树 | CSV↔MD 表格 / 路径与缩进转树形字符画     |
 | 正则 → Java 代码      | 生成 Pattern/Matcher 与正确转义字面量 |
 
-### 七、调试（21）
+### 七、调试
 
 | 工具             | 功能                                      |
 |----------------|-----------------------------------------|
@@ -313,6 +313,7 @@ npm run build     # 输出到 dist/
 | SQL 参数绑定       | ? / :name 占位符 + 参数列表填充为完整 SQL           |
 | URL 参数构造器      | 表格编辑 query，生成 URL / 解析回填                |
 | 线程池参数估算        | 按 QPS/耗时估算 core/max/queue 与说明           |
+| 视频调试           | 本地/URL/M3U/HLS 播放 · 元数据 · 事件 · 截帧         |
 
 ### 八、参考（29）
 
@@ -504,5 +505,5 @@ Chrome / Firefox / Edge / Safari 现代浏览器（支持 ES2020+ 语法）。
 3. 若依赖第三方库，在 `js/loader.js` 的 `toolLibs` 映射中登记
 4. 若工具需要初始化（渲染数据、绑定事件、启动定时器等），在工具 JS 末尾调用 `registerInit(toolId, initFn)` 登记，`openTool`
    会自动调用
-5. 同步更新本 README 工具列表与数量
+5. 同步更新本 README 工具列表（**不必**手改总数：页面顶栏由注册表动态生成）
 6. 保持深色主题一致性与响应式适配；核心纯逻辑建议补充 Vitest 单测
