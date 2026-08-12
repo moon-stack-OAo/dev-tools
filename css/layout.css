@@ -1088,11 +1088,11 @@
     }
 }
 
-/* 返回顶部按钮 */
+/* 返回顶部按钮（避开底部 24px 状态栏，留出间距） */
 .back-to-top {
     position: fixed;
-    bottom: 24px;
-    right: 24px;
+    bottom: 50px;
+    right: 50px;
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -1106,15 +1106,15 @@
     cursor: pointer;
     z-index: 100;
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateX(16px);
     pointer-events: none;
-    transition: all 0.25s ease;
+    transition: opacity 0.25s ease, transform 0.25s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .back-to-top.visible {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
     pointer-events: auto;
 }
 
@@ -1122,7 +1122,7 @@
     background: var(--accent);
     color: var(--bg);
     border-color: var(--accent);
-    transform: translateY(-2px);
+    transform: translateX(-4px);
     box-shadow: 0 6px 20px rgba(var(--accent-rgb), 0.25);
 }
 
