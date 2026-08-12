@@ -93,15 +93,35 @@ function pyrEscapeHtml(s) {
 // === 异步入口：加载与执行（依赖浏览器全局 Pyodide / fetch） ===
 
 /**
- * 获取 Pyodide 资源的 indexURL（基于当前页面地址动态构造）。
- * 支持子路径部署（如 /dev-tools/），自动确保 base URL 有尾部斜杠。
+ * 获取 Pyodide 资源的 indexURL。
+ * 优先从已加载的 pyodide.js 脚本 src 推导（与 loadLib 一致），
+ * 避免 location.href 含 index.html / hash / query 时拼出错误路径导致 404。
+ * 支持子路径部署（如 /dev-tools/）。
  */
 function getPyodideIndexURL() {
-  var base = window.location.href;
-  if (!base.endsWith("/")) {
-    base += "/";
+  if (typeof document !== "undefined") {
+    var scripts = document.getElementsByTagName("script");
+    for (var i = scripts.length - 1; i >= 0; i--) {
+      var src = scripts[i].src || "";
+      // 匹配 .../lib/pyodide/pyodide.js 或带 ?v= 查询串
+      var m = src.match(/^(.*\/pyodide\/)pyodide\.js(?:\?.*)?$/i);
+      if (m) return m[1];
+    }
   }
-  return new URL("lib/pyodide/", base).href;
+
+  if (typeof window === "undefined" || !window.location) {
+    return "lib/pyodide/";
+  }
+
+  var loc = window.location;
+  var path = loc.pathname || "/";
+  // 去掉具体文件名（如 /index.html、/ops-update.html）
+  if (/\/[^/]+\.[a-zA-Z0-9]+$/.test(path)) {
+    path = path.replace(/\/[^/]+$/, "/");
+  } else if (!path.endsWith("/")) {
+    path += "/";
+  }
+  return loc.origin + path + "lib/pyodide/";
 }
 
 /**
@@ -186,12 +206,25 @@ function loadPyodideInstance(onProgress) {
     );
   }
   var indexURL = getPyodideIndexURL();
-  // 先检查 pyodide.js 是否可访问
+  // 先检查 pyodide.js 是否可访问（部分环境禁用 HEAD，失败时回退 GET）
   return fetchWithTimeout(indexURL + "pyodide.js", { method: "HEAD" }, 10000)
+    .then(function (r) {
+      if (r.ok) return r;
+      // 405/501 等：改用 GET 探测
+      return fetchWithTimeout(
+        indexURL + "pyodide.js",
+        { method: "GET", headers: { Range: "bytes=0-0" } },
+        10000,
+      );
+    })
     .then(function (r) {
       if (!r.ok) {
         throw new Error(
-          "pyodide.js 未找到（HTTP " + r.status + "），请检查 nginx 配置",
+          "pyodide.js 未找到（HTTP " +
+            r.status +
+            "）：" +
+            indexURL +
+            "pyodide.js，请确认 dist/lib/pyodide/ 已部署且 nginx 可访问",
         );
       }
       return probePyodideProgress(onProgress);

@@ -228,29 +228,60 @@ describe("PY_SAMPLE 示例代码", () => {
 describe("getPyodideIndexURL", () => {
   // Node 测试环境无 window，跳过这些测试
   const hasWindow = typeof window !== "undefined";
-  const origHref = hasWindow
+  const origLocation = hasWindow
     ? Object.getOwnPropertyDescriptor(window, "location")
     : null;
+  const origDocument = hasWindow
+    ? Object.getOwnPropertyDescriptor(globalThis, "document")
+    : null;
+
+  function mockLocation(parts) {
+    Object.defineProperty(window, "location", {
+      value: {
+        href: parts.href,
+        origin: parts.origin,
+        pathname: parts.pathname,
+      },
+      configurable: true,
+      writable: true,
+    });
+  }
+
+  function mockNoScripts() {
+    Object.defineProperty(globalThis, "document", {
+      value: {
+        getElementsByTagName: () => [],
+      },
+      configurable: true,
+      writable: true,
+    });
+  }
 
   afterEach(() => {
-    if (origHref && hasWindow)
-      Object.defineProperty(window, "location", origHref);
+    if (origLocation && hasWindow)
+      Object.defineProperty(window, "location", origLocation);
+    if (origDocument && hasWindow)
+      Object.defineProperty(globalThis, "document", origDocument);
   });
 
   test("根路径 / 返回 /lib/pyodide/", () => {
     if (!hasWindow) return;
-    Object.defineProperty(window, "location", {
-      value: { href: "http://localhost/" },
-      writable: true,
+    mockNoScripts();
+    mockLocation({
+      href: "http://localhost/",
+      origin: "http://localhost",
+      pathname: "/",
     });
     expect(getPyodideIndexURL()).toBe("http://localhost/lib/pyodide/");
   });
 
   test("子路径 /dev-tools/ 返回 /dev-tools/lib/pyodide/", () => {
     if (!hasWindow) return;
-    Object.defineProperty(window, "location", {
-      value: { href: "http://192.168.1.1/dev-tools/" },
-      writable: true,
+    mockNoScripts();
+    mockLocation({
+      href: "http://192.168.1.1/dev-tools/",
+      origin: "http://192.168.1.1",
+      pathname: "/dev-tools/",
     });
     expect(getPyodideIndexURL()).toBe(
       "http://192.168.1.1/dev-tools/lib/pyodide/",
@@ -259,9 +290,11 @@ describe("getPyodideIndexURL", () => {
 
   test("子路径无尾部斜杠 /dev-tools 自动补全", () => {
     if (!hasWindow) return;
-    Object.defineProperty(window, "location", {
-      value: { href: "http://192.168.1.1/dev-tools" },
-      writable: true,
+    mockNoScripts();
+    mockLocation({
+      href: "http://192.168.1.1/dev-tools",
+      origin: "http://192.168.1.1",
+      pathname: "/dev-tools",
     });
     expect(getPyodideIndexURL()).toBe(
       "http://192.168.1.1/dev-tools/lib/pyodide/",
@@ -270,19 +303,58 @@ describe("getPyodideIndexURL", () => {
 
   test("带端口的地址", () => {
     if (!hasWindow) return;
-    Object.defineProperty(window, "location", {
-      value: { href: "http://192.168.1.1:100/" },
-      writable: true,
+    mockNoScripts();
+    mockLocation({
+      href: "http://192.168.1.1:100/",
+      origin: "http://192.168.1.1:100",
+      pathname: "/",
     });
     expect(getPyodideIndexURL()).toBe("http://192.168.1.1:100/lib/pyodide/");
   });
 
   test("深层子路径", () => {
     if (!hasWindow) return;
-    Object.defineProperty(window, "location", {
-      value: { href: "http://example.com/a/b/c/" },
-      writable: true,
+    mockNoScripts();
+    mockLocation({
+      href: "http://example.com/a/b/c/",
+      origin: "http://example.com",
+      pathname: "/a/b/c/",
     });
     expect(getPyodideIndexURL()).toBe("http://example.com/a/b/c/lib/pyodide/");
+  });
+
+  test("index.html 不拼进路径", () => {
+    if (!hasWindow) return;
+    mockNoScripts();
+    mockLocation({
+      href: "http://localhost/index.html",
+      origin: "http://localhost",
+      pathname: "/index.html",
+    });
+    expect(getPyodideIndexURL()).toBe("http://localhost/lib/pyodide/");
+  });
+
+  test("优先使用已加载的 pyodide.js 脚本 src", () => {
+    if (!hasWindow) return;
+    Object.defineProperty(globalThis, "document", {
+      value: {
+        getElementsByTagName: () => [
+          { src: "http://cdn.example/other.js" },
+          {
+            src: "http://cdn.example/app/lib/pyodide/pyodide.js?v=abc",
+          },
+        ],
+      },
+      configurable: true,
+      writable: true,
+    });
+    mockLocation({
+      href: "http://localhost/index.html#pyrun",
+      origin: "http://localhost",
+      pathname: "/index.html",
+    });
+    expect(getPyodideIndexURL()).toBe(
+      "http://cdn.example/app/lib/pyodide/",
+    );
   });
 });
