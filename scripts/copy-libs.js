@@ -71,6 +71,12 @@ const bundles = [
     dest: "pkijs.min.js",
     globalName: "PKI",
   },
+  {
+    // CodeMirror 6 封装：jsrun / pyrun 代码编辑器
+    entry: "scripts/cm-editor-entry.js",
+    dest: "cm-editor.min.js",
+    globalName: "CMEditor",
+  },
 ];
 
 if (!fs.existsSync(LIB_DIR)) {
@@ -97,8 +103,28 @@ const esbuildBin = path.join(
   ".bin",
   process.platform === "win32" ? "esbuild.cmd" : "esbuild",
 );
+
+/**
+ * 解析 bundle 入口路径：
+ * - entry 以 scripts/ 开头，或 ROOT 下已存在该相对路径 → 项目内入口
+ * - 否则走 node_modules
+ */
+function resolveBundleEntry(entry) {
+  const rootCandidate = path.isAbsolute(entry)
+    ? entry
+    : path.join(ROOT_DIR, entry);
+  if (
+    entry.startsWith("scripts/") ||
+    entry.startsWith("scripts\\") ||
+    fs.existsSync(rootCandidate)
+  ) {
+    return rootCandidate;
+  }
+  return path.join(ROOT_DIR, "node_modules", entry);
+}
+
 bundles.forEach(({ entry, dest, globalName }) => {
-  const entryPath = path.join(ROOT_DIR, "node_modules", entry);
+  const entryPath = resolveBundleEntry(entry);
   const destPath = path.join(LIB_DIR, dest);
   if (!fs.existsSync(entryPath)) {
     console.error(`✗ 未找到 ${entryPath}，请先执行 npm install`);

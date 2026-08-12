@@ -57,8 +57,8 @@ const toolLibs = {
     imgtopdf: ["jspdf.min.js"],
     pdfmerge: ["pdf-lib.min.js"],
     jsonexcel: ["xlsx.min.js"],
-    jsrun: ["sucrase.min.js"],
-    pyrun: ["pyodide/pyodide.js"],
+    jsrun: ["sucrase.min.js", "cm-editor.min.js"],
+    pyrun: ["pyodide/pyodide.js", "cm-editor.min.js"],
 };
 
 // 工具→脚本依赖映射：打开工具前先加载其它工具脚本（复用其全局纯函数）

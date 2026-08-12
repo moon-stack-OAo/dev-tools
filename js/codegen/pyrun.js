@@ -266,6 +266,43 @@ function executePython(code, pyodide, hooks) {
 
 // === UI 函数（浏览器全局，由 onclick 触发） ===
 
+var _pyrEditor = null;
+
+function pyrEnsureEditor() {
+  if (_pyrEditor) return _pyrEditor;
+  if (typeof window === "undefined" || !window.CMEditor) return null;
+  var ta = document.getElementById("pyrCode");
+  if (!ta) return null;
+  var wrap = ta.closest ? ta.closest(".jsr-editor-wrap") : ta.parentElement;
+  if (!wrap || !wrap.classList || !wrap.classList.contains("jsr-editor-wrap")) {
+    return null;
+  }
+  _pyrEditor = window.CMEditor.create(wrap, {
+    language: "python",
+    tabSize: 4,
+    readOnly: !!ta.disabled,
+  });
+  return _pyrEditor;
+}
+
+function pyrGetCode() {
+  var ed = pyrEnsureEditor();
+  if (ed) return ed.getValue();
+  var ta = document.getElementById("pyrCode");
+  return ta ? ta.value : "";
+}
+
+function pyrSetCode(v) {
+  var text = v == null ? "" : String(v);
+  var ed = pyrEnsureEditor();
+  if (ed) {
+    ed.setValue(text);
+    return;
+  }
+  var ta = document.getElementById("pyrCode");
+  if (ta) ta.value = text;
+}
+
 function pyrAppendOutput(target, text) {
   const id = target === "stderr" ? "pyrStderr" : "pyrStdout";
   const el = document.getElementById(id);
@@ -291,17 +328,14 @@ function pyrClearOutput() {
 if (typeof window !== "undefined") window.pyrClearOutput = pyrClearOutput;
 
 function pyrClear() {
-  const ta = document.getElementById("pyrCode");
-  if (ta) ta.value = "";
+  pyrSetCode("");
   pyrClearOutput();
 }
 
 if (typeof window !== "undefined") window.pyrClear = pyrClear;
 
 function pyrLoadSample() {
-  const ta = document.getElementById("pyrCode");
-  if (!ta) return;
-  ta.value = PY_SAMPLE;
+  pyrSetCode(PY_SAMPLE);
 }
 
 if (typeof window !== "undefined") window.pyrLoadSample = pyrLoadSample;
@@ -314,11 +348,12 @@ function pyrOnReady() {
   const wrap = document.getElementById("pyrProgress");
   if (btn) btn.disabled = false;
   if (ta) ta.disabled = false;
+  var ed = pyrEnsureEditor();
+  if (ed) ed.setReadOnly(false);
   if (bar) bar.style.width = "100%";
   if (wrap) wrap.style.display = "none";
   if (status) status.textContent = "✓ Python 运行时就绪";
-  const code = document.getElementById("pyrCode");
-  if (code && !code.value) code.value = PY_SAMPLE;
+  if (!pyrGetCode()) pyrSetCode(PY_SAMPLE);
 }
 
 if (typeof window !== "undefined") window.pyrOnReady = pyrOnReady;
@@ -328,8 +363,8 @@ function pyrRun() {
   const status = document.getElementById("pyrStatus");
   const pyodide =
     typeof window !== "undefined" ? window.__pyodideInstance : null;
-  if (!ta) return;
-  const code = ta.value;
+  if (!ta && !pyrEnsureEditor()) return;
+  const code = pyrGetCode();
   pyrClearOutput();
   if (!pyodide) {
     if (status) status.textContent = "✗ Python 运行时未就绪";
@@ -358,6 +393,8 @@ if (typeof window !== "undefined") window.pyrRun = pyrRun;
 
 if (typeof registerInit === "function") {
   registerInit("pyrun", function () {
+    // 编辑器可先于 Pyodide 就绪创建；加载中保持只读
+    pyrEnsureEditor();
     if (
       typeof window !== "undefined" &&
       window.__pyodideInstance &&

@@ -176,6 +176,48 @@ function runCode(code, lang) {
 
 // === UI 函数 ===
 
+var _jsrEditor = null;
+
+function jsrMapLang(kind) {
+  return kind === "ts" ? "typescript" : "javascript";
+}
+
+function jsrEnsureEditor() {
+  if (_jsrEditor) return _jsrEditor;
+  if (typeof window === "undefined" || !window.CMEditor) return null;
+  var ta = document.getElementById("jsrCode");
+  if (!ta) return null;
+  var wrap = ta.closest ? ta.closest(".jsr-editor-wrap") : ta.parentElement;
+  if (!wrap || !wrap.classList || !wrap.classList.contains("jsr-editor-wrap")) {
+    return null;
+  }
+  var sel = document.getElementById("jsrLang");
+  var kind = sel ? sel.value : "js";
+  _jsrEditor = window.CMEditor.create(wrap, {
+    language: jsrMapLang(kind),
+    tabSize: 2,
+  });
+  return _jsrEditor;
+}
+
+function jsrGetCode() {
+  var ed = jsrEnsureEditor();
+  if (ed) return ed.getValue();
+  var ta = document.getElementById("jsrCode");
+  return ta ? ta.value : "";
+}
+
+function jsrSetCode(v) {
+  var text = v == null ? "" : String(v);
+  var ed = jsrEnsureEditor();
+  if (ed) {
+    ed.setValue(text);
+    return;
+  }
+  var ta = document.getElementById("jsrCode");
+  if (ta) ta.value = text;
+}
+
 function jsrAppendOutput(text, type) {
   const id = type === "stderr" ? "jsrStderr" : "jsrStdout";
   const el = document.getElementById(id);
@@ -193,19 +235,18 @@ function jsrClearOutput() {
 }
 
 function jsrClear() {
-  const ta = document.getElementById("jsrCode");
-  if (ta) ta.value = "";
+  jsrSetCode("");
   jsrClearOutput();
 }
 
 if (typeof window !== "undefined") window.jsrClear = jsrClear;
 
 function jsrLoadSample(kind) {
-  const ta = document.getElementById("jsrCode");
-  if (!ta) return;
-  ta.value = kind === "ts" ? TS_SAMPLE : JS_SAMPLE;
+  jsrSetCode(kind === "ts" ? TS_SAMPLE : JS_SAMPLE);
   const sel = document.getElementById("jsrLang");
   if (sel) sel.value = kind;
+  var ed = jsrEnsureEditor();
+  if (ed) ed.setLanguage(jsrMapLang(kind));
 }
 
 if (typeof window !== "undefined") window.jsrLoadSample = jsrLoadSample;
@@ -214,6 +255,8 @@ function jsrOnLangChange() {
   const sel = document.getElementById("jsrLang");
   if (!sel) return;
   jsrClearOutput();
+  var ed = jsrEnsureEditor();
+  if (ed) ed.setLanguage(jsrMapLang(sel.value));
   jsrLoadSample(sel.value);
 }
 
@@ -223,8 +266,8 @@ function jsrRun() {
   const ta = document.getElementById("jsrCode");
   const sel = document.getElementById("jsrLang");
   const status = document.getElementById("jsrStatus");
-  if (!ta) return;
-  const code = ta.value;
+  if (!ta && !jsrEnsureEditor()) return;
+  const code = jsrGetCode();
   const lang = sel ? sel.value : "js";
   jsrClearOutput();
   const t0 = performance.now();
@@ -258,8 +301,8 @@ if (typeof window !== "undefined") window.jsrRun = jsrRun;
 
 if (typeof registerInit === "function") {
   registerInit("jsrun", function () {
-    const ta = document.getElementById("jsrCode");
-    if (ta && !ta.value) jsrLoadSample("js");
+    jsrEnsureEditor();
+    if (!jsrGetCode()) jsrLoadSample("js");
   });
 }
 
