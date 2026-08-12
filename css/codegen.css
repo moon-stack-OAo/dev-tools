@@ -184,18 +184,36 @@
 }
 
 #panel-jsrun.active > .tool-header,
-#panel-jsrun.active > .toolbar {
+#panel-jsrun.active > .toolbar,
+#panel-jsrun.active > .alert {
     flex-shrink: 0;
 }
 
-#panel-jsrun.active > .jsr-editor-wrap {
-    flex: 1 1 0;
-    min-height: 300px;
+/* 左右布局：代码 | 输出（与 pyrun 一致） */
+#panel-jsrun.active .jsr-main {
+    display: flex;
+    gap: 12px;
+    flex: 1;
+    min-height: 0;
 }
 
-#panel-jsrun.active > .jsr-output {
-    flex: 0 0 auto;
-    max-height: 40%;
+#panel-jsrun.active .jsr-main > .jsr-editor-wrap {
+    flex: 1 1 0;
+    min-height: 200px;
+    margin-bottom: 0;
+}
+
+#panel-jsrun.active .jsr-main > .jsr-output {
+    flex: 1 1 0;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+}
+
+#panel-jsrun.active .jsr-main > .jsr-output > pre {
+    flex: 1;
+    max-height: none;
+    overflow: auto;
 }
 
 .jsr-editor-wrap {
