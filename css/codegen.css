@@ -210,7 +210,7 @@
     flex-direction: column;
 }
 
-#panel-jsrun.active .jsr-main > .jsr-output > pre {
+#panel-jsrun.active .jsr-main > .jsr-output > .jsr-console {
     flex: 1;
     max-height: none;
     overflow: auto;
@@ -313,33 +313,143 @@
     font-size: 11px;
 }
 
-#jsrStdout,
-#jsrStderr {
+/* 控制台输出：按 console level 着色 */
+.jsr-console {
     margin: 0;
-    padding: 10px 14px;
+    padding: 8px;
     font-family: var(--font-mono);
     font-size: 12.5px;
-    line-height: 1.55;
+    line-height: 1.5;
     color: var(--text);
     background: var(--bg-terminal);
+    overflow: auto;
+    flex: 1;
+    min-height: 0;
+}
+
+.jsr-console:empty::before {
+    content: '运行后在此显示 console 输出';
+    display: block;
+    padding: 12px 8px;
+    color: var(--text-muted);
+    font-size: 12px;
+    text-align: center;
+}
+
+.jsr-line {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 5px 8px;
+    margin-bottom: 4px;
+    border-radius: 6px;
+    border-left: 3px solid transparent;
     white-space: pre-wrap;
     word-break: break-word;
-    max-height: 320px;
-    overflow: auto;
 }
 
-#jsrStdout:empty {
-    display: none;
+.jsr-line:last-child {
+    margin-bottom: 0;
 }
 
-.jsr-stderr {
+.jsr-line-tag {
+    flex-shrink: 0;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 1px 6px;
+    border-radius: 4px;
+    line-height: 1.4;
+    margin-top: 1px;
+}
+
+.jsr-line-body {
+    flex: 1;
+    min-width: 0;
+}
+
+/* log — 蓝 */
+.jsr-line-log {
+    background: rgba(var(--info-rgb, 56, 189, 248), 0.1);
+    border-left-color: var(--info, #38bdf8);
+    color: var(--text);
+}
+
+.jsr-line-log .jsr-line-tag {
+    background: rgba(var(--info-rgb, 56, 189, 248), 0.2);
+    color: var(--info, #38bdf8);
+}
+
+/* info — 青/信息色 */
+.jsr-line-info {
+    background: rgba(var(--accent-rgb), 0.1);
+    border-left-color: var(--accent);
+    color: var(--text);
+}
+
+.jsr-line-info .jsr-line-tag {
+    background: rgba(var(--accent-rgb), 0.18);
+    color: var(--accent);
+}
+
+/* warn — 黄 */
+.jsr-line-warn {
+    background: rgba(var(--warning-rgb, 251, 191, 36), 0.12);
+    border-left-color: var(--warning, #fbbf24);
+    color: var(--text);
+}
+
+.jsr-line-warn .jsr-line-tag {
+    background: rgba(var(--warning-rgb, 251, 191, 36), 0.22);
+    color: var(--warning, #fbbf24);
+}
+
+/* error — 红 */
+.jsr-line-error {
+    background: rgba(var(--danger-rgb), 0.12);
+    border-left-color: var(--danger);
     color: var(--danger);
-    border-top: 1px solid var(--border);
-    background: rgba(var(--danger-rgb), 0.06);
 }
 
-.jsr-stderr:empty {
-    display: none;
+.jsr-line-error .jsr-line-tag {
+    background: rgba(var(--danger-rgb), 0.2);
+    color: var(--danger);
+}
+
+/* debug — 灰 */
+.jsr-line-debug {
+    background: rgba(148, 163, 184, 0.08);
+    border-left-color: var(--text-muted);
+    color: var(--text-dim);
+}
+
+.jsr-line-debug .jsr-line-tag {
+    background: rgba(148, 163, 184, 0.15);
+    color: var(--text-muted);
+}
+
+/* 返回值 — 紫 */
+.jsr-line-return {
+    background: rgba(var(--accent2-rgb, 167, 139, 250), 0.1);
+    border-left-color: var(--accent2, #a78bfa);
+    color: var(--text);
+}
+
+.jsr-line-return .jsr-line-tag {
+    background: rgba(var(--accent2-rgb, 167, 139, 250), 0.2);
+    color: var(--accent2, #a78bfa);
+}
+
+/* 异常 / table */
+.jsr-line-table {
+    background: rgba(var(--info-rgb, 56, 189, 248), 0.08);
+    border-left-color: var(--info, #38bdf8);
+}
+
+.jsr-line-table .jsr-line-tag {
+    background: rgba(var(--info-rgb, 56, 189, 248), 0.18);
+    color: var(--info, #38bdf8);
 }
 
 .status-text {

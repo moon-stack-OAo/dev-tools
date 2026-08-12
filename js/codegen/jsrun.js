@@ -92,6 +92,7 @@ function captureConsole(fn) {
     warn: console.warn,
     error: console.error,
     debug: console.debug,
+    table: console.table,
   };
   const wrap = (level) =>
     function () {
@@ -106,6 +107,7 @@ function captureConsole(fn) {
   console.warn = wrap("warn");
   console.error = wrap("error");
   console.debug = wrap("debug");
+  console.table = wrap("table");
   try {
     const result = fn();
     return { ok: true, result: result, error: null, logs: logs };
@@ -117,6 +119,7 @@ function captureConsole(fn) {
     console.warn = orig.warn;
     console.error = orig.error;
     console.debug = orig.debug;
+    console.table = orig.table;
   }
 }
 
@@ -256,21 +259,85 @@ function jsrSetCode(v) {
   if (ta) ta.value = text;
 }
 
-function jsrAppendOutput(text, type) {
-  const id = type === "stderr" ? "jsrStderr" : "jsrStdout";
-  const el = document.getElementById(id);
+function jsrEsc(s) {
+  if (typeof escapeHtml === "function") return escapeHtml(s);
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+/**
+ * 规范化 console level 到样式 class 后缀
+ * @param {string} level
+ * @returns {string}
+ */
+function jsrNormalizeLevel(level) {
+  var lv = String(level || "log").toLowerCase();
+  if (lv === "warning") return "warn";
+  if (
+    lv === "log" ||
+    lv === "info" ||
+    lv === "warn" ||
+    lv === "error" ||
+    lv === "debug" ||
+    lv === "return" ||
+    lv === "table"
+  ) {
+    return lv;
+  }
+  return "log";
+}
+
+/**
+ * 向控制台追加一行（按 level 着色）
+ * @param {string} text
+ * @param {string} [level='log']
+ */
+function jsrAppendOutput(text, level) {
+  var el = document.getElementById("jsrConsole");
   if (!el) return;
-  el.textContent += text;
+  var lv = jsrNormalizeLevel(level);
+  var tagLabel =
+    lv === "return"
+      ? "ret"
+      : lv === "warn"
+        ? "warn"
+        : lv === "error"
+          ? "err"
+          : lv === "info"
+            ? "info"
+            : lv === "debug"
+              ? "dbg"
+              : lv === "table"
+                ? "table"
+                : "log";
+  var line = document.createElement("div");
+  line.className = "jsr-line jsr-line-" + lv;
+  line.innerHTML =
+    '<span class="jsr-line-tag">' +
+    tagLabel +
+    '</span><span class="jsr-line-body">' +
+    jsrEsc(text == null ? "" : String(text)) +
+    "</span>";
+  el.appendChild(line);
+  el.scrollTop = el.scrollHeight;
 }
 
 function jsrClearOutput() {
-  const out = document.getElementById("jsrStdout");
-  const err = document.getElementById("jsrStderr");
-  if (out) out.textContent = "";
-  if (err) err.textContent = "";
-  const status = document.getElementById("jsrStatus");
+  var out = document.getElementById("jsrConsole");
+  if (out) out.innerHTML = "";
+  // 兼容旧 DOM（若未刷新缓存）
+  var legacyOut = document.getElementById("jsrStdout");
+  var legacyErr = document.getElementById("jsrStderr");
+  if (legacyOut) legacyOut.textContent = "";
+  if (legacyErr) legacyErr.textContent = "";
+  var status = document.getElementById("jsrStatus");
   if (status) status.textContent = "";
 }
+
+if (typeof window !== "undefined") window.jsrClearOutput = jsrClearOutput;
 
 function jsrClear() {
   jsrSetCode("");
@@ -314,21 +381,17 @@ function jsrRun() {
 
   if (r.logs && r.logs.length) {
     r.logs.forEach(function (entry) {
-      const stream = entry.level === "error" ? "stderr" : "stdout";
-      jsrAppendOutput(entry.text + "\n", stream);
+      jsrAppendOutput(entry.text, entry.level || "log");
     });
   }
 
   if (r.ok) {
     if (typeof r.result !== "undefined") {
-      jsrAppendOutput(
-        "// 返回值: " + formatLogValue(r.result) + "\n",
-        "stdout",
-      );
+      jsrAppendOutput("返回值: " + formatLogValue(r.result), "return");
     }
     if (status) status.textContent = "✓ 运行成功 (" + elapsed + "ms)";
   } else {
-    jsrAppendOutput(formatError(r.error) + "\n", "stderr");
+    jsrAppendOutput(formatError(r.error), "error");
     if (status) status.textContent = "✗ 异常 (" + elapsed + "ms)";
   }
 }
@@ -352,6 +415,7 @@ if (typeof module !== "undefined" && module.exports) {
     formatLogValue,
     formatError,
     captureConsole,
+    jsrNormalizeLevel,
     JS_SAMPLE,
     TS_SAMPLE,
   };
