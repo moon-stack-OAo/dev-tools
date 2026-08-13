@@ -37,6 +37,7 @@ const domCache = {
     panelHome: null,
     sidebar: null,
     sidebarNav: null,
+    sidebarQuick: null,
     sidebarToggle: null,
     sidebarMenuBtn: null,
     sidebarBackdrop: null,
@@ -63,6 +64,7 @@ function initDomCache() {
     domCache.panelHome = document.getElementById('panel-home');
     domCache.sidebar = document.getElementById('sidebar');
     domCache.sidebarNav = document.getElementById('sidebarNav');
+    domCache.sidebarQuick = document.getElementById('sidebarQuick');
     domCache.sidebarToggle = document.getElementById('sidebarToggle');
     domCache.sidebarMenuBtn = document.getElementById('sidebarMenuBtn');
     domCache.sidebarBackdrop = document.getElementById('sidebarBackdrop');

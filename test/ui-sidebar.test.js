@@ -1,8 +1,10 @@
-// 侧边栏纯逻辑：虚拟分类判定、展开分类选择、宽度钳制
+// 侧边栏纯逻辑：扁平分类计数、宽度钳制、快捷区
 const {
-    isSidebarVirtualCat,
-    resolveSidebarExpandCatId,
+    countSidebarCatTools,
     clampSidebarWidth,
+    countSidebarQuickItem,
+    resolveSidebarQuickFocusFromAudience,
+    SIDEBAR_QUICK_ITEMS,
     SIDEBAR_KEY,
     SIDEBAR_WIDTH_DEFAULT,
     SIDEBAR_WIDTH_MIN,
@@ -10,42 +12,18 @@ const {
 } = require('../js/ui-sidebar.js');
 
 describe('ui-sidebar 纯逻辑', () => {
-    describe('isSidebarVirtualCat', () => {
-        test('favorites / recent 为虚拟分类', () => {
-            expect(isSidebarVirtualCat('favorites')).toBe(true);
-            expect(isSidebarVirtualCat('recent')).toBe(true);
-        });
-
-        test('真实分类返回 false', () => {
-            expect(isSidebarVirtualCat('format')).toBe(false);
-            expect(isSidebarVirtualCat('encode')).toBe(false);
-            expect(isSidebarVirtualCat('')).toBe(false);
-        });
-    });
-
-    describe('resolveSidebarExpandCatId', () => {
-        test('空列表返回 null', () => {
-            expect(resolveSidebarExpandCatId([])).toBe(null);
-            expect(resolveSidebarExpandCatId(null)).toBe(null);
-            expect(resolveSidebarExpandCatId(undefined)).toBe(null);
-        });
-
-        test('仅虚拟分类时不强制展开（返回 null）', () => {
-            expect(resolveSidebarExpandCatId(['favorites', 'recent'])).toBe(null);
-            expect(resolveSidebarExpandCatId(['recent'])).toBe(null);
-        });
-
-        test('真实分类优先于收藏/最近', () => {
-            expect(resolveSidebarExpandCatId(['favorites', 'format', 'recent'])).toBe(
-                'format',
-            );
-            expect(resolveSidebarExpandCatId(['recent', 'encode'])).toBe('encode');
-        });
-
-        test('多个真实分类时取第一个真实分类', () => {
-            expect(resolveSidebarExpandCatId(['favorites', 'format', 'encode'])).toBe(
-                'format',
-            );
+    describe('countSidebarCatTools', () => {
+        test('按 cat 统计工具数', () => {
+            global.tools = [
+                {id: 'a', cat: 'format'},
+                {id: 'b', cat: 'format'},
+                {id: 'c', cat: 'encode'},
+            ];
+            expect(countSidebarCatTools('format')).toBe(2);
+            expect(countSidebarCatTools('encode')).toBe(1);
+            expect(countSidebarCatTools('debug')).toBe(0);
+            expect(countSidebarCatTools('')).toBe(0);
+            global.tools = undefined;
         });
     });
 
@@ -79,6 +57,49 @@ describe('ui-sidebar 纯逻辑', () => {
     describe('SIDEBAR_KEY', () => {
         test('存储键名稳定', () => {
             expect(SIDEBAR_KEY).toBe('devtools_sidebar');
+        });
+    });
+
+    describe('快捷区', () => {
+        test('SIDEBAR_QUICK_ITEMS 顺序与 id 稳定', () => {
+            expect(SIDEBAR_QUICK_ITEMS.map((x) => x.id)).toEqual([
+                'all',
+                'recent',
+                'favorites',
+                'common',
+                'frontend',
+                'backend',
+                'java',
+            ]);
+        });
+
+        test('resolveSidebarQuickFocusFromAudience', () => {
+            expect(resolveSidebarQuickFocusFromAudience('all')).toBe('all');
+            expect(resolveSidebarQuickFocusFromAudience('java')).toBe('java');
+            expect(resolveSidebarQuickFocusFromAudience('frontend')).toBe('frontend');
+            expect(resolveSidebarQuickFocusFromAudience(undefined)).toBe('all');
+            expect(resolveSidebarQuickFocusFromAudience('unknown')).toBe('all');
+        });
+
+        test('countSidebarQuickItem all 统计 tools 长度', () => {
+            global.tools = [{id: 'a'}, {id: 'b'}, {id: 'c'}];
+            expect(countSidebarQuickItem({kind: 'all'})).toBe(3);
+            global.tools = undefined;
+        });
+
+        test('countSidebarQuickItem audience 走 toolMatchesAudience', () => {
+            global.tools = [
+                {id: '1', tags: ['java']},
+                {id: '2', tags: ['common']},
+                {id: '3', tags: ['java', 'backend']},
+            ];
+            global.toolMatchesAudience = (t, a) =>
+                a === 'java' ? (t.tags || []).indexOf('java') !== -1 : true;
+            expect(
+                countSidebarQuickItem({kind: 'audience', audience: 'java'}),
+            ).toBe(2);
+            global.tools = undefined;
+            global.toolMatchesAudience = undefined;
         });
     });
 });

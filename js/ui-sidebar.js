@@ -11,6 +11,70 @@ let sidebarCollapsed = false;
 let sidebarWidth = SIDEBAR_WIDTH_DEFAULT;
 /** 当前工具页对应的 tool id；回首页时清空，虚拟分类刷新后用于恢复高亮 */
 let sidebarActiveToolId = null;
+/**
+ * 快捷区焦点：all | recent | favorites | common | frontend | backend | java
+ * 与首页 audience 联动；recent/favorites 为虚拟跳转焦点
+ */
+let sidebarQuickFocus = 'all';
+
+/** 快捷区条目（顺序固定） */
+const SIDEBAR_QUICK_ITEMS = [
+    {
+        id: 'all',
+        kind: 'all',
+        name: '全部工具',
+        icon: 'bi-folder-fill',
+        color: '#f0b429',
+    },
+    {
+        id: 'recent',
+        kind: 'virtual',
+        cat: 'recent',
+        name: '最近使用',
+        icon: 'bi-clock-history',
+        color: '#94a3b8',
+    },
+    {
+        id: 'favorites',
+        kind: 'virtual',
+        cat: 'favorites',
+        name: '我的收藏',
+        icon: 'bi-star-fill',
+        color: '#fbbf24',
+    },
+    {
+        id: 'common',
+        kind: 'audience',
+        audience: 'common',
+        name: '通用',
+        icon: 'bi-person',
+        color: '#60a5fa',
+    },
+    {
+        id: 'frontend',
+        kind: 'audience',
+        audience: 'frontend',
+        name: '前端',
+        icon: 'bi-code-slash',
+        color: '#22d3ee',
+    },
+    {
+        id: 'backend',
+        kind: 'audience',
+        audience: 'backend',
+        name: '后端',
+        icon: 'bi-hdd-stack',
+        color: '#a78bfa',
+    },
+    {
+        id: 'java',
+        kind: 'audience',
+        audience: 'java',
+        name: 'Java',
+        icon: 'bi-cup-hot',
+        color: '#fb923c',
+    },
+];
 
 /** 将宽度钳制到 [min, max] */
 function clampSidebarWidth(w) {
@@ -113,13 +177,13 @@ function hideSidebarTip() {
 
 /**
  * 是否需要显示气泡：折叠侧边栏始终显示；展开时仅文字被截断时显示。
- * @param {Element} el .sb-cat-header | .sb-tool
+ * @param {Element} el .sb-cat-header | .sb-quick-item
  */
 function shouldShowSidebarTip(el) {
     const sidebar = domCache.sidebar;
     if (!sidebar || !el) return false;
     if (sidebar.classList.contains('collapsed')) return true;
-    const nameEl = el.querySelector('.sb-cat-name, .sb-tool-name');
+    const nameEl = el.querySelector('.sb-cat-name, .sb-quick-name');
     if (!nameEl) return false;
     return nameEl.scrollWidth > nameEl.clientWidth + 1;
 }
@@ -171,10 +235,8 @@ function initSidebarTooltip() {
         !!(el && related && related.nodeType === 1 && el.contains(related));
 
     nav.addEventListener('mouseover', (e) => {
-        if (e.target.closest('.fav-star, .sb-cat-clear, .sidebar-resizer')) return;
-        const catHeader = e.target.closest('.sb-cat-header');
-        const toolEl = e.target.closest('.sb-tool');
-        const anchor = catHeader || toolEl;
+        if (e.target.closest('.sidebar-resizer')) return;
+        const anchor = e.target.closest('.sb-cat-header');
         if (!anchor || !nav.contains(anchor)) return;
         // 进入同一锚点子节点时不重复
         if (_sbTipAnchor === anchor) return;
@@ -193,9 +255,7 @@ function initSidebarTooltip() {
     });
 
     nav.addEventListener('mouseout', (e) => {
-        const catHeader = e.target.closest('.sb-cat-header');
-        const toolEl = e.target.closest('.sb-tool');
-        const anchor = catHeader || toolEl;
+        const anchor = e.target.closest('.sb-cat-header');
         if (!anchor) return;
         // 仍在同一锚点内移动则忽略
         if (relatedInside(anchor, e.relatedTarget)) return;
@@ -214,67 +274,305 @@ function initSidebarTooltip() {
     window.addEventListener('resize', hideSidebarTip);
 }
 
-/** 是否为侧边栏虚拟分类（收藏 / 最近使用） */
-function isSidebarVirtualCat(catId) {
-    return catId === 'favorites' || catId === 'recent';
+/** 业务分类工具数（侧栏扁平分类用） */
+function countSidebarCatTools(catId) {
+    if (!catId || typeof tools === 'undefined' || !tools) return 0;
+    let n = 0;
+    for (let i = 0; i < tools.length; i++) {
+        if (tools[i].cat === catId) n++;
+    }
+    return n;
+}
+
+/** 快捷区条目计数 */
+function countSidebarQuickItem(item) {
+    if (!item) return 0;
+    if (item.kind === 'all') {
+        return typeof tools !== 'undefined' && tools ? tools.length : 0;
+    }
+    if (item.kind === 'virtual') {
+        if (item.cat === 'recent') {
+            return typeof getRecent === 'function' ? getRecent().length : 0;
+        }
+        if (item.cat === 'favorites') {
+            return typeof getFavoriteTools === 'function' ? getFavoriteTools().length : 0;
+        }
+        return 0;
+    }
+    if (item.kind === 'audience') {
+        if (typeof tools === 'undefined' || !tools) return 0;
+        if (typeof toolMatchesAudience !== 'function') return tools.length;
+        let n = 0;
+        for (let i = 0; i < tools.length; i++) {
+            if (toolMatchesAudience(tools[i], item.audience)) n++;
+        }
+        return n;
+    }
+    return 0;
+}
+
+/** 由首页 audience 推导快捷区焦点（虚拟焦点 recent/favorites 保留） */
+function resolveSidebarQuickFocusFromAudience(audience) {
+    const a = audience || 'all';
+    if (a === 'all') return 'all';
+    if (a === 'common' || a === 'frontend' || a === 'backend' || a === 'java') return a;
+    return 'all';
 }
 
 /**
- * 从含当前工具的分类 id 中选出应确保展开的真实分类（不含收藏/最近）。
- * 打开工具时不强制展开虚拟分类，也不收起用户已展开的其它分类。
- * @param {string[]} catIds
- * @returns {string|null}
+ * 同步快捷区激活态
+ * @param {{focus?: string, audience?: string}} [opts]
  */
-function resolveSidebarExpandCatId(catIds) {
-    if (!catIds || !catIds.length) return null;
-    for (let i = 0; i < catIds.length; i++) {
-        if (!isSidebarVirtualCat(catIds[i])) return catIds[i];
+function syncSidebarQuickActive(opts) {
+    const o = opts || {};
+    if (o.focus) {
+        sidebarQuickFocus = o.focus;
+    } else if (o.audience !== undefined) {
+        // 受众变更时覆盖虚拟焦点
+        sidebarQuickFocus = resolveSidebarQuickFocusFromAudience(o.audience);
+    } else if (typeof homeAudience !== 'undefined') {
+        // 若当前不是 recent/favorites 焦点，跟 audience
+        if (sidebarQuickFocus !== 'recent' && sidebarQuickFocus !== 'favorites') {
+            sidebarQuickFocus = resolveSidebarQuickFocusFromAudience(homeAudience);
+        }
     }
-    return null;
+    const box = domCache.sidebarQuick;
+    if (!box) return;
+    box.querySelectorAll('.sb-quick-item').forEach((el) => {
+        el.classList.toggle('active', el.dataset.quick === sidebarQuickFocus);
+    });
 }
 
-function clearSidebarToolCurrent(nav) {
+/** 仅更新快捷区计数文案 */
+function refreshSidebarQuickCounts() {
+    const box = domCache.sidebarQuick;
+    if (!box) return;
+    box.querySelectorAll('.sb-quick-item').forEach((el) => {
+        const id = el.dataset.quick;
+        const item = SIDEBAR_QUICK_ITEMS.find((x) => x.id === id);
+        if (!item) return;
+        const count = countSidebarQuickItem(item);
+        const countEl = el.querySelector('.sb-quick-count');
+        if (countEl) countEl.textContent = String(count);
+        el.setAttribute('data-tip', item.name + (count ? '（' + count + '）' : ''));
+    });
+}
+
+/**
+ * 快捷区点击
+ * @param {string} quickId
+ */
+function handleSidebarQuickClick(quickId) {
+    const item = SIDEBAR_QUICK_ITEMS.find((x) => x.id === quickId);
+    if (!item) return;
+    hideSidebarTip();
+
+    if (item.kind === 'all') {
+        sidebarQuickFocus = 'all';
+        if (typeof setHomeAudience === 'function') setHomeAudience('all');
+        if (typeof goHome === 'function') goHome();
+        else if (typeof showHome === 'function') showHome();
+        syncSidebarQuickActive({focus: 'all'});
+        closeMobileSidebar();
+        return;
+    }
+
+    if (item.kind === 'audience') {
+        sidebarQuickFocus = item.id;
+        if (typeof setHomeAudience === 'function') setHomeAudience(item.audience);
+        // setHomeAudience 会 filterHomeTools，必要时切回首页
+        if (typeof isHomePanelActive === 'function' && !isHomePanelActive()) {
+            if (typeof goHome === 'function') goHome();
+            else if (typeof showHome === 'function') showHome();
+        } else if (typeof setRouteHome === 'function') {
+            // 已在首页：确保路由为首页
+            try {
+                setRouteHome({replace: true});
+            } catch (e) {
+                /* ignore */
+            }
+        }
+        syncSidebarQuickActive({focus: item.id});
+        closeMobileSidebar();
+        return;
+    }
+
+    if (item.kind === 'virtual') {
+        sidebarQuickFocus = item.id;
+        // 回首页并清业务分类筛选，保留 audience；收藏/最近仅首页区块 + 快捷区
+        if (typeof goHome === 'function') {
+            goHome();
+        } else if (typeof showHome === 'function') {
+            showHome();
+        }
+        setTimeout(() => {
+            const el = document.getElementById('cat-' + item.cat);
+            if (el) el.scrollIntoView({behavior: 'smooth', block: 'start'});
+        }, 60);
+        syncSidebarQuickActive({focus: item.id});
+        closeMobileSidebar();
+    }
+}
+
+function buildSidebarQuick() {
+    const box = domCache.sidebarQuick;
+    if (!box) return;
+    // 初始焦点跟 audience
+    if (typeof homeAudience !== 'undefined') {
+        if (sidebarQuickFocus !== 'recent' && sidebarQuickFocus !== 'favorites') {
+            sidebarQuickFocus = resolveSidebarQuickFocusFromAudience(homeAudience);
+        }
+    }
+    let html = '<div class="sb-section-label">快捷</div>';
+    SIDEBAR_QUICK_ITEMS.forEach((item, idx) => {
+        // 受众段前加分隔线
+        if (item.kind === 'audience' && (idx === 0 || SIDEBAR_QUICK_ITEMS[idx - 1].kind !== 'audience')) {
+            html += '<div class="sb-quick-divider" role="separator"></div>';
+        }
+        const count = countSidebarQuickItem(item);
+        const tip = item.name + (count ? '（' + count + '）' : '');
+        html +=
+            '<button type="button" class="sb-quick-item' +
+            (item.id === sidebarQuickFocus ? ' active' : '') +
+            '" data-quick="' +
+            escapeHtml(item.id) +
+            '" data-tip="' +
+            escapeHtml(tip) +
+            '" style="--sb-quick-color:' +
+            escapeHtml(item.color) +
+            '">' +
+            '<i class="bi ' +
+            escapeHtml(item.icon) +
+            ' sb-quick-icon" aria-hidden="true"></i>' +
+            '<span class="sb-quick-name">' +
+            escapeHtml(item.name) +
+            '</span>' +
+            '<span class="sb-quick-count">' +
+            count +
+            '</span>' +
+            '</button>';
+    });
+    box.innerHTML = html;
+
+    if (box.dataset.bound !== '1') {
+        box.dataset.bound = '1';
+        box.addEventListener('click', (e) => {
+            const btn = e.target.closest('.sb-quick-item');
+            if (!btn || !box.contains(btn)) return;
+            e.preventDefault();
+            handleSidebarQuickClick(btn.dataset.quick);
+        });
+        // 复用侧栏气泡：折叠时显示名称
+        box.addEventListener('mouseover', (e) => {
+            if (e.target.closest('.sidebar-resizer')) return;
+            const anchor = e.target.closest('.sb-quick-item');
+            if (!anchor || !box.contains(anchor)) return;
+            if (_sbTipAnchor === anchor) return;
+            const text = (anchor.getAttribute('data-tip') || '').trim();
+            const sidebar = domCache.sidebar;
+            const need =
+                sidebar &&
+                (sidebar.classList.contains('collapsed') ||
+                    (() => {
+                        const nameEl = anchor.querySelector('.sb-quick-name');
+                        return nameEl && nameEl.scrollWidth > nameEl.clientWidth + 1;
+                    })());
+            if (!text || !need) {
+                hideSidebarTip();
+                return;
+            }
+            if (_sbTipTimer) clearTimeout(_sbTipTimer);
+            _sbTipTimer = setTimeout(() => {
+                _sbTipTimer = null;
+                showSidebarTip(anchor, text);
+            }, 280);
+        });
+        box.addEventListener('mouseout', (e) => {
+            const anchor = e.target.closest('.sb-quick-item');
+            if (!anchor) return;
+            const related = e.relatedTarget;
+            if (related && anchor.contains(related)) return;
+            if (_sbTipAnchor === anchor || !_sbTipAnchor) hideSidebarTip();
+        });
+        box.addEventListener(
+            'scroll',
+            () => {
+                hideSidebarTip();
+            },
+            {passive: true},
+        );
+    }
+}
+
+function clearSidebarCatCurrent(nav) {
     if (!nav) return;
-    nav.querySelectorAll('.sb-tool.current').forEach((el) => el.classList.remove('current'));
+    nav.querySelectorAll('.sb-cat.current').forEach((el) => el.classList.remove('current'));
+}
+
+/** 扁平业务分类：点击 → 首页分类筛选 */
+function handleSidebarCatClick(catId) {
+    if (!catId) return;
+    hideSidebarTip();
+    const sidebar = domCache.sidebar;
+    if (sidebar && sidebar.classList.contains('collapsed')) {
+        sidebar.classList.remove('collapsed');
+        sidebarCollapsed = false;
+        saveSidebarState();
+    }
+    if (typeof goHome === 'function') {
+        // 与首页锚点一致：再点同一分类则清除筛选
+        if (typeof homeCatFilter !== 'undefined' && homeCatFilter === catId) {
+            goHome();
+        } else {
+            goHome(catId);
+        }
+    } else if (typeof setHomeCatFilter === 'function') {
+        if (typeof homeCatFilter !== 'undefined' && homeCatFilter === catId) {
+            if (typeof clearHomeCatFilter === 'function') clearHomeCatFilter();
+        } else {
+            setHomeCatFilter(catId);
+        }
+    }
+    closeMobileSidebar();
 }
 
 function buildSidebar() {
     readSidebarState();
+    buildSidebarQuick();
     const nav = domCache.sidebarNav;
     if (!nav) return;
     nav.innerHTML = '';
-    categories.forEach((cat) => {
-        let toolsInCat;
-        if (cat.id === 'favorites') {
-            toolsInCat = getFavoriteTools();
-        } else if (cat.id === 'recent') {
-            toolsInCat = getRecent().map((e) => e.tool);
-        } else {
-            toolsInCat = tools.filter((t) => t.cat === cat.id);
-        }
-        if (!toolsInCat.length) return;
+    const label = document.createElement('div');
+    label.className = 'sb-section-label';
+    label.textContent = '分类';
+    nav.appendChild(label);
+    const bizCats =
+        typeof getBusinessCategories === 'function'
+            ? getBusinessCategories()
+            : (categories || []).filter((c) => c && !c.virtual);
+    bizCats.forEach((cat) => {
+        const count = countSidebarCatTools(cat.id);
+        if (!count) return;
         const wrap = document.createElement('div');
         wrap.className = 'sb-cat cat-' + cat.id;
         wrap.dataset.cat = cat.id;
-        let clearBtn = '';
-        if (cat.id === 'recent') {
-            clearBtn =
-                '<i class="bi bi-x-circle sb-cat-clear" title="清空最近使用" onclick="event.stopPropagation();clearRecent()"></i>';
-        } else if (cat.id === 'favorites') {
-            clearBtn =
-                '<i class="bi bi-x-circle sb-cat-clear" title="清空收藏" onclick="event.stopPropagation();clearFavoritesUI()"></i>';
-        }
-        wrap.innerHTML = `
-            <div class="sb-cat-header" data-cat="${escapeHtml(cat.id)}" data-tip="${escapeHtml(cat.name)}">
-                <i class="bi ${cat.icon} sb-cat-icon"></i>
-                <span class="sb-cat-name">${escapeHtml(cat.name)}</span>
-                ${clearBtn}
-                <i class="bi bi-chevron-right sb-cat-arrow"></i>
-            </div>
-            <div class="sb-tools">
-                ${toolsInCat.map((t) => sbToolHtml(t)).join('')}
-            </div>
-        `;
+        const tip = cat.name + '（' + count + '）';
+        wrap.innerHTML =
+            '<button type="button" class="sb-cat-header" data-cat="' +
+            escapeHtml(cat.id) +
+            '" data-tip="' +
+            escapeHtml(tip) +
+            '">' +
+            '<i class="bi ' +
+            escapeHtml(cat.icon) +
+            ' sb-cat-icon" aria-hidden="true"></i>' +
+            '<span class="sb-cat-name">' +
+            escapeHtml(cat.name) +
+            '</span>' +
+            '<span class="sb-cat-count">' +
+            count +
+            '</span>' +
+            '</button>';
         nav.appendChild(wrap);
     });
 
@@ -282,32 +580,10 @@ function buildSidebar() {
     if (nav.dataset.bound !== '1') {
         nav.dataset.bound = '1';
         nav.addEventListener('click', (e) => {
-            const favEl = e.target.closest('.fav-star');
-            if (favEl) {
-                e.stopPropagation();
-                e.preventDefault();
-                handleToggleFavorite(favEl.dataset.tool);
-                return;
-            }
             const catHeader = e.target.closest('.sb-cat-header');
-            if (catHeader) {
-                const catEl = catHeader.parentElement;
-                const sidebar = domCache.sidebar;
-                if (sidebar.classList.contains('collapsed')) {
-                    sidebar.classList.remove('collapsed');
-                    sidebarCollapsed = false;
-                    saveSidebarState();
-                    nav.querySelectorAll('.sb-cat.expanded').forEach((el) => el.classList.remove('expanded'));
-                    catEl.classList.add('expanded');
-                } else {
-                    catEl.classList.toggle('expanded');
-                }
-                return;
-            }
-            const toolEl = e.target.closest('.sb-tool');
-            if (toolEl) {
-                openTool(toolEl.dataset.tool);
-                closeMobileSidebar();
+            if (catHeader && nav.contains(catHeader)) {
+                e.preventDefault();
+                handleSidebarCatClick(catHeader.dataset.cat);
             }
         });
     }
@@ -331,116 +607,46 @@ function buildSidebar() {
     initSidebarTooltip();
     initMobileSidebar();
 
+    if (typeof syncCatAnchorFilterActive === 'function') {
+        syncCatAnchorFilterActive();
+    }
     if (sidebarActiveToolId) {
         highlightSidebarTool(sidebarActiveToolId);
     }
 }
 
-// 重绘侧边栏虚拟分类（收藏 / 最近使用），顺序：收藏 → 最近使用 → 其余
-function refreshSidebarVirtualCat(catId, toolsInCat, clearTitle, clearFnName) {
-    const nav = domCache.sidebarNav;
-    if (!nav) return;
-    const wasExpanded = !!nav.querySelector(
-        '.sb-cat[data-cat="' + catId + '"].expanded',
-    );
-    nav.querySelector('.sb-cat[data-cat="' + catId + '"]')?.remove();
-    if (!toolsInCat.length) {
-        // 整段移除后仍恢复当前工具高亮（真实分类上的 current）
-        if (sidebarActiveToolId) highlightSidebarTool(sidebarActiveToolId);
-        return;
-    }
-    const cat = categories.find((c) => c.id === catId);
-    if (!cat) return;
-    const wrap = document.createElement('div');
-    wrap.className = 'sb-cat cat-' + catId + (wasExpanded ? ' expanded' : '');
-    wrap.dataset.cat = catId;
-    wrap.innerHTML =
-        '<div class="sb-cat-header" data-cat="' +
-        escapeHtml(catId) +
-        '" data-tip="' +
-        escapeHtml(cat.name) +
-        '"><i class="bi ' +
-        cat.icon +
-        ' sb-cat-icon"></i><span class="sb-cat-name">' +
-        escapeHtml(cat.name) +
-        '</span>' +
-        '<i class="bi bi-x-circle sb-cat-clear" title="' +
-        escapeHtml(clearTitle) +
-        '" onclick="event.stopPropagation();' +
-        clearFnName +
-        '()"></i>' +
-        '<i class="bi bi-chevron-right sb-cat-arrow"></i></div>' +
-        '<div class="sb-tools">' +
-        toolsInCat.map((t) => sbToolHtml(t)).join('') +
-        '</div>';
-    if (catId === 'favorites') {
-        nav.insertBefore(wrap, nav.firstChild);
-    } else {
-        const favCat = nav.querySelector('.sb-cat[data-cat="favorites"]');
-        if (favCat) {
-            favCat.after(wrap);
-        } else {
-            nav.insertBefore(wrap, nav.firstChild);
-        }
-    }
-    // DOM 替换会丢掉 current；有激活工具时重新高亮（真实分类优先展开）
-    if (sidebarActiveToolId) {
-        highlightSidebarTool(sidebarActiveToolId);
-    }
-}
-
+/** 收藏变更：侧栏不再渲染虚拟分类，仅刷新快捷区计数 */
 function refreshSidebarFavorites() {
-    refreshSidebarVirtualCat(
-        'favorites',
-        getFavoriteTools(),
-        '清空收藏',
-        'clearFavoritesUI',
-    );
+    refreshSidebarQuickCounts();
 }
 
-// 重绘侧边栏"最近使用"分类:每次打开工具后调用,使其与首页最近块保持同步。
-// 未产生过最近使用时整段不渲染,与普通分类"无工具则隐藏"的约定一致。
+/** 最近使用变更：仅刷新快捷区计数 */
 function refreshSidebarRecent() {
-    refreshSidebarVirtualCat(
-        'recent',
-        getRecent().map((e) => e.tool),
-        '清空最近使用',
-        'clearRecent',
-    );
+    refreshSidebarQuickCounts();
 }
 
+/**
+ * 打开工具时高亮所属业务分类（扁平侧栏无工具子项）
+ * @param {string} id tool id
+ */
 function highlightSidebarTool(id) {
     const nav = domCache.sidebarNav;
     if (!nav || !id) return;
     sidebarActiveToolId = id;
-    // 只同步 current，不收起任何已展开分类（避免：点真实分类工具 → 该分类被收、最近被展开）
-    clearSidebarToolCurrent(nav);
-    const toolEls = nav.querySelectorAll('.sb-tool[data-tool="' + id + '"]');
-    if (!toolEls.length) return;
-
-    const catIds = [];
-    const catElsById = {};
-    toolEls.forEach((toolEl) => {
-        toolEl.classList.add('current');
-        const catEl = toolEl.closest('.sb-cat');
-        if (!catEl) return;
-        const catId = catEl.dataset.cat;
-        if (!catElsById[catId]) {
-            catElsById[catId] = catEl;
-            catIds.push(catId);
-        }
-    });
-    // 仅确保真实分类展开；收藏/最近保持用户原有展开态
-    const expandId = resolveSidebarExpandCatId(catIds);
-    if (expandId && catElsById[expandId]) {
-        catElsById[expandId].classList.add('expanded');
-    }
+    clearSidebarCatCurrent(nav);
+    const tool =
+        typeof toolsById !== 'undefined' && toolsById.get
+            ? toolsById.get(id)
+            : null;
+    const catId = tool && tool.cat;
+    if (!catId) return;
+    const catEl = nav.querySelector('.sb-cat[data-cat="' + catId + '"]');
+    if (catEl) catEl.classList.add('current');
 }
 
 function clearSidebarHighlight() {
     sidebarActiveToolId = null;
-    // 回首页只清高亮，保留分类展开状态
-    clearSidebarToolCurrent(domCache.sidebarNav);
+    clearSidebarCatCurrent(domCache.sidebarNav);
 }
 
 // === 窄屏 Drawer（≤1024px）===
@@ -516,13 +722,15 @@ function initMobileSidebar() {
 
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
-        isSidebarVirtualCat,
-        resolveSidebarExpandCatId,
+        countSidebarCatTools,
         clampSidebarWidth,
         isMobileSidebarViewport,
         openMobileSidebar,
         closeMobileSidebar,
         toggleMobileSidebar,
+        countSidebarQuickItem,
+        resolveSidebarQuickFocusFromAudience,
+        SIDEBAR_QUICK_ITEMS,
         SIDEBAR_KEY,
         SIDEBAR_WIDTH_DEFAULT,
         SIDEBAR_WIDTH_MIN,

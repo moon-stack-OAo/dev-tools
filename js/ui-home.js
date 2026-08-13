@@ -889,6 +889,9 @@ function setHomeAudience(audience) {
     } catch (e) {
     }
     syncHomeAudienceBar();
+    if (typeof syncSidebarQuickActive === "function") {
+        syncSidebarQuickActive({audience: homeAudience});
+    }
     filterHomeTools();
     if (isHomeCmdPanelOpen()) {
         renderHomeCmdPanel();
