@@ -307,6 +307,7 @@ function buildSidebar() {
             const toolEl = e.target.closest('.sb-tool');
             if (toolEl) {
                 openTool(toolEl.dataset.tool);
+                closeMobileSidebar();
             }
         });
     }
@@ -328,6 +329,7 @@ function buildSidebar() {
 
     initSidebarResizer();
     initSidebarTooltip();
+    initMobileSidebar();
 
     if (sidebarActiveToolId) {
         highlightSidebarTool(sidebarActiveToolId);
@@ -441,11 +443,86 @@ function clearSidebarHighlight() {
     clearSidebarToolCurrent(domCache.sidebarNav);
 }
 
+// === 窄屏 Drawer（≤1024px）===
+function isMobileSidebarViewport() {
+    return typeof window !== 'undefined' && window.matchMedia('(max-width: 1024px)').matches;
+}
+
+function openMobileSidebar() {
+    if (!isMobileSidebarViewport()) return;
+    document.body.classList.add('sidebar-drawer-open');
+    const btn = domCache.sidebarMenuBtn;
+    const backdrop = domCache.sidebarBackdrop;
+    if (btn) btn.setAttribute('aria-expanded', 'true');
+    if (backdrop) {
+        backdrop.hidden = false;
+        backdrop.setAttribute('aria-hidden', 'false');
+    }
+}
+
+function closeMobileSidebar() {
+    document.body.classList.remove('sidebar-drawer-open');
+    const btn = domCache.sidebarMenuBtn;
+    const backdrop = domCache.sidebarBackdrop;
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+    if (backdrop) {
+        backdrop.hidden = true;
+        backdrop.setAttribute('aria-hidden', 'true');
+    }
+}
+
+function toggleMobileSidebar() {
+    if (document.body.classList.contains('sidebar-drawer-open')) {
+        closeMobileSidebar();
+    } else {
+        openMobileSidebar();
+    }
+}
+
+/** 汉堡菜单 / 遮罩 / Esc / 断点切换（幂等） */
+function initMobileSidebar() {
+    const btn = domCache.sidebarMenuBtn;
+    const backdrop = domCache.sidebarBackdrop;
+    if (btn && btn.dataset.bound !== '1') {
+        btn.dataset.bound = '1';
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleMobileSidebar();
+        });
+    }
+    if (backdrop && backdrop.dataset.bound !== '1') {
+        backdrop.dataset.bound = '1';
+        backdrop.addEventListener('click', () => {
+            closeMobileSidebar();
+        });
+    }
+    if (!document.body.dataset.sidebarDrawerEscBound) {
+        document.body.dataset.sidebarDrawerEscBound = '1';
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.body.classList.contains('sidebar-drawer-open')) {
+                closeMobileSidebar();
+            }
+        });
+    }
+    if (!window.__sidebarDrawerResizeBound) {
+        window.__sidebarDrawerResizeBound = true;
+        window.addEventListener('resize', () => {
+            if (!isMobileSidebarViewport()) {
+                closeMobileSidebar();
+            }
+        });
+    }
+}
+
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         isSidebarVirtualCat,
         resolveSidebarExpandCatId,
         clampSidebarWidth,
+        isMobileSidebarViewport,
+        openMobileSidebar,
+        closeMobileSidebar,
+        toggleMobileSidebar,
         SIDEBAR_KEY,
         SIDEBAR_WIDTH_DEFAULT,
         SIDEBAR_WIDTH_MIN,

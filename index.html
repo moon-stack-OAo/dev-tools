@@ -118,6 +118,10 @@
     </aside>
     <div class="main" id="mainContainer">
         <div class="main-header">
+            <button type="button" class="sidebar-menu-btn" id="sidebarMenuBtn" title="打开分类菜单"
+                    aria-label="打开分类菜单" aria-controls="sidebar" aria-expanded="false">
+                <i class="bi bi-list" aria-hidden="true"></i>
+            </button>
             <div class="home-btn" id="homeBtn" onclick="goHome()" style="display:none" title="返回首页"><i
                     class="bi bi-chevron-left"></i></div>
             <div class="header-home-title" id="headerHomeTitle">
@@ -129,10 +133,11 @@
             <div class="home-search-wrap">
                 <span class="search-icon"><i class="bi bi-search"></i></span>
                 <label for="homeSearch"></label>
-                <input id="homeSearch" onblur="setTimeout(hideHomeHeatmap,150)" onfocus="showHomeHeatmap()"
-                       oninput="onHomeSearchInput()" placeholder="搜索工具..."
-                       type="search">
-                <div class="home-heatmap" id="homeHeatmap" style="display:none"></div>
+                <input id="homeSearch" onblur="setTimeout(hideHomeCmdPanel,150)" onfocus="showHomeCmdPanel()"
+                       oninput="onHomeSearchInput()" placeholder="搜索工具… Ctrl+K"
+                       type="search" autocomplete="off" role="combobox" aria-autocomplete="list"
+                       aria-controls="homeHeatmap" aria-expanded="false">
+                <div class="home-heatmap home-cmd-panel" id="homeHeatmap" style="display:none" role="listbox"></div>
             </div>
             <div class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="切换主题 (Ctrl+J)"><i
                     class="bi bi-moon-stars-fill" id="themeIcon"></i></div>
@@ -164,12 +169,33 @@
                     </div>
                 </section>
                 <div class="home-audience-bar" id="homeAudienceBar" role="tablist" aria-label="工具受众筛选">
-                    <button type="button" class="home-audience-btn active" data-audience="all" onclick="setHomeAudience('all')">全部</button>
-                    <button type="button" class="home-audience-btn" data-audience="common" onclick="setHomeAudience('common')">通用</button>
-                    <button class="home-audience-btn" data-audience="frontend" onclick="setHomeAudience('frontend')" type="button">前端</button>
-                    <button class="home-audience-btn" data-audience="backend" onclick="setHomeAudience('backend')" type="button">后端</button>
-                    <button type="button" class="home-audience-btn" data-audience="java" onclick="setHomeAudience('java')">Java</button>
+                    <button type="button" class="home-audience-btn active" role="tab" data-audience="all" onclick="setHomeAudience('all')" aria-selected="true" tabindex="0">全部</button>
+                    <button type="button" class="home-audience-btn" role="tab" data-audience="common" onclick="setHomeAudience('common')" aria-selected="false" tabindex="-1">通用</button>
+                    <button type="button" class="home-audience-btn" role="tab" data-audience="frontend" onclick="setHomeAudience('frontend')" aria-selected="false" tabindex="-1">前端</button>
+                    <button type="button" class="home-audience-btn" role="tab" data-audience="backend" onclick="setHomeAudience('backend')" aria-selected="false" tabindex="-1">后端</button>
+                    <button type="button" class="home-audience-btn" role="tab" data-audience="java" onclick="setHomeAudience('java')" aria-selected="false" tabindex="-1">Java</button>
+                    <span class="home-cat-filter-chip" id="homeCatFilterChip" hidden></span>
+                    <button type="button" class="home-hero-restore" id="homeHeroRestore" title="显示介绍" hidden>介绍</button>
+                    <div class="home-density-toggle" id="homeDensityToggle" role="group" aria-label="首页密度">
+                        <button type="button" class="home-density-btn active" data-density="comfortable" title="舒适密度" aria-label="舒适密度" aria-pressed="true">
+                            <i class="bi bi-grid" aria-hidden="true"></i><span>舒适</span>
+                        </button>
+                        <button type="button" class="home-density-btn" data-density="compact" title="紧凑密度" aria-label="紧凑密度" aria-pressed="false">
+                            <i class="bi bi-grid-3x3-gap" aria-hidden="true"></i><span>紧凑</span>
+                        </button>
+                    </div>
                 </div>
+                <div class="home-scene-chips" id="homeSceneChips" aria-label="高频场景"></div>
+                <section id="homeFavoritesSection" class="home-fav-section" aria-labelledby="homeFavTitle">
+                    <div class="home-fav-header">
+                        <h2 id="homeFavTitle" class="home-fav-title"><i class="bi bi-star-fill" aria-hidden="true"></i> 我的收藏</h2>
+                    </div>
+                    <div id="homeFavoritesGrid" class="home-fav-grid"></div>
+                    <div id="homeFavoritesEmpty" class="home-fav-empty" hidden>
+                        <i class="bi bi-star" aria-hidden="true"></i>
+                        <span>还没有收藏，点击工具卡片上的星标即可加入</span>
+                    </div>
+                </section>
                 <div class="home-body">
                     <div class="home-cat-anchors" id="homeCatAnchors"></div>
                     <div class="home-grid" id="homeGrid"></div>
@@ -192,6 +218,22 @@
     </div>
 </div>
 
+<nav class="home-bottom-nav" id="homeBottomNav" aria-label="移动端导航">
+    <button type="button" class="home-bottom-nav-btn" data-nav="home" title="首页" aria-label="首页">
+        <i class="bi bi-house" aria-hidden="true"></i><span>首页</span>
+    </button>
+    <button type="button" class="home-bottom-nav-btn" data-nav="cats" title="分类" aria-label="分类">
+        <i class="bi bi-grid" aria-hidden="true"></i><span>分类</span>
+    </button>
+    <button type="button" class="home-bottom-nav-btn" data-nav="search" title="搜索" aria-label="搜索">
+        <i class="bi bi-search" aria-hidden="true"></i><span>搜索</span>
+    </button>
+    <button type="button" class="home-bottom-nav-btn" data-nav="fav" title="收藏" aria-label="收藏">
+        <i class="bi bi-star" aria-hidden="true"></i><span>收藏</span>
+    </button>
+</nav>
+
+<div class="sidebar-backdrop" id="sidebarBackdrop" hidden aria-hidden="true"></div>
 <div class="loading-bar" id="loadingBar"></div>
 <div class="toast" id="toast"></div>
 
