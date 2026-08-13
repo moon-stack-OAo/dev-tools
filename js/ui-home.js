@@ -720,13 +720,30 @@ function toggleHomeCatExpand(catId) {
         if (first) homeExpandedCats.add(first);
         homeExpandHasStored = true;
     }
-    if (homeExpandedCats.has(catId)) {
-        homeExpandedCats.delete(catId);
-    } else {
+    var willExpand = !homeExpandedCats.has(catId);
+    if (willExpand) {
         homeExpandedCats.add(catId);
+    } else {
+        homeExpandedCats.delete(catId);
     }
     saveHomeExpandedCats();
     filterHomeTools();
+    // 展开后滚到该分类标题，避免列表变长后当前视口仍停在别处
+    if (willExpand) {
+        scrollHomeCatIntoView(catId);
+    }
+}
+
+/** 将首页分类 divider 滚入可视区域（panel-home 为滚动容器） */
+function scrollHomeCatIntoView(catId) {
+    if (!catId) return;
+    var el = document.getElementById("cat-" + catId);
+    if (!el) return;
+    try {
+        el.scrollIntoView({behavior: "smooth", block: "start"});
+    } catch (e) {
+        el.scrollIntoView(true);
+    }
 }
 
 function applyHomeCatExpandState() {
