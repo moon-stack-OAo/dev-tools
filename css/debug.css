@@ -2945,6 +2945,47 @@
     overflow: hidden;
 }
 
+/* 自定义落点（不依赖 Leaflet 默认 png 路径） */
+.mp-marker-icon {
+    background: transparent !important;
+    border: none !important;
+}
+
+.mp-pin {
+    display: block;
+    width: 28px;
+    height: 40px;
+    position: relative;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+}
+
+.mp-pin::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 22px;
+    height: 22px;
+    margin-left: -11px;
+    border-radius: 50% 50% 50% 0;
+    background: #e74c3c;
+    border: 2px solid #fff;
+    transform: rotate(-45deg);
+    box-sizing: border-box;
+}
+
+.mp-pin::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 7px;
+    width: 8px;
+    height: 8px;
+    margin-left: -4px;
+    border-radius: 50%;
+    background: #fff;
+}
+
 .mp-side {
     display: flex;
     flex-direction: column;

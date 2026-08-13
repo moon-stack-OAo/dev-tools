@@ -5,6 +5,9 @@ const {
     mpClampLat,
     mpClampLng,
     mpIsValidLatLng,
+    mpNormalizeTileTemplate,
+    mpFormatAccuracy,
+    mpZoomForAccuracy,
 } = require('../../js/debug/mappicker.js');
 
 describe('mpParseCoordInput', () => {
@@ -101,5 +104,51 @@ describe('mpClampLat / mpClampLng / mpIsValidLatLng', () => {
         expect(mpIsValidLatLng(0, 181)).toBe(false);
         expect(mpIsValidLatLng(NaN, 0)).toBe(false);
         expect(mpIsValidLatLng('x', 0)).toBe(false);
+    });
+});
+
+describe('mpNormalizeTileTemplate', () => {
+    test('高德 {1-4} 转为 {s} + subdomains', () => {
+        const url =
+            'http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}';
+        const r = mpNormalizeTileTemplate(url);
+        expect(r.ok).toBe(true);
+        expect(r.url).toBe(
+            'http://wprd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}'
+        );
+        expect(r.options.subdomains).toEqual(['1', '2', '3', '4']);
+        expect(r.url).not.toContain('{1-4}');
+    });
+
+    test('字母区间 {a-d}', () => {
+        const r = mpNormalizeTileTemplate('https://{a-d}.example.com/{z}/{x}/{y}.png');
+        expect(r.ok).toBe(true);
+        expect(r.url).toBe('https://{s}.example.com/{z}/{x}/{y}.png');
+        expect(r.options.subdomains).toEqual(['a', 'b', 'c', 'd']);
+    });
+
+    test('已有 {s} 默认 a/b/c', () => {
+        const r = mpNormalizeTileTemplate('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+        expect(r.ok).toBe(true);
+        expect(r.options.subdomains).toEqual(['a', 'b', 'c']);
+    });
+
+    test('缺 z/x/y 失败', () => {
+        expect(mpNormalizeTileTemplate('http://x.com/{z}/{x}').ok).toBe(false);
+        expect(mpNormalizeTileTemplate('').ok).toBe(false);
+    });
+});
+
+describe('mpFormatAccuracy / mpZoomForAccuracy', () => {
+    test('格式化精度', () => {
+        expect(mpFormatAccuracy(null)).toBe('—');
+        expect(mpFormatAccuracy(12.3)).toBe('±12 m');
+        expect(mpFormatAccuracy(1500)).toBe('±1.5 km');
+    });
+
+    test('精度对应缩放', () => {
+        expect(mpZoomForAccuracy(10)).toBe(18);
+        expect(mpZoomForAccuracy(80)).toBe(16);
+        expect(mpZoomForAccuracy(2000)).toBe(13);
     });
 });

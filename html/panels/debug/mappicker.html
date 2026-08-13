@@ -1,7 +1,7 @@
 <div class="tool-panel" id="panel-mappicker">
     <div class="mp-topbar">
-        <input id="mpCoordInput" type="text" placeholder="纬度,经度 或 经度,纬度" autocomplete="off">
-        <button type="button" onclick="mpLocateInput()">定位</button>
+        <input id="mpCoordInput" type="text" placeholder="纬度,经度；留空则定位当前位置" autocomplete="off">
+        <button type="button" onclick="mpLocateInput()" title="有坐标则跳转；留空则精定位（多采样约 8 秒）">定位</button>
         <button type="button" class="outline" onclick="mpClear()">清空</button>
         <button type="button" class="outline" onclick="mpResetView()">重置视图</button>
     </div>
@@ -53,6 +53,10 @@
                     <div class="mp-meta-row">
                         <span class="mp-meta-k">中心点</span>
                         <span class="mp-meta-v" id="mpCenter">—</span>
+                    </div>
+                    <div class="mp-meta-row">
+                        <span class="mp-meta-k">定位精度</span>
+                        <span class="mp-meta-v" id="mpAccuracy">—</span>
                     </div>
                 </div>
             </section>
