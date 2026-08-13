@@ -343,8 +343,79 @@ function updateHeaderHomeSub() {
     }
 }
 
+// === 首页 Hero ===
+const HERO_DISMISS_KEY = 'devtools.hero.dismissed';
+
+function getHomeHeroStats() {
+    if (typeof getRegistryStats === 'function') {
+        return getRegistryStats();
+    }
+    return {
+        toolCount: typeof tools !== 'undefined' ? tools.length : 0,
+        categoryCount: typeof getBusinessCategories === 'function' ? getBusinessCategories().length : 0,
+    };
+}
+
+function updateHomeHeroStats() {
+    const s = getHomeHeroStats();
+    const toolsEl = document.getElementById('homeHeroStatTools');
+    const catsEl = document.getElementById('homeHeroStatCats');
+    if (toolsEl) toolsEl.textContent = s.toolCount + ' 工具';
+    if (catsEl) catsEl.textContent = s.categoryCount + ' 分类';
+}
+
+function isHomeHeroDismissed() {
+    try {
+        return localStorage.getItem(HERO_DISMISS_KEY) === '1';
+    } catch (e) {
+        return false;
+    }
+}
+
+function applyHomeHeroVisibility() {
+    const hero = document.getElementById('homeHero');
+    if (!hero) return;
+    const dismissed = isHomeHeroDismissed();
+    hero.hidden = dismissed;
+    hero.setAttribute('aria-hidden', dismissed ? 'true' : 'false');
+}
+
+function dismissHomeHero() {
+    try {
+        localStorage.setItem(HERO_DISMISS_KEY, '1');
+    } catch (e) {
+        /* ignore */
+    }
+    applyHomeHeroVisibility();
+}
+
+function focusHomeSearchFromHero() {
+    const input = (typeof domCache !== 'undefined' && domCache.homeSearch) || document.getElementById('homeSearch');
+    if (input) {
+        input.focus();
+        input.select();
+    }
+    if (typeof showHomeHeatmap === 'function') showHomeHeatmap();
+}
+
+function initHomeHero() {
+    applyHomeHeroVisibility();
+    updateHomeHeroStats();
+    const cta = document.getElementById('homeHeroFocusSearch');
+    if (cta && !cta.dataset.bound) {
+        cta.dataset.bound = '1';
+        cta.addEventListener('click', focusHomeSearchFromHero);
+    }
+    const dismissBtn = document.getElementById('homeHeroDismiss');
+    if (dismissBtn && !dismissBtn.dataset.bound) {
+        dismissBtn.dataset.bound = '1';
+        dismissBtn.addEventListener('click', dismissHomeHero);
+    }
+}
+
 function buildHomeGrid() {
     updateHeaderHomeSub();
+    initHomeHero();
     const grid = domCache.homeGrid;
     grid.innerHTML = "";
     const anchors = domCache.homeCatAnchors;
@@ -361,7 +432,7 @@ function buildHomeGrid() {
             toolsInCat = tools.filter((t) => t.cat === cat.id);
             if (!toolsInCat.length) return;
         }
-        const divider = document.createElement("div");
+        const divider = document.createElement("h2");
         divider.className = "home-cat-divider cat-" + cat.id;
         divider.id = "cat-" + cat.id;
         divider.innerHTML = `<span class="hcd-icon"><i class="bi ${cat.icon}"></i></span><span>${escapeHtml(cat.name)}</span>`;
@@ -415,7 +486,7 @@ function refreshVirtualHomeBlock(catId, items, icon, name) {
     } else {
         let divider = oldDivider;
         if (!divider) {
-            divider = document.createElement("div");
+            divider = document.createElement("h2");
             divider.className = "home-cat-divider cat-" + catId;
             divider.id = "cat-" + catId;
             divider.innerHTML =
@@ -606,3 +677,24 @@ function clearHomeSearch() {
 }
 
 const onHomeSearchInput = debounce(filterHomeTools, 80);
+
+// 全局搜索快捷键：Ctrl/Cmd+K 或单独按 / 聚焦搜索框（焦点在可编辑区域时不拦截）
+window.addEventListener("keydown", (e) => {
+    const target = e.target;
+    const inEditable =
+        target &&
+        (target.tagName === "INPUT" ||
+            target.tagName === "TEXTAREA" ||
+            target.tagName === "SELECT" ||
+            target.isContentEditable);
+    const isSearchShortcut = (e.ctrlKey || e.metaKey) && (e.key === "k" || e.key === "K");
+    const isSlashShortcut = !(e.ctrlKey || e.metaKey || e.altKey) && e.key === "/";
+    if ((!isSearchShortcut && !isSlashShortcut) || inEditable) return;
+    e.preventDefault();
+    const input = domCache.homeSearch || document.getElementById("homeSearch");
+    if (input) {
+        input.focus();
+        input.select();
+    }
+    showHomeHeatmap();
+});
