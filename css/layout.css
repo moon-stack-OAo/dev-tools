@@ -128,6 +128,7 @@
    避免与 header 白色渐变背景几乎同色导致"白方块"问题 */
 [data-theme='light'] .main-header .home-btn,
 [data-theme='light'] .main-header .header-github,
+[data-theme='light'] .main-header .home-density-btn,
 [data-theme='light'] .theme-toggle {
     background: var(--bg-card2);
     box-shadow: var(--shadow-sm);
@@ -159,15 +160,19 @@
 }
 
 .main-header .home-search-wrap {
-    position: relative;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     width: 400px;
-    flex: 0 0 400px;
-    flex-shrink: 0;
-    margin: 0 auto;
+    z-index: 1;
 }
 
 /* 工具页：搜索框恢复为 flex 布局，靠右 */
 .main-header.tool-mode .home-search-wrap {
+    position: relative;
+    left: auto;
+    transform: none;
+    flex: 0 0 400px;
     margin-left: auto;
     margin-right: 0;
 }
@@ -950,63 +955,58 @@
     display: none !important;
 }
 
-/* 首页密度切换（受众栏右侧） */
-.home-density-toggle {
-    display: inline-flex;
-    flex-shrink: 0;
+/* 顶栏：首页密度切换（主题按钮旁） */
+.main-header .home-density-btn {
+    width: 34px;
+    height: 34px;
+    display: none;
     align-items: center;
-    gap: 2px;
-    margin-left: auto;
-    padding: 2px;
+    justify-content: center;
     border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 16px;
     background: var(--bg-input);
     border: 1px solid var(--border);
-}
-
-/* 介绍按钮可见时由它占 margin-left:auto，密度组跟在其后 */
-.home-audience-bar .home-hero-restore:not([hidden]) + .home-density-toggle {
-    margin-left: 4px;
-}
-
-.home-density-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    flex-shrink: 0;
-    padding: 4px 8px;
-    border: none;
-    border-radius: calc(var(--radius-sm) - 1px);
-    background: transparent;
     color: var(--text-dim);
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: color 0.15s ease, background 0.15s ease;
+    transition: var(--transition);
+    flex-shrink: 0;
+    padding: 0;
+    margin-left: auto;
 }
 
-.home-density-btn:hover {
-    color: var(--text);
-    background: var(--glass-hover);
+/* 仅首页显示密度按钮 */
+.main-header:not(.tool-mode) .home-density-btn {
+    display: flex;
 }
 
-.home-density-btn.active,
-.home-density-btn[aria-pressed='true'] {
+.main-header .home-density-btn:hover {
+    background: var(--bg-hover);
     color: var(--accent);
-    background: var(--accent-glow);
-    font-weight: 600;
+    border-color: var(--accent);
+    box-shadow: 0 2px 12px var(--accent-glow);
 }
 
-.home-density-btn:focus-visible,
+.main-header .home-density-btn[aria-pressed='true'] {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-glow);
+}
+
+.main-header .home-density-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.main-header .home-density-btn i {
+    font-size: 16px;
+    line-height: 1;
+}
+
 .home-audience-btn:focus-visible,
 .home-hero-restore:focus-visible,
 .cat-anchor:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
-}
-
-.home-density-btn i {
-    font-size: 13px;
 }
 
 /* 首页独立「我的收藏」区块（受众/搜索不隐藏） */
@@ -1568,6 +1568,9 @@
 @media (max-width: 900px) {
     .main-header .home-search-wrap {
         width: 240px;
+    }
+
+    .main-header.tool-mode .home-search-wrap {
         flex: 0 0 240px;
     }
 }
@@ -1595,9 +1598,17 @@
     }
 
     .main-header .home-search-wrap {
+        position: relative;
+        left: auto;
+        transform: none;
         width: auto;
         flex: 1 1 auto;
         min-width: 60px;
+    }
+
+    .main-header.tool-mode .home-search-wrap {
+        flex: 1 1 auto;
+        margin-left: 0;
     }
 
     /* 首页：锚点侧栏转为横向滚动条，主体纵向排列，网格占满整宽 */
@@ -1782,11 +1793,12 @@ body.sidebar-resizing .sidebar {
     transition: none;
 }
 
-/* 侧边栏气泡 title（挂 body） */
+/* 全局统一气泡 title（挂 body；.sb-tip 为侧栏历史别名） */
+.ui-tip,
 .sb-tip {
     position: fixed;
     z-index: 9999;
-    max-width: 240px;
+    max-width: 280px;
     padding: 6px 10px;
     border-radius: 6px;
     font-size: 12px;
@@ -1797,25 +1809,30 @@ body.sidebar-resizing .sidebar {
     border: 1px solid var(--border-light);
     box-shadow: var(--shadow);
     pointer-events: none;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal;
+    word-break: break-word;
     opacity: 0;
-    transform: translateX(-4px);
+    transform: translateY(-4px);
     transition: opacity 0.12s ease, transform 0.12s ease;
 }
 
-.sb-tip.visible {
-    opacity: 1;
-    transform: translateX(0);
+.ui-tip.ui-tip-top {
+    transform: translateY(4px);
 }
 
+.ui-tip.ui-tip-right {
+    transform: translateX(-4px);
+}
+
+.ui-tip.ui-tip-left,
 .sb-tip.sb-tip-left {
     transform: translateX(4px);
 }
 
-.sb-tip.sb-tip-left.visible {
-    transform: translateX(0);
+.ui-tip.visible,
+.sb-tip.visible {
+    opacity: 1;
+    transform: translate(0, 0);
 }
 
 .sidebar-header {

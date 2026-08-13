@@ -147,131 +147,18 @@ function initSidebarResizer() {
     });
 }
 
-// === 侧边栏气泡 title（挂 body，避免 sidebar overflow 裁切）===
-let _sbTipEl = null;
-let _sbTipTimer = null;
-let _sbTipAnchor = null;
-
-function ensureSidebarTipEl() {
-    if (_sbTipEl) return _sbTipEl;
-    _sbTipEl = document.createElement('div');
-    _sbTipEl.className = 'sb-tip';
-    _sbTipEl.setAttribute('role', 'tooltip');
-    _sbTipEl.hidden = true;
-    document.body.appendChild(_sbTipEl);
-    return _sbTipEl;
-}
-
-function hideSidebarTip() {
-    if (_sbTipTimer) {
-        clearTimeout(_sbTipTimer);
-        _sbTipTimer = null;
-    }
-    _sbTipAnchor = null;
-    if (_sbTipEl) {
-        _sbTipEl.hidden = true;
-        _sbTipEl.classList.remove('visible');
-        _sbTipEl.textContent = '';
-    }
-}
-
 /**
  * 是否需要显示气泡：折叠侧边栏始终显示；展开时仅文字被截断时显示。
- * @param {Element} el .sb-cat-header | .sb-quick-item
+ * 供全局 ui-tooltip 的 canShowUiTip 调用。
+ * @param {Element} el .sb-cat-header | .sb-quick-item | .sb-tool
  */
 function shouldShowSidebarTip(el) {
     const sidebar = domCache.sidebar;
     if (!sidebar || !el) return false;
     if (sidebar.classList.contains('collapsed')) return true;
-    const nameEl = el.querySelector('.sb-cat-name, .sb-quick-name');
+    const nameEl = el.querySelector('.sb-cat-name, .sb-quick-name, .sb-tool-name');
     if (!nameEl) return false;
     return nameEl.scrollWidth > nameEl.clientWidth + 1;
-}
-
-function positionSidebarTip(anchor) {
-    const tip = ensureSidebarTipEl();
-    if (!anchor || tip.hidden) return;
-    const rect = anchor.getBoundingClientRect();
-    const tipRect = tip.getBoundingClientRect();
-    // 默认贴在目标右侧中间
-    let left = rect.right + 8;
-    let top = rect.top + (rect.height - tipRect.height) / 2;
-    // 右侧不够则放到左侧
-    if (left + tipRect.width > window.innerWidth - 8) {
-        left = rect.left - tipRect.width - 8;
-        tip.classList.add('sb-tip-left');
-    } else {
-        tip.classList.remove('sb-tip-left');
-    }
-    // 垂直钳制
-    top = Math.max(8, Math.min(top, window.innerHeight - tipRect.height - 8));
-    tip.style.left = Math.round(left) + 'px';
-    tip.style.top = Math.round(top) + 'px';
-}
-
-function showSidebarTip(anchor, text) {
-    if (!anchor || !text) return;
-    const tip = ensureSidebarTipEl();
-    _sbTipAnchor = anchor;
-    tip.textContent = text;
-    tip.hidden = false;
-    // 先定位再显示，避免闪到 (0,0)
-    tip.style.left = '-9999px';
-    tip.style.top = '0';
-    positionSidebarTip(anchor);
-    // 下一帧加 visible 触发过渡
-    requestAnimationFrame(() => {
-        if (_sbTipAnchor === anchor) tip.classList.add('visible');
-    });
-}
-
-/** 侧边栏分类/工具气泡 title（事件委托，幂等） */
-function initSidebarTooltip() {
-    const nav = domCache.sidebarNav;
-    if (!nav || nav.dataset.tipBound === '1') return;
-    nav.dataset.tipBound = '1';
-
-    const relatedInside = (el, related) =>
-        !!(el && related && related.nodeType === 1 && el.contains(related));
-
-    nav.addEventListener('mouseover', (e) => {
-        if (e.target.closest('.sidebar-resizer')) return;
-        const anchor = e.target.closest('.sb-cat-header');
-        if (!anchor || !nav.contains(anchor)) return;
-        // 进入同一锚点子节点时不重复
-        if (_sbTipAnchor === anchor) return;
-        if (relatedInside(anchor, e.relatedTarget)) return;
-
-        const text = (anchor.getAttribute('data-tip') || '').trim();
-        if (!text || !shouldShowSidebarTip(anchor)) {
-            hideSidebarTip();
-            return;
-        }
-        if (_sbTipTimer) clearTimeout(_sbTipTimer);
-        _sbTipTimer = setTimeout(() => {
-            _sbTipTimer = null;
-            showSidebarTip(anchor, text);
-        }, 280);
-    });
-
-    nav.addEventListener('mouseout', (e) => {
-        const anchor = e.target.closest('.sb-cat-header');
-        if (!anchor) return;
-        // 仍在同一锚点内移动则忽略
-        if (relatedInside(anchor, e.relatedTarget)) return;
-        if (_sbTipAnchor === anchor || !_sbTipAnchor) hideSidebarTip();
-    });
-
-    // 滚动/窗口变化时隐藏，避免错位
-    nav.addEventListener(
-        'scroll',
-        () => {
-            hideSidebarTip();
-        },
-        {passive: true},
-    );
-    window.addEventListener('scroll', hideSidebarTip, true);
-    window.addEventListener('resize', hideSidebarTip);
 }
 
 /** 业务分类工具数（侧栏扁平分类用） */
@@ -462,45 +349,6 @@ function buildSidebarQuick() {
             e.preventDefault();
             handleSidebarQuickClick(btn.dataset.quick);
         });
-        // 复用侧栏气泡：折叠时显示名称
-        box.addEventListener('mouseover', (e) => {
-            if (e.target.closest('.sidebar-resizer')) return;
-            const anchor = e.target.closest('.sb-quick-item');
-            if (!anchor || !box.contains(anchor)) return;
-            if (_sbTipAnchor === anchor) return;
-            const text = (anchor.getAttribute('data-tip') || '').trim();
-            const sidebar = domCache.sidebar;
-            const need =
-                sidebar &&
-                (sidebar.classList.contains('collapsed') ||
-                    (() => {
-                        const nameEl = anchor.querySelector('.sb-quick-name');
-                        return nameEl && nameEl.scrollWidth > nameEl.clientWidth + 1;
-                    })());
-            if (!text || !need) {
-                hideSidebarTip();
-                return;
-            }
-            if (_sbTipTimer) clearTimeout(_sbTipTimer);
-            _sbTipTimer = setTimeout(() => {
-                _sbTipTimer = null;
-                showSidebarTip(anchor, text);
-            }, 280);
-        });
-        box.addEventListener('mouseout', (e) => {
-            const anchor = e.target.closest('.sb-quick-item');
-            if (!anchor) return;
-            const related = e.relatedTarget;
-            if (related && anchor.contains(related)) return;
-            if (_sbTipAnchor === anchor || !_sbTipAnchor) hideSidebarTip();
-        });
-        box.addEventListener(
-            'scroll',
-            () => {
-                hideSidebarTip();
-            },
-            {passive: true},
-        );
     }
 }
 
@@ -604,7 +452,6 @@ function buildSidebar() {
     }
 
     initSidebarResizer();
-    initSidebarTooltip();
     initMobileSidebar();
 
     if (typeof syncCatAnchorFilterActive === 'function') {

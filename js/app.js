@@ -398,6 +398,7 @@ function clearRefSearch(btn) {
     if (container) container.style.display = "";
 }
 initDomCache();
+if (typeof initUiTooltip === 'function') initUiTooltip();
 buildHomeGrid();
 buildSidebar();
 // 返回顶部按钮(全局一次性绑定,自动适配当前激活面板)

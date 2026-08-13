@@ -127,7 +127,13 @@ function sbToolHtml(t) {
 function syncFavoriteStars(id, isFav) {
     document.querySelectorAll('.fav-star[data-tool="' + id + '"]').forEach((el) => {
         el.classList.toggle("active", isFav);
-        el.title = isFav ? "取消收藏" : "收藏";
+        const tipText = isFav ? "取消收藏" : "收藏";
+        if (typeof setUiTipText === "function") {
+            setUiTipText(el, tipText);
+        } else {
+            el.setAttribute("data-ui-title", tipText);
+            el.removeAttribute("title");
+        }
         if (el.getAttribute("aria-label") != null) {
             el.setAttribute("aria-label", isFav ? "取消收藏" : "收藏");
         }
@@ -151,7 +157,12 @@ function clearFavoritesUI() {
     if (typeof clearFavorites === "function") clearFavorites();
     document.querySelectorAll(".fav-star").forEach((el) => {
         el.classList.remove("active");
-        el.title = "收藏";
+        if (typeof setUiTipText === "function") {
+            setUiTipText(el, "收藏");
+        } else {
+            el.setAttribute("data-ui-title", "收藏");
+            el.removeAttribute("title");
+        }
         if (el.getAttribute("aria-label") != null) {
             el.setAttribute("aria-label", "收藏");
         }
@@ -828,12 +839,23 @@ function applyHomeDensity() {
 
 function syncHomeDensityUI() {
     const density = normalizeHomeDensity(homeDensity);
-    document.querySelectorAll(".home-density-btn").forEach((btn) => {
-        const val = btn.dataset.density;
-        const pressed = val === density;
-        btn.classList.toggle("active", pressed);
-        btn.setAttribute("aria-pressed", pressed ? "true" : "false");
-    });
+    const btn = document.getElementById("homeDensityToggle");
+    if (!btn) return;
+    const isCompact = density === "compact";
+    btn.dataset.density = density;
+    btn.setAttribute("aria-pressed", isCompact ? "true" : "false");
+    const tipText = isCompact ? "切换首页密度：紧凑（点击切换为舒适）" : "切换首页密度：舒适（点击切换为紧凑）";
+    if (typeof setUiTipText === "function") {
+        setUiTipText(btn, tipText);
+    } else {
+        btn.setAttribute("data-ui-title", tipText);
+        btn.removeAttribute("title");
+    }
+    btn.setAttribute("aria-label", isCompact ? "当前紧凑密度，点击切换为舒适" : "当前舒适密度，点击切换为紧凑");
+    const icon = btn.querySelector("i");
+    if (icon) {
+        icon.className = isCompact ? "bi bi-grid-3x3-gap" : "bi bi-grid";
+    }
 }
 
 function initHomeDensity() {
@@ -844,13 +866,11 @@ function initHomeDensity() {
     }
     applyHomeDensity();
     syncHomeDensityUI();
-    const group = document.getElementById("homeDensityToggle");
-    if (group && !group.dataset.bound) {
-        group.dataset.bound = "1";
-        group.querySelectorAll(".home-density-btn").forEach((btn) => {
-            btn.addEventListener("click", () => {
-                setHomeDensity(btn.dataset.density);
-            });
+    const btn = document.getElementById("homeDensityToggle");
+    if (btn && !btn.dataset.bound) {
+        btn.dataset.bound = "1";
+        btn.addEventListener("click", () => {
+            setHomeDensity(homeDensity === "compact" ? "comfortable" : "compact");
         });
     }
 }

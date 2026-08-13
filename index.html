@@ -140,6 +140,10 @@
                        aria-controls="homeHeatmap" aria-expanded="false">
                 <div class="home-heatmap home-cmd-panel" id="homeHeatmap" style="display:none" role="listbox"></div>
             </div>
+            <button type="button" class="home-density-btn" id="homeDensityToggle" title="切换首页密度：舒适"
+                    aria-label="切换首页密度" aria-pressed="false" data-density="comfortable">
+                <i class="bi bi-grid" aria-hidden="true"></i>
+            </button>
             <div class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="切换主题 (Ctrl+J)"><i
                     class="bi bi-moon-stars-fill" id="themeIcon"></i></div>
         </div>
@@ -177,14 +181,6 @@
                     <button type="button" class="home-audience-btn" role="tab" data-audience="java" onclick="setHomeAudience('java')" aria-selected="false" tabindex="-1">Java</button>
                     <span class="home-cat-filter-chip" id="homeCatFilterChip" hidden></span>
                     <button type="button" class="home-hero-restore" id="homeHeroRestore" title="显示介绍" hidden>介绍</button>
-                    <div class="home-density-toggle" id="homeDensityToggle" role="group" aria-label="首页密度">
-                        <button type="button" class="home-density-btn active" data-density="comfortable" title="舒适密度" aria-label="舒适密度" aria-pressed="true">
-                            <i class="bi bi-grid" aria-hidden="true"></i><span>舒适</span>
-                        </button>
-                        <button type="button" class="home-density-btn" data-density="compact" title="紧凑密度" aria-label="紧凑密度" aria-pressed="false">
-                            <i class="bi bi-grid-3x3-gap" aria-hidden="true"></i><span>紧凑</span>
-                        </button>
-                    </div>
                 </div>
                 <div class="home-scene-chips" id="homeSceneChips" aria-label="高频场景"></div>
                 <section id="homeFavoritesSection" class="home-fav-section" aria-labelledby="homeFavTitle">
@@ -245,6 +241,7 @@
 <script src="js/reference/_ref-engine.js"></script>
 <script src="js/loader.js"></script>
 <script src="js/router.js"></script>
+<script src="js/ui-tooltip.js"></script>
 <script src="js/ui-home.js"></script>
 <script src="js/ui-sidebar.js"></script>
 <script src="js/app.js"></script>
