@@ -154,45 +154,9 @@
 
         <div id="panels-container" style="display:none">
             <div class="tool-panel home-panel active" id="panel-home">
-                <section class="home-hero" id="homeHero" aria-labelledby="homeHeroTitle">
-                    <div class="home-hero-copy">
-                        <p class="home-hero-badge"><i class="bi bi-shield-check" aria-hidden="true"></i> 纯前端 · 本地处理</p>
-                        <h2 class="home-hero-title" id="homeHeroTitle">码台 · 开发者工具箱</h2>
-                        <p class="home-hero-desc">数据不出浏览器，无需注册，可离线使用</p>
-                        <ul class="home-hero-pills" aria-label="产品亮点">
-                            <li id="homeHeroStatTools">— 工具</li>
-                            <li id="homeHeroStatCats">— 分类</li>
-                            <li>100% 本地</li>
-                        </ul>
-                    </div>
-                    <div class="home-hero-actions">
-                        <button type="button" class="home-hero-cta" id="homeHeroFocusSearch" title="聚焦搜索 (Ctrl+K)">
-                            <i class="bi bi-search" aria-hidden="true"></i> 搜索工具
-                            <kbd class="home-hero-kbd">Ctrl+K</kbd>
-                        </button>
-                        <button type="button" class="home-hero-dismiss" id="homeHeroDismiss" title="收起介绍">收起</button>
-                    </div>
-                </section>
-                <div class="home-audience-bar" id="homeAudienceBar" role="tablist" aria-label="工具受众筛选">
-                    <button type="button" class="home-audience-btn active" role="tab" data-audience="all" onclick="setHomeAudience('all')" aria-selected="true" tabindex="0">全部</button>
-                    <button type="button" class="home-audience-btn" role="tab" data-audience="common" onclick="setHomeAudience('common')" aria-selected="false" tabindex="-1">通用</button>
-                    <button type="button" class="home-audience-btn" role="tab" data-audience="frontend" onclick="setHomeAudience('frontend')" aria-selected="false" tabindex="-1">前端</button>
-                    <button type="button" class="home-audience-btn" role="tab" data-audience="backend" onclick="setHomeAudience('backend')" aria-selected="false" tabindex="-1">后端</button>
-                    <button type="button" class="home-audience-btn" role="tab" data-audience="java" onclick="setHomeAudience('java')" aria-selected="false" tabindex="-1">Java</button>
+                <div class="home-audience-bar" id="homeAudienceBar">
                     <span class="home-cat-filter-chip" id="homeCatFilterChip" hidden></span>
-                    <button type="button" class="home-hero-restore" id="homeHeroRestore" title="显示介绍" hidden>介绍</button>
                 </div>
-                <div class="home-scene-chips" id="homeSceneChips" aria-label="高频场景"></div>
-                <section id="homeFavoritesSection" class="home-fav-section" aria-labelledby="homeFavTitle">
-                    <div class="home-fav-header">
-                        <h2 id="homeFavTitle" class="home-fav-title"><i class="bi bi-star-fill" aria-hidden="true"></i> 我的收藏</h2>
-                    </div>
-                    <div id="homeFavoritesGrid" class="home-fav-grid"></div>
-                    <div id="homeFavoritesEmpty" class="home-fav-empty" hidden>
-                        <i class="bi bi-star" aria-hidden="true"></i>
-                        <span>还没有收藏，点击工具卡片上的星标即可加入</span>
-                    </div>
-                </section>
                 <div class="home-body">
                     <div class="home-cat-anchors" id="homeCatAnchors"></div>
                     <div class="home-grid" id="homeGrid"></div>
@@ -224,9 +188,6 @@
     </button>
     <button type="button" class="home-bottom-nav-btn" data-nav="search" title="搜索" aria-label="搜索">
         <i class="bi bi-search" aria-hidden="true"></i><span>搜索</span>
-    </button>
-    <button type="button" class="home-bottom-nav-btn" data-nav="fav" title="收藏" aria-label="收藏">
-        <i class="bi bi-star" aria-hidden="true"></i><span>收藏</span>
     </button>
 </nav>
 

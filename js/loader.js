@@ -166,8 +166,13 @@ async function openTool(id) {
     if (gen !== _openToolGen) return;
     bumpUsage(id);
     pushRecent(id);
-    refreshRecentBlock();
-    refreshSidebarRecent();
+    // 仅在首页处于「最近使用」虚拟筛选时刷新网格；否则只更新侧栏计数
+    if (typeof homeVirtualFilter !== 'undefined' && homeVirtualFilter === 'recent' &&
+        typeof refreshRecentBlock === 'function') {
+        refreshRecentBlock();
+        if (typeof filterHomeTools === 'function') filterHomeTools();
+    }
+    if (typeof refreshSidebarRecent === 'function') refreshSidebarRecent();
     document
         .querySelectorAll(".tool-panel.active")
         .forEach((p) => p.classList.remove("active"));

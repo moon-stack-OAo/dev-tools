@@ -786,6 +786,7 @@
 .home-audience-bar {
     display: flex;
     flex-wrap: nowrap;
+    align-items: center;
     gap: 6px;
     margin: 0 0 12px;
     padding: 6px 4px;
@@ -808,6 +809,11 @@
 /* 吸顶时略加强分隔（依赖背景不透明 + 阴影层次） */
 .tool-panel.home-panel .home-audience-bar {
     background: color-mix(in srgb, var(--bg-card) 92%, transparent);
+}
+
+/* 无分类筛选 chip 时不占位 */
+.home-audience-bar:not(:has(.home-cat-filter-chip:not([hidden]))) {
+    display: none;
 }
 
 .home-audience-btn {
@@ -1003,7 +1009,6 @@
 }
 
 .home-audience-btn:focus-visible,
-.home-hero-restore:focus-visible,
 .cat-anchor:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
@@ -1275,34 +1280,12 @@
     flex-shrink: 0;
 }
 
-.home-cat-divider .hcd-chevron {
-    font-size: 12px;
-    color: var(--text-muted);
-    flex-shrink: 0;
-    width: 14px;
-    text-align: center;
-    transition: color 0.2s ease;
-}
-
-.home-cat-divider[role='button']:hover .hcd-chevron {
-    color: var(--accent);
-}
-
-.home-cat-divider.collapsed .hcd-chevron {
-    color: var(--text-dim);
-}
-
 .home-cat-divider::after {
     content: '';
     flex: 1;
     height: 1px;
     background: linear-gradient(90deg, var(--border-light) 0%, transparent 100%);
     margin-left: 6px;
-}
-
-.home-cat-divider.collapsed {
-    padding-bottom: 4px;
-    opacity: 0.92;
 }
 
 .home-card {

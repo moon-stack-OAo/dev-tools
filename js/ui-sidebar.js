@@ -286,16 +286,25 @@ function handleSidebarQuickClick(quickId) {
 
     if (item.kind === 'virtual') {
         sidebarQuickFocus = item.id;
-        // 回首页并清业务分类筛选，保留 audience；收藏/最近仅首页区块 + 快捷区
-        if (typeof goHome === 'function') {
-            goHome();
-        } else if (typeof showHome === 'function') {
+        // 回首页并以虚拟筛选展示最近/收藏工具列表
+        if (typeof showHome === 'function') {
             showHome();
+        } else if (typeof goHome === 'function') {
+            goHome();
         }
-        setTimeout(() => {
-            const el = document.getElementById('cat-' + item.cat);
-            if (el) el.scrollIntoView({behavior: 'smooth', block: 'start'});
-        }, 60);
+        if (typeof clearHomeSearch === 'function') {
+            clearHomeSearch();
+        }
+        if (typeof setRouteHome === 'function') {
+            try {
+                setRouteHome({replace: true});
+            } catch (e) {
+                /* ignore */
+            }
+        }
+        if (typeof setHomeVirtualFilter === 'function') {
+            setHomeVirtualFilter(item.cat);
+        }
         syncSidebarQuickActive({focus: item.id});
         closeMobileSidebar();
     }

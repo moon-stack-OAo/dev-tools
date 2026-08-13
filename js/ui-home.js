@@ -188,7 +188,6 @@ function createHomeCard(t, cardCat, ci) {
     card.dataset.tags = tags.join(",");
     card.style.animationDelay = Math.min(ci, 11) * 0.03 + "s";
     card.innerHTML =
-        favStarHtml(t.id) +
         '<div class="hc-icon"><i class="bi ' +
         t.icon +
         '" aria-hidden="true"></i></div><div class="hc-name">' +
@@ -205,14 +204,6 @@ function createHomeCard(t, cardCat, ci) {
             openTool(t.id);
         }
     });
-    const star = card.querySelector(".fav-star");
-    if (star) {
-        star.addEventListener("click", (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            handleToggleFavorite(t.id);
-        });
-    }
     return card;
 }
 
@@ -585,39 +576,13 @@ function initHomeSearchCmdKeys() {
     input.addEventListener("keydown", onHomeSearchKeydown);
 }
 
-function renderHomeSceneChips() {
-    const wrap =
-        typeof document !== "undefined" ? document.getElementById("homeSceneChips") : null;
-    if (!wrap || typeof toolsById === "undefined") return;
-    const parts = [];
-    HOME_SCENE_SHORTCUTS.forEach(function (sc) {
-        const tool = toolsById.get(sc.toolId || sc.id);
-        if (!tool) return;
-        parts.push(
-            '<button type="button" class="home-scene-chip" data-tool="' +
-                escapeHtml(tool.id) +
-                '" title="' +
-                escapeHtml(tool.desc || sc.label) +
-                '"><i class="bi ' +
-                escapeHtml(tool.icon) +
-                '" aria-hidden="true"></i> ' +
-                escapeHtml(sc.label) +
-                "</button>",
-        );
-    });
-    wrap.innerHTML = parts.join("");
-    wrap.querySelectorAll(".home-scene-chip").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-            if (typeof openTool === "function") openTool(btn.dataset.tool);
-        });
-    });
-}
-
 let homeCards = [];
 let homeDividers = [];
 
 /** 业务分类真筛选（不含 favorites/recent） */
 let homeCatFilter = null;
+/** 侧栏快捷虚拟筛选：null | 'recent' | 'favorites'（默认首页不展示这两块） */
+let homeVirtualFilter = null;
 
 const AUDIENCE_KEY = "devtools.audience";
 const VALID_AUDIENCES = { all: 1, common: 1, frontend: 1, backend: 1, java: 1 };
@@ -626,176 +591,6 @@ let homeAudience = "all";
 const DENSITY_KEY = "devtools.home.density";
 const VALID_DENSITIES = { comfortable: 1, compact: 1 };
 let homeDensity = "comfortable";
-
-/** 首页分类懒展开：localStorage 存用户展开过的业务分类 id */
-const EXPANDED_CATS_KEY = "devtools.home.expandedCats";
-/** @type {Set<string>} */
-let homeExpandedCats = new Set();
-/** 是否已从 localStorage 读到用户偏好（null 键 = 默认仅首个业务类） */
-let homeExpandHasStored = false;
-
-function loadHomeExpandedCats() {
-    try {
-        const raw = localStorage.getItem(EXPANDED_CATS_KEY);
-        if (raw === null) {
-            homeExpandedCats = new Set();
-            homeExpandHasStored = false;
-            return;
-        }
-        homeExpandHasStored = true;
-        const arr = JSON.parse(raw);
-        homeExpandedCats = new Set(
-            Array.isArray(arr) ? arr.filter((id) => typeof id === "string" && id) : [],
-        );
-    } catch (e) {
-        homeExpandedCats = new Set();
-        homeExpandHasStored = false;
-    }
-}
-
-function saveHomeExpandedCats() {
-    try {
-        homeExpandHasStored = true;
-        localStorage.setItem(EXPANDED_CATS_KEY, JSON.stringify(Array.from(homeExpandedCats)));
-    } catch (e) {
-        /* ignore */
-    }
-}
-
-/**
- * 是否强制全展开业务分类（搜索 / 受众 / 分类筛选任一生效）
- * @param {{q?: string, audience?: string, catFilter?: string|null}} [opts]
- * @returns {boolean}
- */
-function shouldForceExpandAllHomeCats(opts) {
-    const o = opts || {};
-    const q =
-        o.q !== undefined
-            ? String(o.q || "").trim()
-            : typeof domCache !== "undefined" && domCache.homeSearch
-              ? domCache.homeSearch.value.trim()
-              : "";
-    const audience = o.audience !== undefined ? o.audience : homeAudience;
-    const catFilter = o.catFilter !== undefined ? o.catFilter : homeCatFilter;
-    return !!(q || (audience && audience !== "all") || catFilter);
-}
-
-/** 首个有工具的业务分类 id（非 virtual） */
-function getFirstBusinessCatId() {
-    if (typeof categories === "undefined" || !categories) return null;
-    for (let i = 0; i < categories.length; i++) {
-        const cat = categories[i];
-        if (!cat || cat.virtual || cat.id === "favorites" || cat.id === "recent") continue;
-        if (typeof tools !== "undefined" && tools.some((t) => t.cat === cat.id)) {
-            return cat.id;
-        }
-    }
-    return null;
-}
-
-/**
- * 业务分类是否处于展开态（不含强制全展开；调用方可再 || force）
- * @param {string} catId
- * @returns {boolean}
- */
-function isHomeCatExpanded(catId) {
-    if (!catId || catId === "recent" || catId === "favorites") return true;
-    if (!homeExpandHasStored) {
-        return catId === getFirstBusinessCatId();
-    }
-    return homeExpandedCats.has(catId);
-}
-
-/** 确保业务分类展开并持久化（锚点 / setHomeCatFilter） */
-function ensureHomeCatExpanded(catId) {
-    if (!catId || catId === "recent" || catId === "favorites") return;
-    if (!getBusinessCatById(catId)) return;
-    if (!homeExpandHasStored) {
-        const first = getFirstBusinessCatId();
-        if (first) homeExpandedCats.add(first);
-    }
-    if (homeExpandedCats.has(catId)) {
-        homeExpandHasStored = true;
-        return;
-    }
-    homeExpandedCats.add(catId);
-    saveHomeExpandedCats();
-}
-
-function toggleHomeCatExpand(catId) {
-    if (!catId || catId === "recent" || catId === "favorites") return;
-    if (!getBusinessCatById(catId)) return;
-    if (shouldForceExpandAllHomeCats()) return;
-    if (!homeExpandHasStored) {
-        const first = getFirstBusinessCatId();
-        if (first) homeExpandedCats.add(first);
-        homeExpandHasStored = true;
-    }
-    var willExpand = !homeExpandedCats.has(catId);
-    if (willExpand) {
-        homeExpandedCats.add(catId);
-    } else {
-        homeExpandedCats.delete(catId);
-    }
-    saveHomeExpandedCats();
-    filterHomeTools();
-    // 展开后滚到该分类标题，避免列表变长后当前视口仍停在别处
-    if (willExpand) {
-        scrollHomeCatIntoView(catId);
-    }
-}
-
-/** 将首页分类 divider 滚入可视区域（panel-home 为滚动容器） */
-function scrollHomeCatIntoView(catId) {
-    if (!catId) return;
-    var el = document.getElementById("cat-" + catId);
-    if (!el) return;
-    try {
-        el.scrollIntoView({behavior: "smooth", block: "start"});
-    } catch (e) {
-        el.scrollIntoView(true);
-    }
-}
-
-function applyHomeCatExpandState() {
-    const force = shouldForceExpandAllHomeCats();
-    homeDividers.forEach((d) => {
-        const catId = d.dataset.cat || d.id.replace("cat-", "");
-        if (catId === "recent" || catId === "favorites") {
-            d.classList.remove("collapsed");
-            d.setAttribute("aria-expanded", "true");
-            return;
-        }
-        const expanded = force || isHomeCatExpanded(catId);
-        d.classList.toggle("collapsed", !expanded);
-        d.setAttribute("aria-expanded", expanded ? "true" : "false");
-        if (!d.dataset.expandBound) {
-            d.dataset.expandBound = "1";
-            d.setAttribute("role", "button");
-            d.setAttribute("tabindex", "0");
-            d.addEventListener("click", (e) => {
-                if (shouldForceExpandAllHomeCats()) return;
-                e.preventDefault();
-                const id = d.dataset.cat || d.id.replace("cat-", "");
-                toggleHomeCatExpand(id);
-            });
-            d.addEventListener("keydown", (e) => {
-                if (e.key !== "Enter" && e.key !== " ") return;
-                if (shouldForceExpandAllHomeCats()) return;
-                e.preventDefault();
-                const id = d.dataset.cat || d.id.replace("cat-", "");
-                toggleHomeCatExpand(id);
-            });
-        }
-        const chev = d.querySelector(".hcd-chevron");
-        if (chev) {
-            chev.classList.toggle("bi-chevron-down", expanded);
-            chev.classList.toggle("bi-chevron-right", !expanded);
-        }
-    });
-}
-
-loadHomeExpandedCats();
 
 /**
  * 规范化首页密度模式
@@ -930,19 +725,31 @@ function getBusinessCatById(catId) {
 function updateHomeCatFilterChip() {
     const chip = document.getElementById("homeCatFilterChip");
     if (!chip) return;
-    const cat = getBusinessCatById(homeCatFilter);
-    if (!cat) {
-        chip.hidden = true;
-        chip.innerHTML = "";
-        return;
+    let icon = "";
+    let name = "";
+    if (homeVirtualFilter === "recent") {
+        icon = "bi-clock-history";
+        name = "最近使用";
+    } else if (homeVirtualFilter === "favorites") {
+        icon = "bi-star-fill";
+        name = "我的收藏";
+    } else {
+        const cat = getBusinessCatById(homeCatFilter);
+        if (!cat) {
+            chip.hidden = true;
+            chip.innerHTML = "";
+            return;
+        }
+        icon = cat.icon;
+        name = cat.name;
     }
     chip.hidden = false;
     chip.innerHTML =
         '<span class="home-cat-filter-label"><i class="bi ' +
-        escapeHtml(cat.icon) +
+        escapeHtml(icon) +
         '" aria-hidden="true"></i> ' +
-        escapeHtml(cat.name) +
-        '</span><button type="button" class="home-cat-filter-clear" title="清除分类筛选" aria-label="清除分类筛选" onclick="clearHomeCatFilter()"><i class="bi bi-x" aria-hidden="true"></i></button>';
+        escapeHtml(name) +
+        '</span><button type="button" class="home-cat-filter-clear" title="清除筛选" aria-label="清除筛选" onclick="clearHomeCatFilter()"><i class="bi bi-x" aria-hidden="true"></i></button>';
 }
 
 function syncCatAnchorFilterActive() {
@@ -972,9 +779,9 @@ function syncCatAnchorFilterActive() {
 function setHomeCatFilter(catId) {
     const cat = getBusinessCatById(catId);
     homeCatFilter = cat ? cat.id : null;
-    if (homeCatFilter) {
-        ensureHomeCatExpanded(homeCatFilter);
-    }
+    homeVirtualFilter = null;
+    // 切回业务分类时清掉虚拟块，避免默认首页露出
+    removeHomeVirtualBlocks();
     updateHomeCatFilterChip();
     syncCatAnchorFilterActive();
     filterHomeTools();
@@ -984,9 +791,47 @@ function setHomeCatFilter(catId) {
     }
 }
 
-function clearHomeCatFilter() {
-    if (!homeCatFilter) return;
+/**
+ * 侧栏「最近使用 / 我的收藏」：仅展示对应虚拟工具列表
+ * @param {'recent'|'favorites'|null} catId
+ */
+function setHomeVirtualFilter(catId) {
+    if (catId !== "recent" && catId !== "favorites") {
+        clearHomeCatFilter();
+        return;
+    }
     homeCatFilter = null;
+    homeVirtualFilter = catId;
+    if (catId === "recent") {
+        refreshRecentBlock();
+    } else {
+        refreshFavoritesBlock();
+    }
+    updateHomeCatFilterChip();
+    syncCatAnchorFilterActive();
+    filterHomeTools();
+    const homePanel = typeof domCache !== "undefined" ? domCache.panelHome : null;
+    if (homePanel) {
+        homePanel.scrollTop = 0;
+    }
+    // 滚到虚拟分类标题
+    setTimeout(function () {
+        const el = document.getElementById("cat-" + catId);
+        if (el) {
+            try {
+                el.scrollIntoView({behavior: "smooth", block: "start"});
+            } catch (e) {
+                el.scrollIntoView(true);
+            }
+        }
+    }, 40);
+}
+
+function clearHomeCatFilter() {
+    if (!homeCatFilter && !homeVirtualFilter) return;
+    homeCatFilter = null;
+    homeVirtualFilter = null;
+    removeHomeVirtualBlocks();
     updateHomeCatFilterChip();
     syncCatAnchorFilterActive();
     filterHomeTools();
@@ -994,16 +839,17 @@ function clearHomeCatFilter() {
 
 function onCatAnchorClick(e, catId) {
     e.preventDefault();
-    if (!getBusinessCatById(catId)) {
-        // 虚拟分类：保留滚动定位
-        if (catId === "recent") {
-            ensureHomeCatExpanded("recent");
+    if (catId === "recent" || catId === "favorites") {
+        if (homeVirtualFilter === catId) {
+            clearHomeCatFilter();
+        } else {
+            setHomeVirtualFilter(catId);
         }
-        const el = document.getElementById("cat-" + catId);
-        if (el) el.scrollIntoView({behavior: "smooth", block: "start"});
         return;
     }
-    ensureHomeCatExpanded(catId);
+    if (!getBusinessCatById(catId)) {
+        return;
+    }
     if (homeCatFilter === catId) {
         clearHomeCatFilter();
     } else {
@@ -1012,52 +858,7 @@ function onCatAnchorClick(e, catId) {
 }
 
 function syncHomeAudienceBar() {
-    const bar = document.getElementById("homeAudienceBar");
-    if (!bar) return;
-    bar.querySelectorAll(".home-audience-btn").forEach((btn) => {
-        const selected = btn.dataset.audience === homeAudience;
-        btn.classList.toggle("active", selected);
-        btn.setAttribute("role", "tab");
-        btn.setAttribute("aria-selected", selected ? "true" : "false");
-        btn.setAttribute("tabindex", selected ? "0" : "-1");
-    });
-}
-
-function initHomeAudienceTabs() {
-    const bar = document.getElementById("homeAudienceBar");
-    if (!bar || bar.dataset.bound) return;
-    bar.dataset.bound = "1";
-    bar.querySelectorAll(".home-audience-btn").forEach((btn) => {
-        btn.setAttribute("role", "tab");
-    });
-    bar.addEventListener("keydown", (e) => {
-        const tabs = Array.from(bar.querySelectorAll(".home-audience-btn"));
-        if (!tabs.length) return;
-        const current = document.activeElement;
-        let idx = tabs.indexOf(current);
-        if (idx < 0) {
-            idx = tabs.findIndex((t) => t.dataset.audience === homeAudience);
-        }
-        if (idx < 0) idx = 0;
-        let next = -1;
-        if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-            next = (idx + 1) % tabs.length;
-        } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
-            next = (idx - 1 + tabs.length) % tabs.length;
-        } else if (e.key === "Home") {
-            next = 0;
-        } else if (e.key === "End") {
-            next = tabs.length - 1;
-        } else {
-            return;
-        }
-        e.preventDefault();
-        const target = tabs[next];
-        if (!target) return;
-        setHomeAudience(target.dataset.audience);
-        target.focus();
-    });
-    syncHomeAudienceBar();
+    // 首页受众 Tab 已移除；侧栏快捷区仍通过 setHomeAudience 联动
 }
 
 /** 顶栏副标题：工具数 / 分类数取自注册表，避免 HTML 写死 */
@@ -1073,141 +874,32 @@ function updateHeaderHomeSub() {
     }
 }
 
-// === 首页 Hero ===
-const HERO_DISMISS_KEY = 'devtools.hero.dismissed';
-
-function getHomeHeroStats() {
-    if (typeof getRegistryStats === 'function') {
-        return getRegistryStats();
-    }
-    return {
-        toolCount: typeof tools !== 'undefined' ? tools.length : 0,
-        categoryCount: typeof getBusinessCategories === 'function' ? getBusinessCategories().length : 0,
-    };
-}
-
-function updateHomeHeroStats() {
-    const s = getHomeHeroStats();
-    const toolsEl = document.getElementById('homeHeroStatTools');
-    const catsEl = document.getElementById('homeHeroStatCats');
-    if (toolsEl) toolsEl.textContent = s.toolCount + ' 工具';
-    if (catsEl) catsEl.textContent = s.categoryCount + ' 分类';
-}
-
-function isHomeHeroDismissed() {
-    try {
-        return localStorage.getItem(HERO_DISMISS_KEY) === '1';
-    } catch (e) {
-        return false;
-    }
-}
-
-function applyHomeHeroVisibility() {
-    const hero = document.getElementById('homeHero');
-    const restore = document.getElementById('homeHeroRestore');
-    const dismissed = isHomeHeroDismissed();
-    if (hero) {
-        hero.hidden = dismissed;
-        hero.setAttribute('aria-hidden', dismissed ? 'true' : 'false');
-    }
-    if (restore) {
-        restore.hidden = !dismissed;
-        restore.setAttribute('aria-hidden', dismissed ? 'false' : 'true');
-    }
-}
-
-function dismissHomeHero() {
-    try {
-        localStorage.setItem(HERO_DISMISS_KEY, '1');
-    } catch (e) {
-        /* ignore */
-    }
-    applyHomeHeroVisibility();
-}
-
-function restoreHomeHero() {
-    try {
-        localStorage.removeItem(HERO_DISMISS_KEY);
-    } catch (e) {
-        /* ignore */
-    }
-    applyHomeHeroVisibility();
-}
-
-function focusHomeSearchFromHero() {
-    const input = (typeof domCache !== 'undefined' && domCache.homeSearch) || document.getElementById('homeSearch');
-    if (input) {
-        input.focus();
-        input.select();
-    }
-    if (typeof showHomeCmdPanel === 'function') showHomeCmdPanel();
-}
-
-function initHomeHero() {
-    applyHomeHeroVisibility();
-    updateHomeHeroStats();
-    const cta = document.getElementById('homeHeroFocusSearch');
-    if (cta && !cta.dataset.bound) {
-        cta.dataset.bound = '1';
-        cta.addEventListener('click', focusHomeSearchFromHero);
-    }
-    const dismissBtn = document.getElementById('homeHeroDismiss');
-    if (dismissBtn && !dismissBtn.dataset.bound) {
-        dismissBtn.dataset.bound = '1';
-        dismissBtn.addEventListener('click', dismissHomeHero);
-    }
-    const restoreBtn = document.getElementById('homeHeroRestore');
-    if (restoreBtn && !restoreBtn.dataset.bound) {
-        restoreBtn.dataset.bound = '1';
-        restoreBtn.addEventListener('click', restoreHomeHero);
-    }
-}
-
 function buildHomeGrid() {
     updateHeaderHomeSub();
-    initHomeHero();
     initHomeDensity();
-    initHomeAudienceTabs();
     initHomeSearchCmdKeys();
-    renderHomeSceneChips();
     const grid = domCache.homeGrid;
     grid.innerHTML = "";
     const anchors = domCache.homeCatAnchors;
     anchors.innerHTML = "";
     categories.forEach((cat) => {
-        // 收藏走独立区块，不在网格与锚点中渲染（避免双份）
-        if (cat.id === "favorites") return;
-        let toolsInCat;
-        if (cat.id === "recent") {
-            toolsInCat = getRecent().map((e) => e.tool);
-            if (!toolsInCat.length) return;
-        } else {
-            toolsInCat = tools.filter((t) => t.cat === cat.id);
-            if (!toolsInCat.length) return;
-        }
+        // 首页不展示虚拟分类：收藏 / 最近使用（侧栏快捷区仍保留）
+        if (cat.virtual || cat.id === "favorites" || cat.id === "recent") return;
+        const toolsInCat = tools.filter((t) => t.cat === cat.id);
+        if (!toolsInCat.length) return;
         const divider = document.createElement("h2");
         divider.className = "home-cat-divider cat-" + cat.id;
         divider.id = "cat-" + cat.id;
         divider.dataset.cat = cat.id;
-        const isBiz = cat.id !== "recent" && cat.id !== "favorites" && !cat.virtual;
-        const chevron = isBiz
-            ? '<i class="bi bi-chevron-down hcd-chevron" aria-hidden="true"></i>'
-            : "";
         divider.innerHTML =
-            chevron +
             '<span class="hcd-icon"><i class="bi ' +
             cat.icon +
             '"></i></span><span class="hcd-name">' +
             escapeHtml(cat.name) +
             "</span>";
-        if (isBiz) {
-            divider.setAttribute("aria-expanded", "true");
-            divider.title = "展开 / 折叠分类";
-        }
         grid.appendChild(divider);
         toolsInCat.forEach((t, ci) => {
-            const cardCat = cat.id === "recent" ? cat.id : t.cat;
-            grid.appendChild(createHomeCard(t, cardCat, ci));
+            grid.appendChild(createHomeCard(t, t.cat, ci));
         });
         const anchor = document.createElement("a");
         anchor.className = "cat-anchor";
@@ -1231,12 +923,37 @@ function buildHomeGrid() {
     const homePanel = domCache.panelHome;
     homePanel.addEventListener("scroll", debounce(highlightAnchor, 50));
 
-    refreshFavoritesBlock();
-    syncHomeAudienceBar();
+    // 默认不渲染收藏/最近；若当前处于虚拟筛选则补上
+    if (homeVirtualFilter === "favorites") {
+        refreshFavoritesBlock();
+    } else if (homeVirtualFilter === "recent") {
+        refreshRecentBlock();
+    } else {
+        removeHomeVirtualBlocks();
+    }
     updateHomeCatFilterChip();
     initHomeBottomNav();
-    // 懒展开 + 筛选统一走 filterHomeTools（内部 applyHomeCatExpandState）
     filterHomeTools();
+}
+
+/** 移除首页虚拟分类块（收藏 / 最近） */
+function removeHomeVirtualBlocks() {
+    const homeGrid = domCache.homeGrid;
+    if (!homeGrid) return;
+    ["favorites", "recent"].forEach(function (catId) {
+        const oldDivider = document.getElementById("cat-" + catId);
+        if (oldDivider) oldDivider.remove();
+        homeGrid.querySelectorAll('.home-card[data-cat="' + catId + '"]').forEach(function (c) {
+            c.remove();
+        });
+        const anchorsBox = domCache.homeCatAnchors;
+        if (anchorsBox) {
+            const oldAnchor = anchorsBox.querySelector('.cat-anchor[href="#cat-' + catId + '"]');
+            if (oldAnchor) oldAnchor.remove();
+        }
+    });
+    homeCards = Array.from(homeGrid.querySelectorAll(".home-card"));
+    homeDividers = Array.from(homeGrid.querySelectorAll(".home-cat-divider"));
 }
 
 // 重绘首页虚拟分类块（收藏 / 最近使用），保持收藏在最近使用之前
@@ -1253,120 +970,104 @@ function refreshVirtualHomeBlock(catId, items, icon, name) {
         .querySelectorAll('.home-card[data-cat="' + catId + '"]')
         .forEach((c) => c.remove());
 
-    if (!items.length) {
-        if (oldDivider) oldDivider.remove();
-        if (oldAnchor) oldAnchor.remove();
+    // 空列表：保留标题，便于空态提示
+    let divider = oldDivider;
+    if (!divider) {
+        divider = document.createElement("h2");
+        divider.className = "home-cat-divider cat-" + catId;
+        divider.id = "cat-" + catId;
+        divider.dataset.cat = catId;
+        divider.innerHTML =
+            '<span class="hcd-icon"><i class="bi ' +
+            icon +
+            '"></i></span><span class="hcd-name">' +
+            escapeHtml(name) +
+            "</span>";
+        const favDivider = document.getElementById("cat-favorites");
+        if (catId === "favorites") {
+            grid.insertBefore(divider, grid.firstChild);
+        } else if (favDivider) {
+            let last = favDivider;
+            let n = favDivider.nextElementSibling;
+            while (
+                n &&
+                n.classList.contains("home-card") &&
+                n.dataset.cat === "favorites"
+            ) {
+                last = n;
+                n = n.nextElementSibling;
+            }
+            last.after(divider);
+        } else {
+            grid.insertBefore(divider, grid.firstChild);
+        }
     } else {
-        let divider = oldDivider;
-        if (!divider) {
-            divider = document.createElement("h2");
-            divider.className = "home-cat-divider cat-" + catId;
-            divider.id = "cat-" + catId;
-            divider.dataset.cat = catId;
-            divider.innerHTML =
-                '<span class="hcd-icon"><i class="bi ' +
-                icon +
-                '"></i></span><span class="hcd-name">' +
-                escapeHtml(name) +
-                "</span>";
-            // 插入顺序：收藏在最近使用之前；最近使用在其余分类之前
-            const favDivider = document.getElementById("cat-favorites");
-            if (catId === "favorites") {
-                grid.insertBefore(divider, grid.firstChild);
-            } else if (favDivider) {
-                let last = favDivider;
-                let n = favDivider.nextElementSibling;
-                while (
-                    n &&
-                    n.classList.contains("home-card") &&
-                    n.dataset.cat === "favorites"
-                    ) {
-                    last = n;
-                    n = n.nextElementSibling;
-                }
-                last.after(divider);
-            } else {
-                grid.insertBefore(divider, grid.firstChild);
-            }
-        }
-        let anchor = oldAnchor;
-        if (!anchor) {
-            anchor = document.createElement("a");
-            anchor.className = "cat-anchor";
-            anchor.href = "#cat-" + catId;
-            anchor.dataset.cat = catId;
-            anchor.innerHTML =
-                '<span class="cat-icon"><i class="bi ' +
-                icon +
-                '"></i></span>' +
-                escapeHtml(name);
-            anchor.addEventListener("click", function (e) {
-                onCatAnchorClick(e, catId);
-            });
-            const favAnchor = anchorsBox.querySelector(
-                '.cat-anchor[href="#cat-favorites"]',
-            );
-            if (catId === "favorites") {
-                anchorsBox.insertBefore(anchor, anchorsBox.firstChild);
-            } else if (favAnchor) {
-                favAnchor.after(anchor);
-            } else {
-                anchorsBox.insertBefore(anchor, anchorsBox.firstChild);
-            }
-        }
-        let prev = divider;
-        items.forEach((t, ci) => {
-            const card = createHomeCard(t, catId, ci);
-            prev.after(card);
-            prev = card;
-        });
+        divider.innerHTML =
+            '<span class="hcd-icon"><i class="bi ' +
+            icon +
+            '"></i></span><span class="hcd-name">' +
+            escapeHtml(name) +
+            "</span>";
     }
+
+    let anchor = oldAnchor;
+    if (!anchor) {
+        anchor = document.createElement("a");
+        anchor.className = "cat-anchor";
+        anchor.href = "#cat-" + catId;
+        anchor.dataset.cat = catId;
+        anchor.innerHTML =
+            '<span class="cat-icon"><i class="bi ' +
+            icon +
+            '"></i></span>' +
+            escapeHtml(name);
+        anchor.addEventListener("click", function (e) {
+            onCatAnchorClick(e, catId);
+        });
+        const favAnchor = anchorsBox.querySelector(
+            '.cat-anchor[href="#cat-favorites"]',
+        );
+        if (catId === "favorites") {
+            anchorsBox.insertBefore(anchor, anchorsBox.firstChild);
+        } else if (favAnchor) {
+            favAnchor.after(anchor);
+        } else {
+            anchorsBox.insertBefore(anchor, anchorsBox.firstChild);
+        }
+    }
+
+    let prev = divider;
+    items.forEach((t, ci) => {
+        const card = createHomeCard(t, catId, ci);
+        prev.after(card);
+        prev = card;
+    });
 
     homeCards = Array.from(grid.querySelectorAll(".home-card"));
     homeDividers = Array.from(grid.querySelectorAll(".home-cat-divider"));
-    filterHomeTools();
 }
 
+/** 渲染收藏虚拟块（供侧栏快捷 / 虚拟筛选） */
 function refreshFavoritesBlock() {
-    const section = document.getElementById("homeFavoritesSection");
-    const grid = document.getElementById("homeFavoritesGrid");
-    const empty = document.getElementById("homeFavoritesEmpty");
-    if (!section || !grid || !empty) return;
-
-    // 若网格里仍残留旧版收藏块，一并清掉（兼容热更新 / 历史 DOM）
-    const homeGrid = domCache.homeGrid;
-    if (homeGrid) {
-        const oldDivider = document.getElementById("cat-favorites");
-        if (oldDivider) oldDivider.remove();
-        homeGrid
-            .querySelectorAll('.home-card[data-cat="favorites"]')
-            .forEach((c) => c.remove());
-        const anchorsBox = domCache.homeCatAnchors;
-        if (anchorsBox) {
-            const oldAnchor = anchorsBox.querySelector('.cat-anchor[href="#cat-favorites"]');
-            if (oldAnchor) oldAnchor.remove();
-        }
-        homeCards = Array.from(homeGrid.querySelectorAll(".home-card"));
-        homeDividers = Array.from(homeGrid.querySelectorAll(".home-cat-divider"));
-    }
-
-    const items = getFavoriteTools();
-    grid.innerHTML = "";
-    if (!items.length) {
-        empty.hidden = false;
-        return;
-    }
-    empty.hidden = true;
-    items.forEach((t, ci) => {
-        grid.appendChild(createHomeCard(t, "favorites", ci));
-    });
+    const cat = typeof categories !== "undefined"
+        ? categories.find((c) => c.id === "favorites")
+        : null;
+    refreshVirtualHomeBlock(
+        "favorites",
+        getFavoriteTools(),
+        cat ? cat.icon : "bi-star-fill",
+        cat ? cat.name : "我的收藏",
+    );
 }
 
+/** 渲染最近使用虚拟块 */
 function refreshRecentBlock() {
-    const cat = categories.find((c) => c.id === "recent");
+    const cat = typeof categories !== "undefined"
+        ? categories.find((c) => c.id === "recent")
+        : null;
     refreshVirtualHomeBlock(
         "recent",
-        getRecent().map((e) => e.tool),
+        getRecent().map((e) => e.tool).filter(Boolean),
         cat ? cat.icon : "bi-clock-history",
         cat ? cat.name : "最近使用",
     );
@@ -1483,20 +1184,6 @@ function handleHomeBottomNav(action) {
         }
         if (typeof showHomeCmdPanel === "function") showHomeCmdPanel();
         syncHomeBottomNav();
-        return;
-    }
-    if (action === "fav") {
-        if (!isHomePanelActive()) {
-            showHome();
-            if (typeof setRouteHome === "function") {
-                setRouteHome({replace: true});
-            }
-        }
-        const sec = document.getElementById("homeFavoritesSection");
-        if (sec) {
-            sec.scrollIntoView({behavior: "smooth", block: "start"});
-        }
-        syncHomeBottomNav();
     }
 }
 
@@ -1550,7 +1237,6 @@ function goHome(catId) {
 
 function filterHomeTools() {
     const q = domCache.homeSearch ? domCache.homeSearch.value.toLowerCase().trim() : "";
-    const forceExpand = shouldForceExpandAllHomeCats({q: q, audience: homeAudience, catFilter: homeCatFilter});
 
     // 如果当前不在首页，自动切回首页再搜索
     const homePanel = domCache.panelHome;
@@ -1560,7 +1246,6 @@ function filterHomeTools() {
         setTimeout(highlightAnchor, 50);
     }
 
-    /** 筛选命中但可能因折叠隐藏的分类（用于 divider 仍显示以便展开） */
     const filterMatchedCats = new Set();
     homeCards.forEach((card) => {
         const name = card.dataset.name || "";
@@ -1568,46 +1253,45 @@ function filterHomeTools() {
         const textMatch = !q || name.includes(q) || desc.includes(q);
         const audienceMatch = cardMatchesAudience(card);
         const cardCat = card.dataset.cat || "";
-        // 业务分类筛选时隐藏 recent 虚拟卡片
         let catMatch = true;
-        if (homeCatFilter) {
-            if (cardCat === "recent") {
-                catMatch = false;
-            } else {
-                catMatch = cardCat === homeCatFilter;
-            }
+        if (homeVirtualFilter) {
+            catMatch = cardCat === homeVirtualFilter;
+        } else if (homeCatFilter) {
+            catMatch = cardCat === homeCatFilter;
+        } else if (cardCat === "recent" || cardCat === "favorites") {
+            // 默认首页不展示虚拟块
+            catMatch = false;
         }
-        const filterMatch = textMatch && audienceMatch && catMatch;
-        const expandMatch =
-            forceExpand ||
-            cardCat === "recent" ||
-            cardCat === "favorites" ||
-            isHomeCatExpanded(cardCat);
-        const match = filterMatch && expandMatch;
+        const match = textMatch && audienceMatch && catMatch;
         card.style.display = match ? "" : "none";
-        if (filterMatch) {
+        if (match) {
             filterMatchedCats.add(cardCat);
         }
     });
     homeDividers.forEach((d) => {
         const catId = d.dataset.cat || d.id.replace("cat-", "");
-        // 有筛选命中则显示 divider（折叠时仍可点开）；无命中则隐藏
-        d.style.display = filterMatchedCats.has(catId) ? "" : "none";
+        let show = filterMatchedCats.has(catId);
+        // 虚拟筛选下即使无工具也显示标题（配合空态）
+        if (homeVirtualFilter && catId === homeVirtualFilter) {
+            show = true;
+        }
+        d.style.display = show ? "" : "none";
+        d.classList.remove("collapsed");
     });
-    applyHomeCatExpandState();
     const empty = document.querySelector(".home-search-empty");
     if (empty) empty.remove();
-    // 空态：仅在「筛选后无任何命中」时提示；折叠导致看不见不算空
     if (!filterMatchedCats.size) {
         const msg = document.createElement("div");
         msg.className = "home-search-empty";
         let tip;
         if (q) {
             tip = '<i class="bi bi-search"></i> 没有匹配的工具';
-        } else if (homeCatFilter) {
-            tip = '<i class="bi bi-funnel"></i> 当前筛选下没有工具';
+        } else if (homeVirtualFilter === "recent") {
+            tip = '<i class="bi bi-clock-history"></i> 暂无最近使用，打开任意工具后会出现在这里';
+        } else if (homeVirtualFilter === "favorites") {
+            tip = '<i class="bi bi-star"></i> 暂无收藏';
         } else {
-            tip = '<i class="bi bi-funnel"></i> 当前受众下没有工具';
+            tip = '<i class="bi bi-funnel"></i> 当前筛选下没有工具';
         }
         msg.innerHTML = tip;
         if (domCache.homeGrid) domCache.homeGrid.appendChild(msg);
@@ -1668,6 +1352,5 @@ if (typeof module !== "undefined" && module.exports) {
         buildCommandPaletteResults,
         HOME_SCENE_SHORTCUTS,
         normalizeHomeDensity,
-        shouldForceExpandAllHomeCats,
     };
 }
