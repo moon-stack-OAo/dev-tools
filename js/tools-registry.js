@@ -1066,6 +1066,22 @@ const tools = [
         cat: "debug",
         tags: ["common","frontend"],
     },
+    {
+        id: "mqtt",
+        icon: "bi-broadcast-pin",
+        name: "MQTT 调试",
+        desc: "MQTT over WebSocket 连接 / 订阅 / 发布 / 消息日志",
+        cat: "debug",
+        tags: ["common","backend"],
+    },
+    {
+        id: "mappicker",
+        icon: "bi-geo-alt",
+        name: "地图选址",
+        desc: "瓦片地图点选坐标 / 复制经纬度",
+        cat: "debug",
+        tags: ["common","frontend","backend"],
+    },
 
     {
         id: "arthas",

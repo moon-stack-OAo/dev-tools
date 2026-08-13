@@ -60,6 +60,8 @@ const toolLibs = {
     jsrun: ["sucrase.min.js", "js-beautify.min.js", "cm-editor.min.js"],
     pyrun: ["pyodide/pyodide.js", "cm-editor.min.js"],
     videodebug: ["hls.min.js"],
+    mqtt: ["mqtt.min.js"],
+    mappicker: ["leaflet.min.js"],
 };
 
 // 工具→脚本依赖映射：打开工具前先加载其它工具脚本（复用其全局纯函数）

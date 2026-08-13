@@ -26,6 +26,21 @@ const libs = [
   { src: "pdf-lib/dist/pdf-lib.min.js", dest: "pdf-lib.min.js" },
   { src: "xlsx/dist/xlsx.full.min.js", dest: "xlsx.min.js" },
   { src: "hls.js/dist/hls.min.js", dest: "hls.min.js" },
+  { src: "mqtt/dist/mqtt.min.js", dest: "mqtt.min.js" },
+  { src: "leaflet/dist/leaflet.js", dest: "leaflet.min.js" },
+  { src: "leaflet/dist/leaflet.css", dest: "leaflet.css" },
+  // Leaflet 默认 Marker 图标（与 leaflet.css 中 url(images/...) 对应）
+  { src: "leaflet/dist/images/marker-icon.png", dest: "images/marker-icon.png" },
+  {
+    src: "leaflet/dist/images/marker-icon-2x.png",
+    dest: "images/marker-icon-2x.png",
+  },
+  {
+    src: "leaflet/dist/images/marker-shadow.png",
+    dest: "images/marker-shadow.png",
+  },
+  { src: "leaflet/dist/images/layers.png", dest: "images/layers.png" },
+  { src: "leaflet/dist/images/layers-2x.png", dest: "images/layers-2x.png" },
 ];
 
 // 需要 esbuild 打包为 IIFE 浏览器友好格式的库
@@ -89,6 +104,10 @@ libs.forEach(({ src, dest }) => {
   const srcPath = path.join(ROOT_DIR, "node_modules", src);
   const destPath = path.join(LIB_DIR, dest);
   if (fs.existsSync(srcPath)) {
+    const destDir = path.dirname(destPath);
+    if (!fs.existsSync(destDir)) {
+      fs.mkdirSync(destDir, { recursive: true });
+    }
     fs.copyFileSync(srcPath, destPath);
     console.log(`✓ ${dest}`);
   } else {

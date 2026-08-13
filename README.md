@@ -314,6 +314,8 @@ npm run build     # 输出到 dist/
 | URL 参数构造器      | 表格编辑 query，生成 URL / 解析回填                |
 | 线程池参数估算        | 按 QPS/耗时估算 core/max/queue 与说明           |
 | 视频调试           | 本地/URL/M3U/HLS 播放 · 元数据 · 事件 · 截帧         |
+| MQTT 调试          | MQTT over WebSocket 连接 / 订阅 / 发布 / 消息日志      |
+| 地图选址           | 瓦片地图点选坐标 / 复制经纬度                         |
 
 ### 八、参考（29）
 

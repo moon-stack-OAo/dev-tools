@@ -1,0 +1,77 @@
+<div class="tool-panel" id="panel-mappicker">
+    <div class="mp-topbar">
+        <input id="mpCoordInput" type="text" placeholder="纬度,经度 或 经度,纬度" autocomplete="off">
+        <button type="button" onclick="mpLocateInput()">定位</button>
+        <button type="button" class="outline" onclick="mpClear()">清空</button>
+        <button type="button" class="outline" onclick="mpResetView()">重置视图</button>
+    </div>
+
+    <div class="mp-layout">
+        <div class="mp-map-wrap">
+            <div id="mpMap" class="mp-map" role="application" aria-label="地图选址"></div>
+        </div>
+
+        <div class="mp-side">
+            <section class="pc-card">
+                <div class="pc-card-head">
+                    <i class="bi bi-geo-alt"></i>
+                    <span>当前坐标</span>
+                </div>
+                <div class="mp-field">
+                    <label class="label" for="mpLat">纬度 lat</label>
+                    <input id="mpLat" type="text" readonly placeholder="—">
+                </div>
+                <div class="mp-field">
+                    <label class="label" for="mpLng">经度 lng</label>
+                    <input id="mpLng" type="text" readonly placeholder="—">
+                </div>
+                <div class="mp-field">
+                    <label class="label" for="mpDecimals">小数位</label>
+                    <select id="mpDecimals" onchange="mpOnDecimalsChange()">
+                        <option value="6" selected>6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                    </select>
+                </div>
+                <div class="mp-copy-row">
+                    <button type="button" class="outline sm" onclick="mpCopy('latlng')">lat,lng</button>
+                    <button type="button" class="outline sm" onclick="mpCopy('lnglat')">lng,lat</button>
+                    <button type="button" class="outline sm" onclick="mpCopy('json')">JSON</button>
+                </div>
+            </section>
+
+            <section class="pc-card">
+                <div class="pc-card-head">
+                    <i class="bi bi-info-circle"></i>
+                    <span>地图状态</span>
+                </div>
+                <div class="mp-meta">
+                    <div class="mp-meta-row">
+                        <span class="mp-meta-k">缩放 z</span>
+                        <span class="mp-meta-v" id="mpZoom">—</span>
+                    </div>
+                    <div class="mp-meta-row">
+                        <span class="mp-meta-k">中心点</span>
+                        <span class="mp-meta-v" id="mpCenter">—</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="pc-card">
+                <div class="pc-card-head">
+                    <i class="bi bi-layers"></i>
+                    <span>瓦片底图</span>
+                </div>
+                <div class="mp-field">
+                    <label class="label" for="mpTileUrl">Tile URL 模板</label>
+                    <input id="mpTileUrl" type="text" placeholder="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png">
+                </div>
+                <button type="button" class="outline sm" onclick="mpApplyTileUrl()">应用瓦片</button>
+            </section>
+
+            <div class="mp-hint">
+                坐标系为 <strong>WGS84</strong>（EPSG:4326）。国内地图 App 常用 GCJ-02，直接套用可能有偏移。默认瓦片来自 OpenStreetMap，请遵守其使用政策；可改为自建 / 镜像模板。
+            </div>
+        </div>
+    </div>
+</div>

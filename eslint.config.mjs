@@ -30,6 +30,8 @@ const libGlobals = {
   loadPyodide: "readonly",
   CMEditor: "readonly",
   Hls: "readonly",
+  mqtt: "readonly",
+  L: "readonly",
 };
 
 // app.js 在浏览器环境暴露的项目级全局函数/变量

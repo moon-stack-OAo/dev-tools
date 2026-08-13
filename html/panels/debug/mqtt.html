@@ -1,0 +1,104 @@
+<div class="tool-panel" id="panel-mqtt">
+    <div class="mqtt-topbar">
+        <input id="mqttUrl" placeholder="ws://localhost:8083/mqtt 或 wss://broker.example.com/mqtt" type="text">
+        <input id="mqttClientId" placeholder="ClientId" style="max-width:180px" type="text">
+        <button class="outline" onclick="mqttRandomClientId()" title="随机 ClientId" type="button">随机</button>
+        <input id="mqttUsername" placeholder="用户名" style="max-width:120px" type="text">
+        <input id="mqttPassword" placeholder="密码" style="max-width:120px" type="password">
+        <button onclick="mqttConnect()" type="button">连接</button>
+        <button class="danger" onclick="mqttDisconnect()" type="button">断开</button>
+        <span class="ws-status disconnected" id="mqttStatus"><span class="ws-dot"></span> 未连接</span>
+    </div>
+
+    <div class="mqtt-options">
+        <label class="mqtt-opt">
+            <span>协议</span>
+            <select id="mqttProtocol">
+                <option value="4" selected>MQTT 3.1.1</option>
+                <option value="5">MQTT 5.0</option>
+            </select>
+        </label>
+        <label class="mqtt-opt mqtt-opt-check">
+            <input checked id="mqttClean" type="checkbox">
+            <span>Clean Session</span>
+        </label>
+        <label class="mqtt-opt">
+            <span>KeepAlive</span>
+            <input id="mqttKeepAlive" min="0" style="width:72px" type="number" value="60">
+            <span class="mqtt-unit">s</span>
+        </label>
+        <label class="mqtt-opt">
+            <span>ConnectTimeout</span>
+            <input id="mqttConnectTimeout" min="1" style="width:80px" type="number" value="30">
+            <span class="mqtt-unit">s</span>
+        </label>
+    </div>
+
+    <div class="mqtt-layout">
+        <div class="mqtt-left">
+            <div class="mqtt-section">
+                <div class="mqtt-section-title">
+                    订阅
+                    <span class="mqtt-tip">多主题：换行 / 逗号 / 分号分隔</span>
+                </div>
+                <div class="mqtt-row mqtt-row-sub">
+                    <textarea class="json-input mqtt-sub-input" id="mqttSubTopic" placeholder="sensor/+/temp&#10;device/#&#10;或 topic1, topic2" rows="3"></textarea>
+                    <div class="mqtt-sub-side">
+                        <select id="mqttSubQos">
+                            <option value="0">QoS 0</option>
+                            <option value="1">QoS 1</option>
+                            <option value="2">QoS 2</option>
+                        </select>
+                        <button onclick="mqttSubscribe()" type="button">订阅</button>
+                    </div>
+                </div>
+                <div class="mqtt-sub-list-head">
+                    <span class="mqtt-sub-count" id="mqttSubCount">0 个订阅</span>
+                    <button class="outline" onclick="mqttUnsubscribeAll()" type="button">全部取消</button>
+                </div>
+                <div class="mqtt-sub-list" id="mqttSubList">
+                    <div class="mqtt-sub-empty">暂无订阅</div>
+                </div>
+            </div>
+
+            <div class="mqtt-section">
+                <div class="mqtt-section-title">发布</div>
+                <div class="mqtt-row">
+                    <input id="mqttPubTopic" placeholder="发布主题（不可含 + / #）" style="flex:1;min-width:140px" type="text">
+                    <select id="mqttPubQos" style="width:90px">
+                        <option value="0">QoS 0</option>
+                        <option value="1">QoS 1</option>
+                        <option value="2">QoS 2</option>
+                    </select>
+                    <label class="mqtt-opt-check">
+                        <input id="mqttPubRetain" type="checkbox">
+                        <span>Retain</span>
+                    </label>
+                </div>
+                <textarea class="json-input mqtt-payload" id="mqttPubPayload" placeholder="Payload 文本" rows="5"></textarea>
+                <div class="mqtt-row mqtt-row-actions">
+                    <button onclick="mqttPublish()" type="button">发布</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="mqtt-right">
+            <div class="mqtt-log-head">
+                <div class="mqtt-section-title" style="margin:0">消息日志</div>
+                <div class="mqtt-log-actions">
+                    <button class="outline" onclick="mqttClearLog()" type="button">清空</button>
+                    <button class="copy-btn" onclick="mqttCopyLog()" type="button">复制</button>
+                </div>
+            </div>
+            <div class="mqtt-log" id="mqttLog">
+                <div class="mqtt-log-empty">等待连接…</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mqtt-hint">
+        <strong>说明：</strong>
+        仅支持 MQTT over WebSocket（<code>ws://</code> / <code>wss://</code>）；勿使用 <code>tcp://</code> 或 <code>mqtt://</code> 直连 1883。
+        跨域与混合内容（HTTPS 页访问 ws://）可能导致连接失败。
+    </div>
+</div>
