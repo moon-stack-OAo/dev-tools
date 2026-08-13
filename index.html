@@ -18,6 +18,7 @@
     <meta content="#0f172a" name="theme-color">
     <meta content="yes" name="mobile-web-app-capable">
     <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style">
+    <meta content="CodeDeck" name="application-name">
     <meta content="CodeDeck" name="apple-mobile-web-app-title">
     <link href="https://tools.livancen.top/" rel="canonical">
     <!-- Open Graph -->
@@ -48,28 +49,44 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "CodeDeck",
-      "alternateName": ["码台", "CodeDeck 码台"],
-      "url": "https://tools.livancen.top/",
-      "description": "面向开发者的纯前端在线工具集，含 Java 深度工具。数据 100% 本地处理，无需注册、可离线。",
-      "applicationCategory": "DeveloperApplication",
-      "operatingSystem": "Any",
-      "browserRequirements": "Requires JavaScript",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "CNY"
-      },
-      "author": [
-        { "@type": "Person", "name": "Livancen" },
-        { "@type": "Person", "name": "Moon" }
-      ],
-      "creator": [
-        { "@type": "Person", "name": "Livancen" },
-        { "@type": "Person", "name": "Moon" }
-      ],
-      "inLanguage": ["zh-CN", "en"]
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://tools.livancen.top/#website",
+          "name": "CodeDeck",
+          "alternateName": ["码台", "CodeDeck 码台", "CodeDeck · 码台"],
+          "url": "https://tools.livancen.top/",
+          "description": "面向开发者的纯前端在线工具集，含 Java 深度工具。数据 100% 本地处理，无需注册、可离线。",
+          "inLanguage": ["zh-CN", "en"],
+          "publisher": { "@id": "https://tools.livancen.top/#app" }
+        },
+        {
+          "@type": "WebApplication",
+          "@id": "https://tools.livancen.top/#app",
+          "name": "CodeDeck",
+          "alternateName": ["码台", "CodeDeck 码台", "CodeDeck · 码台"],
+          "url": "https://tools.livancen.top/",
+          "description": "面向开发者的纯前端在线工具集，含 Java 深度工具。数据 100% 本地处理，无需注册、可离线。",
+          "applicationCategory": "DeveloperApplication",
+          "operatingSystem": "Any",
+          "browserRequirements": "Requires JavaScript",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "CNY"
+          },
+          "author": [
+            { "@type": "Person", "name": "Livancen" },
+            { "@type": "Person", "name": "Moon" }
+          ],
+          "creator": [
+            { "@type": "Person", "name": "Livancen" },
+            { "@type": "Person", "name": "Moon" }
+          ],
+          "inLanguage": ["zh-CN", "en"],
+          "isPartOf": { "@id": "https://tools.livancen.top/#website" }
+        }
+      ]
     }
     </script>
     <!-- 第三方库已改为按需懒加载,见 js/loader.js 中的 toolLibs / loadLib -->
