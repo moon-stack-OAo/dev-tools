@@ -420,8 +420,7 @@ function initBuildInfo() {
             '构建 <code>' +
             escapeHtml(c) +
             '</code>' +
-            (t ? ' · ' + escapeHtml(t) : '') +
-            ' · <a href="ops-update.html" title="更新管理">更新</a>';
+            (t ? ' · ' + escapeHtml(t) : '');
     };
     if (window.__BUILD_INFO__ && window.__BUILD_INFO__.commit) {
         apply(window.__BUILD_INFO__);

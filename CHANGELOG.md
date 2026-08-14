@@ -25,7 +25,7 @@
 ### 工程
 
 - **一键更新（自建服务器）**：构建写入 `version.json` / `__BUILD_INFO__`；`scripts/update-agent.js` + static/docker 脚本；
-  `ops-update.html` 管理页；说明见 `docs/deploy-manual-update.md`
+  说明见 `docs/deploy-manual-update.md`
 - **GitHub CI 发布产物**：`ci-release.yml` 测试构建后发布 `latest-dist`（dist tar.gz）并推送 `ghcr.io/.../dev-tools`
   镜像；服务器可只拉产物/镜像，无需 clone 构建（见 `docs/deploy-ci.md`）
 - **架构重构（行为不变，见 `docs/ADR-refactor-guide.md`）**

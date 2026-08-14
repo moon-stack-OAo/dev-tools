@@ -115,7 +115,7 @@ function getPyodideIndexURL() {
 
   var loc = window.location;
   var path = loc.pathname || "/";
-  // 去掉具体文件名（如 /index.html、/ops-update.html）
+  // 去掉具体文件名（如 /index.html）
   if (/\/[^/]+\.[a-zA-Z0-9]+$/.test(path)) {
     path = path.replace(/\/[^/]+$/, "/");
   } else if (!path.endsWith("/")) {

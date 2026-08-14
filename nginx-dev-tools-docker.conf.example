@@ -7,8 +7,8 @@
 #
 # 要点：
 #   - Agent 必须在宿主机跑，不要放进业务容器（更新会重启容器）
-#   - 容器只提供静态站点；ops-update.html 随镜像一起更新
-#   - 管理页相对路径 api/* 会请求 /dev-tools/api/*，由本配置反代
+#   - 容器只提供静态站点
+#   - 浏览器请求 /dev-tools/api/* 由本配置反代到 update-agent
 #
 # 使用：include 到 server {} 内，或合并进现有站点 conf
 
@@ -37,7 +37,7 @@ location = /dev-tools/healthz {
 # ---------- 站点（Docker 容器，默认映射 8080→80）----------
 location /dev-tools/ {
     # 去掉 /dev-tools 前缀再转给容器根路径
-    # 浏览器: /dev-tools/ops-update.html → 容器: /ops-update.html
+    # 浏览器: /dev-tools/index.html → 容器: /index.html
     proxy_pass http://127.0.0.1:8080/;
     proxy_http_version 1.1;
     proxy_set_header Host $host;
