@@ -133,7 +133,7 @@ function resolveUiTipPlacement(el) {
  */
 function canShowUiTip(el) {
     if (!el) return false;
-    if (typeof shouldShowSidebarTip === 'function' && el.matches && el.matches('.sb-cat-header, .sb-quick-item, .sb-tool')) {
+    if (typeof shouldShowSidebarTip === 'function' && el.matches && el.matches('.sb-cat-header, .sb-quick-item')) {
         return shouldShowSidebarTip(el);
     }
     return true;

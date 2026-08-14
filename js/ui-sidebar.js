@@ -150,13 +150,13 @@ function initSidebarResizer() {
 /**
  * 是否需要显示气泡：折叠侧边栏始终显示；展开时仅文字被截断时显示。
  * 供全局 ui-tooltip 的 canShowUiTip 调用。
- * @param {Element} el .sb-cat-header | .sb-quick-item | .sb-tool
+ * @param {Element} el .sb-cat-header | .sb-quick-item
  */
 function shouldShowSidebarTip(el) {
     const sidebar = domCache.sidebar;
     if (!sidebar || !el) return false;
     if (sidebar.classList.contains('collapsed')) return true;
-    const nameEl = el.querySelector('.sb-cat-name, .sb-quick-name, .sb-tool-name');
+    const nameEl = el.querySelector('.sb-cat-name, .sb-quick-name');
     if (!nameEl) return false;
     return nameEl.scrollWidth > nameEl.clientWidth + 1;
 }

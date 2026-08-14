@@ -538,11 +538,3 @@ function copyText(id) {
     safeCopy(text);
 }
 
-function safeJSON(s) {
-    try {
-        return JSON.parse(s);
-    } catch (e) {
-        return null;
-    }
-}
-

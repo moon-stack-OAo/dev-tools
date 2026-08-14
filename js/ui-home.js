@@ -23,16 +23,6 @@ function getUsageStats() {
     }
 }
 
-function clearUsageStats() {
-    try {
-        localStorage.removeItem(STATS_KEY);
-    } catch (e) {
-    }
-    if (isHomeCmdPanelOpen()) {
-        renderHomeCmdPanel();
-    }
-}
-
 // === Recent Tools ===
 const RECENT_KEY = "devtools.recent";
 const RECENT_MAX = 8;
@@ -64,18 +54,6 @@ function getRecent() {
     }
 }
 
-function clearRecent() {
-    try {
-        localStorage.removeItem(RECENT_KEY);
-    } catch (e) {
-    }
-    refreshRecentBlock();
-    refreshSidebarRecent();
-    if (isHomeCmdPanelOpen()) {
-        renderHomeCmdPanel();
-    }
-}
-
 // === Favorites（逻辑在 favorites.js，此处负责 UI 接入）===
 function getFavoriteTools() {
     if (typeof getFavorites !== "function") return [];
@@ -98,29 +76,6 @@ function favStarHtml(id) {
         '"><i class="bi ' +
         (fav ? "bi-star-fill" : "bi-star") +
         '"></i></button>'
-    );
-}
-
-function sbToolHtml(t) {
-    const fav = typeof isFavorite === "function" && isFavorite(t.id);
-    return (
-        '<div class="sb-tool" data-tool="' +
-        escapeHtml(t.id) +
-        '" data-tip="' +
-        escapeHtml(t.name) +
-        '"><i class="bi ' +
-        t.icon +
-        '"></i><span class="sb-tool-name">' +
-        escapeHtml(t.name) +
-        '</span><i class="bi ' +
-        (fav ? "bi-star-fill" : "bi-star") +
-        " fav-star" +
-        (fav ? " active" : "") +
-        '" data-tool="' +
-        escapeHtml(t.id) +
-        '" title="' +
-        (fav ? "取消收藏" : "收藏") +
-        '"></i></div>'
     );
 }
 
@@ -151,29 +106,6 @@ function handleToggleFavorite(id) {
     refreshFavoritesBlock();
     refreshSidebarFavorites();
     toast(now ? "已收藏" : "已取消收藏");
-}
-
-function clearFavoritesUI() {
-    if (typeof clearFavorites === "function") clearFavorites();
-    document.querySelectorAll(".fav-star").forEach((el) => {
-        el.classList.remove("active");
-        if (typeof setUiTipText === "function") {
-            setUiTipText(el, "收藏");
-        } else {
-            el.setAttribute("data-ui-title", "收藏");
-            el.removeAttribute("title");
-        }
-        if (el.getAttribute("aria-label") != null) {
-            el.setAttribute("aria-label", "收藏");
-        }
-        const icon = el.tagName === "I" ? el : el.querySelector("i");
-        if (!icon) return;
-        icon.classList.remove("bi-star-fill");
-        icon.classList.add("bi-star");
-    });
-    refreshFavoritesBlock();
-    refreshSidebarFavorites();
-    toast("已清空收藏");
 }
 
 function createHomeCard(t, cardCat, ci) {
@@ -518,19 +450,6 @@ function hideHomeCmdPanel() {
     cmdActiveIndex = -1;
 }
 
-/** @deprecated 别名：兼容旧调用 */
-function renderHomeHeatmap() {
-    renderHomeCmdPanel();
-}
-
-function showHomeHeatmap() {
-    showHomeCmdPanel();
-}
-
-function hideHomeHeatmap() {
-    hideHomeCmdPanel();
-}
-
 function onHomeSearchKeydown(e) {
     if (e.isComposing) return;
     const panel = domCache.homeHeatmap;
@@ -600,10 +519,6 @@ let homeDensity = "comfortable";
 function normalizeHomeDensity(v) {
     if (v === "compact" || v === "comfortable") return v;
     return "comfortable";
-}
-
-function getHomeDensity() {
-    return homeDensity;
 }
 
 function setHomeDensity(v) {
@@ -703,7 +618,6 @@ function setHomeAudience(audience) {
         localStorage.setItem(AUDIENCE_KEY, audience);
     } catch (e) {
     }
-    syncHomeAudienceBar();
     if (typeof syncSidebarQuickActive === "function") {
         syncSidebarQuickActive({audience: homeAudience});
     }
@@ -760,7 +674,6 @@ function setHomeCatFilter(catId) {
         } catch (e) {
             /* ignore */
         }
-        syncHomeAudienceBar();
     }
     syncCatAnchorFilterActive();
     // 与快捷区互斥：有业务分类筛选时取消快捷项高亮
@@ -844,10 +757,6 @@ function onCatAnchorClick(e, catId) {
     } else {
         setHomeCatFilter(catId);
     }
-}
-
-function syncHomeAudienceBar() {
-    // 首页受众 Tab 已移除；侧栏快捷区仍通过 setHomeAudience 联动
 }
 
 /** 顶栏副标题：工具数 / 分类数取自注册表，避免 HTML 写死 */
