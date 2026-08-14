@@ -722,36 +722,6 @@ function getBusinessCatById(catId) {
     return cat;
 }
 
-function updateHomeCatFilterChip() {
-    const chip = document.getElementById("homeCatFilterChip");
-    if (!chip) return;
-    let icon = "";
-    let name = "";
-    if (homeVirtualFilter === "recent") {
-        icon = "bi-clock-history";
-        name = "最近使用";
-    } else if (homeVirtualFilter === "favorites") {
-        icon = "bi-star-fill";
-        name = "我的收藏";
-    } else {
-        const cat = getBusinessCatById(homeCatFilter);
-        if (!cat) {
-            chip.hidden = true;
-            chip.innerHTML = "";
-            return;
-        }
-        icon = cat.icon;
-        name = cat.name;
-    }
-    chip.hidden = false;
-    chip.innerHTML =
-        '<span class="home-cat-filter-label"><i class="bi ' +
-        escapeHtml(icon) +
-        '" aria-hidden="true"></i> ' +
-        escapeHtml(name) +
-        '</span><button type="button" class="home-cat-filter-clear" title="清除筛选" aria-label="清除筛选" onclick="clearHomeCatFilter()"><i class="bi bi-x" aria-hidden="true"></i></button>';
-}
-
 function syncCatAnchorFilterActive() {
     const anchors = document.querySelectorAll(".cat-anchor");
     anchors.forEach(function (a) {
@@ -782,11 +752,20 @@ function setHomeCatFilter(catId) {
     homeVirtualFilter = null;
     // 切回业务分类时清掉虚拟块，避免默认首页露出
     removeHomeVirtualBlocks();
-    updateHomeCatFilterChip();
+    // 与快捷受众互斥：进分类筛选时展示该分类全部工具，不叠加受众
+    if (homeCatFilter && homeAudience !== "all") {
+        homeAudience = "all";
+        try {
+            localStorage.setItem(AUDIENCE_KEY, "all");
+        } catch (e) {
+            /* ignore */
+        }
+        syncHomeAudienceBar();
+    }
     syncCatAnchorFilterActive();
     // 与快捷区互斥：有业务分类筛选时取消快捷项高亮
     if (typeof syncSidebarQuickActive === "function") {
-        syncSidebarQuickActive();
+        syncSidebarQuickActive({focus: "all"});
     }
     filterHomeTools();
     const homePanel = typeof domCache !== "undefined" ? domCache.panelHome : null;
@@ -811,7 +790,6 @@ function setHomeVirtualFilter(catId) {
     } else {
         refreshFavoritesBlock();
     }
-    updateHomeCatFilterChip();
     syncCatAnchorFilterActive();
     // 虚拟筛选走快捷区高亮，确保分类区无 filter-active
     if (typeof syncSidebarQuickActive === "function") {
@@ -840,7 +818,6 @@ function clearHomeCatFilter() {
     homeCatFilter = null;
     homeVirtualFilter = null;
     removeHomeVirtualBlocks();
-    updateHomeCatFilterChip();
     syncCatAnchorFilterActive();
     // 清除分类筛选后恢复快捷区高亮
     if (typeof syncSidebarQuickActive === "function") {
@@ -943,7 +920,6 @@ function buildHomeGrid() {
     } else {
         removeHomeVirtualBlocks();
     }
-    updateHomeCatFilterChip();
     initHomeBottomNav();
     filterHomeTools();
 }
