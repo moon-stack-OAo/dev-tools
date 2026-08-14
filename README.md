@@ -1,6 +1,7 @@
-# CodeDeck · 码台
+# ToolPkg · 码包
 
-> **CodeDeck（码台）** —— 面向开发者 / 全栈的**纯前端**在线工具集（含丰富 Java 后端深度工具）—— 工具与分类以 `js/tools-registry.js` 为准
+> **ToolPkg（码包）** —— 面向开发者 / 全栈的**纯前端**在线工具集（含丰富 Java 后端深度工具）—— 工具与分类以
+`js/tools-registry.js` 为准
 > ，覆盖格式化、编解码、安全、生成与转换、代码生成、文本、调试、参考速查。无需后端、无需联网、无需上传数据，所有计算均在浏览器本地完成。支持
 > Vite 开发、Docker 一键部署、Nginx 静态托管，开箱即用。
 
@@ -313,9 +314,9 @@ npm run build     # 输出到 dist/
 | SQL 参数绑定       | ? / :name 占位符 + 参数列表填充为完整 SQL           |
 | URL 参数构造器      | 表格编辑 query，生成 URL / 解析回填                |
 | 线程池参数估算        | 按 QPS/耗时估算 core/max/queue 与说明           |
-| 视频调试           | 本地/URL/M3U/HLS 播放 · 元数据 · 事件 · 截帧         |
-| MQTT 调试          | MQTT over WebSocket 连接 / 订阅 / 发布 / 消息日志      |
-| 地图选址           | 瓦片地图点选坐标 / 复制经纬度                         |
+| 视频调试           | 本地/URL/M3U/HLS 播放 · 元数据 · 事件 · 截帧       |
+| MQTT 调试        | MQTT over WebSocket 连接 / 订阅 / 发布 / 消息日志 |
+| 地图选址           | 瓦片地图点选坐标 / 复制经纬度                        |
 
 ### 八、参考（29）
 
@@ -427,7 +428,8 @@ npm run test:watch # 监听模式
 #### Docker（推荐生产环境）
 
 - **多阶段构建**：`node:20-alpine` 构建 → 运行镜像内 **nginx 静态托管 + Node CORS 代理**
-- HTTP / 视频调试跨域：须部署同源代理。Docker 镜像已内置；**纯静态 dist** 需宿主机跑 `npm run cors-proxy` 且 Nginx 反代 `/__cors_proxy`（见 `nginx-cors-proxy.conf.example`）。当前若访问 `/__cors_proxy` 返回整页 HTML，说明代理未挂上
+- HTTP / 视频调试跨域：须部署同源代理。Docker 镜像已内置；**纯静态 dist** 需宿主机跑 `npm run cors-proxy` 且 Nginx 反代
+  `/__cors_proxy`（见 `nginx-cors-proxy.conf.example`）。当前若访问 `/__cors_proxy` 返回整页 HTML，说明代理未挂上
 - 镜像可缓存，适合 CI/CD
 
 #### Nginx（自有服务器）

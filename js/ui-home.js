@@ -1007,7 +1007,7 @@ function showHome() {
     clearSidebarHighlight();
     if (typeof closeMobileSidebar === 'function') closeMobileSidebar();
     try {
-        document.title = "CodeDeck · 码台 — 纯前端开发者工具箱";
+        document.title = "ToolPkg · 码包 — 纯前端开发者工具箱";
     } catch (e) {
         /* ignore */
     }

@@ -1,6 +1,6 @@
 {
-  "name": "CodeDeck · 码台",
-  "short_name": "码台",
+  "name": "ToolPkg · 码包",
+  "short_name": "码包",
   "description": "纯前端开发者工具箱，100% 本地处理，含 Java 深度工具。",
   "start_url": "./",
   "display": "standalone",
