@@ -207,7 +207,7 @@ function resolveSidebarQuickFocusFromAudience(audience) {
 }
 
 /**
- * 同步快捷区激活态
+ * 同步快捷区激活态（与分类区 filter-active 互斥：有业务分类筛选时不高亮快捷项）
  * @param {{focus?: string, audience?: string}} [opts]
  */
 function syncSidebarQuickActive(opts) {
@@ -225,8 +225,14 @@ function syncSidebarQuickActive(opts) {
     }
     const box = domCache.sidebarQuick;
     if (!box) return;
+    // 业务分类筛选激活时，快捷区不显示选中（互斥）
+    const catFilterOn =
+        typeof homeCatFilter !== 'undefined' && !!homeCatFilter;
     box.querySelectorAll('.sb-quick-item').forEach((el) => {
-        el.classList.toggle('active', el.dataset.quick === sidebarQuickFocus);
+        el.classList.toggle(
+            'active',
+            !catFilterOn && el.dataset.quick === sidebarQuickFocus,
+        );
     });
 }
 
@@ -256,9 +262,13 @@ function handleSidebarQuickClick(quickId) {
 
     if (item.kind === 'all') {
         sidebarQuickFocus = 'all';
+        // goHome 会清分类筛选；受众置 all
         if (typeof setHomeAudience === 'function') setHomeAudience('all');
         if (typeof goHome === 'function') goHome();
-        else if (typeof showHome === 'function') showHome();
+        else {
+            if (typeof clearHomeCatFilter === 'function') clearHomeCatFilter();
+            else if (typeof showHome === 'function') showHome();
+        }
         syncSidebarQuickActive({focus: 'all'});
         closeMobileSidebar();
         return;
@@ -266,11 +276,17 @@ function handleSidebarQuickClick(quickId) {
 
     if (item.kind === 'audience') {
         sidebarQuickFocus = item.id;
+        // 快捷与分类互斥：切受众时清掉业务分类筛选
+        if (typeof clearHomeCatFilter === 'function') clearHomeCatFilter();
         if (typeof setHomeAudience === 'function') setHomeAudience(item.audience);
         // setHomeAudience 会 filterHomeTools，必要时切回首页
         if (typeof isHomePanelActive === 'function' && !isHomePanelActive()) {
-            if (typeof goHome === 'function') goHome();
-            else if (typeof showHome === 'function') showHome();
+            if (typeof goHome === 'function') {
+                // goHome 无参会再清筛选（已空），并 showHome
+                goHome();
+            } else if (typeof showHome === 'function') {
+                showHome();
+            }
         } else if (typeof setRouteHome === 'function') {
             // 已在首页：确保路由为首页
             try {
@@ -286,7 +302,7 @@ function handleSidebarQuickClick(quickId) {
 
     if (item.kind === 'virtual') {
         sidebarQuickFocus = item.id;
-        // 回首页并以虚拟筛选展示最近/收藏工具列表
+        // 回首页并以虚拟筛选展示最近/收藏工具列表（会清业务分类筛选）
         if (typeof showHome === 'function') {
             showHome();
         } else if (typeof goHome === 'function') {
@@ -319,6 +335,9 @@ function buildSidebarQuick() {
             sidebarQuickFocus = resolveSidebarQuickFocusFromAudience(homeAudience);
         }
     }
+    // 业务分类筛选激活时，快捷区不显示选中（与 syncSidebarQuickActive 一致）
+    const catFilterOn =
+        typeof homeCatFilter !== 'undefined' && !!homeCatFilter;
     let html = '<div class="sb-section-label">快捷</div>';
     SIDEBAR_QUICK_ITEMS.forEach((item, idx) => {
         // 受众段前加分隔线
@@ -327,9 +346,10 @@ function buildSidebarQuick() {
         }
         const count = countSidebarQuickItem(item);
         const tip = item.name + (count ? '（' + count + '）' : '');
+        const isActive = !catFilterOn && item.id === sidebarQuickFocus;
         html +=
             '<button type="button" class="sb-quick-item' +
-            (item.id === sidebarQuickFocus ? ' active' : '') +
+            (isActive ? ' active' : '') +
             '" data-quick="' +
             escapeHtml(item.id) +
             '" data-tip="' +

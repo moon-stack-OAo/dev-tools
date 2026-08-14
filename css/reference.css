@@ -364,7 +364,11 @@
     margin-top: 4px;
 }
 
-button.active {
+/* 仅限速查工具内的筛选 chip，勿污染侧栏 .sb-quick-item.active */
+#panel-redisref button.active,
+#panel-springcloud button.active,
+#panel-jvmargs button.active,
+#panel-mqref button.active {
     background: var(--accent) !important;
     color: var(--bg) !important;
     border-color: var(--accent) !important;

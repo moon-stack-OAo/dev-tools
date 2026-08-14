@@ -784,6 +784,10 @@ function setHomeCatFilter(catId) {
     removeHomeVirtualBlocks();
     updateHomeCatFilterChip();
     syncCatAnchorFilterActive();
+    // 与快捷区互斥：有业务分类筛选时取消快捷项高亮
+    if (typeof syncSidebarQuickActive === "function") {
+        syncSidebarQuickActive();
+    }
     filterHomeTools();
     const homePanel = typeof domCache !== "undefined" ? domCache.panelHome : null;
     if (homePanel) {
@@ -809,6 +813,10 @@ function setHomeVirtualFilter(catId) {
     }
     updateHomeCatFilterChip();
     syncCatAnchorFilterActive();
+    // 虚拟筛选走快捷区高亮，确保分类区无 filter-active
+    if (typeof syncSidebarQuickActive === "function") {
+        syncSidebarQuickActive({focus: catId});
+    }
     filterHomeTools();
     const homePanel = typeof domCache !== "undefined" ? domCache.panelHome : null;
     if (homePanel) {
@@ -834,6 +842,10 @@ function clearHomeCatFilter() {
     removeHomeVirtualBlocks();
     updateHomeCatFilterChip();
     syncCatAnchorFilterActive();
+    // 清除分类筛选后恢复快捷区高亮
+    if (typeof syncSidebarQuickActive === "function") {
+        syncSidebarQuickActive();
+    }
     filterHomeTools();
 }
 

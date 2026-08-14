@@ -1881,6 +1881,7 @@ body.sidebar-resizing .sidebar {
     scrollbar-width: thin;
 }
 
+/* 重置全局 button 渐变/阴影/高光，快捷与分类共用同一套列表项样式 */
 .sb-quick-item,
 .sb-cat-header {
     display: flex;
@@ -1894,22 +1895,41 @@ body.sidebar-resizing .sidebar {
     font-size: 12.5px;
     font-weight: 600;
     line-height: 1.25;
+    letter-spacing: normal;
     transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
     user-select: none;
     border: none;
     background: transparent;
+    box-shadow: none;
+    transform: none;
     width: 100%;
     text-align: left;
     min-width: 0;
     min-height: 32px;
     border-left: 2px solid transparent;
     box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
+    white-space: nowrap;
+}
+
+.sb-quick-item::after,
+.sb-cat-header::after {
+    display: none;
 }
 
 .sb-quick-item:hover,
 .sb-cat-header:hover {
     background: var(--glass-hover);
     color: var(--text);
+    box-shadow: none;
+    transform: none;
+}
+
+.sb-quick-item:active,
+.sb-cat-header:active {
+    box-shadow: none;
+    transform: none;
 }
 
 .sb-quick-item:focus-visible,
@@ -1918,10 +1938,26 @@ body.sidebar-resizing .sidebar {
     outline-offset: -2px;
 }
 
-.sb-quick-item.active {
+/* 快捷区 / 分类区 统一选中样式（同一 background，避免全局 button 干扰） */
+.sb-quick-item.active,
+.sb-cat.filter-active > .sb-cat-header,
+.sb-cat.current > .sb-cat-header,
+.sb-cat-header.active {
     color: var(--accent);
     background: var(--accent-glow);
     border-left-color: var(--accent);
+    box-shadow: none;
+    transform: none;
+}
+
+.sb-quick-item.active:hover,
+.sb-cat.filter-active > .sb-cat-header:hover,
+.sb-cat.current > .sb-cat-header:hover,
+.sb-cat-header.active:hover {
+    color: var(--accent);
+    background: var(--accent-glow);
+    box-shadow: none;
+    transform: none;
 }
 
 .sb-quick-icon,
@@ -1943,6 +1979,14 @@ body.sidebar-resizing .sidebar {
 
 .sb-cat-icon {
     color: var(--cat-color, var(--accent));
+}
+
+/* 选中时图标与文字同色，快捷/分类视觉一致 */
+.sb-quick-item.active .sb-quick-icon,
+.sb-cat.filter-active > .sb-cat-header .sb-cat-icon,
+.sb-cat.current > .sb-cat-header .sb-cat-icon,
+.sb-cat-header.active .sb-cat-icon {
+    color: var(--accent);
 }
 
 .sb-quick-name,
@@ -1990,14 +2034,6 @@ body.sidebar-resizing .sidebar {
 
 .sb-cat {
     margin-bottom: 1px;
-}
-
-.sb-cat.filter-active > .sb-cat-header,
-.sb-cat.current > .sb-cat-header,
-.sb-cat-header.active {
-    color: var(--accent);
-    background: var(--accent-glow);
-    border-left-color: var(--accent);
 }
 
 .sidebar-footer {
