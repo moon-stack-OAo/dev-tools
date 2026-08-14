@@ -120,6 +120,7 @@ function createHomeCard(t, cardCat, ci) {
     card.dataset.tags = tags.join(",");
     card.style.animationDelay = Math.min(ci, 11) * 0.03 + "s";
     card.innerHTML =
+        favStarHtml(t.id) +
         '<div class="hc-icon"><i class="bi ' +
         t.icon +
         '" aria-hidden="true"></i></div><div class="hc-name">' +
@@ -136,6 +137,14 @@ function createHomeCard(t, cardCat, ci) {
             openTool(t.id);
         }
     });
+    const star = card.querySelector(".fav-star");
+    if (star) {
+        star.addEventListener("click", (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            handleToggleFavorite(t.id);
+        });
+    }
     return card;
 }
 
