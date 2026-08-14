@@ -3826,3 +3826,104 @@
         min-height: 280px;
     }
 }
+
+/* === Nginx access log nginxlog === */
+.nxl-stats { margin-bottom: 12px; }
+.nxl-stat-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.nxl-stat {
+    min-width: 88px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    text-align: center;
+}
+.nxl-stat-v {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--accent);
+}
+.nxl-stat-l {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 2px;
+}
+.nxl-tops {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+@media (max-width: 700px) {
+    .nxl-tops { grid-template-columns: 1fr; }
+}
+.nxl-tops ul {
+    margin: 6px 0 0;
+    padding-left: 18px;
+    font-size: 12px;
+    max-height: 160px;
+    overflow: auto;
+}
+.nxl-tops li {
+    margin-bottom: 4px;
+    word-break: break-all;
+}
+.nxl-cnt {
+    color: var(--text-dim);
+    font-size: 11px;
+}
+.nxl-skip {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--text-dim);
+}
+.nxl-output {
+    max-height: 420px;
+    overflow: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-card);
+}
+.nxl-empty {
+    padding: 24px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 13px;
+}
+.nxl-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+.nxl-table th {
+    position: sticky;
+    top: 0;
+    background: var(--bg-card2);
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+    font-weight: 600;
+}
+.nxl-table td {
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+}
+.nxl-table tr:hover td {
+    background: rgba(127, 127, 127, 0.06);
+}
+.nxl-path {
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.nxl-st-2 { color: #28a745; font-weight: 600; }
+.nxl-st-3 { color: #17a2b8; font-weight: 600; }
+.nxl-st-4 { color: #ffc107; font-weight: 600; }
+.nxl-st-5 { color: var(--danger); font-weight: 600; }

@@ -1,0 +1,20 @@
+<div class="tool-panel" id="panel-cssref">
+    <div class="ref-search-bar">
+        <div class="ref-search-input-wrap">
+            <i class="bi bi-search search-icon"></i>
+            <input
+                id="cssrefSearch"
+                oninput="
+                    cssrefSearch();
+                    toggleRefClear(this);
+                "
+                placeholder="搜索 CSS 属性、值、简写..."
+                type="text"
+            />
+            <button class="ref-search-clear" onclick="clearRefSearch(this)" type="button">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    </div>
+    <div id="cssrefContent"></div>
+</div>

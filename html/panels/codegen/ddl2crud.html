@@ -1,0 +1,41 @@
+<div class="tool-panel" id="panel-ddl2crud">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div style="min-width:200px;flex:1">
+            <div class="label">基础包名</div>
+            <input id="d2cPackage" placeholder="com.example" type="text" value="com.example">
+        </div>
+        <div>
+            <div class="label">输出层</div>
+            <select id="d2cLayer" style="width:140px">
+                <option value="all">全部</option>
+                <option value="entity">Entity</option>
+                <option value="mapper">Mapper</option>
+                <option value="service">Service</option>
+                <option value="serviceImpl">ServiceImpl</option>
+                <option value="controller">Controller</option>
+            </select>
+        </div>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim);margin-top:18px">
+            <input checked id="d2cLombok" style="accent-color:var(--accent)" type="checkbox"> Lombok
+        </label>
+    </div>
+    <div class="toolbar">
+        <button onclick="d2cGenerate()">生成 CRUD</button>
+        <button class="outline" onclick="d2cLoadSample()" type="button">示例</button>
+        <button class="outline" onclick="d2cClear()" type="button">清空</button>
+    </div>
+    <div class="fmt-split">
+        <div class="fmt-pane">
+            <div class="label">输入 SQL DDL</div>
+            <textarea class="json-input" id="d2cInput"
+                      placeholder="CREATE TABLE `user` (&#10;  `id` BIGINT NOT NULL AUTO_INCREMENT,&#10;  `name` VARCHAR(64) NOT NULL,&#10;  PRIMARY KEY (`id`)&#10;);"></textarea>
+        </div>
+        <div class="fmt-pane">
+            <div class="copy-wrap">
+                <div class="label">生成代码</div>
+                <button class="copy-btn" onclick="copyText('d2cOutput')">复制</button>
+                <div class="output-box" id="d2cOutput"></div>
+            </div>
+        </div>
+    </div>
+</div>

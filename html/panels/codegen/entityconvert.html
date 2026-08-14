@@ -1,0 +1,53 @@
+<div class="tool-panel" id="panel-entityconvert">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div>
+            <div class="label">源类型</div>
+            <select id="ecSource" style="width:120px">
+                <option value="entity">Entity</option>
+                <option value="dto">DTO</option>
+                <option value="vo">VO</option>
+            </select>
+        </div>
+        <div>
+            <div class="label">目标类型</div>
+            <select id="ecTarget" style="width:120px">
+                <option value="dto">DTO</option>
+                <option value="vo">VO</option>
+                <option value="entity">Entity</option>
+            </select>
+        </div>
+        <div style="min-width:180px;flex:1">
+            <div class="label">package</div>
+            <input id="ecPackage" placeholder="com.example.dto" type="text">
+        </div>
+        <div style="min-width:140px">
+            <div class="label">类名（可选）</div>
+            <input id="ecClassName" placeholder="自动加后缀" type="text">
+        </div>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim);margin-top:18px">
+            <input checked id="ecLombok" style="accent-color:var(--accent)" type="checkbox"> Lombok
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim);margin-top:18px">
+            <input id="ecValidation" style="accent-color:var(--accent)" type="checkbox"> Validation
+        </label>
+    </div>
+    <div class="toolbar">
+        <button onclick="ecGenerate()">生成</button>
+        <button class="outline" onclick="ecLoadSample()" type="button">示例</button>
+        <button class="outline" onclick="ecClear()" type="button">清空</button>
+    </div>
+    <div class="fmt-split">
+        <div class="fmt-pane">
+            <div class="label">输入 Java 类 / 字段</div>
+            <textarea class="json-input" id="ecInput"
+                      placeholder="public class UserEntity {&#10;  private Long id;&#10;  private String userName;&#10;}"></textarea>
+        </div>
+        <div class="fmt-pane">
+            <div class="copy-wrap">
+                <div class="label">生成结果</div>
+                <button class="copy-btn" onclick="copyText('ecOutput')">复制</button>
+                <div class="output-box" id="ecOutput"></div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,28 @@
+<div class="tool-panel" id="panel-cssfmt">
+    <div class="toolbar">
+        <span class="label" style="margin:0">缩进:</span>
+        <select id="cssfIndent" style="width:90px">
+            <option value="2">2 空格</option>
+            <option value="4" selected>4 空格</option>
+        </select>
+        <button onclick="cssfFormat()">格式化</button>
+        <button class="outline" onclick="cssfMinify()">压缩</button>
+        <button class="outline" onclick="cssfLoadSample()" style="margin-left:auto">示例</button>
+        <button class="outline" onclick="cssfClear()" style="border-color:var(--danger);color:var(--danger)">清空</button>
+    </div>
+    <div class="fmt-split">
+        <div class="fmt-pane">
+            <div class="label">输入 CSS</div>
+            <textarea class="json-input" id="cssfInput"
+                      placeholder=".a{color:red;background:#fff;padding:10px 20px}"
+                      spellcheck="false"></textarea>
+        </div>
+        <div class="fmt-pane">
+            <div class="copy-wrap">
+                <div class="label">输出</div>
+                <button class="copy-btn" onclick="copyText('cssfOutput')">复制</button>
+                <div class="output-box" id="cssfOutput"></div>
+            </div>
+        </div>
+    </div>
+</div>

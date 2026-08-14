@@ -1,0 +1,35 @@
+<div class="tool-panel" id="panel-openapi2ts">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div style="min-width:260px;flex:1">
+            <div class="label">baseUrl（可选，覆盖 servers）</div>
+            <input id="o2tBaseUrl" placeholder="https://api.example.com" type="text">
+        </div>
+    </div>
+    <div class="toolbar">
+        <button onclick="o2tGenerate()">生成</button>
+        <button class="outline" onclick="o2tLoadSample()" type="button">示例</button>
+        <button class="outline" onclick="o2tClear()" type="button">清空</button>
+    </div>
+    <div class="fmt-split">
+        <div class="fmt-pane">
+            <div class="label">OpenAPI（JSON / YAML）</div>
+            <textarea class="json-input" id="o2tInput"
+                      placeholder='{"openapi":"3.0.3","info":{"title":"API","version":"1.0.0"},"paths":{}}'></textarea>
+        </div>
+        <div class="fmt-pane">
+            <div class="copy-wrap">
+                <div class="label">生成的 TypeScript Client</div>
+                <button class="copy-btn" onclick="copyText('o2tOutput')">复制</button>
+                <div class="output-box" id="o2tOutput"></div>
+            </div>
+        </div>
+    </div>
+    <div style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
+        <strong>说明：</strong>
+        <ul style="margin:4px 0 0 16px">
+            <li>支持 OpenAPI 3 / Swagger 2；JSON 始终可用，YAML 需 js-yaml</li>
+            <li>从 components.schemas 生成 interface；path + method 生成 fetch 异步函数</li>
+            <li>函数名优先 operationId，否则 method + path 推导</li>
+        </ul>
+    </div>
+</div>

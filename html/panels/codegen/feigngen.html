@@ -1,0 +1,43 @@
+<div class="tool-panel" id="panel-feigngen">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div style="min-width:160px">
+            <div class="label">服务名 name</div>
+            <input id="fgServiceName" placeholder="user-service" type="text" value="remote-service">
+        </div>
+        <div style="min-width:140px">
+            <div class="label">Client 类名</div>
+            <input id="fgClientName" placeholder="UserClient" type="text">
+        </div>
+        <div style="min-width:160px;flex:1">
+            <div class="label">package</div>
+            <input id="fgPackage" placeholder="com.example.client" type="text">
+        </div>
+        <div style="min-width:120px">
+            <div class="label">url（可选）</div>
+            <input id="fgUrl" placeholder="http://..." type="text">
+        </div>
+        <div style="min-width:100px">
+            <div class="label">path 前缀</div>
+            <input id="fgPath" placeholder="/api" type="text">
+        </div>
+    </div>
+    <div class="toolbar">
+        <button onclick="fgGenerate()">生成 Feign</button>
+        <button class="outline" onclick="fgLoadSample()" type="button">示例</button>
+        <button class="outline" onclick="fgClear()" type="button">清空</button>
+    </div>
+    <div class="fmt-split">
+        <div class="fmt-pane">
+            <div class="label">接口描述 / 方法签名</div>
+            <textarea class="json-input" id="fgInput"
+                      placeholder="GET /api/users/{id} getById UserDTO&#10;POST /api/users create UserDTO"></textarea>
+        </div>
+        <div class="fmt-pane">
+            <div class="copy-wrap">
+                <div class="label">@FeignClient 接口</div>
+                <button class="copy-btn" onclick="copyText('fgOutput')">复制</button>
+                <div class="output-box" id="fgOutput"></div>
+            </div>
+        </div>
+    </div>
+</div>

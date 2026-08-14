@@ -1,0 +1,46 @@
+<div class="tool-panel" id="panel-nginxlog">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div>
+            <div class="label">Method</div>
+            <select id="nxlMethod" style="width:100px">
+                <option value="">全部</option>
+                <option value="GET">GET</option>
+                <option value="POST">POST</option>
+                <option value="PUT">PUT</option>
+                <option value="DELETE">DELETE</option>
+                <option value="PATCH">PATCH</option>
+            </select>
+        </div>
+        <div style="width:100px">
+            <div class="label">状态 ≥</div>
+            <input id="nxlStatusMin" placeholder="200" type="number">
+        </div>
+        <div style="width:100px">
+            <div class="label">状态 ≤</div>
+            <input id="nxlStatusMax" placeholder="599" type="number">
+        </div>
+        <div style="min-width:120px">
+            <div class="label">IP 包含</div>
+            <input id="nxlIp" placeholder="192.168" type="text">
+        </div>
+        <div style="min-width:140px;flex:1">
+            <div class="label">Path 包含</div>
+            <input id="nxlPath" placeholder="/api" type="text">
+        </div>
+        <div style="width:90px">
+            <div class="label">上限</div>
+            <input id="nxlLimit" type="number" value="500">
+        </div>
+    </div>
+    <div class="toolbar">
+        <button onclick="nxlParse()">解析统计</button>
+        <button class="outline" onclick="nxlLoadSample()" type="button">示例</button>
+        <button class="outline" onclick="nxlClear()" type="button">清空</button>
+    </div>
+    <div class="label">access.log（combined）</div>
+    <textarea class="json-input" id="nxlInput" style="min-height:160px;margin-bottom:12px"
+              placeholder='192.168.1.1 - - [14/Aug/2026:10:00:01 +0800] "GET / HTTP/1.1" 200 1234 "-" "Mozilla/5.0"'></textarea>
+    <div id="nxlStats" class="nxl-stats"></div>
+    <div class="label" style="margin-top:12px">解析结果</div>
+    <div id="nxlOutput" class="nxl-output"></div>
+</div>

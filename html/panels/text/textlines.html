@@ -1,0 +1,44 @@
+<div class="tool-panel" id="panel-textlines">
+    <div class="toolbar" style="flex-wrap:wrap;align-items:center;gap:8px">
+        <button onclick="tlSortAsc()" type="button">升序</button>
+        <button onclick="tlSortDesc()" type="button">降序</button>
+        <button class="outline" onclick="tlUnique()" type="button">去重</button>
+        <button class="outline" onclick="tlReverse()" type="button">反转</button>
+        <button class="outline" onclick="tlShuffle()" type="button">打乱</button>
+        <button class="outline" onclick="tlProcess()" type="button">仅拆分</button>
+        <button class="outline" onclick="tlLoadSample()" type="button">示例</button>
+        <button class="outline" onclick="tlClear()" type="button">清空</button>
+    </div>
+    <div class="flex gap-6 mb-8" style="flex-wrap:wrap;align-items:center;font-size:12px;color:var(--text-dim)">
+        <label style="display:flex;align-items:center;gap:4px">
+            <input checked id="tlTrim" style="accent-color:var(--accent)" type="checkbox"> Trim
+        </label>
+        <label style="display:flex;align-items:center;gap:4px">
+            <input checked id="tlRemoveEmpty" style="accent-color:var(--accent)" type="checkbox"> 去空行
+        </label>
+        <label style="display:flex;align-items:center;gap:4px">
+            <input id="tlIgnoreCase" style="accent-color:var(--accent)" type="checkbox"> 忽略大小写
+        </label>
+        <label style="display:flex;align-items:center;gap:4px">
+            <input id="tlNumeric" style="accent-color:var(--accent)" type="checkbox"> 数字排序
+        </label>
+        <label style="display:flex;align-items:center;gap:4px">
+            分隔符
+            <input id="tlSep" placeholder="默认换行，\t 为 Tab" style="width:120px" type="text" value="">
+        </label>
+    </div>
+    <div class="fmt-split">
+        <div class="fmt-pane">
+            <div class="label">输入文本</div>
+            <textarea class="json-input" id="tlInput"
+                      placeholder="每行一项，或自定义分隔符..."></textarea>
+        </div>
+        <div class="fmt-pane">
+            <div class="copy-wrap">
+                <div class="label">输出</div>
+                <button class="copy-btn" onclick="copyText('tlOutput')" type="button">复制</button>
+                <div class="output-box" id="tlOutput" style="min-height:200px"></div>
+            </div>
+        </div>
+    </div>
+</div>

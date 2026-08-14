@@ -1,0 +1,26 @@
+<div class="tool-panel" id="panel-zhconvert">
+    <div class="toolbar" style="flex-wrap:wrap">
+        <button onclick="zhcS2T()" type="button">简 → 繁</button>
+        <button onclick="zhcT2S()" type="button">繁 → 简</button>
+        <button class="outline" onclick="zhcSwap()" type="button">互换</button>
+        <button class="outline" onclick="zhcLoadSample()" type="button">示例</button>
+        <button class="outline" onclick="zhcClear()" type="button">清空</button>
+    </div>
+    <div class="fmt-split">
+        <div class="fmt-pane">
+            <div class="label">输入文本</div>
+            <textarea class="json-input" id="zhcInput"
+                      placeholder="粘贴简体或繁体中文..."></textarea>
+        </div>
+        <div class="fmt-pane">
+            <div class="copy-wrap">
+                <div class="label">转换结果</div>
+                <button class="copy-btn" onclick="copyText('zhcOutput')" type="button">复制</button>
+                <div class="output-box" id="zhcOutput" style="min-height:200px"></div>
+            </div>
+        </div>
+    </div>
+    <div style="margin-top:12px;padding:12px;background:var(--glass);border-radius:6px;font-size:12px;color:var(--text-dim)">
+        <strong>说明：</strong>基于常用简繁字对照表逐字转换，适合日常文本；专业排版/异体字场景请使用专业词库工具。
+    </div>
+</div>

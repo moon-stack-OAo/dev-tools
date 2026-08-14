@@ -1,0 +1,49 @@
+<div class="tool-panel" id="panel-javabuilder">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div>
+            <div class="label">模式</div>
+            <select id="jbdMode" style="width:160px">
+                <option value="builder">手写 Builder</option>
+                <option value="expand">去 Lombok 展开</option>
+            </select>
+        </div>
+        <div style="min-width:180px;flex:1">
+            <div class="label">package（可选）</div>
+            <input id="jbdPackage" placeholder="com.example" type="text">
+        </div>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim);margin-top:18px">
+            <input checked id="jbdOptGetters" style="accent-color:var(--accent)" type="checkbox"> Getter
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim);margin-top:18px">
+            <input id="jbdOptSetters" style="accent-color:var(--accent)" type="checkbox"> Setter
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim);margin-top:18px">
+            <input checked id="jbdOptBuilder" style="accent-color:var(--accent)" type="checkbox"> Builder
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim);margin-top:18px">
+            <input checked id="jbdOptToString" style="accent-color:var(--accent)" type="checkbox"> toString
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim);margin-top:18px">
+            <input id="jbdOptEquals" style="accent-color:var(--accent)" type="checkbox"> equals/hashCode
+        </label>
+    </div>
+    <div class="toolbar">
+        <button onclick="jbdGenerate()">生成</button>
+        <button class="outline" onclick="jbdLoadSample()" type="button">示例</button>
+        <button class="outline" onclick="jbdClear()" type="button">清空</button>
+    </div>
+    <div class="fmt-split">
+        <div class="fmt-pane">
+            <div class="label">输入 Java 类</div>
+            <textarea class="json-input" id="jbdInput"
+                      placeholder="@Data&#10;public class User {&#10;  private Long id;&#10;  private String name;&#10;}"></textarea>
+        </div>
+        <div class="fmt-pane">
+            <div class="copy-wrap">
+                <div class="label">生成结果</div>
+                <button class="copy-btn" onclick="copyText('jbdOutput')">复制</button>
+                <div class="output-box" id="jbdOutput"></div>
+            </div>
+        </div>
+    </div>
+</div>

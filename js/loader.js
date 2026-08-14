@@ -36,6 +36,7 @@ const toolLibs = {
     jsonconvert: ["js-yaml.min.js", "fxp.min.js"],
     propertiesfmt: ["js-yaml.min.js"],
     openapiview: ["js-yaml.min.js"],
+    openapi2ts: ["js-yaml.min.js"],
     sql: ["sql-formatter.min.js"],
     sqldialect: ["sql-formatter.min.js"],
     jsonpath: ["jsonpath.min.js"],
@@ -44,6 +45,8 @@ const toolLibs = {
     markdown: ["marked.min.js"],
     htmlmd: ["marked.min.js"],
     webfmt: ["js-beautify.min.js"],
+    cssfmt: ["js-beautify.min.js"],
+
     qrcode: ["qrcode.min.js"],
     qrdecode: ["jsqr.min.js"],
     hash: ["md5.min.js"],

@@ -1,0 +1,20 @@
+<div class="tool-panel" id="panel-esdslref">
+    <div class="ref-search-bar">
+        <div class="ref-search-input-wrap">
+            <i class="bi bi-search search-icon"></i>
+            <input
+                id="esdslrefSearch"
+                oninput="
+                    esdslrefSearch();
+                    toggleRefClear(this);
+                "
+                placeholder="搜索 Query DSL、聚合、映射、API..."
+                type="text"
+            />
+            <button class="ref-search-clear" onclick="clearRefSearch(this)" type="button">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    </div>
+    <div id="esdslrefContent"></div>
+</div>

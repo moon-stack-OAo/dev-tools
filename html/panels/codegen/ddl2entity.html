@@ -1,0 +1,39 @@
+<div class="tool-panel" id="panel-ddl2entity">
+    <div class="flex gap-6 mb-8" style="align-items:center;flex-wrap:wrap">
+        <div>
+            <div class="label">目标</div>
+            <select id="d2eTarget" style="width:140px">
+                <option value="jpa">JPA Entity</option>
+                <option value="prisma">Prisma Schema</option>
+            </select>
+        </div>
+        <div id="d2eJpaOpts" class="flex gap-6" style="align-items:center;flex-wrap:wrap">
+            <div style="min-width:200px;flex:1">
+                <div class="label">package（可选）</div>
+                <input id="d2ePackage" placeholder="com.example.domain" type="text">
+            </div>
+            <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim);margin-top:18px">
+                <input checked id="d2eLombok" style="accent-color:var(--accent)" type="checkbox"> Lombok @Data
+            </label>
+        </div>
+    </div>
+    <div class="toolbar">
+        <button onclick="d2eGenerate()">生成</button>
+        <button class="outline" onclick="d2eLoadSample()" type="button">示例</button>
+        <button class="outline" onclick="d2eClear()" type="button">清空</button>
+    </div>
+    <div class="fmt-split">
+        <div class="fmt-pane">
+            <div class="label">输入 SQL DDL</div>
+            <textarea class="json-input" id="d2eInput"
+                      placeholder="CREATE TABLE `user` (&#10;  `id` BIGINT NOT NULL AUTO_INCREMENT,&#10;  `name` VARCHAR(64) NOT NULL COMMENT '姓名',&#10;  PRIMARY KEY (`id`)&#10;);"></textarea>
+        </div>
+        <div class="fmt-pane">
+            <div class="copy-wrap">
+                <div class="label" id="d2eOutLabel">生成的 JPA Entity</div>
+                <button class="copy-btn" onclick="copyText('d2eOutput')">复制</button>
+                <div class="output-box" id="d2eOutput"></div>
+            </div>
+        </div>
+    </div>
+</div>

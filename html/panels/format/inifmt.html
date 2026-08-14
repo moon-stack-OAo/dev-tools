@@ -1,0 +1,26 @@
+<div class="tool-panel" id="panel-inifmt">
+    <div class="toolbar">
+        <button onclick="inifmtDoFormat()">格式化</button>
+        <button class="outline" onclick="inifmtToJson()">INI → JSON</button>
+        <button class="outline" onclick="inifmtFromJson()">JSON → INI</button>
+        <label style="margin-left:8px"><input id="iniSort" style="accent-color:var(--accent)" type="checkbox"> 排序</label>
+        <label><input checked id="iniDedupe" style="accent-color:var(--accent)" type="checkbox"> 去重 key</label>
+        <button class="outline" onclick="inifmtLoadSample()" style="margin-left:auto" type="button">示例</button>
+        <button class="outline" onclick="inifmtClear()" type="button">清空</button>
+    </div>
+    <div class="fmt-split">
+        <div class="fmt-pane">
+            <div class="label">输入 INI / conf / JSON</div>
+            <textarea class="json-input" id="iniInput"
+                      placeholder="[section]&#10;key = value" style="font-family:var(--font)"></textarea>
+        </div>
+        <div class="fmt-pane">
+            <div class="copy-wrap">
+                <div class="label">输出</div>
+                <button class="copy-btn" onclick="copyText('iniOutput')">复制</button>
+                <div class="output-box" id="iniOutput" style="white-space:pre-wrap;font-family:var(--font)"></div>
+            </div>
+        </div>
+    </div>
+    <div id="iniWarn" style="display:none;padding:10px 12px;background:rgba(220,53,69,.1);border:1px solid var(--danger);border-radius:6px;color:var(--danger);font-size:13px;margin-bottom:8px"></div>
+</div>

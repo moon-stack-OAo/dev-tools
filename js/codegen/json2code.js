@@ -1,4 +1,4 @@
-// JSON → TypeScript / Kotlin / Go
+// JSON → TypeScript / Kotlin / Go / C# / Python / Rust
 // 纯函数导出供单元测试 require；UI 通过 registerInit 挂载。
 
 const J2C_SAMPLE = `{
@@ -25,7 +25,7 @@ const J2C_SAMPLE = `{
   ]
 }`;
 
-const J2C_LANGS = ["typescript", "kotlin", "go"];
+const J2C_LANGS = ["typescript", "kotlin", "go", "csharp", "python", "rust"];
 
 // ============== 命名工具 ==============
 
@@ -629,6 +629,338 @@ function j2cRenderGoStruct(entry) {
   return lines.join("\n");
 }
 
+// ============== C# ==============
+
+function j2cCsScalar(type) {
+  if (!type) return "object";
+  switch (type.kind) {
+    case "null":
+      return "object";
+    case "string":
+      return "string";
+    case "boolean":
+      return "bool";
+    case "number":
+      return type.isInteger ? "long" : "double";
+    case "any":
+      return "object";
+    default:
+      return "object";
+  }
+}
+
+function j2cRenderCsType(type, optional) {
+  if (!type) return "object";
+  if (type.kind === "array") {
+    const inner = j2cRenderCsType(type.item, false);
+    const list = "List<" + inner + ">";
+    return optional || type.nullable ? list + "?" : list;
+  }
+  if (type.kind === "object") {
+    const n = type.name || "Dictionary<string, object>";
+    return optional || type.nullable ? n + "?" : n;
+  }
+  const s = j2cCsScalar(type);
+  // string/object 引用类型在 C# 可空用 ?
+  if (optional || type.nullable) {
+    if (s === "object" || s === "string") return s + "?";
+    return s + "?";
+  }
+  return s;
+}
+
+function j2cGenerateCSharp(rootType, rootName) {
+  const root = j2cSanitizeTypeName(rootName, "Root");
+  if (rootType && rootType.kind === "array") {
+    const itemHint = root.replace(/s$/i, "") || root + "Item";
+    const { types, root: itemRoot } = j2cCollectNamedTypes(
+      rootType.item,
+      itemHint,
+    );
+    const blocks = types.map((entry) => j2cRenderCsClass(entry));
+    const itemName =
+      itemRoot && itemRoot.name
+        ? itemRoot.name
+        : j2cRenderCsType(rootType.item, false);
+    blocks.push("// 根类型为数组: List<" + itemName + ">");
+    return "using System;\nusing System.Collections.Generic;\n\n" + blocks.join("\n\n") + "\n";
+  }
+  if (!rootType || rootType.kind !== "object") {
+    return (
+      "using System;\n\npublic class " +
+      root +
+      "\n{\n    public " +
+      j2cRenderCsType(rootType, false) +
+      " Value { get; set; }\n}\n"
+    );
+  }
+  const { types } = j2cCollectNamedTypes(rootType, root);
+  const body = types.map((entry) => j2cRenderCsClass(entry)).join("\n\n");
+  return "using System;\nusing System.Collections.Generic;\n\n" + body + "\n";
+}
+
+function j2cRenderCsClass(entry) {
+  const t = entry.type;
+  const keys = Object.keys(t.fields || {});
+  const lines = ["public class " + entry.name, "{"];
+  if (!keys.length) {
+    lines.push("}");
+    return lines.join("\n");
+  }
+  keys.forEach((k) => {
+    const f = t.fields[k];
+    const propName = j2cToPascalCase(k) || "Field";
+    const typ = j2cRenderCsType(f.type, f.optional);
+    if (propName !== k) {
+      lines.push("    // json: \"" + k + "\"");
+    }
+    lines.push("    public " + typ + " " + propName + " { get; set; }");
+  });
+  lines.push("}");
+  return lines.join("\n");
+}
+
+// ============== Python ==============
+
+function j2cPyScalar(type) {
+  if (!type) return "Any";
+  switch (type.kind) {
+    case "null":
+      return "None";
+    case "string":
+      return "str";
+    case "boolean":
+      return "bool";
+    case "number":
+      return type.isInteger ? "int" : "float";
+    case "any":
+      return "Any";
+    default:
+      return "Any";
+  }
+}
+
+function j2cRenderPyType(type, optional) {
+  if (!type) return "Any";
+  let base;
+  if (type.kind === "array") {
+    base = "List[" + j2cRenderPyType(type.item, false) + "]";
+  } else if (type.kind === "object") {
+    base = type.name || "Dict[str, Any]";
+  } else {
+    base = j2cPyScalar(type);
+  }
+  if (optional || type.nullable) {
+    if (base === "None") return "None";
+    return "Optional[" + base + "]";
+  }
+  return base;
+}
+
+function j2cGeneratePython(rootType, rootName) {
+  const root = j2cSanitizeTypeName(rootName, "Root");
+  if (rootType && rootType.kind === "array") {
+    const itemHint = root.replace(/s$/i, "") || root + "Item";
+    const { types, root: itemRoot } = j2cCollectNamedTypes(
+      rootType.item,
+      itemHint,
+    );
+    const blocks = types.map((entry) => j2cRenderPyDataclass(entry));
+    const itemName =
+      itemRoot && itemRoot.name
+        ? itemRoot.name
+        : j2cRenderPyType(rootType.item, false);
+    blocks.push("# 根类型为数组: List[" + itemName + "]");
+    return j2cPyHeader() + blocks.join("\n\n") + "\n";
+  }
+  if (!rootType || rootType.kind !== "object") {
+    return (
+      j2cPyHeader() +
+      "@dataclass\nclass " +
+      root +
+      ":\n    value: " +
+      j2cRenderPyType(rootType, false) +
+      "\n"
+    );
+  }
+  const { types } = j2cCollectNamedTypes(rootType, root);
+  return j2cPyHeader() + types.map((entry) => j2cRenderPyDataclass(entry)).join("\n\n") + "\n";
+}
+
+function j2cPyHeader() {
+  return (
+    "from __future__ import annotations\n\n" +
+    "from dataclasses import dataclass\n" +
+    "from typing import Any, Dict, List, Optional\n\n"
+  );
+}
+
+function j2cRenderPyDataclass(entry) {
+  const t = entry.type;
+  const keys = Object.keys(t.fields || {});
+  const lines = ["@dataclass", "class " + entry.name + ":"];
+  if (!keys.length) {
+    lines.push("    pass");
+    return lines.join("\n");
+  }
+  keys.forEach((k) => {
+    const f = t.fields[k];
+    const fieldName = j2cSanitizeFieldName(k, "field");
+    const typ = j2cRenderPyType(f.type, f.optional);
+    if (fieldName !== k) {
+      lines.push("    # json: \"" + k + "\"");
+    }
+    lines.push("    " + fieldName + ": " + typ);
+  });
+  return lines.join("\n");
+}
+
+// ============== Rust ==============
+
+function j2cRustScalar(type) {
+  if (!type) return "serde_json::Value";
+  switch (type.kind) {
+    case "null":
+      return "serde_json::Value";
+    case "string":
+      return "String";
+    case "boolean":
+      return "bool";
+    case "number":
+      return type.isInteger ? "i64" : "f64";
+    case "any":
+      return "serde_json::Value";
+    default:
+      return "serde_json::Value";
+  }
+}
+
+function j2cRenderRustType(type, optional) {
+  if (!type) return "serde_json::Value";
+  let base;
+  if (type.kind === "array") {
+    base = "Vec<" + j2cRenderRustType(type.item, false) + ">";
+  } else if (type.kind === "object") {
+    base = type.name || "serde_json::Map<String, serde_json::Value>";
+  } else {
+    base = j2cRustScalar(type);
+  }
+  if (optional || type.nullable) {
+    return "Option<" + base + ">";
+  }
+  return base;
+}
+
+function j2cGenerateRust(rootType, rootName) {
+  const root = j2cSanitizeTypeName(rootName, "Root");
+  if (rootType && rootType.kind === "array") {
+    const itemHint = root.replace(/s$/i, "") || root + "Item";
+    const { types, root: itemRoot } = j2cCollectNamedTypes(
+      rootType.item,
+      itemHint,
+    );
+    const blocks = types.map((entry) => j2cRenderRustStruct(entry));
+    const itemName =
+      itemRoot && itemRoot.name
+        ? itemRoot.name
+        : j2cRenderRustType(rootType.item, false);
+    blocks.push("// 根类型为数组: Vec<" + itemName + ">");
+    return j2cRustHeader() + blocks.join("\n\n") + "\n";
+  }
+  if (!rootType || rootType.kind !== "object") {
+    return (
+      j2cRustHeader() +
+      "#[derive(Debug, Clone, Serialize, Deserialize)]\n" +
+      "pub struct " +
+      root +
+      " {\n    pub value: " +
+      j2cRenderRustType(rootType, false) +
+      ",\n}\n"
+    );
+  }
+  const { types } = j2cCollectNamedTypes(rootType, root);
+  return j2cRustHeader() + types.map((entry) => j2cRenderRustStruct(entry)).join("\n\n") + "\n";
+}
+
+function j2cRustHeader() {
+  return "use serde::{Deserialize, Serialize};\n\n";
+}
+
+function j2cRenderRustStruct(entry) {
+  const t = entry.type;
+  const keys = Object.keys(t.fields || {});
+  const lines = [
+    "#[derive(Debug, Clone, Serialize, Deserialize)]",
+    "pub struct " + entry.name + " {",
+  ];
+  if (!keys.length) {
+    lines.push("}");
+    return lines.join("\n");
+  }
+  keys.forEach((k) => {
+    const f = t.fields[k];
+    // snake_case 字段名
+    const fieldName = j2cToSnakeCase(k);
+    const typ = j2cRenderRustType(f.type, f.optional);
+    if (fieldName !== k) {
+      lines.push('    #[serde(rename = "' + k + '")]');
+    }
+    if (f.optional) {
+      lines.push('    #[serde(default, skip_serializing_if = "Option::is_none")]');
+    }
+    lines.push("    pub " + fieldName + ": " + typ + ",");
+  });
+  lines.push("}");
+  return lines.join("\n");
+}
+
+function j2cToSnakeCase(name) {
+  const words = j2cSplitWords(name);
+  if (!words.length) return "field";
+  let n = words.map((w) => w.toLowerCase()).join("_");
+  if (!j2cIsIdentStart(n.charAt(0))) n = "f_" + n;
+  n = n
+    .split("")
+    .map((c) => (/[A-Za-z0-9_]/.test(c) ? c : "_"))
+    .join("");
+  // Rust 关键字简单规避
+  const reserved = {
+    type: true,
+    match: true,
+    self: true,
+    super: true,
+    crate: true,
+    mod: true,
+    use: true,
+    pub: true,
+    fn: true,
+    let: true,
+    mut: true,
+    ref: true,
+    impl: true,
+    trait: true,
+    struct: true,
+    enum: true,
+    where: true,
+    as: true,
+    in: true,
+    if: true,
+    else: true,
+    loop: true,
+    while: true,
+    for: true,
+    return: true,
+    break: true,
+    continue: true,
+    move: true,
+    box: true,
+    true: true,
+    false: true,
+  };
+  if (reserved[n]) n = n + "_";
+  return n || "field";
+}
+
 // ============== 主入口 ==============
 
 function j2cParseJson(text) {
@@ -649,7 +981,7 @@ function j2cParseJson(text) {
 
 /**
  * @param {string} jsonText
- * @param {string} lang - typescript | kotlin | go
+ * @param {string} lang - typescript | kotlin | go | csharp | python | rust
  * @param {{ rootName?: string, tsStyle?: 'interface'|'type' }} options
  * @returns {{ ok: boolean, code?: string, error?: string }}
  */
@@ -681,6 +1013,14 @@ function jsonToCode(jsonText, lang, options) {
       });
     } else if (language === "kotlin") {
       code = j2cGenerateKotlin(schema, rootName);
+    } else if (language === "go") {
+      code = j2cGenerateGo(schema, rootName);
+    } else if (language === "csharp") {
+      code = j2cGenerateCSharp(schema, rootName);
+    } else if (language === "python") {
+      code = j2cGeneratePython(schema, rootName);
+    } else if (language === "rust") {
+      code = j2cGenerateRust(schema, rootName);
     } else {
       code = j2cGenerateGo(schema, rootName);
     }
@@ -735,6 +1075,9 @@ function j2cUpdateLangUi() {
       typescript: "TypeScript",
       kotlin: "Kotlin",
       go: "Go",
+      csharp: "C#",
+      python: "Python",
+      rust: "Rust",
     };
     label.textContent = "生成的 " + (names[lang] || lang) + " 代码";
   }
@@ -815,6 +1158,7 @@ if (typeof module !== "undefined" && module.exports) {
     j2cMergeTypes,
     j2cToPascalCase,
     j2cToCamelCase,
+    j2cToSnakeCase,
     j2cToGoFieldName,
     j2cSanitizeTypeName,
     j2cSanitizeFieldName,
@@ -822,6 +1166,9 @@ if (typeof module !== "undefined" && module.exports) {
     j2cGenerateTypeScript,
     j2cGenerateKotlin,
     j2cGenerateGo,
+    j2cGenerateCSharp,
+    j2cGeneratePython,
+    j2cGenerateRust,
     J2C_SAMPLE,
     J2C_LANGS,
   };

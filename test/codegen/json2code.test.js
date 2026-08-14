@@ -10,6 +10,9 @@ const {
   j2cGenerateTypeScript,
   j2cGenerateKotlin,
   j2cGenerateGo,
+  j2cGenerateCSharp,
+  j2cGeneratePython,
+  j2cGenerateRust,
   J2C_SAMPLE,
   J2C_LANGS,
 } = require("../../js/codegen/json2code.js");
@@ -163,9 +166,95 @@ describe("Go 生成", () => {
   });
 });
 
+describe("C# 生成", () => {
+  test("class + List + 可选字段", () => {
+    const schema = j2cInferType({
+      userName: "a",
+      age: 1,
+      score: 1.5,
+      tags: ["x"],
+      orders: [
+        { orderId: "1", amount: 1.5, paid: true },
+        { orderId: "2", amount: 2 },
+      ],
+    });
+    const code = j2cGenerateCSharp(schema, "Root");
+    expect(code).toContain("using System");
+    expect(code).toContain("public class Root");
+    expect(code).toContain("public string UserName { get; set; }");
+    expect(code).toContain("public long Age { get; set; }");
+    expect(code).toContain("public double Score { get; set; }");
+    expect(code).toContain("public List<string> Tags { get; set; }");
+    expect(code).toMatch(/public class Order/);
+    expect(code).toContain("public List<Order> Orders { get; set; }");
+    expect(code).toMatch(/public bool\? Paid/);
+  });
+});
+
+describe("Python 生成", () => {
+  test("dataclass + List + Optional", () => {
+    const schema = j2cInferType({
+      userName: "a",
+      age: 1,
+      score: 1.5,
+      tags: ["x"],
+      orders: [
+        { orderId: "1", amount: 1.5, paid: true },
+        { orderId: "2", amount: 2 },
+      ],
+    });
+    const code = j2cGeneratePython(schema, "Root");
+    expect(code).toContain("from __future__ import annotations");
+    expect(code).toContain("from dataclasses import dataclass");
+    expect(code).toContain("@dataclass");
+    expect(code).toContain("class Root:");
+    expect(code).toContain("userName: str");
+    expect(code).toContain("age: int");
+    expect(code).toContain("score: float");
+    expect(code).toContain("tags: List[str]");
+    expect(code).toMatch(/class Order:/);
+    expect(code).toContain("orders: List[Order]");
+    expect(code).toMatch(/paid: Optional\[bool\]/);
+  });
+});
+
+describe("Rust 生成", () => {
+  test("struct + serde + Vec + Option", () => {
+    const schema = j2cInferType({
+      userName: "a",
+      age: 1,
+      score: 1.5,
+      tags: ["x"],
+      orders: [
+        { orderId: "1", amount: 1.5, paid: true },
+        { orderId: "2", amount: 2 },
+      ],
+    });
+    const code = j2cGenerateRust(schema, "Root");
+    expect(code).toContain("use serde::{Deserialize, Serialize}");
+    expect(code).toContain("#[derive(Debug, Clone, Serialize, Deserialize)]");
+    expect(code).toContain("pub struct Root {");
+    expect(code).toContain('#[serde(rename = "userName")]');
+    expect(code).toContain("pub user_name: String,");
+    expect(code).toContain("pub age: i64,");
+    expect(code).toContain("pub score: f64,");
+    expect(code).toContain("pub tags: Vec<String>,");
+    expect(code).toMatch(/pub struct Order/);
+    expect(code).toContain("pub orders: Vec<Order>,");
+    expect(code).toMatch(/pub paid: Option<bool>/);
+  });
+});
+
 describe("jsonToCode 集成", () => {
-  test("支持三种语言", () => {
-    expect(J2C_LANGS).toEqual(["typescript", "kotlin", "go"]);
+  test("支持六种语言", () => {
+    expect(J2C_LANGS).toEqual([
+      "typescript",
+      "kotlin",
+      "go",
+      "csharp",
+      "python",
+      "rust",
+    ]);
     for (const lang of J2C_LANGS) {
       const r = jsonToCode(J2C_SAMPLE, lang, { rootName: "Root" });
       expect(r.ok).toBe(true);
@@ -195,5 +284,15 @@ describe("jsonToCode 集成", () => {
     const r = jsonToCode('{"x":1}', "typescript", { rootName: "Foo" });
     expect(r.ok).toBe(true);
     expect(r.code).toContain("export interface Foo");
+  });
+
+  test("C# / Python / Rust 默认根名 Root", () => {
+    for (const lang of ["csharp", "python", "rust"]) {
+      const r = jsonToCode('{"x":1}', lang, {});
+      expect(r.ok).toBe(true);
+      if (lang === "csharp") expect(r.code).toContain("public class Root");
+      if (lang === "python") expect(r.code).toContain("class Root:");
+      if (lang === "rust") expect(r.code).toContain("pub struct Root");
+    }
   });
 });
