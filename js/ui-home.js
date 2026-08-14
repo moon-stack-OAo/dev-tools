@@ -308,10 +308,20 @@ function buildCommandPaletteResults(opts) {
 
 let cmdActiveIndex = -1;
 let cmdFlatItems = [];
+/** 当前命令面板 Tab（分组 type：recent/usage/scene/tools/categories） */
+let cmdActiveTab = "";
+let cmdGroupsCache = [];
 
 function isHomeCmdPanelOpen() {
     const panel = typeof domCache !== "undefined" ? domCache.homeHeatmap : null;
     return !!(panel && panel.style.display !== "none");
+}
+
+function setHomeSearchAriaExpanded(open) {
+    const input =
+        (typeof domCache !== "undefined" && domCache.homeSearch) ||
+        (typeof document !== "undefined" ? document.getElementById("homeSearch") : null);
+    if (input) input.setAttribute("aria-expanded", open ? "true" : "false");
 }
 
 function ensureCmdPanelBindings() {
@@ -320,8 +330,55 @@ function ensureCmdPanelBindings() {
     panel.dataset.cmdBound = "1";
     panel.classList.add("home-cmd-panel");
     panel.addEventListener("mousedown", function (e) {
+        // 避免点击 Tab/列表时 input blur 关闭面板；Tab 切换仍走 click
         e.preventDefault();
     });
+    panel.addEventListener("click", function (e) {
+        const tab = e.target.closest(".home-cmd-tab");
+        if (tab && panel.contains(tab)) {
+            const type = tab.getAttribute("data-tab");
+            if (type) setHomeCmdTab(type);
+            return;
+        }
+        const item = e.target.closest(".home-cmd-item");
+        if (item && panel.contains(item)) {
+            const idx = parseInt(item.dataset.cmdIdx, 10);
+            activateCmdItem(idx);
+        }
+    });
+}
+
+function resolveCmdActiveTab(groups) {
+    if (!groups || !groups.length) return "";
+    if (cmdActiveTab) {
+        for (let i = 0; i < groups.length; i++) {
+            if (groups[i].type === cmdActiveTab) return cmdActiveTab;
+        }
+    }
+    return groups[0].type;
+}
+
+function getCmdGroupByType(type) {
+    for (let i = 0; i < cmdGroupsCache.length; i++) {
+        if (cmdGroupsCache[i].type === type) return cmdGroupsCache[i];
+    }
+    return null;
+}
+
+function setHomeCmdTab(type, opts) {
+    opts = opts || {};
+    if (!type || type === cmdActiveTab) {
+        if (type === cmdActiveTab && !opts.force) return;
+    }
+    const group = getCmdGroupByType(type);
+    if (!group) return;
+    cmdActiveTab = type;
+    cmdFlatItems = group.items.slice();
+    if (opts.resetIndex !== false) cmdActiveIndex = -1;
+    if (cmdActiveIndex >= cmdFlatItems.length) {
+        cmdActiveIndex = cmdFlatItems.length - 1;
+    }
+    renderHomeCmdPanelBody();
 }
 
 function activateCmdItem(idx) {
@@ -340,12 +397,82 @@ function updateCmdActiveUI() {
     if (!panel) return;
     panel.querySelectorAll(".home-cmd-item").forEach(function (el) {
         const idx = parseInt(el.dataset.cmdIdx, 10);
-        el.classList.toggle("active", idx === cmdActiveIndex);
+        const on = idx === cmdActiveIndex;
+        el.classList.toggle("active", on);
+        el.setAttribute("aria-selected", on ? "true" : "false");
     });
     const active = panel.querySelector(".home-cmd-item.active");
     if (active && typeof active.scrollIntoView === "function") {
         active.scrollIntoView({block: "nearest"});
     }
+}
+
+function renderCmdItemHtml(item, flatIdx) {
+    const active = flatIdx === cmdActiveIndex ? " active" : "";
+    const catClass = item.cat ? " cat-" + escapeHtml(item.cat) : "";
+    const icon = item.icon
+        ? '<span class="home-cmd-icon"><i class="bi ' +
+          escapeHtml(item.icon) +
+          '"></i></span>'
+        : '<span class="home-cmd-icon"><i class="bi bi-grid"></i></span>';
+    const desc = item.desc
+        ? '<span class="home-cmd-desc">' + escapeHtml(item.desc) + "</span>"
+        : "";
+    let badge = "";
+    if (item.kind === "category") {
+        badge = '<span class="home-cmd-badge">分类</span>';
+    } else if (item.kind === "shortcut") {
+        badge = '<span class="home-cmd-badge">场景</span>';
+    }
+    return (
+        '<div class="home-cmd-item' +
+        active +
+        catClass +
+        '" data-cmd-idx="' +
+        flatIdx +
+        '" data-kind="' +
+        escapeHtml(item.kind) +
+        '" data-id="' +
+        escapeHtml(item.id) +
+        '" role="option" aria-selected="' +
+        (flatIdx === cmdActiveIndex ? "true" : "false") +
+        '">' +
+        icon +
+        '<span class="home-cmd-text"><span class="home-cmd-name">' +
+        escapeHtml(item.name) +
+        "</span>" +
+        desc +
+        "</span>" +
+        badge +
+        "</div>"
+    );
+}
+
+/** 仅刷新列表区（Tab 已存在时切换用） */
+function renderHomeCmdPanelBody() {
+    const panel = typeof domCache !== "undefined" ? domCache.homeHeatmap : null;
+    if (!panel) return;
+    const list = panel.querySelector(".home-cmd-list");
+    const tabs = panel.querySelectorAll(".home-cmd-tab");
+    if (tabs && tabs.length) {
+        tabs.forEach(function (el) {
+            const on = el.getAttribute("data-tab") === cmdActiveTab;
+            el.classList.toggle("active", on);
+            el.setAttribute("aria-selected", on ? "true" : "false");
+            el.tabIndex = on ? 0 : -1;
+        });
+    }
+    if (!list) return;
+    if (!cmdFlatItems.length) {
+        list.innerHTML =
+            '<div class="home-cmd-empty home-cmd-empty-sm">该分类下暂无结果</div>';
+        return;
+    }
+    let html = "";
+    for (let i = 0; i < cmdFlatItems.length; i++) {
+        html += renderCmdItemHtml(cmdFlatItems[i], i);
+    }
+    list.innerHTML = html;
 }
 
 function renderHomeCmdPanel() {
@@ -363,13 +490,16 @@ function renderHomeCmdPanel() {
         audience: typeof homeAudience !== "undefined" ? homeAudience : "all",
         shortcuts: HOME_SCENE_SHORTCUTS,
     });
-    cmdFlatItems = result.flat;
+    cmdGroupsCache = result.groups || [];
+    cmdActiveTab = resolveCmdActiveTab(cmdGroupsCache);
+    const activeGroup = getCmdGroupByType(cmdActiveTab);
+    cmdFlatItems = activeGroup ? activeGroup.items.slice() : [];
     if (cmdActiveIndex >= cmdFlatItems.length) {
         cmdActiveIndex = cmdFlatItems.length - 1;
     }
     if (cmdActiveIndex < -1) cmdActiveIndex = -1;
 
-    if (!result.groups.length) {
+    if (!cmdGroupsCache.length) {
         const emptyTip = q
             ? "没有匹配结果"
             : "开始使用工具后，这里会显示最近与常用入口";
@@ -380,74 +510,68 @@ function renderHomeCmdPanel() {
         return;
     }
 
-    let html = "";
-    let flatIdx = 0;
-    result.groups.forEach(function (g) {
-        html +=
-            '<div class="home-cmd-group"><div class="home-cmd-group-title">' +
+    let tabsHtml = '<div class="home-cmd-tabs" role="tablist" aria-label="搜索结果分类">';
+    for (let i = 0; i < cmdGroupsCache.length; i++) {
+        const g = cmdGroupsCache[i];
+        const on = g.type === cmdActiveTab;
+        const count = g.items ? g.items.length : 0;
+        tabsHtml +=
+            '<button type="button" class="home-cmd-tab' +
+            (on ? " active" : "") +
+            '" role="tab" data-tab="' +
+            escapeHtml(g.type) +
+            '" aria-selected="' +
+            (on ? "true" : "false") +
+            '" tabindex="' +
+            (on ? "0" : "-1") +
+            '"><span class="home-cmd-tab-label">' +
             escapeHtml(g.title) +
-            "</div>";
-        g.items.forEach(function (item) {
-            const active = flatIdx === cmdActiveIndex ? " active" : "";
-            const catClass = item.cat ? " cat-" + escapeHtml(item.cat) : "";
-            const icon = item.icon
-                ? '<span class="home-cmd-icon"><i class="bi ' +
-                  escapeHtml(item.icon) +
-                  '"></i></span>'
-                : '<span class="home-cmd-icon"><i class="bi bi-grid"></i></span>';
-            const desc = item.desc
-                ? '<span class="home-cmd-desc">' + escapeHtml(item.desc) + "</span>"
-                : "";
-            let badge = "";
-            if (item.kind === "category") {
-                badge = '<span class="home-cmd-badge">分类</span>';
-            } else if (item.kind === "shortcut") {
-                badge = '<span class="home-cmd-badge">场景</span>';
-            }
-            html +=
-                '<div class="home-cmd-item' +
-                active +
-                catClass +
-                '" data-cmd-idx="' +
-                flatIdx +
-                '" data-kind="' +
-                escapeHtml(item.kind) +
-                '" data-id="' +
-                escapeHtml(item.id) +
-                '" role="option" aria-selected="' +
-                (flatIdx === cmdActiveIndex ? "true" : "false") +
-                '">' +
-                icon +
-                '<span class="home-cmd-text"><span class="home-cmd-name">' +
-                escapeHtml(item.name) +
-                "</span>" +
-                desc +
-                "</span>" +
-                badge +
-                "</div>";
-            flatIdx++;
-        });
-        html += "</div>";
-    });
-    panel.innerHTML = html;
-    panel.querySelectorAll(".home-cmd-item").forEach(function (el) {
-        el.addEventListener("click", function () {
-            const idx = parseInt(el.dataset.cmdIdx, 10);
-            activateCmdItem(idx);
-        });
-    });
+            '</span><span class="home-cmd-tab-count">' +
+            count +
+            "</span></button>";
+    }
+    tabsHtml += "</div>";
+
+    let listHtml = '<div class="home-cmd-list" role="listbox">';
+    if (!cmdFlatItems.length) {
+        listHtml +=
+            '<div class="home-cmd-empty home-cmd-empty-sm">该分类下暂无结果</div>';
+    } else {
+        for (let j = 0; j < cmdFlatItems.length; j++) {
+            listHtml += renderCmdItemHtml(cmdFlatItems[j], j);
+        }
+    }
+    listHtml += "</div>";
+
+    panel.innerHTML = tabsHtml + listHtml;
 }
 
 function showHomeCmdPanel() {
     renderHomeCmdPanel();
     const panel = typeof domCache !== "undefined" ? domCache.homeHeatmap : null;
     if (panel) panel.style.display = "";
+    setHomeSearchAriaExpanded(true);
 }
 
 function hideHomeCmdPanel() {
     const panel = typeof domCache !== "undefined" ? domCache.homeHeatmap : null;
     if (panel) panel.style.display = "none";
     cmdActiveIndex = -1;
+    setHomeSearchAriaExpanded(false);
+}
+
+function switchHomeCmdTabByDelta(delta) {
+    if (!cmdGroupsCache.length) return;
+    let idx = 0;
+    for (let i = 0; i < cmdGroupsCache.length; i++) {
+        if (cmdGroupsCache[i].type === cmdActiveTab) {
+            idx = i;
+            break;
+        }
+    }
+    const next =
+        (idx + delta + cmdGroupsCache.length * 10) % cmdGroupsCache.length;
+    setHomeCmdTab(cmdGroupsCache[next].type);
 }
 
 function onHomeSearchKeydown(e) {
@@ -460,6 +584,30 @@ function onHomeSearchKeydown(e) {
             e.preventDefault();
             hideHomeCmdPanel();
         }
+        return;
+    }
+
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        if (!open) return;
+        if (!cmdGroupsCache.length || cmdGroupsCache.length < 2) return;
+        // 输入框内有选区/光标移动时不抢左右键；无内容或全选时可切换 Tab
+        const input = domCache.homeSearch;
+        if (input && input.value && input.selectionStart !== input.selectionEnd) {
+            return;
+        }
+        if (input && input.value && e.key === "ArrowLeft" && input.selectionStart > 0) {
+            return;
+        }
+        if (
+            input &&
+            input.value &&
+            e.key === "ArrowRight" &&
+            input.selectionEnd < input.value.length
+        ) {
+            return;
+        }
+        e.preventDefault();
+        switchHomeCmdTabByDelta(e.key === "ArrowRight" ? 1 : -1);
         return;
     }
 
@@ -1207,6 +1355,8 @@ function clearHomeSearch() {
 
 function handleHomeSearchInput() {
     cmdActiveIndex = -1;
+    // 输入变化时重新匹配分组，允许回到默认首个 Tab
+    cmdActiveTab = "";
     filterHomeTools();
     const input = domCache.homeSearch;
     const focused = input && document.activeElement === input;

@@ -163,7 +163,7 @@
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    width: 400px;
+    width: 440px;
     z-index: 1;
 }
 
@@ -172,7 +172,7 @@
     position: relative;
     left: auto;
     transform: none;
-    flex: 0 0 400px;
+    flex: 0 0 440px;
     margin-left: auto;
     margin-right: 0;
 }
@@ -232,8 +232,10 @@
     border-radius: var(--radius);
     box-shadow: var(--shadow-lg);
     z-index: 200;
-    overflow: hidden auto;
+    overflow: hidden;
     max-height: min(420px, calc(100vh - 120px));
+    display: flex;
+    flex-direction: column;
     animation: homeHeatmapIn 0.18s ease;
 }
 
@@ -248,6 +250,117 @@
     }
 }
 
+/* 分类 Tab：分段胶囊（segmented） */
+.home-cmd-tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 4px;
+    padding: 8px;
+    margin: 0;
+    border-bottom: 1px solid var(--border);
+    background: color-mix(in srgb, var(--bg-card2) 88%, transparent);
+    flex-shrink: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+.home-cmd-tabs::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+.home-cmd-tab {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: var(--font-ui);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    line-height: 1.25;
+    flex: 0 0 auto;
+    transition:
+        color 0.15s ease,
+        background 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+    outline: none;
+}
+
+.home-cmd-tab:hover {
+    color: var(--text);
+    background: var(--glass-hover);
+    border-color: var(--border);
+}
+
+.home-cmd-tab:focus-visible {
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.home-cmd-tab.active {
+    color: var(--accent);
+    font-weight: 600;
+    background: var(--accent-glow);
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.home-cmd-tab-label {
+    letter-spacing: 0.01em;
+}
+
+.home-cmd-tab-count {
+    font-size: 10px;
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-input);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    line-height: 1;
+    transition:
+        color 0.15s ease,
+        background 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.home-cmd-tab:hover .home-cmd-tab-count {
+    color: var(--text-dim);
+    border-color: var(--border-light);
+}
+
+.home-cmd-tab.active .home-cmd-tab-count {
+    background: color-mix(in srgb, var(--accent) 18%, var(--bg-card));
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.home-cmd-list {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden auto;
+    padding: 4px 0 6px;
+}
+
+/* 兼容旧分组标题样式（若别处复用） */
 .home-cmd-group {
     padding: 4px 0;
 }
@@ -339,6 +452,11 @@
     color: var(--text-muted);
     font-size: 12px;
     line-height: 1.6;
+}
+
+.home-cmd-empty-sm {
+    padding: 16px 12px;
+    font-size: 12px;
 }
 
 .home-cmd-empty i {
