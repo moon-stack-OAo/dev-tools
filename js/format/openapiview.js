@@ -310,7 +310,7 @@ function _oavSetStatus(msg, isErr) {
   const el = document.getElementById("oavStatus");
   if (!el) return;
   el.textContent = msg || "";
-  el.className = "nfm-status" + (isErr ? " oav-status-err" : "");
+  el.className = "oav-status" + (isErr ? " oav-status-err" : "");
 }
 
 function _oavMethodClass(method) {

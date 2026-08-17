@@ -1862,6 +1862,11 @@
     box-shadow: var(--shadow-sm);
 }
 
+.pc-inputs,
+.pc-notes {
+    min-width: 0;
+}
+
 .pc-card-head {
     display: flex;
     align-items: center;
@@ -2870,6 +2875,36 @@
     border-left-color: var(--danger);
 }
 
+.vd-log-time {
+    color: var(--text-muted);
+    margin-right: 6px;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+}
+
+.vd-log-level {
+    font-weight: 600;
+    margin-right: 6px;
+    flex-shrink: 0;
+}
+
+.vd-log-entry.level-info .vd-log-level {
+    color: var(--accent);
+}
+
+.vd-log-entry.level-warn .vd-log-level {
+    color: var(--warning);
+}
+
+.vd-log-entry.level-error .vd-log-level {
+    color: var(--danger);
+}
+
+.vd-log-msg {
+    color: var(--text-dim);
+    word-break: break-word;
+}
+
 .vd-log-empty,
 .vd-shot-empty {
     display: flex;
@@ -2891,6 +2926,14 @@
     display: block;
     max-width: 100%;
     border-radius: var(--radius-sm);
+}
+
+.vd-shot-meta {
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    text-align: center;
 }
 
 .vd-hint {
@@ -3118,11 +3161,27 @@
     gap: 12px;
 }
 
+.mqtt-tab-panel {
+    min-width: 0;
+}
+
+.mqtt-tab-panel[hidden] {
+    display: none !important;
+}
+
 .mqtt-field {
     display: grid;
     grid-template-columns: 110px minmax(0, 1fr);
     gap: 10px 12px;
     align-items: center;
+}
+
+.mqtt-field-hint {
+    align-items: start;
+}
+
+.mqtt-field-hint .mqtt-field-label {
+    min-height: 0;
 }
 
 .mqtt-field-label {
@@ -3931,82 +3990,340 @@
 /* CSS Selector Tester */
 .cssel-layout {
     display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: 16px;
-    align-items: start;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    gap: 14px;
+    align-items: stretch;
+    min-height: min(72vh, 720px);
 }
+
+.cssel-main,
+.cssel-side {
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 100%;
+}
+
+.cssel-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius, 8px);
+    background: var(--bg-card);
+    padding: 12px 14px;
+    min-width: 0;
+    flex-shrink: 0;
+}
+
+.cssel-card-matches,
+.cssel-card-preview {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.cssel-card-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    min-height: 24px;
+}
+
+.cssel-card-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.cssel-card-title i {
+    color: var(--accent);
+    font-size: 14px;
+}
+
+.cssel-html {
+    width: 100%;
+    height: 320px;
+    min-height: 200px;
+    max-height: 480px;
+    resize: vertical;
+    font-family: var(--font-mono, var(--font));
+    font-size: 12.5px;
+    line-height: 1.5;
+    tab-size: 2;
+    white-space: pre;
+}
+
+.cssel-sel-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.cssel-sel-input {
+    flex: 1;
+    min-width: 180px;
+    font-family: var(--font-mono, var(--font));
+    font-size: 13px;
+}
+
+.cssel-sel-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.cssel-btn-danger {
+    border-color: var(--danger) !important;
+    color: var(--danger) !important;
+}
+
+.cssel-count {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 22px;
+    padding: 0 8px;
+    border-radius: 11px;
+    font-size: 12px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    background: var(--bg-card2, var(--glass));
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+}
+
+.cssel-count.has-match {
+    background: rgba(var(--accent-rgb, 99, 179, 237), 0.14);
+    color: var(--accent);
+    border-color: rgba(var(--accent-rgb, 99, 179, 237), 0.35);
+}
+
+.cssel-count.is-zero {
+    opacity: 0.85;
+}
+
+.cssel-badge {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 600;
+    color: #d97706;
+    background: rgba(245, 158, 11, 0.14);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    border-radius: 10px;
+    padding: 2px 8px;
+}
+
+.cssel-card-matches .cssel-matches {
+    margin: 0 -2px;
+    flex: 1 1 auto;
+    min-height: 160px;
+    max-height: none;
+}
+
 .cssel-matches {
-    max-height: 320px;
     overflow: auto;
     border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: var(--bg-card);
-    padding: 8px;
+    border-radius: var(--radius-sm, 6px);
+    background: var(--bg-card2, var(--bg));
+    padding: 4px;
 }
+
 .cssel-match-item {
     display: flex;
-    gap: 8px;
-    padding: 8px;
-    border-bottom: 1px solid var(--border);
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    transition: background 0.12s ease, border-color 0.12s ease;
 }
-.cssel-match-item:last-child {
-    border-bottom: none;
+
+.cssel-match-item:hover {
+    background: var(--bg-card);
+    border-color: var(--border);
 }
+
+.cssel-match-item + .cssel-match-item {
+    margin-top: 2px;
+}
+
 .cssel-match-idx {
     flex-shrink: 0;
     font-size: 11px;
-    color: var(--text-dim);
-    font-weight: 600;
+    font-weight: 700;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
     min-width: 28px;
+    height: 22px;
+    line-height: 22px;
+    text-align: center;
+    border-radius: 6px;
+    background: rgba(var(--accent-rgb, 99, 179, 237), 0.12);
 }
+
 .cssel-match-code {
     margin: 0;
     flex: 1;
+    min-width: 0;
     white-space: pre-wrap;
-    word-break: break-all;
-    font-family: var(--font);
-    font-size: 11px;
-    line-height: 1.45;
+    word-break: break-word;
+    font-family: var(--font-mono, var(--font));
+    font-size: 11.5px;
+    line-height: 1.5;
     color: var(--text);
 }
+
+.cssel-match-more {
+    margin-top: 4px;
+    padding: 8px 10px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-dim);
+    border-top: 1px dashed var(--border);
+}
+
 .cssel-empty,
 .cssel-error {
-    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 28px 16px;
     text-align: center;
     font-size: 13px;
     color: var(--text-dim);
+    min-height: 120px;
+    height: 100%;
+    box-sizing: border-box;
 }
+
+.cssel-empty i,
+.cssel-error i {
+    font-size: 22px;
+    opacity: 0.7;
+}
+
 .cssel-error {
     color: var(--danger);
+    background: rgba(var(--danger-rgb, 245, 101, 101), 0.06);
+    border-radius: 6px;
 }
+
 .cssel-preview {
-    min-height: 220px;
-    max-height: 480px;
+    flex: 1 1 auto;
+    min-height: 200px;
+    max-height: none;
     overflow: auto;
     border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: #fff;
-    color: #111;
-    padding: 12px;
+    border-radius: var(--radius-sm, 6px);
+    background: #fafafa;
+    color: #1a1a1a;
+    padding: 14px 16px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
 }
+
 .cssel-preview-inner {
     font-size: 13px;
-    line-height: 1.5;
+    line-height: 1.55;
 }
+
+.cssel-preview-inner:empty::before {
+    content: '预览区';
+    color: #999;
+    font-size: 12px;
+}
+
 .cssel-preview .cssel-hl {
     outline: 2px solid #f59e0b !important;
     outline-offset: 2px;
-    background: rgba(245, 158, 11, 0.12) !important;
+    background: rgba(245, 158, 11, 0.16) !important;
+    box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.25);
+    border-radius: 2px;
 }
+
 .cssel-hint {
-    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-shrink: 0;
+    padding: 10px 12px;
+    background: var(--glass, var(--bg-card2));
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm, 6px);
     font-size: 12px;
     color: var(--text-dim);
     line-height: 1.5;
 }
+
+.cssel-hint-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.cssel-hint-item i {
+    color: var(--accent);
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.cssel-hint code {
+    font-size: 11px;
+    color: var(--accent2, var(--accent));
+    background: rgba(var(--accent-rgb, 99, 179, 237), 0.1);
+    padding: 0 4px;
+    border-radius: 3px;
+}
+
 @media (max-width: 900px) {
     .cssel-layout {
         grid-template-columns: 1fr;
+        min-height: 0;
+    }
+
+    .cssel-main,
+    .cssel-side {
+        height: auto;
+    }
+
+    .cssel-card-matches,
+    .cssel-card-preview {
+        flex: none;
+    }
+
+    .cssel-card-matches .cssel-matches {
+        max-height: 260px;
+        min-height: 140px;
+    }
+
+    .cssel-preview {
+        min-height: 200px;
+        max-height: 360px;
+        flex: none;
+    }
+
+    .cssel-html {
+        height: 220px;
+        min-height: 160px;
+    }
+}
+
+@media (max-width: 560px) {
+    .cssel-sel-actions {
+        width: 100%;
+    }
+
+    .cssel-sel-actions button {
+        flex: 1;
     }
 }
 

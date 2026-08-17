@@ -558,6 +558,15 @@
     overflow: auto;
 }
 
+.pyr-stderr {
+    color: var(--danger);
+    border-top: 1px solid var(--border);
+}
+
+.pyr-stderr:empty {
+    display: none;
+}
+
 #pyrStdout:empty {
     display: none;
 }

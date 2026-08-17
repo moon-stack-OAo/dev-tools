@@ -611,12 +611,12 @@ function _gqlShowBalance(text) {
   const el = document.getElementById("gqlBalance");
   if (!el) return;
   if (!String(text || "").trim()) {
-    el.innerHTML = '<span class="nfm-lint-empty">未检查</span>';
+    el.innerHTML = '<span class="gql-lint-empty">未检查</span>';
     return;
   }
   const r = checkGraphqlBalance(text);
   if (r.ok) {
-    el.innerHTML = '<span class="nfm-lint-empty">括号 / 引号平衡 ✓</span>';
+    el.innerHTML = '<span class="gql-lint-empty">括号 / 引号平衡 ✓</span>';
     return;
   }
   const parts = [];
@@ -629,12 +629,12 @@ function _gqlShowBalance(text) {
             return String(s);
           };
     parts.push(
-      '<div class="nfm-lint-item nfm-lint-error">' +
+      '<div class="gql-lint-item gql-lint-error">' +
         '<i class="bi bi-x-circle-fill"></i>' +
-        '<span class="nfm-lint-rule">[' +
+        '<span class="gql-lint-rule">[' +
         esc(it.kind) +
         "]</span>" +
-        '<span class="nfm-lint-msg">' +
+        '<span class="gql-lint-msg">' +
         esc(it.msg) +
         "</span>" +
         "</div>",
@@ -707,7 +707,7 @@ function _gqlClear() {
   document.getElementById("gqlInput").value = "";
   document.getElementById("gqlOutput").value = "";
   const bal = document.getElementById("gqlBalance");
-  if (bal) bal.innerHTML = '<span class="nfm-lint-empty">未检查</span>';
+  if (bal) bal.innerHTML = '<span class="gql-lint-empty">未检查</span>';
   _gqlSetStatus("已清空");
 }
 

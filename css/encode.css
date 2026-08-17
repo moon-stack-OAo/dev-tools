@@ -21,6 +21,11 @@
     min-height: 0;
 }
 
+.ib64-col-in,
+.ib64-col-out {
+    min-width: 0;
+}
+
 .ib64-card {
     border: 1px solid var(--border);
     border-radius: var(--radius, 8px);

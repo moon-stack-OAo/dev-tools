@@ -1307,6 +1307,11 @@
     align-items: start;
 }
 
+.bsh-controls,
+.bsh-side {
+    min-width: 0;
+}
+
 .bsh-preview-opts {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
@@ -1405,6 +1410,11 @@
     align-items: start;
 }
 
+.gd-controls,
+.gd-side {
+    min-width: 0;
+}
+
 .gd-stops {
     display: flex;
     flex-direction: column;
@@ -1486,6 +1496,11 @@
     align-items: start;
 }
 
+.fg-controls,
+.fg-side {
+    min-width: 0;
+}
+
 .fg-fields {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1540,6 +1555,11 @@
     align-items: start;
 }
 
+.cbz-controls,
+.cbz-side {
+    min-width: 0;
+}
+
 .cbz-fields {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1592,6 +1612,11 @@
     grid-template-columns: 1fr minmax(240px, 340px);
     gap: 16px;
     align-items: start;
+}
+
+.ctr-controls,
+.ctr-side {
+    min-width: 0;
 }
 
 .ctr-colors {
@@ -2026,6 +2051,12 @@
     gap: 16px;
     align-items: start;
 }
+
+.fp-controls,
+.fp-side {
+    min-width: 0;
+}
+
 .fp-filename {
     margin-top: 6px;
     font-size: 12px;

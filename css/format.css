@@ -1,44 +1,7 @@
 /* 格式化工具：json / xml / yaml / sql / jsonpath / jsonschema / jsonconvert / sqldialect / dbtype
- * 复用 css/base.css 中的通用类；此处只放置新增专属样式。
+ * 复用 css/base.css、css/layout.css 中的通用类；此处只放置 format 专属样式。
+ * 跨分类共享：.fmt-split / .fmt-pane / .grid-2col / .alert / .jf-* → layout.css
  */
-
-/* 输入/输出左右布局（format / encode / text / codegen 等 IO 工具） */
-.fmt-split {
-    display: flex;
-    gap: 12px;
-    align-items: stretch;
-}
-
-.fmt-pane {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-}
-
-.fmt-pane textarea.json-input {
-    min-height: 380px;
-    flex: 1;
-}
-
-.fmt-pane .output-box {
-    min-height: 380px;
-    flex: 1;
-    max-height: 560px;
-}
-
-.fmt-pane .copy-wrap {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-height: 0;
-}
-
-@media (max-width: 900px) {
-    .fmt-split {
-        flex-direction: column;
-    }
-}
 
 /* JSON 输出区语法高亮（仅成功输出，不影响 .output-box.error） */
 .output-box.json-hl .json-key {
@@ -658,6 +621,12 @@
     font-weight: 600;
 }
 
+.oav-status {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    align-self: center;
+}
+
 .oav-status-err {
     color: var(--danger, #e74c3c);
 }
@@ -1054,6 +1023,11 @@
     box-shadow: var(--shadow-sm);
 }
 
+.jse-left,
+.jse-right {
+    min-width: 0;
+}
+
 .jse-pane-head {
     display: flex;
     align-items: center;
@@ -1428,84 +1402,7 @@
     }
 }
 
-/* ===== 共享基建：grid-2col / alert / jf-* ===== */
-.grid-2col {
-    display: flex;
-    gap: 12px;
-    align-items: stretch;
-}
-
-.grid-2col > * {
-    flex: 1;
-    min-width: 0;
-}
-
-@media (max-width: 900px) {
-    .grid-2col {
-        flex-direction: column;
-    }
-}
-
-.alert {
-    padding: 10px 14px;
-    margin-bottom: 12px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border);
-    background: var(--bg-card);
-    color: var(--text-dim);
-    font-size: 12.5px;
-    line-height: 1.55;
-}
-
-.alert code {
-    font-size: 11.5px;
-    padding: 1px 5px;
-    border-radius: 3px;
-    background: var(--bg-input);
-    color: var(--accent);
-}
-
-.alert-warning,
-.jf-alert {
-    border-color: rgba(var(--warning-rgb), 0.35);
-    background: var(--warning-glow);
-    color: var(--text-dim);
-}
-
-.alert-warning code,
-.jf-alert code {
-    color: var(--warning);
-    background: rgba(var(--warning-rgb), 0.12);
-}
-
-.jf-options {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px 14px;
-    padding: 10px 12px;
-    margin-bottom: 12px;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-}
-
-.jf-options select {
-    padding: 5px 8px;
-    font-size: 12px;
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text);
-    outline: none;
-}
-
-.jf-options select:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px var(--accent-glow);
-}
-
-/* ===== nginxfmt / graphqlfmt：nfm-* ===== */
+/* ===== nginxfmt：nfm-* ===== */
 .nfm-stats {
     font-size: 12px;
     color: var(--text-muted);
@@ -1616,6 +1513,79 @@
     border: 1px solid var(--border);
     white-space: pre-wrap;
     word-break: break-all;
+}
+
+/* ===== graphqlfmt：gql-* ===== */
+.gql-status {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    align-self: center;
+}
+
+.gql-grid {
+    margin-bottom: 4px;
+}
+
+.gql-lint-section {
+    margin-top: 4px;
+}
+
+.gql-lint-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    max-height: 280px;
+    overflow: auto;
+    font-size: 12.5px;
+}
+
+.gql-lint-empty {
+    color: var(--text-muted);
+    font-size: 12.5px;
+    padding: 4px 0;
+}
+
+.gql-lint-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 10px;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--bg-card2);
+    line-height: 1.45;
+}
+
+.gql-lint-item > i {
+    flex-shrink: 0;
+    font-size: 13px;
+}
+
+.gql-lint-error {
+    border-color: rgba(var(--danger-rgb), 0.35);
+    background: var(--danger-glow);
+}
+
+.gql-lint-error > i {
+    color: var(--danger);
+}
+
+.gql-lint-rule {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--text-dim);
+}
+
+.gql-lint-msg {
+    color: var(--text);
+    flex: 1 1 auto;
+    min-width: 120px;
 }
 
 /* ===== sqlexplain：sqlex-* ===== */

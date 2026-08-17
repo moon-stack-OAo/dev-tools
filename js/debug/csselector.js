@@ -113,7 +113,7 @@ function csselectorQuery(html, selector, doc) {
             ok: false,
             count: 0,
             matches: [],
-            msg: '无效的选择器：' + (e2 && e2.message ? e2.message : String(e2)),
+            msg: '无效的选择器：' + (e && e.message ? e.message : String(e)),
         };
     }
 
@@ -147,6 +147,22 @@ function csselectorGetSampleHtml() {
     ].join('\n');
 }
 
+function csselectorSetCount(countEl, n) {
+    if (!countEl) return;
+    var num = n == null ? 0 : Number(n);
+    if (!isFinite(num) || num < 0) num = 0;
+    countEl.textContent = String(num);
+    countEl.classList.toggle('has-match', num > 0);
+    countEl.classList.toggle('is-zero', num === 0);
+}
+
+function csselectorTruncateHtml(s, maxLen) {
+    var str = s == null ? '' : String(s);
+    var max = maxLen != null && isFinite(Number(maxLen)) ? Math.max(40, Number(maxLen)) : 1200;
+    if (str.length <= max) return str;
+    return str.slice(0, max) + '\n… (已截断，共 ' + str.length + ' 字符)';
+}
+
 function csselectorRender() {
     var htmlEl = document.getElementById('csselHtml');
     var selEl = document.getElementById('csselSelector');
@@ -159,9 +175,10 @@ function csselectorRender() {
     var selector = selEl.value;
 
     if (!String(selector).trim()) {
-        if (countEl) countEl.textContent = '0';
+        csselectorSetCount(countEl, 0);
         if (listEl) {
-            listEl.innerHTML = '<div class="cssel-empty">输入选择器后显示匹配结果</div>';
+            listEl.innerHTML =
+                '<div class="cssel-empty"><i class="bi bi-search"></i><span>输入选择器后显示匹配结果</span></div>';
         }
         if (previewEl) {
             csselectorRenderPreview(previewEl, html, null);
@@ -171,9 +188,12 @@ function csselectorRender() {
 
     var r = csselectorQuery(html, selector);
     if (!r.ok) {
-        if (countEl) countEl.textContent = '0';
+        csselectorSetCount(countEl, 0);
         if (listEl) {
-            listEl.innerHTML = '<div class="cssel-error">' + escapeHtml(r.msg || '查询失败') + '</div>';
+            listEl.innerHTML =
+                '<div class="cssel-error"><i class="bi bi-exclamation-triangle"></i><span>' +
+                escapeHtml(r.msg || '查询失败') +
+                '</span></div>';
         }
         if (previewEl) {
             csselectorRenderPreview(previewEl, html, null);
@@ -182,10 +202,11 @@ function csselectorRender() {
         return;
     }
 
-    if (countEl) countEl.textContent = String(r.count);
+    csselectorSetCount(countEl, r.count);
     if (listEl) {
         if (!r.matches.length) {
-            listEl.innerHTML = '<div class="cssel-empty">无匹配节点</div>';
+            listEl.innerHTML =
+                '<div class="cssel-empty"><i class="bi bi-inbox"></i><span>无匹配节点</span></div>';
         } else {
             var parts = [];
             for (var i = 0; i < r.matches.length; i++) {
@@ -195,13 +216,13 @@ function csselectorRender() {
                         (i + 1) +
                         '</div>' +
                         '<pre class="cssel-match-code">' +
-                        escapeHtml(r.matches[i]) +
+                        escapeHtml(csselectorTruncateHtml(r.matches[i], 1200)) +
                         '</pre></div>',
                 );
             }
             if (r.count > r.matches.length) {
                 parts.push(
-                    '<div class="cssel-empty">仅显示前 ' +
+                    '<div class="cssel-match-more">仅显示前 ' +
                         r.matches.length +
                         ' 条，共 ' +
                         r.count +
@@ -217,6 +238,9 @@ function csselectorRender() {
     }
     if (typeof setStatus === 'function') setStatus('匹配 ' + r.count + ' 个节点');
 }
+
+var csselectorOnInput =
+    typeof debounce === 'function' ? debounce(csselectorRender, 180) : csselectorRender;
 
 /**
  * 安全预览：DOMParser 解析后克隆到容器，去掉 script，再 outline 高亮
@@ -239,8 +263,9 @@ function csselectorRenderPreview(container, html, selector) {
             for (var i = scripts.length - 1; i >= 0; i--) {
                 if (scripts[i].parentNode) scripts[i].parentNode.removeChild(scripts[i]);
             }
+            // adoptNode 会移出节点；importNode 仅克隆不移除，while 会死循环
             while (body.firstChild) {
-                wrap.appendChild(document.importNode(body.firstChild, true));
+                wrap.appendChild(document.adoptNode(body.firstChild));
             }
         }
     } catch (e) {

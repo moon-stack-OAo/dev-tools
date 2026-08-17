@@ -402,6 +402,41 @@
     text-align: center;
 }
 
+/* 条形码 */
+.barcode-options {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    margin-bottom: 12px;
+}
+
+.barcode-output {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    min-height: 200px;
+}
+
+#barcodeCanvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    background: #ffffff;
+}
+
+.barcode-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: var(--font);
+    text-align: center;
+}
+
 /* 模板替换 */
 .tpl-output-box {
     font-size: 15px;

@@ -1,33 +1,50 @@
 <div class="tool-panel" id="panel-csselector">
     <div class="cssel-layout">
         <div class="cssel-main">
-            <div class="mb-8">
-                <div class="label">HTML 源码</div>
-                <textarea id="csselHtml" rows="12" oninput="csselectorRender()" placeholder="粘贴 HTML 片段…" style="font-family:var(--font);font-size:12px"></textarea>
+            <div class="cssel-card">
+                <div class="cssel-card-head">
+                    <span class="cssel-card-title"><i class="bi bi-code-slash"></i> HTML 源码</span>
+                </div>
+                <textarea class="cssel-html" id="csselHtml" rows="16" oninput="csselectorOnInput()" placeholder="粘贴 HTML 片段…" spellcheck="false"></textarea>
             </div>
-            <div class="mb-8">
-                <div class="label">CSS 选择器</div>
-                <div class="flex gap-6" style="align-items:center;flex-wrap:wrap">
-                    <input id="csselSelector" type="text" oninput="csselectorRender()" placeholder=".class / #id / div > p" style="flex:1;min-width:180px;font-family:var(--font)">
-                    <button onclick="csselectorRender()">查询</button>
-                    <button class="outline" onclick="csselectorLoadExample()">示例</button>
-                    <button class="outline" onclick="csselectorClear()">清空</button>
+
+            <div class="cssel-card">
+                <div class="cssel-card-head">
+                    <span class="cssel-card-title"><i class="bi bi-cursor-text"></i> CSS 选择器</span>
+                </div>
+                <div class="cssel-sel-row">
+                    <input class="cssel-sel-input" id="csselSelector" type="text" oninput="csselectorOnInput()" placeholder=".class / #id / div > p" spellcheck="false" autocomplete="off">
+                    <div class="cssel-sel-actions">
+                        <button type="button" class="primary" onclick="csselectorRender()">查询</button>
+                        <button type="button" class="outline" onclick="csselectorLoadExample()">示例</button>
+                        <button type="button" class="outline cssel-btn-danger" onclick="csselectorClear()">清空</button>
+                    </div>
                 </div>
             </div>
-            <div class="mb-8">
-                <div class="label">匹配结果 · <span id="csselCount">0</span> 个</div>
+
+            <div class="cssel-card cssel-card-matches">
+                <div class="cssel-card-head">
+                    <span class="cssel-card-title"><i class="bi bi-list-check"></i> 匹配结果</span>
+                    <span class="cssel-count" id="csselCount">0</span>
+                </div>
                 <div class="cssel-matches" id="csselMatches">
-                    <div class="cssel-empty">输入选择器后显示匹配结果</div>
+                    <div class="cssel-empty"><i class="bi bi-search"></i><span>输入选择器后显示匹配结果</span></div>
                 </div>
             </div>
         </div>
+
         <div class="cssel-side">
-            <div class="label">预览（匹配节点高亮）</div>
-            <div class="cssel-preview" id="csselPreview"></div>
+            <div class="cssel-card cssel-card-preview">
+                <div class="cssel-card-head">
+                    <span class="cssel-card-title"><i class="bi bi-eye"></i> 预览</span>
+                    <span class="cssel-badge">匹配高亮</span>
+                </div>
+                <div class="cssel-preview" id="csselPreview"></div>
+            </div>
             <div class="cssel-hint">
-                <div>· 使用 DOMParser 解析，预览前剥离 &lt;script&gt;</div>
-                <div>· 匹配节点以橙色 outline 高亮</div>
-                <div>· 列表展示 outerHTML（已转义）</div>
+                <div class="cssel-hint-item"><i class="bi bi-shield-check"></i> DOMParser 解析，预览前剥离 <code>&lt;script&gt;</code></div>
+                <div class="cssel-hint-item"><i class="bi bi-highlighter"></i> 匹配节点橙色 outline + 浅底高亮</div>
+                <div class="cssel-hint-item"><i class="bi bi-file-earmark-code"></i> 列表展示 <code>outerHTML</code>（已转义）</div>
             </div>
         </div>
     </div>

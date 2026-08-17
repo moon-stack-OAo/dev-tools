@@ -5,7 +5,7 @@
         不做完整 GraphQL 语法校验。
     </div>
 
-    <div class="toolbar jf-options nfm-toolbar">
+    <div class="toolbar jf-options gql-toolbar">
         <label style="display:flex;align-items:center;gap:6px">
             缩进：
             <select id="gqlIndent">
@@ -18,7 +18,7 @@
         <button class="outline" onclick="_gqlSample()">加载示例</button>
     </div>
 
-    <div class="grid-2col nfm-grid">
+    <div class="grid-2col gql-grid">
         <div style="display:flex;flex-direction:column;min-width:0">
             <div class="label">GraphQL 输入</div>
             <textarea class="json-input" id="gqlInput" placeholder="粘贴 GraphQL query / mutation..."
@@ -35,11 +35,11 @@
         <button class="btn btn-primary" onclick="_gqlFormat()">格式化</button>
         <button class="btn" onclick="_gqlMinify()">压缩</button>
         <button class="btn" onclick="_gqlCopy()">复制</button>
-        <span class="nfm-status" id="gqlStatus"></span>
+        <span class="gql-status" id="gqlStatus"></span>
     </div>
 
-    <div class="nfm-lint-section">
+    <div class="gql-lint-section">
         <div class="label" style="margin-top:14px">括号 / 引号检查</div>
-        <div class="nfm-lint-list" id="gqlBalance"><span class="nfm-lint-empty">未检查</span></div>
+        <div class="gql-lint-list" id="gqlBalance"><span class="gql-lint-empty">未检查</span></div>
     </div>
 </div>

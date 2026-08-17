@@ -845,3 +845,97 @@
     overflow: auto;
     min-height: 0;
 }
+
+/* 通用网格 / 表格 / 卡片响应式 */
+.ref-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+}
+
+.ref-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+}
+
+.ref-table th,
+.ref-table td {
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+}
+
+.ref-table th {
+    background: var(--bg-card2);
+    color: var(--text-dim);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.ref-table code {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+}
+
+@media (max-width: 900px) {
+    .ref-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .ref-search-bar-tabs {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .ref-search-bar-tabs > .ref-search-input-wrap {
+        max-width: none;
+    }
+
+    .ref-cmd-head {
+        flex-wrap: wrap;
+    }
+
+    .ref-cmd-name {
+        white-space: normal;
+        word-break: break-all;
+    }
+
+    .ref-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .ref-card,
+    .arthas-card,
+    .redisref-card,
+    .springcloud-card,
+    .mqref-card {
+        padding: 10px 12px;
+    }
+
+    .ref-pre,
+    .arthas-pre {
+        font-size: 11.5px;
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .ref-search-bar {
+        padding: 10px 12px;
+        margin-bottom: 14px;
+    }
+
+    .ref-group-title {
+        font-size: 12px;
+    }
+
+    .ref-cmd-desc,
+    .ref-syntax {
+        font-size: 11.5px;
+    }
+}
