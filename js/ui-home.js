@@ -1305,18 +1305,14 @@ function filterHomeTools() {
         const name = card.dataset.name || "";
         const desc = card.dataset.desc || "";
         const textMatch = !q || name.includes(q) || desc.includes(q);
-        const audienceMatch = cardMatchesAudience(card);
         const cardCat = card.dataset.cat || "";
-        let catMatch = true;
-        if (homeVirtualFilter) {
-            catMatch = cardCat === homeVirtualFilter;
-        } else if (homeCatFilter) {
-            catMatch = cardCat === homeCatFilter;
-        } else if (cardCat === "recent" || cardCat === "favorites") {
-            // 默认首页不展示虚拟块
-            catMatch = false;
-        }
-        const match = textMatch && audienceMatch && catMatch;
+        const match = homeCardShouldShow({
+            textMatch: textMatch,
+            audienceMatch: cardMatchesAudience(card),
+            cardCat: cardCat,
+            homeVirtualFilter: homeVirtualFilter,
+            homeCatFilter: homeCatFilter,
+        });
         card.style.display = match ? "" : "none";
         if (match) {
             filterMatchedCats.add(cardCat);
@@ -1403,10 +1399,35 @@ if (typeof window !== "undefined") {
     });
 }
 
+/**
+ * 首页卡片是否应显示（纯函数，便于单测）
+ * @param {{ textMatch: boolean, audienceMatch: boolean, cardCat: string,
+ *   homeVirtualFilter?: string|null, homeCatFilter?: string|null }} opts
+ * @returns {boolean}
+ */
+function homeCardShouldShow(opts) {
+    const textMatch = !!opts.textMatch;
+    const cardCat = opts.cardCat || '';
+    const homeVirtualFilter = opts.homeVirtualFilter || null;
+    const homeCatFilter = opts.homeCatFilter || null;
+    // 最近/收藏不叠加受众；业务分类筛选时由调用方将 audienceMatch 置 true
+    const audienceMatch = homeVirtualFilter ? true : !!opts.audienceMatch;
+    let catMatch = true;
+    if (homeVirtualFilter) {
+        catMatch = cardCat === homeVirtualFilter;
+    } else if (homeCatFilter) {
+        catMatch = cardCat === homeCatFilter;
+    } else if (cardCat === 'recent' || cardCat === 'favorites') {
+        catMatch = false;
+    }
+    return textMatch && audienceMatch && catMatch;
+}
+
 if (typeof module !== "undefined" && module.exports) {
     module.exports = {
         buildCommandPaletteResults,
         HOME_SCENE_SHORTCUTS,
         normalizeHomeDensity,
+        homeCardShouldShow,
     };
 }
