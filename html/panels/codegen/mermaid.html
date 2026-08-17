@@ -1,0 +1,42 @@
+<div class="tool-panel" id="panel-mermaid">
+    <div class="alert alert-warning mmd-warn" style="font-size:12px;margin-bottom:8px">
+        首次打开会加载 Mermaid 库，体积较大，请稍候。渲染在本地浏览器完成，数据不上传。
+    </div>
+    <div class="toolbar mmd-toolbar" style="flex-wrap:wrap">
+        <select id="mmdSample" style="width:140px" title="示例类型">
+            <option value="flowchart">flowchart</option>
+            <option value="sequence">sequence</option>
+            <option value="class">class</option>
+            <option value="er">er</option>
+            <option value="gantt">gantt</option>
+            <option value="pie">pie</option>
+        </select>
+        <button class="outline" onclick="mmdLoadSample()" title="加载选中示例">加载示例</button>
+        <button class="primary" onclick="mmdRender()">运行</button>
+        <label class="mmd-auto-label" style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:4px">
+            <input checked id="mmdAuto" style="accent-color:var(--accent)" type="checkbox"> 自动刷新
+        </label>
+        <button class="outline" onclick="mmdCopySource()">复制源码</button>
+        <button class="outline" onclick="mmdDownloadSvg()">下载 SVG</button>
+        <button class="outline" onclick="mmdDownloadPng()">下载 PNG</button>
+        <span class="status-text" id="mmdStatus"></span>
+    </div>
+    <div class="mmd-main">
+        <div class="mmd-editor">
+            <div class="label">Mermaid 源码</div>
+            <textarea class="json-input mmd-source" id="mmdSource"
+                      placeholder="flowchart TD&#10;    A --> B"
+                      spellcheck="false"></textarea>
+        </div>
+        <div class="mmd-preview-col">
+            <div class="label">预览</div>
+            <div class="mmd-preview" id="mmdPreview">
+                <div class="mmd-placeholder">
+                    <i class="bi bi-diagram-3"></i>
+                    <div>请输入 Mermaid 源码后点击运行</div>
+                </div>
+            </div>
+            <div class="mmd-error" id="mmdError" style="display:none"></div>
+        </div>
+    </div>
+</div>

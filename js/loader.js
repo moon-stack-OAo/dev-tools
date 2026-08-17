@@ -65,6 +65,7 @@ const toolLibs = {
     videodebug: ["hls.min.js"],
     mqtt: ["mqtt.min.js"],
     mappicker: ["leaflet.min.js"],
+    mermaid: ["mermaid.min.js"],
 };
 
 // 工具→脚本依赖映射：打开工具前先加载其它工具脚本（复用其全局纯函数）

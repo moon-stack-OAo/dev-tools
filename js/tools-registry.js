@@ -860,7 +860,7 @@ const tools = [
         id: "plantuml",
         icon: "bi-diagram-2",
         name: "PlantUML 类图",
-        desc: "Java/JSON 转 PlantUML 类图源码",
+        desc: "Java/JSON 转 PlantUML 类图 · 在线预览",
         cat: "codegen",
         tags: ["common","backend"],
     },
@@ -879,6 +879,14 @@ const tools = [
         desc: "CREATE TABLE 生成 Mermaid erDiagram",
         cat: "codegen",
         tags: ["common","backend"],
+    },
+    {
+        id: "mermaid",
+        icon: "bi-diagram-3-fill",
+        name: "Mermaid 编辑器",
+        desc: "Mermaid 源码实时预览 / SVG·PNG 导出",
+        cat: "codegen",
+        tags: ["common","frontend","backend"],
     },
     {
         id: "flywaygen",

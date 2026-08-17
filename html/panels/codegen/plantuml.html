@@ -15,7 +15,7 @@
                     <button id="plBtnGen">生成</button>
                 </div>
             </div>
-            <div class="flex gap-12"
+            <div class="flex gap-12 pl-opts"
                  style="flex-wrap:wrap;align-items:center;font-size:12px;color:var(--text-dim);margin-bottom:8px">
                 <label style="display:flex;align-items:center;gap:4px"><input checked id="plOptFields"
                                                                               style="accent-color:var(--accent)"
@@ -33,6 +33,12 @@
                 <label style="display:flex;align-items:center;gap:4px"><input checked id="plOptGens"
                                                                               style="accent-color:var(--accent)"
                                                                               type="checkbox"> 显示泛型</label>
+                <label style="display:flex;align-items:center;gap:4px"><input checked id="plOptAssoc"
+                                                                              style="accent-color:var(--accent)"
+                                                                              type="checkbox"> 显示关联</label>
+                <label style="display:flex;align-items:center;gap:4px"><input checked id="plOptSkin"
+                                                                              style="accent-color:var(--accent)"
+                                                                              type="checkbox"> 皮肤样式</label>
             </div>
             <textarea class="pl-input" id="plSrcInput" placeholder="public class Foo { ... }"
                       spellcheck="false"></textarea>
@@ -46,7 +52,8 @@
                            title="在新窗口打开 plantuml.com 在线查看">
                             <i class="bi bi-box-arrow-up-right"></i> 在 plantuml.com 打开
                         </a>
-                        <button id="plBtnCopy">复制</button>
+                        <button id="plBtnCopy" title="复制 PlantUML 源码">复制源码</button>
+                        <button id="plBtnDownload" title="下载 .puml 文件">下载 .puml</button>
                     </div>
                 </div>
                 <textarea class="pl-output-box" id="plOutput" readonly spellcheck="false"></textarea>
@@ -57,7 +64,7 @@
                     <button id="plBtnReset" title="重置预览">重试</button>
                 </div>
                 <div class="pl-preview-wrap">
-                    <img alt="PlantUML preview" id="plPreview"
+                    <img alt="PlantUML preview" class="pl-preview-img" id="plPreview"
                          style="display:none;max-width:100%;height:auto;background:#fff" />
                     <div class="pl-preview-error" id="plPreviewError" style="display:none"></div>
                     <div class="pl-preview-placeholder" id="plPreviewPlaceholder">

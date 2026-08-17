@@ -430,6 +430,43 @@ function ddlmermaidClear() {
     setStatus('已清空');
 }
 
+/** 将当前输出写入 sessionStorage 并打开 Mermaid 编辑器 */
+function ddlmermaidOpenInEditor() {
+    const out = document.getElementById('dmOutput');
+    const text = out ? (out.textContent || '').trim() : '';
+    if (!text || text === '请输入 CREATE TABLE DDL' || out.classList.contains('error')) {
+        if (typeof toast === 'function') {
+            toast('请先成功生成 Mermaid ER', 'error');
+        } else {
+            setStatus('请先成功生成 Mermaid ER');
+        }
+        return;
+    }
+    try {
+        sessionStorage.setItem('devtools.mermaid.openSource', text);
+    } catch (e) {
+        if (typeof toast === 'function') {
+            toast('无法写入临时存储', 'error');
+        }
+        return;
+    }
+    if (typeof openTool !== 'function') {
+        if (typeof toast === 'function') toast('openTool 不可用', 'error');
+        return;
+    }
+    Promise.resolve(openTool('mermaid'))
+        .then(function () {
+            // 工具若已 init 过，registerInit 不会再跑，需主动应用 storage
+            if (typeof mmdApplyOpenSource === 'function') {
+                mmdApplyOpenSource();
+            }
+            setStatus('已跳转 Mermaid 编辑器');
+        })
+        .catch(function () {
+            setStatus('打开 Mermaid 编辑器失败');
+        });
+}
+
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         ddlToMermaid: ddlToMermaid,

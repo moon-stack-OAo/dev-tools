@@ -41,6 +41,8 @@ const libs = [
   },
   { src: "leaflet/dist/images/layers.png", dest: "images/layers.png" },
   { src: "leaflet/dist/images/layers-2x.png", dest: "images/layers-2x.png" },
+  // Mermaid 11：官方 dist 已是浏览器可用 IIFE，挂 globalThis.mermaid
+  { src: "mermaid/dist/mermaid.min.js", dest: "mermaid.min.js" },
 ];
 
 // 需要 esbuild 打包为 IIFE 浏览器友好格式的库

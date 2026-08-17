@@ -32,6 +32,7 @@ const libGlobals = {
   Hls: "readonly",
   mqtt: "readonly",
   L: "readonly",
+  mermaid: "readonly",
 };
 
 // app.js 在浏览器环境暴露的项目级全局函数/变量

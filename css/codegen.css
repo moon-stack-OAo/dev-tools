@@ -1474,6 +1474,7 @@
     position: relative;
     flex: 1;
     min-height: 220px;
+    max-height: 480px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1537,11 +1538,27 @@
     gap: 4px;
 }
 
-#plPreview {
+#plPreview,
+.pl-preview-img {
     max-width: 100%;
+    max-height: 440px;
     height: auto;
     border-radius: 4px;
     box-shadow: var(--shadow-sm, 0 1px 4px rgba(0, 0, 0, 0.15));
+    cursor: zoom-in;
+}
+
+.pl-spin {
+    animation: pl-spin 1s linear infinite;
+}
+
+@keyframes pl-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* ===== Java Stream 构建器（javastream） ===== */
@@ -1749,6 +1766,111 @@
 
     .hr-preview {
         min-height: 280px;
+    }
+}
+
+/* ===== Mermaid 编辑器（mermaid） ===== */
+.mmd-warn {
+    line-height: 1.5;
+}
+
+.mmd-toolbar {
+    margin-bottom: 8px;
+}
+
+.mmd-auto-label {
+    user-select: none;
+}
+
+.mmd-main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    align-items: stretch;
+    min-height: 480px;
+}
+
+.mmd-editor,
+.mmd-preview-col {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+.mmd-source {
+    flex: 1;
+    min-height: 360px;
+    height: 100%;
+    resize: vertical;
+    font-family: var(--font-mono, var(--font));
+    font-size: 13px;
+    line-height: 1.55;
+    tab-size: 2;
+    white-space: pre;
+}
+
+.mmd-preview {
+    flex: 1;
+    min-height: 360px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm, 4px);
+    background: var(--bg);
+    overflow: auto;
+    padding: 12px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.mmd-preview svg {
+    max-width: 100%;
+    height: auto;
+}
+
+.mmd-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    min-height: 280px;
+    color: var(--text-muted, var(--text-dim));
+    text-align: center;
+    font-size: 13px;
+}
+
+.mmd-placeholder i {
+    font-size: 36px;
+    opacity: 0.35;
+    color: var(--accent);
+}
+
+.mmd-error {
+    margin-top: 8px;
+    padding: 10px 12px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--danger);
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: var(--radius-sm, 4px);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 160px;
+    overflow: auto;
+}
+
+@media (max-width: 900px) {
+    .mmd-main {
+        grid-template-columns: 1fr;
+        min-height: 0;
+    }
+
+    .mmd-source,
+    .mmd-preview {
+        min-height: 240px;
     }
 }
 
