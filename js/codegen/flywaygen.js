@@ -259,11 +259,11 @@ function flyGenFlyway() {
         const content = flywayTemplate(version, desc, { ddl: ddl, author: author });
         if (nameOut) nameOut.textContent = name;
         out.textContent = content;
-        out.className = 'output-box';
+        out.className = 'output-box fly-output';
         if (typeof setStatus === 'function') setStatus('已生成 Flyway: ' + name);
     } catch (e) {
         out.textContent = e.message;
-        out.className = 'output-box error';
+        out.className = 'output-box fly-output error';
     }
 }
 
@@ -302,11 +302,11 @@ function flyGenLiquibase() {
             nameOut.textContent = format === 'xml' ? 'db.changelog-xxx.xml' : 'db.changelog-xxx.yaml';
         }
         out.textContent = content;
-        out.className = 'output-box';
+        out.className = 'output-box fly-output';
         if (typeof setStatus === 'function') setStatus('已生成 Liquibase ' + format.toUpperCase());
     } catch (e) {
         out.textContent = e.message;
-        out.className = 'output-box error';
+        out.className = 'output-box fly-output error';
     }
 }
 
@@ -328,11 +328,11 @@ function flyGenColumnSql() {
         document.getElementById('flyDdl').value = sql;
         document.getElementById('flyFileName').textContent = '(列变更 SQL)';
         out.textContent = sql;
-        out.className = 'output-box';
+        out.className = 'output-box fly-output';
         if (typeof setStatus === 'function') setStatus('已生成列变更 SQL');
     } catch (e) {
         out.textContent = e.message;
-        out.className = 'output-box error';
+        out.className = 'output-box fly-output error';
     }
 }
 
@@ -357,8 +357,11 @@ function flyClear() {
             if (el) el.value = '';
         },
     );
-    document.getElementById('flyOutput').textContent = '';
-    document.getElementById('flyOutput').className = 'output-box';
+    const out = document.getElementById('flyOutput');
+    if (out) {
+        out.textContent = '';
+        out.className = 'output-box fly-output';
+    }
     const nameOut = document.getElementById('flyFileName');
     if (nameOut) nameOut.textContent = '';
     if (typeof setStatus === 'function') setStatus('已清空');

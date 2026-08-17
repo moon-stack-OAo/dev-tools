@@ -179,7 +179,7 @@ function protobufDecodeBase64() {
 
   if (!input) {
     output.textContent = "请输入 Base64 编码的 Protobuf 数据";
-    output.style.color = "var(--error, #ff6b6b)";
+    output.className = "output-box pb-output error";
     return;
   }
 
@@ -194,11 +194,11 @@ function protobufDecodeBase64() {
     const schema = parseProtoSchema(schemaText);
     const result = decodeProtobuf(bytes, 0, bytes.length, schema);
     output.textContent = JSON.stringify(result, null, 2);
-    output.style.color = "";
+    output.className = "output-box pb-output";
     setStatus("解码成功");
   } catch (e) {
     output.textContent = "解码失败: " + e.message;
-    output.style.color = "var(--error, #ff6b6b)";
+    output.className = "output-box pb-output error";
   }
 }
 
@@ -210,7 +210,7 @@ function protobufDecodeHex() {
 
   if (!input) {
     output.textContent = "请输入 Hex 编码的 Protobuf 数据";
-    output.style.color = "var(--error, #ff6b6b)";
+    output.className = "output-box pb-output error";
     return;
   }
 
@@ -227,11 +227,11 @@ function protobufDecodeHex() {
     const schema = parseProtoSchema(schemaText);
     const result = decodeProtobuf(bytes, 0, bytes.length, schema);
     output.textContent = JSON.stringify(result, null, 2);
-    output.style.color = "";
+    output.className = "output-box pb-output";
     setStatus("解码成功");
   } catch (e) {
     output.textContent = "解码失败: " + e.message;
-    output.style.color = "var(--error, #ff6b6b)";
+    output.className = "output-box pb-output error";
   }
 }
 
@@ -243,7 +243,7 @@ function protobufEncode() {
 
   if (!input) {
     output.textContent = "请输入 JSON 数据";
-    output.style.color = "var(--error, #ff6b6b)";
+    output.className = "output-box pb-output error";
     return;
   }
 
@@ -261,11 +261,11 @@ function protobufEncode() {
       Array.from(bytes)
         .map((b) => b.toString(16).padStart(2, "0"))
         .join(" ");
-    output.style.color = "";
+    output.className = "output-box pb-output";
     setStatus("编码成功");
   } catch (e) {
     output.textContent = "编码失败: " + e.message;
-    output.style.color = "var(--error, #ff6b6b)";
+    output.className = "output-box pb-output error";
   }
 }
 

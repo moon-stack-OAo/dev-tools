@@ -1769,6 +1769,242 @@
     }
 }
 
+/* ===== Flyway / Liquibase 骨架（flywaygen） ===== */
+.fly-toolbar {
+    margin-bottom: 10px;
+}
+
+.fly-field-inline {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-dim);
+    user-select: none;
+}
+
+.fly-field-inline select {
+    width: 110px;
+    min-height: 32px;
+}
+
+.fly-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: 12px;
+    align-items: stretch;
+    min-height: 480px;
+}
+
+.fly-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+    min-height: 0;
+}
+
+.fly-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius, 8px);
+    background: var(--bg-card);
+    padding: 12px 14px;
+}
+
+.fly-card-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 10px;
+}
+
+.fly-card-title i {
+    color: var(--accent);
+    font-size: 14px;
+}
+
+.fly-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 12px;
+}
+
+.fly-field .label {
+    margin-bottom: 4px;
+}
+
+.fly-field input,
+.fly-field select {
+    width: 100%;
+}
+
+.fly-card-ddl {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.fly-ddl {
+    flex: 1;
+    min-height: 120px;
+    resize: vertical;
+    font-family: var(--font-mono, var(--font));
+    font-size: 13px;
+    line-height: 1.55;
+    white-space: pre;
+    tab-size: 2;
+}
+
+.fly-hint {
+    padding: 10px 12px;
+    background: var(--glass);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.55;
+    flex-shrink: 0;
+}
+
+.fly-hint ul {
+    margin: 6px 0 0 16px;
+    padding: 0;
+}
+
+.fly-hint code {
+    font-size: 11.5px;
+    color: var(--accent2, var(--accent));
+}
+
+.fly-col-out {
+    min-height: 0;
+}
+
+.fly-card-out {
+    flex-shrink: 0;
+}
+
+.fly-filename {
+    min-height: 40px;
+    padding: 10px 12px;
+    font-family: var(--font-mono, var(--font));
+    font-size: 13px;
+    word-break: break-all;
+    background: var(--bg-terminal, var(--bg-input));
+}
+
+.fly-output-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    margin: 0;
+}
+
+.fly-output {
+    flex: 1;
+    min-height: 280px;
+    max-height: min(70vh, 640px);
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: var(--font-mono, var(--font));
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+@media (max-width: 960px) {
+    .fly-main {
+        grid-template-columns: 1fr;
+        min-height: 0;
+    }
+
+    .fly-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .fly-output {
+        min-height: 220px;
+    }
+}
+
+/* ===== DDL → Mermaid ER（ddlmermaid） ===== */
+.dm-toolbar {
+    margin-bottom: 8px;
+}
+
+.dm-main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    align-items: stretch;
+    min-height: 420px;
+}
+
+.dm-col {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+.dm-input {
+    flex: 1;
+    min-height: 320px;
+    height: 100%;
+    resize: vertical;
+    font-family: var(--font-mono, var(--font));
+    font-size: 13px;
+    line-height: 1.55;
+    tab-size: 2;
+    white-space: pre;
+}
+
+.dm-hint {
+    margin-top: 8px;
+    padding: 10px 12px;
+    background: var(--glass);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.55;
+    flex-shrink: 0;
+}
+
+.dm-output-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.dm-output {
+    flex: 1;
+    min-height: 320px;
+    max-height: min(70vh, 640px);
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: var(--font-mono, var(--font));
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+@media (max-width: 900px) {
+    .dm-main {
+        grid-template-columns: 1fr;
+        min-height: 0;
+    }
+
+    .dm-input,
+    .dm-output {
+        min-height: 220px;
+    }
+}
+
 /* ===== Mermaid 编辑器（mermaid） ===== */
 .mmd-warn {
     line-height: 1.5;

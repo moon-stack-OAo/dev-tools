@@ -1,0 +1,35 @@
+<div class="tool-panel" id="panel-gitignore">
+    <div class="toolbar gi-toolbar" style="flex-wrap:wrap">
+        <button class="primary" onclick="gitignoreRender()">生成</button>
+        <button class="outline" onclick="gitignoreLoadExample()">示例 Node+Vue+VSCode</button>
+        <button class="outline" onclick="gitignoreCopy()">复制</button>
+        <button class="outline" onclick="gitignoreDownload()">下载 .gitignore</button>
+        <button class="outline" onclick="gitignoreClear()" style="border-color:var(--danger);color:var(--danger);margin-left:auto">清空选择</button>
+    </div>
+
+    <div class="gi-main">
+        <div class="gi-col gi-col-form">
+            <div class="gi-card">
+                <div class="gi-card-title"><i class="bi bi-list-check"></i> 选择模板</div>
+                <div class="gi-list" id="giList"></div>
+            </div>
+            <div class="gi-hint">
+                <strong>说明</strong>
+                <ul>
+                    <li>按勾选顺序拼接，每段带 <code># === 名称 ===</code> 注释头</li>
+                    <li>相同规则行自动去重（保留首次），空行折叠</li>
+                    <li>「全选本组」可快速切换整组模板</li>
+                </ul>
+            </div>
+        </div>
+        <div class="gi-col gi-col-out">
+            <div class="gi-card gi-card-out">
+                <div class="gi-card-title">
+                    <i class="bi bi-file-earmark-code"></i> .gitignore 预览
+                    <button class="copy-btn" type="button" onclick="gitignoreCopy()" style="margin-left:auto">复制</button>
+                </div>
+                <textarea class="gi-output" id="giOutput" readonly spellcheck="false" placeholder="勾选模板后实时预览"></textarea>
+            </div>
+        </div>
+    </div>
+</div>

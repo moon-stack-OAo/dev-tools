@@ -1,0 +1,95 @@
+<div class="tool-panel" id="panel-corsgen">
+    <div class="toolbar cors-toolbar" style="flex-wrap:wrap">
+        <button class="primary" onclick="corsRender()">生成</button>
+        <button class="outline" onclick="corsLoadExample()">加载示例</button>
+        <button class="outline" onclick="corsClear()" style="border-color:var(--danger);color:var(--danger);margin-left:auto">重置</button>
+    </div>
+
+    <div class="cors-warn" id="corsWarn" style="display:none"></div>
+
+    <div class="cors-main">
+        <div class="cors-col cors-col-form">
+            <div class="cors-card">
+                <div class="cors-card-title"><i class="bi bi-globe"></i> Allow-Origin</div>
+                <div class="cors-radio-row">
+                    <label class="cors-check"><input name="corsOriginMode" type="radio" value="star" checked onchange="corsOnOriginModeChange()"> <span>*</span></label>
+                    <label class="cors-check"><input name="corsOriginMode" type="radio" value="custom" onchange="corsOnOriginModeChange()"> <span>自定义</span></label>
+                </div>
+                <div id="corsOriginWrap" style="display:none;margin-top:8px">
+                    <div class="label">Origin（多行可多个，生成取第一个）</div>
+                    <textarea id="corsOrigin" rows="3" oninput="corsRender()" placeholder="https://app.example.com" spellcheck="false"></textarea>
+                </div>
+            </div>
+
+            <div class="cors-card">
+                <div class="cors-card-title"><i class="bi bi-arrow-left-right"></i> Allow-Methods</div>
+                <div class="cors-checks" id="corsMethods">
+                    <label class="cors-check"><input id="corsMethod_GET" type="checkbox" checked onchange="corsRender()"> <span>GET</span></label>
+                    <label class="cors-check"><input id="corsMethod_POST" type="checkbox" checked onchange="corsRender()"> <span>POST</span></label>
+                    <label class="cors-check"><input id="corsMethod_PUT" type="checkbox" onchange="corsRender()"> <span>PUT</span></label>
+                    <label class="cors-check"><input id="corsMethod_PATCH" type="checkbox" onchange="corsRender()"> <span>PATCH</span></label>
+                    <label class="cors-check"><input id="corsMethod_DELETE" type="checkbox" onchange="corsRender()"> <span>DELETE</span></label>
+                    <label class="cors-check"><input id="corsMethod_OPTIONS" type="checkbox" checked onchange="corsRender()"> <span>OPTIONS</span></label>
+                    <label class="cors-check"><input id="corsMethod_HEAD" type="checkbox" onchange="corsRender()"> <span>HEAD</span></label>
+                </div>
+            </div>
+
+            <div class="cors-card">
+                <div class="cors-card-title"><i class="bi bi-list-ul"></i> Allow-Headers</div>
+                <div class="cors-checks">
+                    <label class="cors-check"><input id="corsAH_Content_Type" type="checkbox" checked onchange="corsRender()"> <span>Content-Type</span></label>
+                    <label class="cors-check"><input id="corsAH_Authorization" type="checkbox" checked onchange="corsRender()"> <span>Authorization</span></label>
+                    <label class="cors-check"><input id="corsAH_X_Requested_With" type="checkbox" checked onchange="corsRender()"> <span>X-Requested-With</span></label>
+                    <label class="cors-check"><input id="corsAH_Accept" type="checkbox" onchange="corsRender()"> <span>Accept</span></label>
+                    <label class="cors-check"><input id="corsAH_Origin" type="checkbox" onchange="corsRender()"> <span>Origin</span></label>
+                    <label class="cors-check"><input id="corsAH_Cache_Control" type="checkbox" onchange="corsRender()"> <span>Cache-Control</span></label>
+                    <label class="cors-check"><input id="corsAH_X_CSRF_Token" type="checkbox" onchange="corsRender()"> <span>X-CSRF-Token</span></label>
+                </div>
+                <div class="label" style="margin-top:8px">自定义（逗号/换行分隔）</div>
+                <input id="corsAllowHeadersCustom" type="text" oninput="corsRender()" placeholder="X-Custom-Header">
+            </div>
+
+            <div class="cors-card">
+                <div class="cors-card-title"><i class="bi bi-eye"></i> 其它选项</div>
+                <div class="cors-grid">
+                    <div class="cors-field cors-field-grow">
+                        <div class="label">Expose-Headers（可选）</div>
+                        <input id="corsExposeHeaders" type="text" oninput="corsRender()" placeholder="X-Request-Id, Content-Disposition">
+                    </div>
+                    <div class="cors-field">
+                        <div class="label">Max-Age（秒）</div>
+                        <input id="corsMaxAge" type="number" min="0" step="1" value="86400" oninput="corsRender()">
+                    </div>
+                </div>
+                <div class="cors-checks" style="margin-top:10px">
+                    <label class="cors-check"><input id="corsCredentials" type="checkbox" onchange="corsRender()"> <span>Allow-Credentials</span></label>
+                    <label class="cors-check"><input id="corsPreflight" type="checkbox" checked onchange="corsRender()"> <span>输出 OPTIONS 预检说明</span></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="cors-col cors-col-out">
+            <div class="cors-card cors-card-out">
+                <div class="cors-card-title">
+                    <i class="bi bi-file-text"></i> 响应头
+                    <button class="copy-btn" type="button" onclick="corsCopy('corsText')" style="margin-left:auto">复制</button>
+                </div>
+                <textarea class="cors-output" id="corsText" readonly spellcheck="false"></textarea>
+            </div>
+            <div class="cors-card cors-card-out">
+                <div class="cors-card-title">
+                    <i class="bi bi-server"></i> Nginx
+                    <button class="copy-btn" type="button" onclick="corsCopy('corsNginx')" style="margin-left:auto">复制</button>
+                </div>
+                <textarea class="cors-output cors-output-sm" id="corsNginx" readonly spellcheck="false"></textarea>
+            </div>
+            <div class="cors-card cors-card-out">
+                <div class="cors-card-title">
+                    <i class="bi bi-filetype-js"></i> Express
+                    <button class="copy-btn" type="button" onclick="corsCopy('corsExpress')" style="margin-left:auto">复制</button>
+                </div>
+                <textarea class="cors-output cors-output-sm" id="corsExpress" readonly spellcheck="false"></textarea>
+            </div>
+        </div>
+    </div>
+</div>

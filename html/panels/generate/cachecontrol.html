@@ -1,0 +1,92 @@
+<div class="tool-panel" id="panel-cachecontrol">
+    <div class="toolbar cc-toolbar" style="flex-wrap:wrap">
+        <button class="primary" onclick="cacheControlRender()">生成</button>
+        <button class="outline" onclick="cacheControlClear()" style="border-color:var(--danger);color:var(--danger);margin-left:auto">重置</button>
+    </div>
+
+    <div class="cc-presets" id="ccPresets"></div>
+    <div class="cc-warn" id="ccWarn" style="display:none"></div>
+
+    <div class="cc-main">
+        <div class="cc-col cc-col-form">
+            <div class="cc-card">
+                <div class="cc-card-title"><i class="bi bi-people"></i> 作用域</div>
+                <div class="cc-radio-row">
+                    <label class="cc-check"><input name="ccScope" type="radio" value="public" checked onchange="cacheControlRender()"> <span>public</span></label>
+                    <label class="cc-check"><input name="ccScope" type="radio" value="private" onchange="cacheControlRender()"> <span>private</span></label>
+                </div>
+            </div>
+
+            <div class="cc-card">
+                <div class="cc-card-title"><i class="bi bi-toggles"></i> 指令</div>
+                <div class="cc-checks">
+                    <label class="cc-check"><input id="ccNoStore" type="checkbox" onchange="cacheControlRender()"> <span>no-store</span></label>
+                    <label class="cc-check"><input id="ccNoCache" type="checkbox" onchange="cacheControlRender()"> <span>no-cache</span></label>
+                    <label class="cc-check"><input id="ccMustRevalidate" type="checkbox" onchange="cacheControlRender()"> <span>must-revalidate</span></label>
+                    <label class="cc-check"><input id="ccProxyRevalidate" type="checkbox" onchange="cacheControlRender()"> <span>proxy-revalidate</span></label>
+                    <label class="cc-check"><input id="ccImmutable" type="checkbox" onchange="cacheControlRender()"> <span>immutable</span></label>
+                </div>
+            </div>
+
+            <div class="cc-card">
+                <div class="cc-card-title"><i class="bi bi-clock"></i> 时间（秒，可空）</div>
+                <div class="cc-grid">
+                    <div class="cc-field">
+                        <div class="label">max-age</div>
+                        <input id="ccMaxAge" type="number" min="0" step="1" oninput="cacheControlRender()" placeholder="3600">
+                    </div>
+                    <div class="cc-field">
+                        <div class="label">s-maxage</div>
+                        <input id="ccSMaxAge" type="number" min="0" step="1" oninput="cacheControlRender()" placeholder="CDN">
+                    </div>
+                    <div class="cc-field">
+                        <div class="label">stale-while-revalidate</div>
+                        <input id="ccSwr" type="number" min="0" step="1" oninput="cacheControlRender()" placeholder="60">
+                    </div>
+                    <div class="cc-field">
+                        <div class="label">stale-if-error</div>
+                        <input id="ccSie" type="number" min="0" step="1" oninput="cacheControlRender()" placeholder="86400">
+                    </div>
+                </div>
+            </div>
+
+            <div class="cc-card">
+                <div class="cc-card-title"><i class="bi bi-plus-square"></i> 附加头</div>
+                <div class="cc-checks" style="margin-bottom:8px">
+                    <label class="cc-check"><input id="ccExpires" type="checkbox" onchange="cacheControlRender()"> <span>生成 Expires（基于 max-age）</span></label>
+                </div>
+                <div class="label">Vary（可选）</div>
+                <input id="ccVary" type="text" oninput="cacheControlRender()" placeholder="Accept-Encoding">
+            </div>
+        </div>
+
+        <div class="cc-col cc-col-out">
+            <div class="cc-card cc-card-out">
+                <div class="cc-card-title">
+                    <i class="bi bi-file-text"></i> Cache-Control
+                    <button class="copy-btn" type="button" onclick="cacheControlCopy('ccOutput')" style="margin-left:auto">复制</button>
+                </div>
+                <textarea class="cc-output" id="ccOutput" rows="3" readonly spellcheck="false"></textarea>
+            </div>
+            <div class="cc-card cc-card-out">
+                <div class="cc-card-title">
+                    <i class="bi bi-list"></i> 完整响应头
+                    <button class="copy-btn" type="button" onclick="cacheControlCopy('ccHeaders')" style="margin-left:auto">复制</button>
+                </div>
+                <textarea class="cc-output" id="ccHeaders" rows="5" readonly spellcheck="false"></textarea>
+            </div>
+            <div class="cc-card">
+                <div class="cc-card-title"><i class="bi bi-chat-left-text"></i> 说明</div>
+                <div class="cc-summary" id="ccSummary">配置后将显示人话说明</div>
+            </div>
+            <div class="cc-hint">
+                <strong>提示</strong>
+                <ul>
+                    <li><code>no-store</code> 与 max-age 等互斥，开启后其它指令会被忽略</li>
+                    <li>带 hash 的静态资源适合 public + 长 max-age + immutable</li>
+                    <li>HTML/API 常用 no-cache 或短 max-age + must-revalidate</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

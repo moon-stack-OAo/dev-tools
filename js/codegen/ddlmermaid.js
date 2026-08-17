@@ -388,17 +388,17 @@ function ddlmermaidGenerate() {
     const out = document.getElementById('dmOutput');
     if (!input || !input.trim()) {
         out.textContent = '请输入 CREATE TABLE DDL';
-        out.className = 'output-box error';
+        out.className = 'output-box dm-output error';
         return;
     }
     try {
         const mermaid = ddlToMermaid(input);
         out.textContent = mermaid;
-        out.className = 'output-box';
+        out.className = 'output-box dm-output';
         setStatus('Mermaid ER 图已生成');
     } catch (e) {
         out.textContent = e.message;
-        out.className = 'output-box error';
+        out.className = 'output-box dm-output error';
     }
 }
 
@@ -422,11 +422,16 @@ function ddlmermaidLoadSample() {
         '  qty INT\n' +
         ');';
     setStatus('已加载示例');
+    ddlmermaidGenerate();
 }
 
 function ddlmermaidClear() {
     document.getElementById('dmInput').value = '';
-    document.getElementById('dmOutput').textContent = '';
+    const out = document.getElementById('dmOutput');
+    if (out) {
+        out.textContent = '';
+        out.className = 'output-box dm-output';
+    }
     setStatus('已清空');
 }
 
