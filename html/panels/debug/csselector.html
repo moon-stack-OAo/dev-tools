@@ -1,0 +1,34 @@
+<div class="tool-panel" id="panel-csselector">
+    <div class="cssel-layout">
+        <div class="cssel-main">
+            <div class="mb-8">
+                <div class="label">HTML 源码</div>
+                <textarea id="csselHtml" rows="12" oninput="csselectorRender()" placeholder="粘贴 HTML 片段…" style="font-family:var(--font);font-size:12px"></textarea>
+            </div>
+            <div class="mb-8">
+                <div class="label">CSS 选择器</div>
+                <div class="flex gap-6" style="align-items:center;flex-wrap:wrap">
+                    <input id="csselSelector" type="text" oninput="csselectorRender()" placeholder=".class / #id / div > p" style="flex:1;min-width:180px;font-family:var(--font)">
+                    <button onclick="csselectorRender()">查询</button>
+                    <button class="outline" onclick="csselectorLoadExample()">示例</button>
+                    <button class="outline" onclick="csselectorClear()">清空</button>
+                </div>
+            </div>
+            <div class="mb-8">
+                <div class="label">匹配结果 · <span id="csselCount">0</span> 个</div>
+                <div class="cssel-matches" id="csselMatches">
+                    <div class="cssel-empty">输入选择器后显示匹配结果</div>
+                </div>
+            </div>
+        </div>
+        <div class="cssel-side">
+            <div class="label">预览（匹配节点高亮）</div>
+            <div class="cssel-preview" id="csselPreview"></div>
+            <div class="cssel-hint">
+                <div>· 使用 DOMParser 解析，预览前剥离 &lt;script&gt;</div>
+                <div>· 匹配节点以橙色 outline 高亮</div>
+                <div>· 列表展示 outerHTML（已转义）</div>
+            </div>
+        </div>
+    </div>
+</div>

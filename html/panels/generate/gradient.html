@@ -1,0 +1,66 @@
+<div class="tool-panel" id="panel-gradient">
+    <div class="gd-layout">
+        <div class="gd-controls">
+            <div class="mb-8">
+                <div class="label">类型</div>
+                <div class="flex gap-6" style="align-items:flex-end;flex-wrap:wrap">
+                    <div style="width:140px">
+                        <select id="gdType" onchange="gradientOnTypeChange()" style="width:100%">
+                            <option selected value="linear">线性 linear</option>
+                            <option value="radial">径向 radial</option>
+                        </select>
+                    </div>
+                    <div id="gdLinearOpts" class="flex gap-6" style="align-items:flex-end;flex-wrap:wrap">
+                        <div style="min-width:180px">
+                            <div class="label">角度 <span id="gdAngleVal">90°</span></div>
+                            <input id="gdAngle" type="range" min="0" max="360" value="90" oninput="gradientOnChange()" style="width:100%">
+                        </div>
+                        <div style="width:90px">
+                            <div class="label">精确值</div>
+                            <input id="gdAngleNum" type="number" min="0" max="360" value="90"
+                                   oninput="document.getElementById('gdAngle').value=this.value;gradientOnChange()">
+                        </div>
+                    </div>
+                    <div id="gdRadialOpts" class="flex gap-6" style="align-items:flex-end;flex-wrap:wrap;display:none">
+                        <div style="width:120px">
+                            <div class="label">形状</div>
+                            <select id="gdShape" onchange="gradientOnChange()" style="width:100%">
+                                <option selected value="ellipse">ellipse</option>
+                                <option value="circle">circle</option>
+                            </select>
+                        </div>
+                        <div style="width:140px">
+                            <div class="label">位置</div>
+                            <input id="gdPosition" type="text" value="center" oninput="gradientOnChange()" placeholder="center">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <div class="flex gap-6" style="align-items:center;margin-bottom:8px">
+                    <div class="label" style="margin:0">色标</div>
+                    <button type="button" class="outline" onclick="gradientAddStop()" style="margin-left:auto">添加色标</button>
+                </div>
+                <div id="gdStops" class="gd-stops"></div>
+            </div>
+
+            <div class="toolbar">
+                <button onclick="gradientRender()">更新</button>
+                <button class="outline" onclick="gradientLoadExample()">加载示例</button>
+                <button class="outline" onclick="gradientReset()">重置</button>
+            </div>
+        </div>
+
+        <div class="gd-side">
+            <div class="label">实时预览</div>
+            <div class="gd-preview" id="gdPreview"></div>
+            <div class="copy-wrap" style="margin-top:12px">
+                <div class="label">CSS</div>
+                <button class="copy-btn" onclick="gradientCopy()">复制</button>
+                <div class="output-box" id="gdCss" style="min-height:48px;word-break:break-all"></div>
+                <div id="gdCssText" style="display:none"></div>
+            </div>
+        </div>
+    </div>
+</div>

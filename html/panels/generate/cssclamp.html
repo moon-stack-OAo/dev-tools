@@ -1,0 +1,54 @@
+<div class="tool-panel" id="panel-cssclamp">
+    <div class="mb-8">
+        <div class="label">参数</div>
+        <div class="ccl-opts">
+            <div>
+                <div class="label">最小字号 (px)</div>
+                <input id="cclMinF" type="number" min="1" step="0.5" value="16" oninput="cssclampRender()">
+            </div>
+            <div>
+                <div class="label">最大字号 (px)</div>
+                <input id="cclMaxF" type="number" min="1" step="0.5" value="32" oninput="cssclampRender()">
+            </div>
+            <div>
+                <div class="label">最小视口 (px)</div>
+                <input id="cclMinV" type="number" min="1" step="1" value="320" oninput="cssclampRender()">
+            </div>
+            <div>
+                <div class="label">最大视口 (px)</div>
+                <input id="cclMaxV" type="number" min="1" step="1" value="1280" oninput="cssclampRender()">
+            </div>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <button onclick="cssclampRender()">计算</button>
+        <button class="outline" onclick="cssclampLoadExample()">加载示例</button>
+        <button class="outline" onclick="cssclampCopy()">复制</button>
+        <button class="outline" onclick="cssclampReset()">重置</button>
+    </div>
+
+    <div class="copy-wrap">
+        <div class="label">输出</div>
+        <button class="copy-btn" onclick="cssclampCopy()">复制</button>
+        <textarea id="cclOutput" rows="3" readonly placeholder="font-size: clamp(…);"></textarea>
+        <div class="ccl-meta" id="cclMeta"></div>
+    </div>
+
+    <div class="mb-8" style="margin-top:14px">
+        <div class="label">视口模拟预览</div>
+        <div class="ccl-slider-row">
+            <input id="cclVwSlider" type="range" min="320" max="1280" value="800" oninput="cssclampOnSlider()">
+            <span>视口 <b id="cclVwLabel">800px</b> · 字号 <b id="cclSizeLabel">—</b></span>
+        </div>
+        <div class="ccl-preview">
+            <div id="cclPreviewText" class="ccl-preview-text">Fluid Typography 流式排版 Aa 0123</div>
+        </div>
+    </div>
+
+    <div class="ccl-hint">
+        <div><b>说明</b></div>
+        <div>· preferred = calc(yIntercept px + slope×100 vw)，slope = (maxFont − minFont) / (maxVw − minVw)</div>
+        <div>· 输出形式：font-size: clamp(min, preferred, max);</div>
+    </div>
+</div>

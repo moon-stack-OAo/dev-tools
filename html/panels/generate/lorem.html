@@ -1,0 +1,74 @@
+<div class="tool-panel" id="panel-lorem">
+    <div class="mb-8 flex gap-6" style="flex-wrap:wrap">
+        <button id="lrBtnText" class="sm" onclick="loremSwitchTab('text')">假文</button>
+        <button id="lrBtnImg" class="sm outline" onclick="loremSwitchTab('img')">占位图</button>
+    </div>
+
+    <div id="lrTabText">
+        <div class="lr-opts">
+            <div>
+                <div class="label">语言</div>
+                <select id="lrLang" style="width:100%">
+                    <option value="en" selected>英文 Lorem</option>
+                    <option value="zh">中文假文</option>
+                </select>
+            </div>
+            <div>
+                <div class="label">段落数</div>
+                <input id="lrParagraphs" type="number" min="1" max="50" value="3">
+            </div>
+            <div>
+                <div class="label">每段句数</div>
+                <input id="lrSentences" type="number" min="1" max="40" value="4">
+            </div>
+        </div>
+        <div class="toolbar">
+            <button onclick="loremGenerateUI()">生成</button>
+            <button class="outline" onclick="loremCopyText()">复制</button>
+            <button class="outline" onclick="loremClear()">清空</button>
+        </div>
+        <div class="copy-wrap">
+            <div class="label">输出</div>
+            <button class="copy-btn" onclick="copyText('lrOutput')">复制</button>
+            <textarea id="lrOutput" rows="14" style="font-family:var(--font);font-size:13px;line-height:1.6" placeholder="点击生成…"></textarea>
+        </div>
+    </div>
+
+    <div id="lrTabImg" style="display:none">
+        <div class="lr-opts">
+            <div>
+                <div class="label">宽度 (px)</div>
+                <input id="lrWidth" type="number" min="1" max="4000" value="320">
+            </div>
+            <div>
+                <div class="label">高度 (px)</div>
+                <input id="lrHeight" type="number" min="1" max="4000" value="180">
+            </div>
+            <div>
+                <div class="label">背景色</div>
+                <input id="lrBg" type="color" value="#cccccc">
+            </div>
+            <div>
+                <div class="label">文字色</div>
+                <input id="lrFg" type="color" value="#333333">
+            </div>
+            <div style="grid-column:1 / -1">
+                <div class="label">文字（可选，默认 宽×高）</div>
+                <input id="lrPhText" type="text" placeholder="留空则显示尺寸">
+            </div>
+        </div>
+        <div class="toolbar">
+            <button onclick="loremGenPlaceholder()">生成占位图</button>
+            <button class="outline" onclick="loremDownloadPlaceholder()">下载 PNG</button>
+            <button class="outline" onclick="loremClear()">清空</button>
+        </div>
+        <div class="lr-ph-preview">
+            <img id="lrPhImg" alt="尚未生成">
+        </div>
+        <div class="copy-wrap" style="margin-top:10px">
+            <div class="label">Data URL</div>
+            <button class="copy-btn" onclick="copyText('lrPhUrl')">复制</button>
+            <textarea id="lrPhUrl" rows="3" readonly style="font-family:var(--font);font-size:11px"></textarea>
+        </div>
+    </div>
+</div>

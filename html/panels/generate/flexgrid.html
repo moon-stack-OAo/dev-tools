@@ -1,0 +1,129 @@
+<div class="tool-panel" id="panel-flexgrid">
+    <div class="fg-tabs">
+        <button type="button" class="fg-tab active" id="fgTabFlex" onclick="flexgridSetMode('flex')">Flex</button>
+        <button type="button" class="fg-tab" id="fgTabGrid" onclick="flexgridSetMode('grid')">Grid</button>
+    </div>
+
+    <div class="fg-layout">
+        <div class="fg-controls">
+            <div id="fgFlexPane">
+                <div class="fg-fields">
+                    <div>
+                        <div class="label">flex-direction</div>
+                        <select id="fgFlexDir" onchange="flexgridOnChange()" style="width:100%">
+                            <option selected value="row">row</option>
+                            <option value="row-reverse">row-reverse</option>
+                            <option value="column">column</option>
+                            <option value="column-reverse">column-reverse</option>
+                        </select>
+                    </div>
+                    <div>
+                        <div class="label">flex-wrap</div>
+                        <select id="fgFlexWrap" onchange="flexgridOnChange()" style="width:100%">
+                            <option selected value="nowrap">nowrap</option>
+                            <option value="wrap">wrap</option>
+                            <option value="wrap-reverse">wrap-reverse</option>
+                        </select>
+                    </div>
+                    <div>
+                        <div class="label">justify-content</div>
+                        <select id="fgJustify" onchange="flexgridOnChange()" style="width:100%">
+                            <option selected value="flex-start">flex-start</option>
+                            <option value="flex-end">flex-end</option>
+                            <option value="center">center</option>
+                            <option value="space-between">space-between</option>
+                            <option value="space-around">space-around</option>
+                            <option value="space-evenly">space-evenly</option>
+                        </select>
+                    </div>
+                    <div>
+                        <div class="label">align-items</div>
+                        <select id="fgAlignItems" onchange="flexgridOnChange()" style="width:100%">
+                            <option selected value="stretch">stretch</option>
+                            <option value="flex-start">flex-start</option>
+                            <option value="flex-end">flex-end</option>
+                            <option value="center">center</option>
+                            <option value="baseline">baseline</option>
+                        </select>
+                    </div>
+                    <div>
+                        <div class="label">align-content</div>
+                        <select id="fgAlignContent" onchange="flexgridOnChange()" style="width:100%">
+                            <option selected value="stretch">stretch</option>
+                            <option value="flex-start">flex-start</option>
+                            <option value="flex-end">flex-end</option>
+                            <option value="center">center</option>
+                            <option value="space-between">space-between</option>
+                            <option value="space-around">space-around</option>
+                            <option value="space-evenly">space-evenly</option>
+                        </select>
+                    </div>
+                    <div>
+                        <div class="label">gap</div>
+                        <input id="fgFlexGap" type="text" value="8px" oninput="flexgridOnChange()" placeholder="8px">
+                    </div>
+                    <div>
+                        <div class="label">子项数量</div>
+                        <input id="fgFlexCount" type="number" min="1" max="24" value="4" oninput="flexgridOnChange()">
+                    </div>
+                </div>
+            </div>
+
+            <div id="fgGridPane" style="display:none">
+                <div class="fg-fields">
+                    <div class="fg-span2">
+                        <div class="label">grid-template-columns</div>
+                        <input id="fgColumns" type="text" value="repeat(3, 1fr)" oninput="flexgridOnChange()" placeholder="repeat(3, 1fr)">
+                    </div>
+                    <div class="fg-span2">
+                        <div class="label">grid-template-rows</div>
+                        <input id="fgRows" type="text" value="auto" oninput="flexgridOnChange()" placeholder="auto">
+                    </div>
+                    <div>
+                        <div class="label">gap</div>
+                        <input id="fgGridGap" type="text" value="8px" oninput="flexgridOnChange()" placeholder="8px">
+                    </div>
+                    <div>
+                        <div class="label">justify-items</div>
+                        <select id="fgJustifyItems" onchange="flexgridOnChange()" style="width:100%">
+                            <option selected value="stretch">stretch</option>
+                            <option value="start">start</option>
+                            <option value="end">end</option>
+                            <option value="center">center</option>
+                        </select>
+                    </div>
+                    <div>
+                        <div class="label">align-items</div>
+                        <select id="fgGridAlign" onchange="flexgridOnChange()" style="width:100%">
+                            <option selected value="stretch">stretch</option>
+                            <option value="start">start</option>
+                            <option value="end">end</option>
+                            <option value="center">center</option>
+                        </select>
+                    </div>
+                    <div>
+                        <div class="label">格子数量</div>
+                        <input id="fgGridCount" type="number" min="1" max="36" value="6" oninput="flexgridOnChange()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="toolbar" style="margin-top:12px">
+                <button onclick="flexgridRender()">更新</button>
+                <button class="outline" onclick="flexgridLoadExample()">加载示例</button>
+                <button class="outline" onclick="flexgridReset()">重置</button>
+            </div>
+        </div>
+
+        <div class="fg-side">
+            <div class="label">实时预览</div>
+            <div class="fg-preview" id="fgPreview"></div>
+            <div class="copy-wrap" style="margin-top:12px">
+                <div class="label">CSS</div>
+                <button class="copy-btn" onclick="flexgridCopy()">复制</button>
+                <div class="output-box" id="fgCss" style="min-height:120px;white-space:pre-wrap;word-break:break-all"></div>
+                <div id="fgCssText" style="display:none"></div>
+            </div>
+        </div>
+    </div>
+</div>

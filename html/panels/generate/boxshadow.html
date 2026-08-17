@@ -1,0 +1,50 @@
+<div class="tool-panel" id="panel-boxshadow">
+    <div class="bsh-layout">
+        <div class="bsh-controls">
+            <div class="mb-8">
+                <div class="label">预览设置</div>
+                <div class="bsh-preview-opts">
+                    <div>
+                        <div class="label">画布背景</div>
+                        <input id="bshPreviewBg" type="color" value="#e2e8f0" oninput="boxshadowRender()">
+                    </div>
+                    <div>
+                        <div class="label">块背景</div>
+                        <input id="bshBoxBg" type="color" value="#ffffff" oninput="boxshadowRender()">
+                    </div>
+                    <div>
+                        <div class="label">圆角 (px)</div>
+                        <input id="bshRadius" type="number" min="0" value="12" oninput="boxshadowRender()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <div class="flex gap-6" style="align-items:center;margin-bottom:8px">
+                    <div class="label" style="margin:0">阴影层</div>
+                    <button type="button" class="outline" onclick="boxshadowAddLayer()" style="margin-left:auto">添加阴影</button>
+                </div>
+                <div id="bshLayers" class="bsh-layers"></div>
+            </div>
+
+            <div class="toolbar">
+                <button onclick="boxshadowRender()">更新</button>
+                <button class="outline" onclick="boxshadowLoadExample()">加载示例</button>
+                <button class="outline" onclick="boxshadowReset()">重置</button>
+            </div>
+        </div>
+
+        <div class="bsh-side">
+            <div class="label">实时预览</div>
+            <div class="bsh-preview" id="bshPreview">
+                <div class="bsh-box" id="bshBox">Preview</div>
+            </div>
+            <div class="copy-wrap" style="margin-top:12px">
+                <div class="label">CSS</div>
+                <button class="copy-btn" onclick="boxshadowCopy()">复制</button>
+                <div class="output-box" id="bshCss" style="min-height:48px;word-break:break-all"></div>
+                <div id="bshCssText" style="display:none"></div>
+            </div>
+        </div>
+    </div>
+</div>

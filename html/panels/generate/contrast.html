@@ -1,0 +1,48 @@
+<div class="tool-panel" id="panel-contrast">
+    <div class="ctr-layout">
+        <div class="ctr-controls">
+            <div class="ctr-colors">
+                <div>
+                    <div class="label">前景色</div>
+                    <div class="ctr-color-row">
+                        <input id="ctrFgPick" type="color" value="#111827" oninput="contrastOnPick('fg')">
+                        <input id="ctrFg" type="text" value="#111827" oninput="contrastRender()" placeholder="#111827">
+                    </div>
+                </div>
+                <div>
+                    <div class="label">背景色</div>
+                    <div class="ctr-color-row">
+                        <input id="ctrBgPick" type="color" value="#ffffff" oninput="contrastOnPick('bg')">
+                        <input id="ctrBg" type="text" value="#ffffff" oninput="contrastRender()" placeholder="#ffffff">
+                    </div>
+                </div>
+            </div>
+
+            <div class="toolbar">
+                <button onclick="contrastRender()">检测</button>
+                <button class="outline" onclick="contrastSwap()">交换颜色</button>
+                <button class="outline" onclick="contrastLoadExample()">加载示例</button>
+                <button class="outline" onclick="contrastReset()">重置</button>
+            </div>
+
+            <div class="ctr-ratio-card">
+                <div class="ctr-ratio-label">对比度</div>
+                <div class="ctr-ratio-value" id="ctrRatio">—</div>
+            </div>
+
+            <div class="copy-wrap" style="margin-top:12px">
+                <div class="label">WCAG 结果</div>
+                <div class="output-box" id="ctrResult" style="min-height:140px"></div>
+            </div>
+        </div>
+
+        <div class="ctr-side">
+            <div class="label">颜色预览</div>
+            <div class="ctr-preview" id="ctrPreview">
+                <div class="ctr-preview-normal">正常文本 Aa 示例 正文对比度</div>
+                <div class="ctr-preview-large">大文本 Aa 18pt+</div>
+            </div>
+            <div class="ctr-hint">大文本：≥18pt 或 ≥14pt 粗体。AA/AAA 阈值来自 WCAG 2.x。</div>
+        </div>
+    </div>
+</div>

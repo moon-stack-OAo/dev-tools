@@ -1,0 +1,47 @@
+<div class="tool-panel" id="panel-svgopt">
+    <div class="mb-8">
+        <div class="label">SVG 源码</div>
+        <textarea id="svoInput" rows="10" placeholder="粘贴 SVG 源码…" oninput="svgoptRender()"></textarea>
+    </div>
+
+    <div class="mb-8">
+        <div class="label">优化选项</div>
+        <div class="svo-opts">
+            <label class="svo-check"><input type="checkbox" id="svoStripComments" checked onchange="svgoptRender()"> 去掉注释</label>
+            <label class="svo-check"><input type="checkbox" id="svoCollapseWs" checked onchange="svgoptRender()"> 压缩空白</label>
+            <label class="svo-check"><input type="checkbox" id="svoStripInk" checked onchange="svgoptRender()"> 去掉 inkscape/sodipodi</label>
+            <label class="svo-check"><input type="checkbox" id="svoStripXmlSpace" checked onchange="svgoptRender()"> 去掉 xml:space</label>
+            <label class="svo-check"><input type="checkbox" id="svoStripWh" onchange="svgoptRender()"> 去掉 width/height（保留 viewBox）</label>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <button onclick="svgoptRender()">优化</button>
+        <button class="outline" onclick="svgoptLoadExample()">加载示例</button>
+        <button class="outline" onclick="svgoptClear()">清空</button>
+        <button class="outline" onclick="svgoptCopyCode()">复制代码</button>
+        <button class="outline" onclick="svgoptCopyUri()">复制 data URI</button>
+        <button class="outline" onclick="svgoptDownload()">下载 SVG</button>
+    </div>
+
+    <div class="svo-stats" id="svoStats"></div>
+
+    <div class="svo-layout">
+        <div>
+            <div class="label">预览</div>
+            <div class="svo-preview" id="svoPreview"><span style="color:var(--text-dim)">预览区</span></div>
+        </div>
+        <div>
+            <div class="label">优化后代码</div>
+            <textarea id="svoOutput" rows="8" readonly placeholder="优化结果…"></textarea>
+            <div class="label" style="margin-top:10px">data URI</div>
+            <textarea id="svoDataUri" rows="3" readonly placeholder="data:image/svg+xml,…"></textarea>
+        </div>
+    </div>
+
+    <div class="svo-hint">
+        <div><b>说明</b></div>
+        <div>· 轻量自研优化：注释、多余空白、Inkscape/Sodipodi 属性、xml:space；可选去掉 width/height</div>
+        <div>· 非 SVGO 全量压缩；复杂 SVG 请用专业工具二次优化</div>
+    </div>
+</div>

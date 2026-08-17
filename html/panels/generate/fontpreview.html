@@ -1,0 +1,56 @@
+<div class="tool-panel" id="panel-fontpreview">
+    <div class="fp-layout">
+        <div class="fp-controls">
+            <div class="mb-8">
+                <div class="label">字体文件 (ttf / otf / woff / woff2)</div>
+                <input id="fpFile" type="file" accept=".ttf,.otf,.woff,.woff2,font/ttf,font/otf,font/woff,font/woff2" onchange="fontpreviewOnFile(this)">
+                <div class="fp-filename" id="fpFileName">未选择字体</div>
+            </div>
+
+            <div class="fp-opts">
+                <div>
+                    <div class="label">字号 <span id="fpSizeVal">24px</span></div>
+                    <input id="fpSize" type="range" min="8" max="120" value="24" oninput="fontpreviewApplyStyle()">
+                </div>
+                <div>
+                    <div class="label">字重</div>
+                    <select id="fpWeight" onchange="fontpreviewApplyStyle()" style="width:100%">
+                        <option value="100">100 Thin</option>
+                        <option value="200">200 Extra Light</option>
+                        <option value="300">300 Light</option>
+                        <option value="400" selected>400 Regular</option>
+                        <option value="500">500 Medium</option>
+                        <option value="600">600 Semi Bold</option>
+                        <option value="700">700 Bold</option>
+                        <option value="800">800 Extra Bold</option>
+                        <option value="900">900 Black</option>
+                    </select>
+                </div>
+                <div>
+                    <div class="label">行高 <span id="fpLhVal">1.5</span></div>
+                    <input id="fpLineHeight" type="range" min="0.8" max="3" step="0.05" value="1.5" oninput="fontpreviewApplyStyle()">
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <div class="label">预览文本</div>
+                <div class="toolbar" style="margin-bottom:6px">
+                    <button class="sm outline" onclick="fontpreviewSetSample('zh')">中文样张</button>
+                    <button class="sm outline" onclick="fontpreviewSetSample('en')">英文样张</button>
+                    <button class="sm outline" onclick="fontpreviewSetSample('mix')">中英混合</button>
+                </div>
+                <textarea id="fpText" rows="5" oninput="fontpreviewApplyStyle()" style="font-family:var(--font);font-size:13px"></textarea>
+            </div>
+
+            <div class="toolbar">
+                <button class="outline" onclick="fontpreviewReset()">重置</button>
+            </div>
+        </div>
+
+        <div class="fp-side">
+            <div class="label">预览</div>
+            <div class="fp-preview" id="fpPreview"></div>
+            <div class="fp-hint">本地字体经 Object URL + FontFace 加载；离开或重置时会 revoke，不上传服务器。</div>
+        </div>
+    </div>
+</div>

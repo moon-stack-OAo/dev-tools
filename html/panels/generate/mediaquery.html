@@ -1,0 +1,55 @@
+<div class="tool-panel" id="panel-mediaquery">
+    <div class="mb-8">
+        <div class="label">断点预设</div>
+        <div class="mq-presets" id="mqPresets"></div>
+    </div>
+
+    <div class="mb-8">
+        <div class="label">自定义</div>
+        <div class="mq-opts">
+            <div>
+                <div class="label">方向</div>
+                <select id="mqDirection" onchange="mediaqueryRender()" style="width:100%">
+                    <option value="min-width" selected>min-width</option>
+                    <option value="max-width">max-width</option>
+                </select>
+            </div>
+            <div>
+                <div class="label">宽度 (px)</div>
+                <input id="mqWidth" type="number" min="1" step="1" value="768" oninput="mediaqueryRender()">
+            </div>
+            <div>
+                <div class="label">orientation（可选）</div>
+                <select id="mqOrientation" onchange="mediaqueryRender()" style="width:100%">
+                    <option value="" selected>无</option>
+                    <option value="portrait">portrait</option>
+                    <option value="landscape">landscape</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-8">
+        <div class="label">规则体（占位）</div>
+        <textarea id="mqBody" rows="4" oninput="mediaqueryRender()">  /* styles */</textarea>
+    </div>
+
+    <div class="toolbar">
+        <button onclick="mediaqueryRender()">生成</button>
+        <button class="outline" onclick="mediaqueryLoadExample()">示例 (lg 1024)</button>
+        <button class="outline" onclick="mediaqueryCopy()">复制</button>
+        <button class="outline" onclick="mediaqueryReset()">重置</button>
+    </div>
+
+    <div class="copy-wrap">
+        <div class="label">@media 输出</div>
+        <button class="copy-btn" onclick="mediaqueryCopy()">复制</button>
+        <textarea id="mqOutput" rows="8" readonly placeholder="@media …"></textarea>
+    </div>
+
+    <div class="mq-hint">
+        <div><b>说明</b></div>
+        <div>· 预设对齐常见 Tailwind 断点：sm 640 / md 768 / lg 1024 / xl 1280 / 2xl 1536</div>
+        <div>· 可组合 orientation；规则体可自行改成实际 CSS</div>
+    </div>
+</div>

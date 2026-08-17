@@ -1,0 +1,69 @@
+<div class="tool-panel" id="panel-cssunit">
+    <div class="mb-8">
+        <div class="label">输入</div>
+        <div class="flex gap-6" style="align-items:flex-end;flex-wrap:wrap">
+            <div class="flex-1" style="min-width:140px">
+                <div class="label">数值</div>
+                <input id="cuInput" oninput="cssunitRender()" placeholder="16" type="text" value="16">
+            </div>
+            <div style="width:110px">
+                <div class="label">单位</div>
+                <select id="cuUnit" onchange="cssunitRender()" style="width:100%">
+                    <option selected value="px">px</option>
+                    <option value="rem">rem</option>
+                    <option value="em">em</option>
+                    <option value="vw">vw</option>
+                    <option value="vh">vh</option>
+                    <option value="%">%</option>
+                </select>
+            </div>
+            <button class="outline" onclick="cssunitClear()" style="margin-left:auto">清空</button>
+        </div>
+    </div>
+
+    <div class="mb-8">
+        <div class="label">换算参数</div>
+        <div class="cu-opts">
+            <div>
+                <div class="label">根字号 (rem)</div>
+                <input id="cuRoot" oninput="cssunitRender()" type="number" min="1" step="1" value="16">
+            </div>
+            <div>
+                <div class="label">em 参照字号</div>
+                <input id="cuEm" oninput="cssunitRender()" type="number" min="1" step="1" value="16">
+            </div>
+            <div>
+                <div class="label">视口宽 (vw)</div>
+                <input id="cuVw" oninput="cssunitRender()" type="number" min="1" step="1" value="1920">
+            </div>
+            <div>
+                <div class="label">视口高 (vh)</div>
+                <input id="cuVh" oninput="cssunitRender()" type="number" min="1" step="1" value="1080">
+            </div>
+            <div>
+                <div class="label">% 参照长度 (px)</div>
+                <input id="cuPercentRef" oninput="cssunitRender()" type="number" min="1" step="1" placeholder="默认=视口宽">
+            </div>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <button onclick="cssunitRender()">换算</button>
+        <button class="outline" onclick="cssunitLoadExample()">加载示例 (16px)</button>
+    </div>
+
+    <div class="copy-wrap">
+        <div class="label">换算结果</div>
+        <button class="copy-btn" onclick="copyText('cuResultText')">复制</button>
+        <div class="output-box" id="cuResult" style="min-height:100px">
+            <span style="color:var(--text-dim)">请输入数值</span>
+        </div>
+        <div id="cuResultText" style="display:none"></div>
+    </div>
+
+    <div class="cu-hint">
+        <div><b>说明</b></div>
+        <div>· 以 px 为中间量互转：rem = px / 根字号，em = px / em 参照，vw/vh 相对视口，% 相对「参照长度」</div>
+        <div>· 默认根字号 16、视口 1920×1080；% 参照留空时使用视口宽度</div>
+    </div>
+</div>

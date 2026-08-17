@@ -1,0 +1,30 @@
+<div class="tool-panel" id="panel-specificity">
+    <div class="mb-8">
+        <div class="label">CSS 选择器</div>
+        <div class="flex gap-6" style="align-items:center;flex-wrap:wrap">
+            <input id="spcInput" type="text" oninput="specificityRender()" placeholder="如 ul#nav li.active:hover::before" style="flex:1;min-width:220px;font-family:var(--font)">
+            <button onclick="specificityRender()">计算</button>
+            <button class="outline" onclick="specificityLoadExample()">示例</button>
+            <button class="outline" onclick="specificityClear()">清空</button>
+        </div>
+    </div>
+
+    <div class="spc-summary">
+        <div class="spc-card">
+            <div class="spc-card-label">特异性三元组</div>
+            <div class="spc-card-value" id="spcTuple">—</div>
+        </div>
+        <div class="spc-card">
+            <div class="spc-card-label">权重近似 (a×10000+b×100+c)</div>
+            <div class="spc-card-value" id="spcScore">—</div>
+        </div>
+    </div>
+
+    <div class="copy-wrap" style="margin-top:12px">
+        <div class="label">明细</div>
+        <div class="output-box" id="spcResult" style="min-height:120px">
+            <span style="color:var(--text-dim)">请输入 CSS 选择器</span>
+        </div>
+        <div id="spcDetail" style="display:none"></div>
+    </div>
+</div>
