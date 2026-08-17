@@ -14,24 +14,25 @@
 - **摩斯电码中文标点**：`，。！？：；（）「」` 等自动映射为半角后再编码
 - **JSON → Interface**（`json2ts`）：JSON / Object 生成 TypeScript `interface` / `type`（复用 `json2code`）
 - **图片混淆**（`imgshuffle`）：Gilbert 曲线可逆像素混淆 / 解混淆（参考小番茄混淆，纯本地 Canvas）
+- **前端 CSS / 视觉工具（+14）**：
+    - 生成（`generate`）：CSS 单位换算（`cssunit`）、阴影生成（`boxshadow`）、渐变生成（`gradient`）、Flex/Grid 可视化（`flexgrid`）、贝塞尔曲线（`cubicbezier`）、对比度检查（`contrast`）、SVG 优化（`svgopt`）、Favicon 多尺寸（`favicon`）、CSS Clamp（`cssclamp`）、媒体查询生成（`mediaquery`）、Lorem/占位图（`lorem`）、字体预览（`fontpreview`）
+    - 调试（`debug`）：CSS 选择器测试（`csselector`）、特异性计算器（`specificity`）
+    - 均为纯前端零依赖；含面板、注册表、分类样式与单测
 
 ### 变更
 
 - **SEO**：完善 description/OG/Twitter/canonical、JSON-LD、`robots.txt` / `sitemap.xml` / `site.webmanifest`；打开工具时更新
   `document.title`
 - **产品定位**：Java 开发工具箱 → 开发者工具箱；首页受众筛选扩展为全部/通用/前端/后端/Java（多标签）
-- 工具总数 **156 → 158**
+- 工具总数以注册表为准，当前 **202**（`js/tools-registry.js`）
 
 ### 工程
 
-- **一键更新（自建服务器）**：构建写入 `version.json` / `__BUILD_INFO__`；`scripts/update-agent.js` + static/docker 脚本；
-  说明见 `docs/deploy-manual-update.md`
+- **一键更新（自建服务器）**：构建写入 `version.json` / `__BUILD_INFO__`；`scripts/update-agent.js` + static/docker 脚本
 - **GitHub CI 发布产物**：`ci-release.yml` 测试构建后发布 `latest-dist`（dist tar.gz）并推送 `ghcr.io/.../dev-tools`
-  镜像；服务器可只拉产物/镜像，无需 clone 构建（见 `docs/deploy-ci.md`）
-- **架构重构（行为不变，见 `docs/ADR-refactor-guide.md`）**
-    - Phase1：`tools-registry.js`、`crypto-utils.js`、`utils.js`
-    - Phase2：`loader.js`、`router.js`；`reference/_ref-engine.js` 试点
-    - Phase3：`ui-home.js` / `ui-sidebar.js` 迁出，`app.js` 降至 **~474 行**
+  镜像；服务器可只拉产物/镜像，无需 clone 构建
+- 前端工具扩展单测约 **+124**；全量 `npm test`：**1893 passed**（129 files）
+
 
 ## [1.1.0] - 2026-08-03
 
