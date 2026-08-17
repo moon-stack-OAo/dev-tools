@@ -1,0 +1,42 @@
+<div class="tool-panel" id="panel-htmlrun">
+    <div class="alert alert-warning hr-warn" style="font-size:12px;margin-bottom:8px">
+        代码在隔离 iframe（sandbox，无 same-origin）中运行；请勿加载不可信远程资源（外链仍可能发起网络请求）。
+    </div>
+    <div class="toolbar">
+        <button class="outline" onclick="hrLoadSample()">加载示例</button>
+        <button class="outline" onclick="hrClear()">清空</button>
+        <button class="primary" onclick="hrRun()">▶ 运行</button>
+        <label class="hr-auto-label" style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:4px">
+            <input id="hrAuto" style="accent-color:var(--accent)" type="checkbox"> 自动刷新
+        </label>
+        <button class="outline" onclick="hrCopyDoc()">复制完整文档</button>
+        <span class="status-text" id="hrStatus"></span>
+    </div>
+    <div class="hr-main">
+        <div class="hr-editor">
+            <div class="hr-tabs tab-bar">
+                <div class="tab active" data-tab="html" onclick="hrSwitchTab('html')">HTML</div>
+                <div class="tab" data-tab="css" onclick="hrSwitchTab('css')">CSS</div>
+                <div class="tab" data-tab="js" onclick="hrSwitchTab('js')">JS</div>
+            </div>
+            <div class="hr-pane active" id="hrPane-html">
+                <textarea class="json-input hr-ta" id="hrHtml" placeholder="&lt;div&gt;Hello&lt;/div&gt;&#10;或粘贴完整 HTML 文档"
+                          spellcheck="false"></textarea>
+            </div>
+            <div class="hr-pane" id="hrPane-css">
+                <textarea class="json-input hr-ta" id="hrCss" placeholder="body { margin: 0; }"
+                          spellcheck="false"></textarea>
+            </div>
+            <div class="hr-pane" id="hrPane-js">
+                <textarea class="json-input hr-ta" id="hrJs" placeholder="console.log('hi');"
+                          spellcheck="false"></textarea>
+            </div>
+        </div>
+        <div class="hr-preview-wrap">
+            <div class="label">预览</div>
+            <iframe class="hr-preview" id="hrPreview"
+                    sandbox="allow-scripts allow-forms allow-modals allow-popups"
+                    title="HTML 预览"></iframe>
+        </div>
+    </div>
+</div>

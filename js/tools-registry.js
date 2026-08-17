@@ -930,6 +930,14 @@ const tools = [
         tags: ["common","frontend"],
     },
     {
+        id: "htmlrun",
+        icon: "bi-filetype-html",
+        name: "HTML 运行",
+        desc: "HTML / CSS / JS 沙箱预览 / 实时渲染",
+        cat: "codegen",
+        tags: ["common","frontend"],
+    },
+    {
         id: "pyrun",
         icon: "bi-filetype-py",
         name: "Python 运行",

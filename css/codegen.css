@@ -1676,3 +1676,79 @@
         align-self: flex-end;
     }
 }
+
+/* HTML 运行预览 (htmlrun) */
+.hr-main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    min-height: 360px;
+}
+
+.hr-editor {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
+}
+
+.hr-tabs {
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+.hr-pane {
+    display: none;
+    flex: 1;
+    min-height: 0;
+}
+
+.hr-pane.active {
+    display: flex;
+    flex-direction: column;
+}
+
+.hr-ta {
+    flex: 1;
+    min-height: 280px;
+    height: 100%;
+    resize: vertical;
+    font-family: var(--font);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.hr-preview-wrap {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+.hr-preview {
+    width: 100%;
+    min-height: 320px;
+    flex: 1;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: #fff;
+}
+
+.hr-warn {
+    line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+    .hr-main {
+        grid-template-columns: 1fr;
+    }
+
+    .hr-ta {
+        min-height: 200px;
+    }
+
+    .hr-preview {
+        min-height: 280px;
+    }
+}
+
