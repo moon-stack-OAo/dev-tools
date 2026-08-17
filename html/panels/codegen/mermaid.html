@@ -3,13 +3,13 @@
         首次打开会加载 Mermaid 库，体积较大，请稍候。渲染在本地浏览器完成，数据不上传。
     </div>
     <div class="toolbar mmd-toolbar" style="flex-wrap:wrap">
-        <select id="mmdSample" style="width:140px" title="示例类型">
-            <option value="flowchart">flowchart</option>
-            <option value="sequence">sequence</option>
-            <option value="class">class</option>
-            <option value="er">er</option>
-            <option value="gantt">gantt</option>
-            <option value="pie">pie</option>
+        <select id="mmdSample" style="min-width:168px;width:auto" title="示例类型">
+            <option value="flowchart">流程图 (flowchart)</option>
+            <option value="sequence">时序图 (sequence)</option>
+            <option value="class">类图 (class)</option>
+            <option value="er">ER 图 (er)</option>
+            <option value="gantt">甘特图 (gantt)</option>
+            <option value="pie">饼图 (pie)</option>
         </select>
         <button class="outline" onclick="mmdLoadSample()" title="加载选中示例">加载示例</button>
         <button class="primary" onclick="mmdRender()">运行</button>

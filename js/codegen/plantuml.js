@@ -815,41 +815,75 @@ function jsonToPlantUml(jsonText, opts) {
     return parts.join('\n') + '\n';
 }
 
-// PlantUML 自定义 URL-safe base64 编码(同步:Node 测试用 zlib;异步:浏览器 CompressionStream)
+// PlantUML 官方 URL 编码：deflate-raw 后用自定义 6bit 字母表（非标准 base64）
+// 参见 https://plantuml.com/text-encoding
+function _plEncode6bit(b) {
+    if (b < 10) return String.fromCharCode(48 + b);
+    b -= 10;
+    if (b < 26) return String.fromCharCode(65 + b);
+    b -= 26;
+    if (b < 26) return String.fromCharCode(97 + b);
+    b -= 26;
+    if (b === 0) return '-';
+    if (b === 1) return '_';
+    return '?';
+}
+
+function _plAppend3bytes(b1, b2, b3) {
+    const c1 = b1 >> 2;
+    const c2 = ((b1 & 0x3) << 4) | (b2 >> 4);
+    const c3 = ((b2 & 0xf) << 2) | (b3 >> 6);
+    const c4 = b3 & 0x3f;
+    return (
+        _plEncode6bit(c1 & 0x3f) +
+        _plEncode6bit(c2 & 0x3f) +
+        _plEncode6bit(c3 & 0x3f) +
+        _plEncode6bit(c4 & 0x3f)
+    );
+}
+
+/**
+ * deflate-raw 字节 → PlantUML 自定义 base64
+ * @param {Uint8Array|Buffer|ArrayLike<number>} data
+ * @returns {string}
+ */
+function plantumlEncode64(data) {
+    let r = '';
+    const n = data.length;
+    for (let i = 0; i < n; i += 3) {
+        if (i + 2 === n) {
+            r += _plAppend3bytes(data[i], data[i + 1], 0);
+        } else if (i + 1 === n) {
+            r += _plAppend3bytes(data[i], 0, 0);
+        } else {
+            r += _plAppend3bytes(data[i], data[i + 1], data[i + 2]);
+        }
+    }
+    return r;
+}
+
 function plantumlEncodeSync(text) {
     if (text == null || text === '') return '';
     const zlib = require('zlib');
-    const compressed = zlib.deflateRawSync(Buffer.from(text, 'utf8'));
-    return compressed
-        .toString('base64')
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=+$/, '');
-}
-
-function _plB64UrlSafe(uint8) {
-    let bin = '';
-    for (let i = 0; i < uint8.length; i++) bin += String.fromCharCode(uint8[i]);
-    // 在现代浏览器 globalThis.btoa 可用;若不可用则通过 Buffer 回退(不可能发生在浏览器)
-    if (typeof btoa !== 'undefined') {
-        return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-    }
-    return Buffer.from(uint8)
-        .toString('base64')
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=+$/, '');
+    const compressed = zlib.deflateRawSync(Buffer.from(String(text), 'utf8'));
+    return plantumlEncode64(compressed);
 }
 
 function plantumlEncode(text) {
-    if (text == null) return Promise.resolve('');
+    if (text == null || text === '') return Promise.resolve('');
     if (typeof CompressionStream === 'undefined') {
-        // 降级为 Node 风格同步返回(兼容 jsdom/老版本)
-        return Promise.resolve(plantumlEncodeSync(text));
+        // Node / 无 CompressionStream：走 zlib 同步实现
+        try {
+            return Promise.resolve(plantumlEncodeSync(text));
+        } catch (e) {
+            return Promise.reject(e);
+        }
     }
-    const data = new TextEncoder().encode(text);
+    const data = new TextEncoder().encode(String(text));
     const stream = new Blob([data]).stream().pipeThrough(new CompressionStream('deflate-raw'));
-    return new Response(stream).arrayBuffer().then((buf) => _plB64UrlSafe(new Uint8Array(buf)));
+    return new Response(stream).arrayBuffer().then(function (buf) {
+        return plantumlEncode64(new Uint8Array(buf));
+    });
 }
 
 // ========== UI ==========
@@ -1182,6 +1216,7 @@ if (typeof module !== 'undefined' && module.exports) {
         jsonToPlantUml,
         plantumlEncodeSync,
         plantumlEncode,
+        plantumlEncode64,
     };
 }
 

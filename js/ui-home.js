@@ -103,8 +103,14 @@ function handleToggleFavorite(id) {
     if (typeof toggleFavorite !== "function" || !id) return;
     const now = toggleFavorite(id);
     syncFavoriteStars(id, now);
-    refreshFavoritesBlock();
-    refreshSidebarFavorites();
+    // 仅在「我的收藏」虚拟筛选下刷新列表；默认首页不插入收藏分类块
+    if (homeVirtualFilter === "favorites") {
+        refreshFavoritesBlock();
+        if (typeof filterHomeTools === "function") filterHomeTools();
+    }
+    if (typeof refreshSidebarFavorites === "function") {
+        refreshSidebarFavorites();
+    }
     toast(now ? "已收藏" : "已取消收藏");
 }
 

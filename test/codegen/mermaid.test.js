@@ -2,7 +2,9 @@ const {
     mermaidDefaultTheme,
     mermaidSampleByType,
     mermaidSampleTypes,
+    mermaidSampleLabel,
     mermaidIsEmptySource,
+    MERMAID_SAMPLE_LABELS,
 } = require('../../js/codegen/mermaid.js');
 
 describe('mermaidDefaultTheme', () => {
@@ -25,6 +27,25 @@ describe('mermaidSampleTypes', () => {
             'gantt',
             'pie',
         ]);
+    });
+});
+
+describe('mermaidSampleLabel', () => {
+    test('各类型含中文名与英文 key', () => {
+        expect(mermaidSampleLabel('flowchart')).toBe('流程图 (flowchart)');
+        expect(mermaidSampleLabel('sequence')).toBe('时序图 (sequence)');
+        expect(mermaidSampleLabel('class')).toBe('类图 (class)');
+        expect(mermaidSampleLabel('er')).toBe('ER 图 (er)');
+        expect(mermaidSampleLabel('gantt')).toBe('甘特图 (gantt)');
+        expect(mermaidSampleLabel('pie')).toBe('饼图 (pie)');
+    });
+
+    test('LABELS 覆盖全部 sampleTypes', () => {
+        mermaidSampleTypes.forEach(function (t) {
+            expect(MERMAID_SAMPLE_LABELS[t]).toBeTruthy();
+            expect(mermaidSampleLabel(t)).toContain(MERMAID_SAMPLE_LABELS[t]);
+            expect(mermaidSampleLabel(t)).toContain(t);
+        });
     });
 });
 

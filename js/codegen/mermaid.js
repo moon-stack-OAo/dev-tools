@@ -4,6 +4,27 @@ const MERMAID_OPEN_KEY = 'devtools.mermaid.openSource';
 
 const mermaidSampleTypes = ['flowchart', 'sequence', 'class', 'er', 'gantt', 'pie'];
 
+/** 示例类型中文名（下拉展示） */
+const MERMAID_SAMPLE_LABELS = {
+    flowchart: '流程图',
+    sequence: '时序图',
+    class: '类图',
+    er: 'ER 图',
+    gantt: '甘特图',
+    pie: '饼图',
+};
+
+/**
+ * @param {string} type
+ * @returns {string} 如「流程图 (flowchart)」
+ */
+function mermaidSampleLabel(type) {
+    const key = String(type || '').toLowerCase();
+    const cn = MERMAID_SAMPLE_LABELS[key];
+    if (cn) return cn + ' (' + key + ')';
+    return key || '流程图 (flowchart)';
+}
+
 const MERMAID_SAMPLES = {
     flowchart: [
         'flowchart TD',
@@ -189,7 +210,12 @@ async function mmdRender() {
         preview.innerHTML = svg;
         const svgEl = preview.querySelector('svg');
         if (svgEl) {
+            // 去掉固定宽高，按预览区等比缩放（导出仍用 _mmdLastSvg 原始尺寸）
+            svgEl.removeAttribute('width');
+            svgEl.removeAttribute('height');
             svgEl.style.maxWidth = '100%';
+            svgEl.style.maxHeight = 'min(56vh, 500px)';
+            svgEl.style.width = 'auto';
             svgEl.style.height = 'auto';
         }
         mmdSetError('');
@@ -336,13 +362,23 @@ function mmdApplyOpenSource() {
 function mmdInit() {
     const src = document.getElementById('mmdSource');
     const sample = document.getElementById('mmdSample');
-    if (sample && !sample.options.length) {
+    if (sample) {
+        // 统一用中文标签刷新选项（含面板 HTML 已写死的英文 option）
+        const cur = sample.value || 'flowchart';
+        sample.innerHTML = '';
         mermaidSampleTypes.forEach(function (t) {
             const opt = document.createElement('option');
             opt.value = t;
-            opt.textContent = t;
+            opt.textContent = mermaidSampleLabel(t);
             sample.appendChild(opt);
         });
+        if (mermaidSampleTypes.indexOf(cur) >= 0) {
+            sample.value = cur;
+        } else {
+            sample.value = 'flowchart';
+        }
+        sample.style.minWidth = '168px';
+        sample.style.width = 'auto';
     }
 
     if (typeof debounce === 'function') {
@@ -377,7 +413,9 @@ if (typeof module !== 'undefined' && module.exports) {
         mermaidDefaultTheme: mermaidDefaultTheme,
         mermaidSampleByType: mermaidSampleByType,
         mermaidSampleTypes: mermaidSampleTypes,
+        mermaidSampleLabel: mermaidSampleLabel,
         mermaidIsEmptySource: mermaidIsEmptySource,
+        MERMAID_SAMPLE_LABELS: MERMAID_SAMPLE_LABELS,
     };
 }
 

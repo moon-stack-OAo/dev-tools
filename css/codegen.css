@@ -1812,20 +1812,24 @@
 
 .mmd-preview {
     flex: 1;
-    min-height: 360px;
+    min-height: 280px;
+    max-height: min(62vh, 560px);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm, 4px);
     background: var(--bg);
     overflow: auto;
     padding: 12px;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
 }
 
 .mmd-preview svg {
+    display: block;
     max-width: 100%;
-    height: auto;
+    max-height: min(56vh, 500px);
+    width: auto !important;
+    height: auto !important;
 }
 
 .mmd-placeholder {

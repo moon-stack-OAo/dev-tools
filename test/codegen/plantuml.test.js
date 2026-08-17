@@ -4,6 +4,7 @@ const {
     javaToPlantUml,
     jsonToPlantUml,
     plantumlEncodeSync,
+    plantumlEncode64,
 } = require('../../js/codegen/plantuml.js');
 
 describe('parseJavaToClasses 基础类型', () => {
@@ -447,12 +448,18 @@ describe('jsonToPlantUml 输出', () => {
 });
 
 describe('plantumlEncodeSync 编码', () => {
+    function encodePlantUmlRef(text) {
+        const zlib = require('zlib');
+        const compressed = zlib.deflateRawSync(Buffer.from(String(text), 'utf8'));
+        return plantumlEncode64(compressed);
+    }
+
     test('空输入输出空字符串', () => {
         expect(plantumlEncodeSync('')).toBe('');
         expect(plantumlEncodeSync(null)).toBe('');
     });
 
-    test('输出仅包含 URL-safe 字符 [A-Za-z0-9_-]', () => {
+    test('输出仅包含 PlantUML 字母表 [A-Za-z0-9_-]', () => {
         const r = plantumlEncodeSync('@startuml\nA -> B: hello\n@enduml');
         expect(r).toMatch(/^[A-Za-z0-9_-]+$/);
         expect(r).not.toContain('+');
@@ -477,22 +484,30 @@ describe('plantumlEncodeSync 编码', () => {
         expect(a).not.toBe(b);
     });
 
-    test('与独立 zlib 实现结果一致', () => {
-        const zlib = require('zlib');
+    test('与 PlantUML 官方算法参考实现一致', () => {
         const input = 'A -> B: hello';
-        const expected = zlib
-            .deflateRawSync(Buffer.from(input, 'utf8'))
+        expect(plantumlEncodeSync(input)).toBe(encodePlantUmlRef(input));
+    });
+
+    test('标准 base64url 与 PlantUML 编码不同（回归：预览曾用错编码）', () => {
+        const zlib = require('zlib');
+        const input = '@startuml\nAlice -> Bob: hello\n@enduml\n';
+        const compressed = zlib.deflateRawSync(Buffer.from(input, 'utf8'));
+        const wrong = compressed
             .toString('base64')
             .replace(/\+/g, '-')
             .replace(/\//g, '_')
             .replace(/=+$/, '');
-        expect(plantumlEncodeSync(input)).toBe(expected);
+        const right = plantumlEncodeSync(input);
+        expect(right).not.toBe(wrong);
+        expect(right).toMatch(/^[A-Za-z0-9_-]+$/);
     });
 
-    test('plantuml.com 在线服务转义前缀示例', () => {
-        const r = plantumlEncodeSync('A -> B: hello');
+    test('已知样例编码可被 plantuml 字母表接受', () => {
+        const r = plantumlEncodeSync('@startuml\nAlice -> Bob: hello\n@enduml\n');
         expect(r.length).toBeGreaterThan(4);
-        expect(r).toMatch(/^[A-Za-z0-9_-]+$/);
+        // 官方算法对简单时序图通常以 SoWk 开头
+        expect(r.startsWith('SoWk')).toBe(true);
     });
 
     test('中文 UTF-8 字符不丢码', () => {
