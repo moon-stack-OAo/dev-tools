@@ -52,8 +52,14 @@ let jwtGenDefaultsLoaded = false;
 function jwtGenInit() {
   if (jwtGenDefaultsLoaded) return;
   jwtGenDefaultsLoaded = true;
+  jwtGenReset();
+}
+
+function jwtGenReset() {
   const headerEl = document.getElementById("jwtgenHeader");
   const payloadEl = document.getElementById("jwtgenPayload");
+  const secretEl = document.getElementById("jwtgenSecret");
+  const outputEl = document.getElementById("jwtgenOutput");
   const now = Math.floor(Date.now() / 1000);
   headerEl.value = JSON.stringify({ alg: "HS256", typ: "JWT" }, null, 2);
   payloadEl.value = JSON.stringify(
@@ -65,7 +71,11 @@ function jwtGenInit() {
     null,
     2,
   );
+  secretEl.value = "";
+  outputEl.textContent = "";
+  outputEl.className = "output-box";
   updateJwtExpStatus();
+  setStatus("已恢复默认值");
 }
 
 function updateJwtExpStatus() {
@@ -235,5 +245,7 @@ if (typeof module !== "undefined" && module.exports) {
     isPem: isPem,
     buildJwtSigningInput: buildJwtSigningInput,
     assembleJwt: assembleJwt,
+    jwtGenInit: jwtGenInit,
+    jwtGenReset: jwtGenReset,
   };
 }

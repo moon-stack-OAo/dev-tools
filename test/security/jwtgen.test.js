@@ -6,6 +6,8 @@ const {
     isPem,
     buildJwtSigningInput,
     assembleJwt,
+    jwtGenInit,
+    jwtGenReset,
 } = require('../../js/security/jwtgen.js');
 
 describe('b64Pad', () => {
@@ -170,5 +172,61 @@ describe('buildJwtSigningInput / assembleJwt', () => {
         const padded = payloadB64 + '='.repeat((4 - (payloadB64.length % 4)) % 4);
         const json = Buffer.from(padded.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8');
         expect(JSON.parse(json)).toEqual(payload);
+    });
+});
+
+describe('jwtGenInit / jwtGenReset', () => {
+    const originalDocument = global.document;
+    const originalSetStatus = global.setStatus;
+
+    function createElement(value) {
+        return { value: value || '', textContent: '', className: '', style: {} };
+    }
+
+    afterEach(() => {
+        vi.useRealTimers();
+        if (originalDocument === undefined) delete global.document;
+        else global.document = originalDocument;
+        if (originalSetStatus === undefined) delete global.setStatus;
+        else global.setStatus = originalSetStatus;
+    });
+
+    test('初始化只设置一次，重置每次恢复动态默认值并清理结果', () => {
+        const elements = {
+            jwtgenHeader: createElement('自定义 Header'),
+            jwtgenPayload: createElement('自定义 Payload'),
+            jwtgenSecret: createElement('secret'),
+            jwtgenOutput: createElement(),
+            jwtgenStatus: createElement(),
+        };
+        elements.jwtgenOutput.textContent = 'generated-token';
+        elements.jwtgenOutput.className = 'output-box error';
+        global.document = { getElementById: (id) => elements[id] };
+        global.setStatus = vi.fn();
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date('2024-01-01T00:00:00.000Z'));
+
+        jwtGenInit();
+        expect(JSON.parse(elements.jwtgenHeader.value)).toEqual({ alg: 'HS256', typ: 'JWT' });
+        expect(JSON.parse(elements.jwtgenPayload.value)).toEqual({ sub: 'user123', iat: 1704067200, exp: 1704070800 });
+
+        elements.jwtgenHeader.value = '保留的修改';
+        jwtGenInit();
+        expect(elements.jwtgenHeader.value).toBe('保留的修改');
+
+        vi.setSystemTime(new Date('2024-01-01T00:01:00.000Z'));
+        elements.jwtgenSecret.value = 'another-secret';
+        elements.jwtgenOutput.textContent = 'another-token';
+        elements.jwtgenOutput.className = 'output-box error';
+        jwtGenReset();
+
+        expect(JSON.parse(elements.jwtgenHeader.value)).toEqual({ alg: 'HS256', typ: 'JWT' });
+        expect(JSON.parse(elements.jwtgenPayload.value)).toEqual({ sub: 'user123', iat: 1704067260, exp: 1704070860 });
+        expect(elements.jwtgenSecret.value).toBe('');
+        expect(elements.jwtgenOutput.textContent).toBe('');
+        expect(elements.jwtgenOutput.className).toBe('output-box');
+        expect(elements.jwtgenStatus.textContent).toContain('有效');
+        expect(elements.jwtgenStatus.style.color).toBe('var(--accent)');
+        expect(global.setStatus).toHaveBeenLastCalledWith('已恢复默认值');
     });
 });
