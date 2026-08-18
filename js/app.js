@@ -1,23 +1,3 @@
-// === GitHub Link (动态注入，生产模式才有) ===
-// 仅当 Vite 注入的 window.__DEVTOOLS__.withGithub === true 时，才创建 GitHub 链接。
-// dev 模式下该值为 undefined，自然跳过——同时配合 removeGithubPlugin 在构建时清理硬编码链接。
-(function injectGithubLink() {
-    if (typeof window === "undefined") return;
-    const flag = window.__DEVTOOLS__;
-    if (!flag || flag.withGithub !== true) return;
-    const header = document.querySelector(".main-header");
-    if (!header) return;
-    const gh = document.createElement("a");
-    gh.id = "headerGithub";
-    gh.className = "header-github";
-    gh.href = "https://github.com/moon-stack-OAo/dev-tools";
-    gh.rel = "noopener noreferrer";
-    gh.target = "_blank";
-    gh.title = "查看 GitHub 仓库";
-    gh.innerHTML = '<i class="bi bi-github"></i><span>GitHub</span>';
-    header.appendChild(gh);
-})();
-
 // === DOM Cache ===
 const domCache = {
     mainHeader: null,
