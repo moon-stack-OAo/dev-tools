@@ -355,7 +355,7 @@ const tools = [
         id: "hash",
         icon: "bi-hash",
         name: "Hash 计算",
-        desc: "MD5 / SHA-1 / SHA-256 / SHA-512",
+        desc: "MD5 / SHA-1 / SHA-256 / SHA-384 / SHA-512 / 原生 SHA-3",
         cat: "security",
         tags: ["common","frontend","backend"],
     },
@@ -1645,4 +1645,3 @@ function toolMatchesAudience(tool, audience) {
     }
     return true;
 }
-

@@ -33,6 +33,12 @@ function grpcSwitchTab(tab, name) {
   document.getElementById("grpc-tab-" + name).classList.add("active");
 }
 
+function grpcSwitchBodyMode() {
+  const mode = document.querySelector('input[name="grpcBodyMode"]:checked').value;
+  document.getElementById("grpcBodyBase64").style.display = mode === "base64" ? "" : "none";
+  document.getElementById("grpcBodyJson").style.display = mode === "json" ? "" : "none";
+}
+
 function grpcAddMeta(key, val) {
   const container = document.getElementById("grpcMetaList");
   const row = document.createElement("div");
@@ -70,6 +76,75 @@ function grpcBase64Encode(str) {
   }
 }
 
+function grpcBytesToBase64(bytes) {
+  let binary = "";
+  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+  if (typeof btoa === "function") return btoa(binary);
+  if (typeof Buffer !== "undefined") return Buffer.from(bytes).toString("base64");
+  throw new Error("当前环境不支持 Base64 编码");
+}
+
+function grpcBase64ToBytes(input) {
+  const clean = String(input || "").replace(/\s+/g, "");
+  if (!/^[A-Za-z0-9+/]*={0,2}$/.test(clean) || clean.length % 4 === 1)
+    throw new Error("Base64 格式无效");
+  let bin;
+  try {
+    if (typeof atob === "function") bin = atob(clean);
+    else if (typeof Buffer !== "undefined") bin = Buffer.from(clean, "base64").toString("binary");
+    else throw new Error("当前环境不支持 Base64 解码");
+  } catch (e) {
+    throw new Error("Base64 解码失败: " + e.message);
+  }
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+
+// gRPC data frame: 1 byte compression flag + 4 bytes big-endian message length.
+function grpcBuildFrame(messageBytes) {
+  const bytes = messageBytes instanceof Uint8Array ? messageBytes : new Uint8Array(messageBytes);
+  if (bytes.length > 0xffffffff) throw new Error("请求消息超过 gRPC 4 字节长度上限");
+  const frame = new Uint8Array(bytes.length + 5);
+  frame[0] = 0;
+  frame[1] = (bytes.length >>> 24) & 0xff;
+  frame[2] = (bytes.length >>> 16) & 0xff;
+  frame[3] = (bytes.length >>> 8) & 0xff;
+  frame[4] = bytes.length & 0xff;
+  frame.set(bytes, 5);
+  return frame;
+}
+
+function grpcBuildCurlCommand(endpoint, contentType, metadata, messageBytes) {
+  if (!endpoint || !String(endpoint).trim()) throw new Error("请输入目标服务地址");
+  const frameBase64 = grpcBytesToBase64(grpcBuildFrame(messageBytes));
+  const lines = [
+    "# 生成供 curl 或本地 HTTP/2 gRPC 代理使用的请求命令（浏览器不直接发送标准 HTTP/2 gRPC）",
+    `curl -X POST ${grpcShellQuote(endpoint)} \\`,
+    `  -H ${grpcShellQuote("Content-Type: " + contentType)} \\`,
+    `  -H ${grpcShellQuote("TE: trailers")} \\`,
+  ];
+  if ((metadata || []).length) lines.push(`  -H ${grpcShellQuote("Accept: */*")} \\`);
+  (metadata || []).forEach(([key, value]) => {
+    const lower = key.toLowerCase();
+    lines.push(`  -H ${grpcShellQuote(key + ": " + value)} \\`);
+    if (!lower.endsWith("-bin") && !/^[A-Za-z0-9+/=]*$/.test(value)) {
+      lines.push(`  -H ${grpcShellQuote(lower + "-bin: " + grpcBase64Encode(value))} \\`);
+    }
+  });
+  lines.push(`  --data-binary ${grpcShellQuote(frameBase64)}`);
+  return lines.join("\n");
+}
+
+function grpcEncodeJsonWithSchema(value, schemaText) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("JSON 必须是对象");
+  const protobuf = typeof globalThis !== "undefined" ? globalThis : {};
+  if (typeof protobuf.parseProtoSchema !== "function" || typeof protobuf.encodeProtobuf !== "function") {
+    throw new Error("公共 Protobuf 编码器未加载，请先加载 protobuf 工具脚本");
+  }
+  return protobuf.encodeProtobuf(value, protobuf.parseProtoSchema(String(schemaText || "")));
+}
+
 function grpcBuildMeta() {
   const out = document.getElementById("grpcMetaOutput");
   const endpoint = document.getElementById("grpcEndpoint").value.trim();
@@ -83,31 +158,23 @@ function grpcBuildMeta() {
     return;
   }
 
-  const lines = [];
-  lines.push(`# gRPC ${meta.length ? "call" : "健康检查"} 命令`);
-  lines.push(`curl -X POST ${grpcShellQuote(endpoint)} \\`);
-  lines.push(`  -H ${grpcShellQuote("Content-Type: " + contentType)} \\`);
-  lines.push(`  -H ${grpcShellQuote("TE: trailers")} \\`);
-  if (meta.length) {
-    lines.push(`  -H ${grpcShellQuote("Accept: */*")} \\`);
-    meta.forEach(([k, v]) => {
-      const lower = k.toLowerCase();
-      if (lower === "grpc-metadata-bin" || lower.endsWith("-bin")) {
-        lines.push(`  -H ${grpcShellQuote(k + ": " + v)} \\`);
-      } else {
-        const encoded = grpcBase64Encode(v);
-        lines.push(`  -H ${grpcShellQuote(k + ": " + v)} \\`);
-        if (encoded && !/^[A-Za-z0-9+/=]*$/.test(v)) {
-          lines.push(`  -H ${grpcShellQuote(lower + "-bin: " + encoded)} \\`);
-        }
-      }
-    });
+  try {
+    const mode = document.querySelector('input[name="grpcBodyMode"]:checked').value;
+    let messageBytes;
+    if (mode === "base64") {
+      messageBytes = grpcBase64ToBytes(document.getElementById("grpcRequestBase64").value);
+    } else {
+      const json = JSON.parse(document.getElementById("grpcRequestJson").value);
+      const schema = document.getElementById("grpcRequestSchema").value;
+      messageBytes = grpcEncodeJsonWithSchema(json, schema);
+    }
+    out.textContent = grpcBuildCurlCommand(endpoint, contentType, meta, messageBytes);
+    out.className = "output-box";
+    setStatus("已生成 gRPC 帧请求命令");
+  } catch (e) {
+    out.textContent = "请求体生成失败: " + e.message;
+    out.className = "output-box error";
   }
-  lines.push(`  --data-binary ''`);
-
-  out.textContent = lines.join("\n").replace(/ \\\n$/, "");
-  out.className = "output-box";
-  setStatus("已生成 gRPC 调用命令");
 }
 
 function grpcParsePb() {
@@ -120,18 +187,20 @@ function grpcParsePb() {
   }
   let bytes;
   try {
-    const clean = input.replace(/\s+/g, "");
-    const bin = atob(clean);
-    bytes = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      bytes = grpcBase64ToBytes(input);
   } catch (e) {
     out.textContent = "Base64 解码失败: " + e.message;
     out.className = "output-box error";
     return;
   }
-  out.textContent = grpcDecodeProtobuf(bytes);
-  out.className = "output-box";
-  setStatus("Protobuf 解析完成 (" + bytes.length + " 字节)");
+  try {
+    out.textContent = grpcDecodeProtobuf(bytes);
+    out.className = "output-box";
+    setStatus("Protobuf 解析完成 (" + bytes.length + " 字节)");
+  } catch (e) {
+    out.textContent = "Wire Format 解析失败: " + e.message;
+    out.className = "output-box error";
+  }
 }
 
 function grpcParsePbHex() {
@@ -152,23 +221,29 @@ function grpcParsePbHex() {
   for (let i = 0; i < bytes.length; i++) {
     bytes[i] = parseInt(clean.substr(i * 2, 2), 16);
   }
-  out.textContent = grpcDecodeProtobuf(bytes);
-  out.className = "output-box";
-  setStatus("Protobuf (Hex) 解析完成 (" + bytes.length + " 字节)");
+  try {
+    out.textContent = grpcDecodeProtobuf(bytes);
+    out.className = "output-box";
+    setStatus("Protobuf (Hex) 解析完成 (" + bytes.length + " 字节)");
+  } catch (e) {
+    out.textContent = "Wire Format 解析失败: " + e.message;
+    out.className = "output-box error";
+  }
 }
 
 function grpcReadVarint(bytes, pos) {
-  let value = 0;
-  let shift = 0;
-  let count = 0;
-  while (pos < bytes.length && count < 10) {
+  let value = 0n;
+  let shift = 0n;
+  for (let count = 0; count < 10; count++) {
+    if (pos >= bytes.length) throw new Error("Varint 截断：数据未结束");
     const b = bytes[pos++];
-    value |= (b & 0x7f) << shift;
-    count++;
+    if (count === 9 && (b & 0x7f) > 1) throw new Error("Varint 非法：超过 64 位");
+    value |= BigInt(b & 0x7f) << shift;
     if ((b & 0x80) === 0) return [value, pos];
-    shift += 7;
+    if (count === 9) throw new Error("Varint 非法：超过 64 位");
+    shift += 7n;
   }
-  return [value, pos];
+  throw new Error("Varint 非法：超过 10 字节");
 }
 
 function grpcBytesToAscii(bytes) {
@@ -195,7 +270,7 @@ function grpcTryUtf8(bytes) {
   }
 }
 
-const WIRE_TYPES = {
+const GRPC_WIRE_TYPES = {
   0: "Varint",
   1: "Fixed64",
   2: "Length-delimited",
@@ -222,14 +297,16 @@ function grpcDecodeProtobuf(bytes) {
     const [tag, newPos] = grpcReadVarint(bytes, pos);
     if (newPos === pos) break;
     pos = newPos;
-    const fieldNumber = tag >>> 3;
-    const wireType = tag & 0x07;
+    if (tag > 0xfffffffffffffff8n) throw new Error("字段标签非法");
+    const fieldNumber = Number(tag >> 3n);
+    const wireType = Number(tag & 0x07n);
+    if (fieldNumber === 0) throw new Error("字段号不能为 0");
 
     if (wireType === 0) {
       const [val, np] = grpcReadVarint(bytes, pos);
       pos = np;
       lines.push(
-        `#${++idx} field=${fieldNumber} type=varint  value=${val} (0x${val.toString(16)})  bytes=${startPos}-${pos}`,
+        `#${++idx} field=${fieldNumber} type=varint  value=${val.toString()} (0x${val.toString(16)})  bytes=${startPos}-${pos}`,
       );
     } else if (wireType === 1) {
       if (pos + 8 > bytes.length) {
@@ -238,7 +315,7 @@ function grpcDecodeProtobuf(bytes) {
       }
       let v = 0n;
       for (let i = 0; i < 8; i++) v |= BigInt(bytes[pos + i]) << BigInt(i * 8);
-      const dv = bytes[pos] & 0x80 ? v.toString() : Number(v).toString();
+      const dv = v.toString();
       pos += 8;
       lines.push(
         `#${++idx} field=${fieldNumber} type=fixed64 value=${dv}  bytes=${startPos}-${pos}`,
@@ -246,13 +323,14 @@ function grpcDecodeProtobuf(bytes) {
     } else if (wireType === 2) {
       const [len, np] = grpcReadVarint(bytes, pos);
       pos = np;
-      if (pos + len > bytes.length) {
+      if (len > BigInt(bytes.length - pos)) {
         lines.push(
-          `#${++idx} field=${fieldNumber} type=length-delimited  [截断: 需要 ${len} 字节, 剩余 ${bytes.length - pos}]`,
+          `#${++idx} field=${fieldNumber} type=length-delimited  [截断: 需要 ${len.toString()} 字节, 剩余 ${bytes.length - pos}]`,
         );
-        break;
+        throw new Error("Length-delimited 数据截断");
       }
-      const slice = bytes.slice(pos, pos + len);
+      const numericLength = Number(len);
+      const slice = bytes.slice(pos, pos + numericLength);
       const utf8 = grpcTryUtf8(slice);
       const ascii = grpcBytesToAscii(slice);
       const hex =
@@ -261,7 +339,7 @@ function grpcDecodeProtobuf(bytes) {
           .join(" ") + (slice.length > 32 ? " ..." : "");
       const maybeNested = len > 0 && ascii.printable === false && utf8 === null;
       lines.push(
-        `#${++idx} field=${fieldNumber} type=length-delimited length=${len}  bytes=${startPos}-${pos + len}`,
+        `#${++idx} field=${fieldNumber} type=length-delimited length=${len.toString()}  bytes=${startPos}-${pos + numericLength}`,
       );
       if (utf8 !== null) {
         lines.push(
@@ -278,7 +356,7 @@ function grpcDecodeProtobuf(bytes) {
       if (maybeNested) {
         lines.push("    [提示] 看起来像嵌套 message，可尝试递归解析");
       }
-      pos += len;
+      pos += numericLength;
     } else if (wireType === 5) {
       if (pos + 4 > bytes.length) {
         lines.push(`#${++idx} field=${fieldNumber} type=fixed32  [截断]`);
@@ -296,7 +374,7 @@ function grpcDecodeProtobuf(bytes) {
       );
     } else {
       lines.push(
-        `#${++idx} field=${fieldNumber} wire_type=${wireType} (${WIRE_TYPES[wireType] || "unknown"}) 无法解析，停止`,
+        `#${++idx} field=${fieldNumber} wire_type=${wireType} (${GRPC_WIRE_TYPES[wireType] || "unknown"}) 无法解析，停止`,
       );
       break;
     }
@@ -327,3 +405,14 @@ function grpcInit() {
 }
 
 registerInit("grpc", grpcInit);
+
+if (typeof module !== "undefined") {
+  module.exports = {
+    grpcReadVarint,
+    grpcDecodeProtobuf,
+    grpcBuildFrame,
+    grpcBytesToBase64,
+    grpcBuildCurlCommand,
+    grpcEncodeJsonWithSchema,
+  };
+}

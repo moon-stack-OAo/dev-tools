@@ -1397,6 +1397,108 @@
 }
 
 /* gRPC */
+.cc-config,
+.cc-result,
+.grpc-meta-config,
+.grpc-result,
+.grpc-pb-config {
+    min-width: 0;
+}
+
+.tool-panel#panel-cookiecache > .stomp-block {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.9fr);
+    gap: 0 14px;
+    align-items: start;
+}
+
+.tool-panel#panel-cookiecache > .stomp-block > .stomp-block-title {
+    grid-column: 1 / -1;
+}
+
+.tool-panel#panel-cookiecache .cc-config {
+    min-width: 0;
+}
+
+.tool-panel#panel-cookiecache .cc-config > .api-body-input {
+    width: 100%;
+    resize: vertical;
+}
+
+.tool-panel#panel-cookiecache .cc-config > .toolbar {
+    justify-content: flex-start;
+}
+
+.tool-panel#panel-cookiecache .cc-result {
+    min-height: 112px;
+    margin-top: 0 !important;
+}
+
+.tool-panel#panel-cookiecache .cc-result .output-box {
+    min-height: 80px;
+}
+
+.grpc-meta-layout,
+.grpc-pb-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+    gap: 0 14px;
+    align-items: start;
+}
+
+.grpc-meta-config {
+    min-width: 0;
+}
+
+.grpc-meta-config .stomp-block:last-of-type {
+    margin-bottom: 12px;
+}
+
+.grpc-result {
+    min-height: 220px;
+    margin-top: 0;
+}
+
+.grpc-result .output-box {
+    min-height: 160px;
+    height: calc(100% - 24px);
+    overflow: auto;
+}
+
+.grpc-pb-config {
+    margin-bottom: 0;
+}
+
+.grpc-pb-config .api-body-input {
+    width: 100%;
+    resize: vertical;
+}
+
+.grpc-pb-config .toolbar {
+    justify-content: flex-start;
+}
+
+.grpc-pb-layout .grpc-result {
+    min-height: 260px;
+}
+
+@media (max-width: 900px) {
+    .tool-panel#panel-cookiecache > .stomp-block,
+    .grpc-meta-layout,
+    .grpc-pb-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .tool-panel#panel-cookiecache .cc-result,
+    .grpc-result {
+        margin-top: 8px !important;
+    }
+
+    .grpc-pb-config {
+        margin-bottom: 12px;
+    }
+}
+
 .grpc-status-table {
     background: var(--bg-card);
     border: 1px solid var(--border);

@@ -75,6 +75,24 @@ function decodeInteger(value, fieldType) {
   return bigIntToValue(value);
 }
 
+function isPackableType(type) {
+  return INTEGER_TYPES.has(type) || ["fixed32", "fixed64", "sfixed32", "sfixed64", "float", "double"].includes(type);
+}
+
+function decodeFixed(bytes, pos, size, fieldType) {
+  if (pos + size > bytes.length) throw new Error("数据不足");
+  const view = new DataView(bytes.buffer, bytes.byteOffset + pos, size);
+  if (fieldType === "float") return view.getFloat32(0, true);
+  if (fieldType === "double") return view.getFloat64(0, true);
+  if (size === 4) {
+    const value = view.getUint32(0, true);
+    return fieldType === "sfixed32" ? Number(BigInt.asIntN(32, BigInt(value))) : value;
+  }
+  const value = view.getBigUint64(0, true);
+  if (!fieldType) return value.toString();
+  return fieldType === "sfixed64" ? bigIntToValue(BigInt.asIntN(64, value)) : bigIntToValue(value);
+}
+
 function addFieldValue(result, fieldName, value) {
   if (result[fieldName] !== undefined) {
     if (!Array.isArray(result[fieldName]))
@@ -83,6 +101,26 @@ function addFieldValue(result, fieldName, value) {
   } else {
     result[fieldName] = value;
   }
+}
+
+function addDecodedField(result, field, fieldNumber, value) {
+  const fieldName = field ? field.name : "field_" + fieldNumber;
+  if (field && field.map) {
+    if (!result[fieldName]) result[fieldName] = {};
+    result[fieldName][String(value[0])] = value[1];
+  } else if (field && field.oneof) {
+    result[fieldName] = value;
+  } else {
+    addFieldValue(result, fieldName, value);
+  }
+}
+
+function decodeMapEntry(bytes, offset, length, field) {
+  const entry = decodeProtobuf(bytes, offset, length, {
+    1: field.keyField,
+    2: field.valueField,
+  });
+  return [entry.field_1 === undefined ? "" : entry.field_1, entry.field_2];
 }
 
 // 解码 Protobuf 消息
@@ -104,9 +142,39 @@ function decodeProtobuf(bytes, offset, length, schema) {
     pos += tagResult.bytesRead;
 
     const field = fields && fields[fieldNumber];
-    const fieldName = field ? field.name : "field_" + fieldNumber;
     const fieldType = field ? field.type : null;
     let value;
+
+    if (field && field.oneof && field.oneof.fields) {
+      for (const otherField of field.oneof.fields) {
+        if (otherField !== field) delete result[otherField.name];
+      }
+    }
+
+    if (field && field.repeated && !field.map && isPackableType(fieldType) && wireType === 2) {
+      const lengthResult = readLength(bytes, pos, end);
+      pos += lengthResult.bytesRead;
+      const dataEnd = pos + lengthResult.length;
+      if (dataEnd > end) throw new Error("数据不足");
+      while (pos < dataEnd) {
+        let item;
+        if (fieldType === "fixed32" || fieldType === "sfixed32" || fieldType === "float") {
+          if (pos + 4 > dataEnd) throw new Error("packed 字段长度非法");
+          item = decodeFixed(bytes, pos, 4, fieldType);
+          pos += 4;
+        } else if (fieldType === "fixed64" || fieldType === "sfixed64" || fieldType === "double") {
+          if (pos + 8 > dataEnd) throw new Error("packed 字段长度非法");
+          item = decodeFixed(bytes, pos, 8, fieldType);
+          pos += 8;
+        } else {
+          const itemResult = decodeVarint(bytes, pos, dataEnd);
+          item = decodeInteger(itemResult.value, fieldType);
+          pos += itemResult.bytesRead;
+        }
+        addDecodedField(result, field, fieldNumber, item);
+      }
+      continue;
+    }
 
     switch (wireType) {
       case 0: {
@@ -117,11 +185,7 @@ function decodeProtobuf(bytes, offset, length, schema) {
       }
       case 1: {
         if (pos + 8 > end) throw new Error("数据不足");
-        const view = new DataView(bytes.buffer, bytes.byteOffset + pos, 8);
-        value =
-          fieldType === "double"
-            ? view.getFloat64(0, true)
-            : view.getBigUint64(0, true).toString();
+        value = decodeFixed(bytes, pos, 8, fieldType);
         pos += 8;
         break;
       }
@@ -131,7 +195,9 @@ function decodeProtobuf(bytes, offset, length, schema) {
         if (pos + lengthResult.length > end) throw new Error("数据不足");
         const dataEnd = pos + lengthResult.length;
 
-        if (fieldType === "string") {
+        if (field && field.map) {
+          value = decodeMapEntry(bytes, pos, lengthResult.length, field);
+        } else if (fieldType === "string") {
           value = new TextDecoder("utf-8").decode(bytes.slice(pos, dataEnd));
         } else if (fieldType === "bytes") {
           value = bytesToHex(bytes.slice(pos, dataEnd));
@@ -164,29 +230,23 @@ function decodeProtobuf(bytes, offset, length, schema) {
       }
       case 5: {
         if (pos + 4 > end) throw new Error("数据不足");
-        const view = new DataView(bytes.buffer, bytes.byteOffset + pos, 4);
-        value =
-          fieldType === "float"
-            ? view.getFloat32(0, true)
-            : view.getUint32(0, true);
+        value = decodeFixed(bytes, pos, 4, fieldType);
         pos += 4;
         break;
       }
       default:
         throw new Error("未知 wire type: " + wireType);
     }
-    addFieldValue(result, fieldName, value);
+    addDecodedField(result, field, fieldNumber, value);
   }
   return result;
 }
 
 function tokenizeProto(schemaText) {
-  return (
-    schemaText
-      .replace(/\/\/[^\n]*/g, "")
-      .replace(/\/\*[\s\S]*?\*\//g, "")
-      .match(/[A-Za-z_]\w*|\d+|[{}=;.]/g) || []
-  );
+  return schemaText
+    .replace(/\/\/[^\n]*/g, "")
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .match(/"(?:\\.|[^"\\])*"|[A-Za-z_]\w*|-?\d+|[{}=;.,\[\]<>]/g) || [];
 }
 
 function isScalarType(type) {
@@ -209,7 +269,7 @@ function isScalarType(type) {
 function parseProtoSchema(schemaText) {
   if (!schemaText || !schemaText.trim()) return null;
   const tokens = tokenizeProto(schemaText);
-  const root = { messages: {}, root: null };
+  const root = { messages: {}, enums: {}, root: null };
   let index = 0;
 
   function skipStatement() {
@@ -222,6 +282,70 @@ function parseProtoSchema(schemaText) {
     if (tokens[index] === ";") index++;
   }
 
+  function parseEnum(parent) {
+    const name = tokens[index++];
+    if (!name || tokens[index++] !== "{") throw new Error("enum 定义不完整");
+    const enumSchema = { name, values: {}, parent: parent || null };
+    if (parent) parent.enums[name] = enumSchema;
+    else root.enums[name] = enumSchema;
+    while (index < tokens.length && tokens[index] !== "}") {
+      const valueName = tokens[index++];
+      if (tokens[index++] !== "=") {
+        skipStatement();
+        continue;
+      }
+      const value = Number(tokens[index++]);
+      if (!Number.isInteger(value)) throw new Error("非法 enum 值");
+      enumSchema.values[valueName] = value;
+      skipStatement();
+    }
+    if (tokens[index] !== "}") throw new Error("enum 缺少结束括号");
+    index++;
+    return enumSchema;
+  }
+
+  function parseField(message, label, oneof) {
+    let type;
+    let map = false;
+    let keyType;
+    if (tokens[index] === "map") {
+      map = true;
+      index++;
+      if (tokens[index++] !== "<") throw new Error("map 定义不完整");
+      keyType = tokens[index++];
+      if (tokens[index++] !== ",") throw new Error("map 定义不完整");
+      type = tokens[index++];
+      if (tokens[index++] !== ">") throw new Error("map 定义不完整");
+    } else {
+      type = tokens[index++];
+    }
+    const fieldName = tokens[index++];
+    if (!type || !fieldName || tokens[index++] !== "=") {
+      skipStatement();
+      return null;
+    }
+    const fieldNumber = Number(tokens[index++]);
+    if (!Number.isInteger(fieldNumber) || fieldNumber <= 0) throw new Error("非法字段号");
+    const field = { type, name: fieldName, repeated: label === "repeated" || map, packed: undefined };
+    if (oneof) field.oneof = oneof;
+    if (map) {
+      field.map = true;
+      field.keyField = { type: keyType, name: "field_1" };
+      field.valueField = { type, name: "field_2" };
+    }
+    if (tokens[index] === "[") {
+      index++;
+      while (index < tokens.length && tokens[index] !== "]") {
+        if (tokens[index] === "packed" && tokens[index + 1] === "=" && tokens[index + 2] === "false") field.packed = false;
+        index++;
+      }
+      if (tokens[index] === "]") index++;
+    }
+    skipStatement();
+    message.fields[fieldNumber] = field;
+    return field;
+  }
+
   function parseMessage(parent) {
     const name = tokens[index++];
     if (!name || tokens[index++] !== "{") throw new Error("message 定义不完整");
@@ -229,6 +353,7 @@ function parseProtoSchema(schemaText) {
       name: name,
       fields: {},
       nested: {},
+      enums: {},
       parent: parent || null,
     };
     if (parent) parent.nested[name] = message;
@@ -241,24 +366,30 @@ function parseProtoSchema(schemaText) {
         parseMessage(message);
         continue;
       }
+      if (tokens[index] === "enum") {
+        index++;
+        parseEnum(message);
+        continue;
+      }
+      if (tokens[index] === "oneof") {
+        index++;
+        const oneofName = tokens[index++];
+        if (tokens[index++] !== "{") throw new Error("oneof 定义不完整");
+        const oneof = { name: oneofName, fields: [] };
+        while (index < tokens.length && tokens[index] !== "}") {
+          const field = parseField(message, null, oneof);
+          if (field) oneof.fields.push(field);
+        }
+        if (tokens[index] === "}") index++;
+        continue;
+      }
       let label = null;
-      if (["optional", "required", "repeated"].includes(tokens[index]))
-        label = tokens[index++];
-      const type = tokens[index++];
-      const fieldName = tokens[index++];
-      if (!type || !fieldName || tokens[index++] !== "=") {
+      if (["optional", "required", "repeated"].includes(tokens[index])) label = tokens[index++];
+      if (["reserved", "extensions", "option"].includes(tokens[index])) {
         skipStatement();
         continue;
       }
-      const fieldNumber = Number(tokens[index++]);
-      if (!Number.isInteger(fieldNumber) || fieldNumber <= 0)
-        throw new Error("非法字段号");
-      message.fields[fieldNumber] = {
-        type: type,
-        name: fieldName,
-        repeated: label === "repeated",
-      };
-      skipStatement();
+      parseField(message, label);
     }
     if (tokens[index] !== "}") throw new Error("message 缺少结束括号");
     index++;
@@ -269,6 +400,9 @@ function parseProtoSchema(schemaText) {
     if (tokens[index] === "message") {
       index++;
       parseMessage(null);
+    } else if (tokens[index] === "enum") {
+      index++;
+      parseEnum(null);
     } else {
       skipStatement();
     }
@@ -289,9 +423,25 @@ function parseProtoSchema(schemaText) {
     return candidate || null;
   }
 
+  function resolveEnum(type, message) {
+    if (isScalarType(type)) return null;
+    const typeParts = type.split(".").filter(Boolean);
+    for (let scope = message; scope; scope = scope.parent) {
+      let candidate = scope.enums[typeParts[0]];
+      if (candidate) return candidate;
+    }
+    return root.enums[typeParts[0]] || null;
+  }
+
   function bindMessageTypes(message) {
     Object.values(message.fields).forEach((field) => {
       field.messageSchema = resolveMessage(field.type, message);
+      field.enumSchema = resolveEnum(field.type, message);
+      if (field.map) {
+        field.valueField.messageSchema = resolveMessage(field.valueField.type, message);
+        field.valueField.enumSchema = resolveEnum(field.valueField.type, message);
+        field.keyField.messageSchema = resolveMessage(field.keyField.type, message);
+      }
     });
     Object.values(message.nested).forEach(bindMessageTypes);
   }
@@ -311,7 +461,8 @@ function parseInteger(value, fieldType) {
   }
 }
 
-function encodeInteger(bytes, value, fieldType) {
+function encodeInteger(bytes, value, fieldType, enumSchema) {
+  if (enumSchema && typeof value === "string" && enumSchema.values[value] !== undefined) value = enumSchema.values[value];
   let integer = parseInteger(value, fieldType || "varint");
   if (fieldType === "sint64") {
     if (integer < -(1n << 63n) || integer > (1n << 63n) - 1n)
@@ -366,6 +517,34 @@ function encodeProtobuf(obj, schema) {
       fieldNumber = Number(match[1]);
     }
 
+    const encodePrimitive = (target, fieldValue, fieldType, fieldInfo) => {
+      if (fieldType === "double") {
+        const buffer = new ArrayBuffer(8);
+        new DataView(buffer).setFloat64(0, Number(fieldValue), true);
+        for (const byte of new Uint8Array(buffer)) target.push(byte);
+      } else if (fieldType === "float") {
+        const buffer = new ArrayBuffer(4);
+        new DataView(buffer).setFloat32(0, Number(fieldValue), true);
+        for (const byte of new Uint8Array(buffer)) target.push(byte);
+      } else if (["fixed32", "sfixed32"].includes(fieldType)) {
+        const integer = parseInteger(fieldValue, fieldType);
+        if (fieldType === "sfixed32" && (integer < -2147483648n || integer > 2147483647n)) throw new Error("sfixed32 超出范围");
+        if (fieldType === "fixed32" && (integer < 0n || integer > 4294967295n)) throw new Error("fixed32 超出范围");
+        const buffer = new ArrayBuffer(4);
+        new DataView(buffer).setUint32(0, Number(BigInt.asUintN(32, integer)), true);
+        for (const byte of new Uint8Array(buffer)) target.push(byte);
+      } else if (["fixed64", "sfixed64"].includes(fieldType)) {
+        const integer = parseInteger(fieldValue, fieldType);
+        if (fieldType === "sfixed64" && (integer < -(1n << 63n) || integer > (1n << 63n) - 1n)) throw new Error("sfixed64 超出范围");
+        if (fieldType === "fixed64" && (integer < 0n || integer > MAX_UINT64)) throw new Error("fixed64 超出范围");
+        const buffer = new ArrayBuffer(8);
+        new DataView(buffer).setBigUint64(0, BigInt.asUintN(64, integer), true);
+        for (const byte of new Uint8Array(buffer)) target.push(byte);
+      } else {
+        encodeInteger(target, fieldValue, fieldType, fieldInfo && fieldInfo.enumSchema);
+      }
+    };
+
     const encodeField = (fieldValue) => {
       const fieldType = field && field.type;
       const wireType =
@@ -386,19 +565,9 @@ function encodeProtobuf(obj, schema) {
       encodeVarint(bytes, (BigInt(fieldNumber) << 3n) | BigInt(wireType));
 
       if (wireType === 0) {
-        encodeInteger(bytes, fieldValue, fieldType);
+        encodePrimitive(bytes, fieldValue, fieldType, field);
       } else if (wireType === 1) {
-        const buffer = new ArrayBuffer(8);
-        const view = new DataView(buffer);
-        if (fieldType === "double")
-          view.setFloat64(0, Number(fieldValue), true);
-        else
-          view.setBigUint64(
-            0,
-            BigInt.asUintN(64, parseInteger(fieldValue, fieldType)),
-            true,
-          );
-        for (let i = 0; i < 8; i++) bytes.push(view.getUint8(i));
+        encodePrimitive(bytes, fieldValue, fieldType, field);
       } else if (wireType === 2) {
         let data;
         if (fieldType === "bytes") {
@@ -415,15 +584,27 @@ function encodeProtobuf(obj, schema) {
         encodeVarint(bytes, BigInt(data.length));
         for (const byte of data) bytes.push(byte);
       } else {
-        const buffer = new ArrayBuffer(4);
-        const view = new DataView(buffer);
-        if (fieldType === "float") view.setFloat32(0, Number(fieldValue), true);
-        else view.setUint32(0, Number(fieldValue), true);
-        for (let i = 0; i < 4; i++) bytes.push(view.getUint8(i));
+        encodePrimitive(bytes, fieldValue, fieldType, field);
       }
     };
 
-    if (Array.isArray(value)) value.forEach(encodeField);
+    if (field && field.map && value && typeof value === "object" && !Array.isArray(value)) {
+      for (const [key, mapValue] of Object.entries(value)) {
+        const entry = encodeProtobuf({ field_1: key, field_2: mapValue }, {
+          1: field.keyField,
+          2: field.valueField,
+        });
+        encodeVarint(bytes, (BigInt(fieldNumber) << 3n) | 2n);
+        encodeVarint(bytes, BigInt(entry.length));
+        bytes.push(...entry);
+      }
+    } else if (Array.isArray(value) && field && field.repeated && field.packed !== false && isPackableType(field.type)) {
+      const packed = [];
+      value.forEach((item) => encodePrimitive(packed, item, field.type, field));
+      encodeVarint(bytes, (BigInt(fieldNumber) << 3n) | 2n);
+      encodeVarint(bytes, BigInt(packed.length));
+      bytes.push(...packed);
+    } else if (Array.isArray(value)) value.forEach(encodeField);
     else encodeField(value);
   }
   return new Uint8Array(bytes);

@@ -4,7 +4,7 @@
         <b>兼容说明</b>：实现 jasypt 默认算法 <code>PBEWithMD5AndDES</code>（迭代默认 1000）。
         输出格式 <code>Base64(salt||ciphertext)</code>，可选 <code>ENC(...)</code> 包装，可与
         <code>StandardPBEStringEncryptor</code> / 老版 Spring 配置加解密互操作。
-        <br>不支持 <code>PBEWITHHMACSHA512ANDAES_256</code> 等新算法；DES 仅用于遗留配置，勿用于新系统。
+        <br><code>PBEWITHHMACSHA512ANDAES_256</code> 未实现：标准 Web Crypto 无法保证 Java Jasypt PBE 的参数与互操作格式一致；DES 仅用于遗留配置，勿用于新系统。
     </div>
     <div class="flex gap-6 mb-8" style="align-items:flex-end;flex-wrap:wrap">
         <div class="flex-1" style="min-width:180px">

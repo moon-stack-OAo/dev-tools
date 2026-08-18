@@ -71,6 +71,7 @@ const toolLibs = {
 // 工具→脚本依赖映射：打开工具前先加载其它工具脚本（复用其全局纯函数）
 const toolScriptDeps = {
     json2ts: ["json2code"],
+    grpc: ["protobuf"],
 };
 
 // 生产构建内联的 window.__ASSET_MAP__ 提供逐文件内容哈希,用于动态资源强缓存;
@@ -286,4 +287,3 @@ async function openTool(id) {
 }
 
 // 切回首页 UI 状态(由 goHome / filterHomeTools 复用)
-

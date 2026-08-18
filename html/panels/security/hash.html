@@ -8,7 +8,10 @@
         <button onclick="hashCompute('md5')">MD5</button>
         <button class="outline" onclick="hashCompute('sha1')">SHA-1</button>
         <button class="outline" onclick="hashCompute('sha256')">SHA-256</button>
+        <button class="outline" onclick="hashCompute('sha384')">SHA-384</button>
         <button class="outline" onclick="hashCompute('sha512')">SHA-512</button>
+        <button class="outline" data-hash-algo="sha3-256" onclick="hashCompute('sha3-256')">SHA-3-256</button>
+        <button class="outline" data-hash-algo="sha3-512" onclick="hashCompute('sha3-512')">SHA-3-512</button>
         <button class="outline" onclick="hashClear()"
                 style="margin-left:auto;border-color:var(--danger);color:var(--danger)">清空
         </button>

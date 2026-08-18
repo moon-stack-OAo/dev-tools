@@ -1,118 +1,286 @@
 <div class="tool-panel" id="panel-cookiecache">
-    <div class="toolbar">
-        <button class="outline" onclick="cookiecacheLoadSample()">加载示例</button>
-    </div>
+  <div class="toolbar">
+    <button class="outline" onclick="cookiecacheLoadSample()">加载示例</button>
+  </div>
 
-    <div class="stomp-block">
-        <div class="stomp-block-title">Cookie 请求头解析</div>
-        <textarea class="api-body-input" id="ccCookieInput" placeholder="sessionId=abc; theme=dark"
-                  style="min-height:64px"></textarea>
-        <div class="toolbar" style="margin-top:8px;margin-bottom:0">
-            <button onclick="cookieParseRun()">解析 Cookie</button>
-        </div>
-        <div class="copy-wrap" style="margin-top:8px">
-            <div class="label">结果</div>
-            <button class="copy-btn" onclick="copyText('ccCookieOutput')">复制</button>
-            <div class="output-box" id="ccCookieOutput" style="min-height:80px"></div>
-        </div>
+  <div class="stomp-block">
+    <div class="stomp-block-title">Cookie 请求头解析</div>
+    <div class="cc-config">
+      <textarea
+        class="api-body-input"
+        id="ccCookieInput"
+        placeholder="sessionId=abc; theme=dark"
+        style="min-height: 64px"
+      ></textarea>
+      <div class="toolbar" style="margin-top: 8px; margin-bottom: 0">
+        <button onclick="cookieParseRun()">解析 Cookie</button>
+      </div>
     </div>
+    <div class="copy-wrap cc-result" style="margin-top: 8px">
+      <div class="label">结果</div>
+      <button class="copy-btn" onclick="copyText('ccCookieOutput')">
+        复制
+      </button>
+      <div
+        class="output-box"
+        id="ccCookieOutput"
+        style="min-height: 80px"
+      ></div>
+    </div>
+  </div>
 
-    <div class="stomp-block">
-        <div class="stomp-block-title">Set-Cookie 解析（每行一条）</div>
-        <textarea class="api-body-input" id="ccSetCookieInput" placeholder="name=value; Path=/; HttpOnly; Secure; SameSite=Lax"
-                  style="min-height:80px"></textarea>
-        <div class="toolbar" style="margin-top:8px;margin-bottom:0">
-            <button onclick="setCookieParseRun()">解析 Set-Cookie</button>
-        </div>
-        <div class="copy-wrap" style="margin-top:8px">
-            <div class="label">结果 / 安全提示</div>
-            <button class="copy-btn" onclick="copyText('ccSetCookieOutput')">复制</button>
-            <div class="output-box" id="ccSetCookieOutput" style="min-height:100px"></div>
-        </div>
+  <div class="stomp-block">
+    <div class="stomp-block-title">Set-Cookie 解析（每行一条）</div>
+    <div class="cc-config">
+      <textarea
+        class="api-body-input"
+        id="ccSetCookieInput"
+        placeholder="name=value; Path=/; HttpOnly; Secure; SameSite=Lax"
+        style="min-height: 80px"
+      ></textarea>
+      <div class="toolbar" style="margin-top: 8px; margin-bottom: 0">
+        <button onclick="setCookieParseRun()">解析 Set-Cookie</button>
+      </div>
     </div>
+    <div class="copy-wrap cc-result" style="margin-top: 8px">
+      <div class="label">结果 / 安全提示</div>
+      <button class="copy-btn" onclick="copyText('ccSetCookieOutput')">
+        复制
+      </button>
+      <div
+        class="output-box"
+        id="ccSetCookieOutput"
+        style="min-height: 100px"
+      ></div>
+    </div>
+  </div>
 
-    <div class="stomp-block">
-        <div class="stomp-block-title">构造 Set-Cookie</div>
-        <div class="flex gap-6 mb-8" style="flex-wrap:wrap;align-items:flex-end">
-            <div>
-                <div class="label">Name</div>
-                <input id="ccName" placeholder="token" style="width:120px" type="text">
-            </div>
-            <div style="flex:1;min-width:140px">
-                <div class="label">Value</div>
-                <input id="ccValue" placeholder="value" style="width:100%" type="text">
-            </div>
-            <div>
-                <div class="label">Path</div>
-                <input id="ccPath" style="width:80px" type="text" value="/">
-            </div>
-            <div>
-                <div class="label">Domain</div>
-                <input id="ccDomain" placeholder="可选" style="width:120px" type="text">
-            </div>
-            <div>
-                <div class="label">Max-Age</div>
-                <input id="ccMaxAge" placeholder="秒" style="width:80px" type="text">
-            </div>
-            <div>
-                <div class="label">Expires</div>
-                <input id="ccExpires" placeholder="GMT 日期可选" style="width:180px" type="text">
-            </div>
-            <div>
-                <div class="label">SameSite</div>
-                <select id="ccSameSite" style="width:100px">
-                    <option value="">(无)</option>
-                    <option value="Lax">Lax</option>
-                    <option value="Strict">Strict</option>
-                    <option value="None">None</option>
-                </select>
-            </div>
-            <label style="font-size:12px;color:var(--text-dim)"><input id="ccSecure" style="accent-color:var(--accent)" type="checkbox"> Secure</label>
-            <label style="font-size:12px;color:var(--text-dim)"><input id="ccHttpOnly" style="accent-color:var(--accent)" type="checkbox"> HttpOnly</label>
-            <label style="font-size:12px;color:var(--text-dim)"><input id="ccPartitioned" style="accent-color:var(--accent)" type="checkbox"> Partitioned</label>
+  <div class="stomp-block">
+    <div class="stomp-block-title">构造 Set-Cookie</div>
+    <div class="cc-config">
+      <div
+        class="flex gap-6 mb-8"
+        style="flex-wrap: wrap; align-items: flex-end"
+      >
+        <div>
+          <div class="label">Name</div>
+          <input
+            id="ccName"
+            placeholder="token"
+            style="width: 120px"
+            type="text"
+          />
         </div>
-        <button onclick="setCookieBuildRun()">生成 Set-Cookie</button>
-        <div class="copy-wrap" style="margin-top:8px">
-            <div class="label">输出</div>
-            <button class="copy-btn" onclick="copyText('ccBuildCookieOutput')">复制</button>
-            <div class="output-box" id="ccBuildCookieOutput" style="min-height:48px"></div>
+        <div style="flex: 1; min-width: 140px">
+          <div class="label">Value</div>
+          <input
+            id="ccValue"
+            placeholder="value"
+            style="width: 100%"
+            type="text"
+          />
         </div>
+        <div>
+          <div class="label">Path</div>
+          <input id="ccPath" style="width: 80px" type="text" value="/" />
+        </div>
+        <div>
+          <div class="label">Domain</div>
+          <input
+            id="ccDomain"
+            placeholder="可选"
+            style="width: 120px"
+            type="text"
+          />
+        </div>
+        <div>
+          <div class="label">Max-Age</div>
+          <input
+            id="ccMaxAge"
+            placeholder="秒"
+            style="width: 80px"
+            type="text"
+          />
+        </div>
+        <div>
+          <div class="label">Expires</div>
+          <input
+            id="ccExpires"
+            placeholder="GMT 日期可选"
+            style="width: 180px"
+            type="text"
+          />
+        </div>
+        <div>
+          <div class="label">SameSite</div>
+          <select id="ccSameSite" style="width: 100px">
+            <option value="">(无)</option>
+            <option value="Lax">Lax</option>
+            <option value="Strict">Strict</option>
+            <option value="None">None</option>
+          </select>
+        </div>
+        <label style="font-size: 12px; color: var(--text-dim)"
+          ><input
+            id="ccSecure"
+            style="accent-color: var(--accent)"
+            type="checkbox"
+          />
+          Secure</label
+        >
+        <label style="font-size: 12px; color: var(--text-dim)"
+          ><input
+            id="ccHttpOnly"
+            style="accent-color: var(--accent)"
+            type="checkbox"
+          />
+          HttpOnly</label
+        >
+        <label style="font-size: 12px; color: var(--text-dim)"
+          ><input
+            id="ccPartitioned"
+            style="accent-color: var(--accent)"
+            type="checkbox"
+          />
+          Partitioned</label
+        >
+      </div>
+      <button onclick="setCookieBuildRun()">生成 Set-Cookie</button>
     </div>
+    <div class="copy-wrap cc-result" style="margin-top: 8px">
+      <div class="label">输出</div>
+      <button class="copy-btn" onclick="copyText('ccBuildCookieOutput')">
+        复制
+      </button>
+      <div
+        class="output-box"
+        id="ccBuildCookieOutput"
+        style="min-height: 48px"
+      ></div>
+    </div>
+  </div>
 
-    <div class="stomp-block">
-        <div class="stomp-block-title">Cache-Control 构造</div>
-        <div class="mb-8" style="display:flex;flex-wrap:wrap;gap:10px 16px;font-size:12px;color:var(--text-dim)">
-            <label><input id="ccNoStore" style="accent-color:var(--accent)" type="checkbox"> no-store</label>
-            <label><input id="ccNoCache" style="accent-color:var(--accent)" type="checkbox"> no-cache</label>
-            <label><input id="ccPublic" style="accent-color:var(--accent)" type="checkbox"> public</label>
-            <label><input id="ccPrivate" style="accent-color:var(--accent)" type="checkbox"> private</label>
-            <label><input id="ccMustRevalidate" style="accent-color:var(--accent)" type="checkbox"> must-revalidate</label>
-            <label><input id="ccImmutable" style="accent-color:var(--accent)" type="checkbox"> immutable</label>
-            <label><input id="ccNoTransform" style="accent-color:var(--accent)" type="checkbox"> no-transform</label>
+  <div class="stomp-block">
+    <div class="stomp-block-title">Cache-Control 构造</div>
+    <div class="cc-config">
+      <div
+        class="mb-8"
+        style="
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px 16px;
+          font-size: 12px;
+          color: var(--text-dim);
+        "
+      >
+        <label
+          ><input
+            id="ccNoStore"
+            style="accent-color: var(--accent)"
+            type="checkbox"
+          />
+          no-store</label
+        >
+        <label
+          ><input
+            id="ccNoCache"
+            style="accent-color: var(--accent)"
+            type="checkbox"
+          />
+          no-cache</label
+        >
+        <label
+          ><input
+            id="ccPublic"
+            style="accent-color: var(--accent)"
+            type="checkbox"
+          />
+          public</label
+        >
+        <label
+          ><input
+            id="ccPrivate"
+            style="accent-color: var(--accent)"
+            type="checkbox"
+          />
+          private</label
+        >
+        <label
+          ><input
+            id="ccMustRevalidate"
+            style="accent-color: var(--accent)"
+            type="checkbox"
+          />
+          must-revalidate</label
+        >
+        <label
+          ><input
+            id="ccImmutable"
+            style="accent-color: var(--accent)"
+            type="checkbox"
+          />
+          immutable</label
+        >
+        <label
+          ><input
+            id="ccNoTransform"
+            style="accent-color: var(--accent)"
+            type="checkbox"
+          />
+          no-transform</label
+        >
+      </div>
+      <div
+        class="flex gap-6 mb-8"
+        style="flex-wrap: wrap; align-items: flex-end"
+      >
+        <div>
+          <div class="label">max-age（秒）</div>
+          <input
+            id="ccCacheMaxAge"
+            placeholder="3600"
+            style="width: 100px"
+            type="text"
+          />
         </div>
-        <div class="flex gap-6 mb-8" style="flex-wrap:wrap;align-items:flex-end">
-            <div>
-                <div class="label">max-age（秒）</div>
-                <input id="ccCacheMaxAge" placeholder="3600" style="width:100px" type="text">
-            </div>
-            <div>
-                <div class="label">s-maxage</div>
-                <input id="ccSMaxAge" placeholder="CDN" style="width:100px" type="text">
-            </div>
-            <div>
-                <div class="label">stale-while-revalidate</div>
-                <input id="ccSwr" placeholder="可选" style="width:100px" type="text">
-            </div>
-            <div>
-                <div class="label">stale-if-error</div>
-                <input id="ccSie" placeholder="可选" style="width:100px" type="text">
-            </div>
+        <div>
+          <div class="label">s-maxage</div>
+          <input
+            id="ccSMaxAge"
+            placeholder="CDN"
+            style="width: 100px"
+            type="text"
+          />
         </div>
-        <button onclick="cacheControlBuildRun()">生成 Cache-Control</button>
-        <div class="copy-wrap" style="margin-top:8px">
-            <div class="label">输出</div>
-            <button class="copy-btn" onclick="copyText('ccCacheOutput')">复制</button>
-            <div class="output-box" id="ccCacheOutput" style="min-height:100px"></div>
+        <div>
+          <div class="label">stale-while-revalidate</div>
+          <input
+            id="ccSwr"
+            placeholder="可选"
+            style="width: 100px"
+            type="text"
+          />
         </div>
+        <div>
+          <div class="label">stale-if-error</div>
+          <input
+            id="ccSie"
+            placeholder="可选"
+            style="width: 100px"
+            type="text"
+          />
+        </div>
+      </div>
+      <button onclick="cacheControlBuildRun()">生成 Cache-Control</button>
     </div>
+    <div class="copy-wrap cc-result" style="margin-top: 8px">
+      <div class="label">输出</div>
+      <button class="copy-btn" onclick="copyText('ccCacheOutput')">复制</button>
+      <div
+        class="output-box"
+        id="ccCacheOutput"
+        style="min-height: 100px"
+      ></div>
+    </div>
+  </div>
 </div>

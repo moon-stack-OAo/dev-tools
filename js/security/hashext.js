@@ -1,6 +1,6 @@
 // Hash 扩展工具
 // 实际可用：CRC32、CRC32C、Adler32、SM3
-// 说明：浏览器 Web Crypto 不支持 SHA-3 / RIPEMD-160，故不提供这两类算法
+// SHA-3 / RIPEMD-160 由 Hash 计算工具按浏览器能力提供，本工具不重复实现。
 
 // === CRC32 (标准 IEEE 802.3) ===
 const CRC32_TABLE = (() => {

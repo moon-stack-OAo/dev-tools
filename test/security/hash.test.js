@@ -61,6 +61,13 @@ describe('hashDigest — 明确向量', () => {
         );
     });
 
+    test('SHA-384 空串', async () => {
+        expect(await hashDigest('sha384', '')).toBe(
+            '38b060a751ac96384cd9327eb1b1e36a21fdb71114be07434c0cc7bf63f6e1da' +
+                '274edebfe76f65fbd51ad2f14898b95b',
+        );
+    });
+
     test('不支持算法抛错', async () => {
         await expect(hashDigest('sha3', 'x')).rejects.toThrow('不支持的算法');
     });

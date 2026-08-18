@@ -7,7 +7,7 @@ function hashBytesToHex(buf) {
 
 /**
  * 计算摘要（纯逻辑，不依赖 DOM）
- * @param {'md5'|'sha1'|'sha256'|'sha512'} type
+ * @param {'md5'|'sha1'|'sha256'|'sha384'|'sha512'|'sha3-256'|'sha3-512'} type
  * @param {string} raw
  * @returns {Promise<string>} 小写 hex
  */
@@ -16,13 +16,29 @@ async function hashDigest(type, raw) {
         if (typeof md5 !== "function") throw new Error("md5 库未加载");
         return md5(raw);
     }
-    const algo = {sha1: "SHA-1", sha256: "SHA-256", sha512: "SHA-512"}[type];
-    if (!algo) throw new Error("不支持的算法: " + type);
-    const hashBuffer = await crypto.subtle.digest(
-        algo,
-        new TextEncoder().encode(raw),
-    );
-    return hashBytesToHex(hashBuffer);
+    const algos = {
+        sha1: "SHA-1",
+        sha256: "SHA-256",
+        sha384: "SHA-384",
+        sha512: "SHA-512",
+        "sha3-256": ["SHA-3-256", "SHA3-256"],
+        "sha3-512": ["SHA-3-512", "SHA3-512"],
+    }[type];
+    if (!algos) throw new Error("不支持的算法: " + type);
+    const candidates = Array.isArray(algos) ? algos : [algos];
+    let lastError;
+    for (const algo of candidates) {
+        try {
+            const hashBuffer = await crypto.subtle.digest(
+                algo,
+                new TextEncoder().encode(raw),
+            );
+            return hashBytesToHex(hashBuffer);
+        } catch (e) {
+            lastError = e;
+        }
+    }
+    throw lastError;
 }
 
 async function hashCompute(type) {
@@ -37,7 +53,10 @@ async function hashCompute(type) {
         md5: "MD5",
         sha1: "SHA-1",
         sha256: "SHA-256",
+        sha384: "SHA-384",
         sha512: "SHA-512",
+        "sha3-256": "SHA-3-256",
+        "sha3-512": "SHA-3-512",
     }[type];
     try {
         result = await hashDigest(type, raw);
@@ -57,11 +76,33 @@ async function hashCompute(type) {
     }
 }
 
+async function hashNativeAlgorithmSupported(type) {
+    try {
+        await hashDigest(type, "");
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+async function hashInit() {
+    const buttons = document.querySelectorAll("[data-hash-algo]");
+    for (const button of buttons) {
+        const type = button.getAttribute("data-hash-algo");
+        if (!(await hashNativeAlgorithmSupported(type))) {
+            button.disabled = true;
+            button.title = "当前浏览器的 Web Crypto 未支持此算法";
+        }
+    }
+}
+
 function hashClear() {
     document.getElementById("hashResults").innerHTML = "";
     setStatus("已清空");
 }
 
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = {hashBytesToHex, hashDigest};
+    module.exports = {hashBytesToHex, hashDigest, hashNativeAlgorithmSupported};
 }
+
+if (typeof registerInit === "function") registerInit("hash", hashInit);
