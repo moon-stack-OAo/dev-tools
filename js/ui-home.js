@@ -1170,7 +1170,7 @@ function showHome() {
     clearSidebarHighlight();
     if (typeof closeMobileSidebar === 'function') closeMobileSidebar();
     try {
-        document.title = "ToolPkg · 码包 — 纯前端开发者工具箱";
+        document.title = "DevCoffer · 码柜 — 纯前端开发者工具箱";
     } catch (e) {
         /* ignore */
     }

@@ -356,7 +356,7 @@ function inifmtClear() {
 function inifmtLoadSample() {
     document.getElementById('iniInput').value = [
         '; application config',
-        'app_name = ToolPkg',
+        'app_name = DevCoffer',
         'debug = true',
         '',
         '[database]',

@@ -261,7 +261,7 @@ function j5LoadSample() {
     document.getElementById('j5Input').value = [
         '{',
         '  // 用户配置',
-        "  name: 'ToolPkg',",
+        "  name: 'DevCoffer',",
         '  version: "1.0.0",',
         '  features: [',
         '    "json5",',

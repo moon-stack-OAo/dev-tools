@@ -224,7 +224,7 @@ async function openTool(id) {
     // 工具页标题：利于标签页识别与 SEO 分享
     try {
         document.title =
-            tool.name + " · ToolPkg 码包" + (tool.desc ? " — " + tool.desc : "");
+            tool.name + " · DevCoffer 码柜" + (tool.desc ? " — " + tool.desc : "");
     } catch (e) {
         /* ignore */
     }
